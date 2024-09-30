@@ -1,4 +1,4 @@
-<script>
+
   function updateDetails(newWant){
   // this is clunky and risks not being defned if loading order differs?
     if(!(typeof newWant==='undefined')) {
@@ -218,5 +218,4 @@ document.getElementById('bandblock').appendChild(toAdd);
     return val;
   }
 
-</script>
 
