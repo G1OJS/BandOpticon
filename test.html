@@ -141,6 +141,7 @@ div {margin: 2px;  padding: 5px;}
   function editMyCall(){
     var resp=prompt("Enter your callsign",myCall);
     myCall=resp;
+    localStorage.setItem('myCall',myCall);
   }
   
   // function to allow the user to edit the home squares list
@@ -290,20 +291,20 @@ div {margin: 2px;  padding: 5px;}
       if(spot[0]==Bands[iBand]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
+           if(txcall==myCall){Sq4_reachedByMe.add(spot[5].substr(0,4));}
            if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,4)}
            active_tx.add(rxcall);
            Sq2_reached.add(spot[5].substr(0,2));
-           Sq4_reached.add(spot[5].substr(0,4));
-           if(txcall==myCall){Sq4_reachedByMe.add(spot[5].substr(0,4));}
+           Sq4_reached.add(spot[5].substr(0,2));
         }
         if(SquareInHome(spot[5])) {
            rxcall=spot[3];
+           if(rxcall==myCall){Sq4_spottedByMe.add(spot[4].substr(0,4));}
            if(showSquaresWithCalls) {rxcall=rxcall+"-"+spot[5].substr(0,4)}
            active_tx.add(rxcall);
            active_rx.add(spot[3]+"-"+spot[5].substr(0,4));
            Sq2_spotted.add(spot[4].substr(0,2));
            Sq4_spotted.add(spot[4].substr(0,4));
-           if(rxcall==myCall){Sq4_spottedByMe.add(spot[4].substr(0,4));}
         }
       }
     }
