@@ -1,13 +1,13 @@
 <!-- To do:
   Allow edit of purge time and refresh time
   Add option to enter your own call & see the same stats but for your call only (under the TX,rx, sq in the band details box)
-
+  Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
 -->
 
 <html>
 <head><style>
 
-:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.5vmax;}
+:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax;}
 div {margin: 2px;  padding: 5px;}
 #BO_title {text-align: center; font-size: 5rem;}
 #BO_subtitle {text-align: center; font-size: 1.5rem;}
@@ -19,7 +19,7 @@ div {margin: 2px;  padding: 5px;}
 .incoming {color:olive;}
 .bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
 .bandblock > div {background-color: white;}
-.creditsblock {color:black; font-size: 0.8rem; display: grid; grid-template-columns: 300px auto;}
+.creditsblock {color:black; font-size: 0.7rem; display: grid; grid-template-columns: 300px auto;}
 </style>
 </head>
 
@@ -32,7 +32,8 @@ div {margin: 2px;  padding: 5px;}
 <div class="creditsblock" id="credits" name="credits">
   <div>
     Javascript & HTML developed by:<br>
-    Alan Robinson - G1OJS - G1OJS@yahoo.com <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a> <br>
+    Alan Robinson - G1OJS<br>
+    <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a> <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
     BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
     BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
   </div><div>
@@ -106,9 +107,8 @@ div {margin: 2px;  padding: 5px;}
          "<span class='interzone'> Home &#8680 Home /</span>"+
          "<span class='outgoing'> Home &#8680 DX /</span>"+
          "<span class='incoming'> DX &#8680 Home</span><br>"+
-         "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br> \
-         <span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div> \
-         Viewport "+document.documentElement.clientWidth+" / "+document.documentElement.clientHeight
+         "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
+         "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
     } else {
       writeBandActiveCallsInDetails(detailWanted);
     }
