@@ -89,7 +89,7 @@ div {margin: 2px;  padding: 5px;}
       console.log("No local config data found: defaults applied.");
       saveConfig();
     }
-    if(localSorage.getItem('myCall')){
+    if(localStorage.getItem('myCall')){
       myCall=localStorage.getItem('myCall');
     } else {
       myCall="G1OJS";
