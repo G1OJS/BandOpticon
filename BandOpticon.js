@@ -32,7 +32,11 @@
   // Define the Squares and Bands of interest
 //  localStorage.removeItem('Squares')
   if(localStorage.getItem('Squares')){
-    var Squares=JSON.parse(localStorage.getItem('Squares'));
+    try {var Squares=JSON.parse(localStorage.getItem('Squares'));}
+    catch(err) {
+      localStorage.removeItem('Squares')
+      var Squares=["IO","JO01","JO02","JO03","JO04"];
+      localStorage.setItem('Squares', JSON.stringify(Squares));}
   } else {
     var Squares=["IO","JO01","JO02","JO03","JO04"];
     localStorage.setItem('Squares', JSON.stringify(Squares));
