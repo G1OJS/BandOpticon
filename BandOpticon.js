@@ -217,9 +217,6 @@ document.getElementById('bandblock').appendChild(toAdd);
     var val=message.slice(iColon+1,iComma).replace(/"/g, '');
     return val;
   }
- 
 
 </script>
 
-
-</html>
