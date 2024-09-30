@@ -67,6 +67,8 @@ div {margin: 2px;  padding: 5px;}
       console.log("Saving config:");
       localStorage.setItem('Squares', JSON.stringify(Squares));
       console.log("Saved "+Squares);
+      localStorage.setItem('myCall', myCall);
+      console.log("Saved "+myCall);
   }
   
   function loadConfig(){
@@ -85,6 +87,12 @@ div {margin: 2px;  padding: 5px;}
     } else {
       Squares=defaultSquares;
       console.log("No local config data found: defaults applied.");
+      saveConfig();
+    }
+    if(localSorage.getItem('myCall')){
+      myCall=localSorage.getItem('myCall');
+    } else {
+      myCall="G1OJS";
       saveConfig();
     }
   }
