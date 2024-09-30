@@ -1,26 +1,25 @@
 <!-- To do:
   Allow edit of purge time and refresh time
   Add option to enter your own call & see the same stats but for your call only (under the TX,rx, sq in the band details box)
-
+  Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
 -->
 
 <html>
 <head><style>
-:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1em;}
-#main_content { background-color: #DFF8FE; color:black;text-align: left; font-size: 1em;}
+
+:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.5vmax;}
 div {margin: 2px;  padding: 5px;}
-#BO_title {text-align: center; font-size: 4em;}
-#BO_subtitle {text-align: center; font-size: 1.2em;}
-#credits {color:black; font-size: 0.8em;}
-.detail > div {background-color: rgba(255, 255, 255, 0.8);}
+#BO_title {text-align: center; font-size: 5rem;}
+#BO_subtitle {text-align: center; font-size: 1.5rem;}
+.detail > div {background-color: white;}
 .transmit {color:red; }
 .receive {color:green; }
 .interzone {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
 .bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
-.bandblock > div {background-color: rgba(255, 255, 255, 0.8);}
-.creditsblock {display: grid; grid-template-columns: 250px auto;}
+.bandblock > div {background-color: white;}
+.creditsblock {color:black; font-size: 0.8rem; display: grid; grid-template-columns: 300px auto;}
 </style>
 </head>
 
@@ -107,8 +106,8 @@ div {margin: 2px;  padding: 5px;}
          "<span class='interzone'> Home &#8680 Home /</span>"+
          "<span class='outgoing'> Home &#8680 DX /</span>"+
          "<span class='incoming'> DX &#8680 Home</span><br>"+
-         "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br> \
-         <span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
+         "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
+         "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
     } else {
       writeBandActiveCallsInDetails(detailWanted);
     }
