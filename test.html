@@ -276,7 +276,7 @@ div {margin: 2px;  padding: 5px;}
    }
     
   function writeBandActiveCallsInDetails(iBand){
-    const showSquaresWithCalls=true;
+    const showSquaresWithCalls=false;
     var active_tx=new Set;
     var active_rx=new Set;
     var Sq2_reached=new Set;
@@ -324,7 +324,6 @@ div {margin: 2px;  padding: 5px;}
        "<p class='transmit'><strong>Tx calls:</strong> "+Array.from(active_tx).toSorted().join(' ')+"<br>"+
        "<strong>Squares reached:</strong> "+Array.from(Sq_reached).toSorted().join(' ')+"<br></p>"+
        "<strong>Squares reached by me:</strong> "+Array.from(Sq4_reachedByMe).toSorted().join(' ')+"<br></p>"+
-      
        "<p class='receive'><strong>Rx calls:</strong> "+Array.from(active_rx).toSorted().join(' ')+"<br>"+
        "<strong>Squares spotted:</strong> "+Array.from(Sq_spotted).toSorted().join(' ')+"<br></p>"+
        "<strong>Squares spotted by me:</strong> "+Array.from(Sq4_spottedByMe).toSorted().join(' ')+"<br></p>"+
