@@ -1,5 +1,5 @@
 # BandOpticon
-### Where is each band open to from *my* local area? How active are they? What DX are others in my area receiving and being spotted by?
+### Where is each band open to from *my* local area? How active are they? What DX are others in my area receiving and being spotted by? What squares are they reaching and spotting? All on one screen??
 
 ## BONUS - works great on phones and tablets too! [click here]({{ site.baseurl }}/BandOpticon) 
 
