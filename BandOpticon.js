@@ -57,7 +57,12 @@
     var resp=prompt("Enter Squares",Squares);
  //   var regex=/^(([0-9]+)(,(?=[0-9]))?)+$/;
  //   if (regex.test(resp)) {
-      Squares=resp.split(', '); // convert string response back to an array
+      // convert string response back to an array
+      Squares=[];
+      var newVals=resp.split(',');
+      for(i=0;i<newVals.length;i++){
+        Squares[i]=newVals[i];
+      }
       updateControls();
       localStorage.setItem('Squares', Squares);
       spots=[];
