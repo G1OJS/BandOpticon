@@ -329,7 +329,7 @@ div {margin: 2px;  padding: 5px;}
     // if any of the lists of squares is very long, let's display them at level 2 instead of level 4
     const ml=20;
     var lvl=4;
-    if(Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml 
+    if(Sqs_reached.size>ml || Sqs_reachedByMe.size>ml 
        || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {lvl=2}
    
     // done analysing, now write the HTML in the details div
@@ -338,24 +338,28 @@ div {margin: 2px;  padding: 5px;}
     var topHTML="<div>"+ "<strong>"+Bands[iBand]+" details</strong> (<a href='#controls' onclick='updateDetails(-1);'>close</a>)<br>";
     
     var txHTML="<p class='transmit'><strong>Tx calls:</strong> "
-    txHTML+=Array.from(active_tx).toSorted().join(' ')+"<br><strong>Squares reached:</strong> "
-    var reachedArr=Array.from(Sqs_reached).toSorted();
-    var reachedByMeArr=Array.from(Sqs_reachedByMe).toSorted();
-    for (let i=0;i<reachedArr.length;i++){txHTML+=reachedArr[i].substr(0,lvl)+" ";}
-    txHTML+="<br><strong>Squares reached by me:</strong> "
-    for (let i=0;i<reachedByMeArr.length;i++){txHTML+=reachedArr[i].substr(0,lvl)+" ";}
+    txHTML+=Array.from(active_tx).toSorted().join(' ');
+    txHTML+="<br><strong>Squares reached:</strong> "+SquaresArrayFromSquaresSet(Sqs_reached,lvl).join(' ');
+    txHTML+="<br><strong>Squares reached by me:</strong> "+SquaresArrayFromSquaresSet(Sqs_reachedByMe,lvl).join(' ');
     txHTML+="<br></p>"
     
     var rxHTML="<p class='receive'><strong>Rx calls:</strong> "
-    rxHTML+=Array.from(active_rx).toSorted().join(' ')+"<br><strong>Squares spotted:</strong> "
-    var spottedArr=Array.from(Sqs_spotted).toSorted();
-    var spottedByMeArr=Array.from(Sqs_spottedByMe).toSorted();
-    for (let i=0;i<spottedArr.length;i++){rxHTML+=spottedArr[i].substr(0,lvl)+" ";}
-    rxHTML+="<br><strong>Squares spotted by me:</strong> "
-    for (let i=0;i<spottedByMeArr.length;i++){rxHTML+=spottedArr[i].substr(0,lvl)+" ";}
+    rxHTML+=Array.from(active_rx).toSorted().join(' ')
+    rxHTML+="<br><strong>Squares spotted:</strong> "+SquaresArrayFromSquaresSet(Sqs_spotted,lvl).join(' ');
+    rxHTML+="<br><strong>Squares spotted by me:</strong> "+SquaresArrayFromSquaresSet(Sqs_spottedByMe,lvl).join(' ');
     rxHTML+="<br></p>"
        
     detail.innerHTML=topHTML+txHTML+rxHTML+"</div>";
+  }
+  
+  function SquaresArrayFromSquaresSet(sqSet,lvl){
+    // take the unique-valued squares Set at level 4 (or more)
+    // and produce a sorted squares Array at level=lvl
+    var sqArr=Array.from(sqSet).toSorted();
+    var sqSet2=new Set;
+    // going one by one because we need to apply substr to each element
+    for (let i=0;i<sqArr.length;i++){sqSet2.add(sqArr[i].substr(0,lvl))};
+    return Array.from(sqSet2)
   }
 
   function validSquare(locator){
@@ -373,7 +377,6 @@ div {margin: 2px;  padding: 5px;}
     return (Squares.includes(sq.substr(0,2)) || Squares.includes(sq.substr(0,4)) || Squares.includes(sq.substr(0,6)));
   }
   
- 
   function getVal(key,message){
     // parse the MQTT message to get the part we want (key)
     var iVal=message.indexOf('"'+key+'":');
