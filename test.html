@@ -144,15 +144,17 @@ div {margin: 2px;  padding: 5px;}
     controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
        "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"+
-       "Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
+       spots.length+" spots in database. Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
   }
 
+  // needs validation code
   function editMyCall(){
     var resp=prompt("Enter your callsign",myCall);
     myCall=resp;
     localStorage.setItem('myCall',myCall);
   }
-
+  
+  // needs validation code
   function editPurgeMins(){
     var resp=prompt("Enter minutes for spot expiry",purgeMinutes);
     purgeMinutes=resp;
@@ -224,7 +226,7 @@ div {margin: 2px;  padding: 5px;}
       var tSpot=spot[1];
       if((Date.now()/1000-tSpot)/60 > purgeMinutes) {del.push(iSpot)}
     }
-    for(let iDel=0; iDel <del.length;iDel++) {spots.splice(del[idel],1)}
+    for(let iDel=0; iDel <del.length;iDel++) {spots.splice(del[iDel],1)}
   }
   
   function addSpot(message){
