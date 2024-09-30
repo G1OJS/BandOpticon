@@ -126,9 +126,15 @@ div {margin: 2px;  padding: 5px;}
     var sqs=Squares.join(';')+" <a href='#controls' onclick='editSquares();'>edit</a>";
     controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
+       "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a>";
        "Spots purged when older than "+purgeMinutes+" minutes"
   }
 
+  function editMyCall(){
+    var resp=prompt("Enter your callsign",myCall);
+    myCall=resp;
+  }
+  
   // function to allow the user to edit the home squares list
   function editSquares(){
     var resp=prompt("Enter Squares",Squares);
