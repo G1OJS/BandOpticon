@@ -66,9 +66,11 @@ div {margin: 2px;  padding: 5px;}
   function saveConfig(){
       console.log("Saving config:");
       localStorage.setItem('Squares', JSON.stringify(Squares));
-      console.log("Saved "+Squares);
+      console.log("Saved Squares: "+Squares);
       localStorage.setItem('myCall', myCall);
-      console.log("Saved "+myCall);
+      console.log("Saved myCall: "+myCall);
+      localStorage.setItem('purgeMinutes', purgeMinutes);
+      console.log("Saved purgeMinutes: "+purgeMinutes);
   }
   
   function loadConfig(){
@@ -93,6 +95,12 @@ div {margin: 2px;  padding: 5px;}
       myCall=localStorage.getItem('myCall');
     } else {
       myCall="G1OJS";
+      saveConfig();
+    }
+    if(localStorage.getItem('purgeMinutes')){
+      purgeMinutes=localStorage.getItem('purgeMinutes');
+    } else {
+      purgeMinutes=5;
       saveConfig();
     }
   }
@@ -135,7 +143,7 @@ div {margin: 2px;  padding: 5px;}
     controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
        "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"+
-       "Spots purged when older than "+purgeMinutes+" minutes"
+       "Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
   }
 
   function editMyCall(){
@@ -143,13 +151,19 @@ div {margin: 2px;  padding: 5px;}
     myCall=resp;
     localStorage.setItem('myCall',myCall);
   }
+
+  function editPurgeMins(){
+    var resp=prompt("Enter minutes for spot expiry",purgeMinutes);
+    purgeMinutes=resp;
+    localStorage.setItem('purgeMinutes',purgeMinutes);
+  }
   
   // function to allow the user to edit the home squares list
   function editSquares(){
     var resp=prompt("Enter Squares",Squares);
       var test=resp.split(','); // need to convert resp string to array
       squaresValid=true;
-      for (i=0;i<test.length;i++){
+      for (let i=0;i<test.length;i++){
         if(validSquare(test[i])==0) squaresValid=false;
       }
       if(squaresValid){
@@ -209,7 +223,7 @@ div {margin: 2px;  padding: 5px;}
       var tSpot=spot[1];
       if((Date.now()/1000-tSpot)/60 > purgeMinutes) {del.push(iSpot)}
     }
-    for (let iSpot=0; iSpot <del.length;iSpot++){spots.splice(del[iSpot],1)}
+    let iDel=0; iDel <del.length;iDel++){spots.splice(del[idel],1)}
   }
   
   function addSpot(message){
@@ -232,12 +246,12 @@ div {margin: 2px;  padding: 5px;}
         bandStats[i][1]=0;
         bandStats[i][2]=0;
     }
-    for (let iSpot=0; iSpot < spots.length; iSpot++) {
+    let iSpot=0; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       var dircode=0;    // dircode will be 0=H->H, 1=DX->H, 2=H->DX, 3=DX-DX
       if(!SquareInHome(spots[iSpot][4])) {dircode+=1};
       if(!SquareInHome(spots[iSpot][5])) {dircode+=2};
-      iBand=Bands.indexOf(spot[0]);
+      let iBand=Bands.indexOf(spot[0]);
       // DX->DX should never happen as we discarded it above
       if(dircode>2 || iBand==-1){
          console.log("Bad spot "+spot); 
@@ -246,9 +260,9 @@ div {margin: 2px;  padding: 5px;}
       }
     }
     // done counting so now write results to HTML
-    for (let iBand=0; iBand < Bands.length; iBand++) {
-      var snum=bandStats[iBand];
-      document.getElementById(Bands[iBand]+"spots").innerHTML=
+    for (let i=0; i < Bands.length; i++) {
+      var snum=bandStats[i];
+      document.getElementById(Bands[i]+"spots").innerHTML=
         "Spots "+snum[0]
         +"/<span class='outgoing'>"+snum[2]
         +"</span>/<span class='incoming'>"+snum[1]
@@ -258,7 +272,7 @@ div {margin: 2px;  padding: 5px;}
   
    function writeBandActiveCallStats(){
   //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-     for (iBand=0; iBand<Bands.length; iBand++){
+     for (let iBand=0; iBand<Bands.length; iBand++){
        //note - we use sets here as an easy way of counting unique calls
        var active_tx=new Set;
        var active_rx=new Set;
