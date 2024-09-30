@@ -20,3 +20,5 @@ The software runs in Javascript on your machine and requires no downloads. Just 
 
 [GitHub repo](https://github.com/G1OJS/BandOpticon/)
 
+Easter egg - you might find me fiddling with ideas for the next version [here]({{ site.baseurl }}/test) 
+
