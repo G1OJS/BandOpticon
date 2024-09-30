@@ -293,7 +293,7 @@ div {margin: 2px;  padding: 5px;}
            txcall=spot[2];
            if(txcall==myCall){Sq4_reachedByMe.add(spot[5].substr(0,4));}
            if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,4)}
-           active_tx.add(rxcall);
+           active_tx.add(txcall);
            Sq2_reached.add(spot[5].substr(0,2));
            Sq4_reached.add(spot[5].substr(0,2));
         }
@@ -301,8 +301,7 @@ div {margin: 2px;  padding: 5px;}
            rxcall=spot[3];
            if(rxcall==myCall){Sq4_spottedByMe.add(spot[4].substr(0,4));}
            if(showSquaresWithCalls) {rxcall=rxcall+"-"+spot[5].substr(0,4)}
-           active_tx.add(rxcall);
-           active_rx.add(spot[3]+"-"+spot[5].substr(0,4));
+           active_rx.add(rxcall);
            Sq2_spotted.add(spot[4].substr(0,2));
            Sq4_spotted.add(spot[4].substr(0,4));
         }
