@@ -58,7 +58,7 @@ div {margin: 2px;  padding: 5px;}
   let purgeMinutes=5;
   let detailWanted="Layout";
   let spots=[];
-  let tWrite=0; // time of last write set to 1970 so screen will update asap
+  let tWrite=0; // time of last write set to 1 Jan 1970 so screen will update asap
   let tStart=Date.now(); // software start
   const defaultSquares=["IO","JO01","JO02","JO03","JO04"]
   let Squares=[];
@@ -224,7 +224,7 @@ div {margin: 2px;  padding: 5px;}
     for (let iSpot=0; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       var tSpot=spot[1];
-      if((Date.now()/1000-tSpot)/60 > purgeMinutes) {del.push(iSpot)}
+      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {del.push(iSpot)}
     }
     for(let iDel=0; iDel <del.length;iDel++) {spots.splice(del[iDel],1)}
   }
@@ -235,7 +235,7 @@ div {margin: 2px;  padding: 5px;}
     receiverCall=getVal("rc",message);
     senderSq=getVal("sl",message).toUpperCase();
     receiverSq=getVal("rl",message).toUpperCase();
-    tSpot=parseInt(getVal("t",message));
+    tSpot=Date.now(); // working with time spot received not time spot generated
     spots.push([band,tSpot,senderCall,receiverCall,senderSq,receiverSq]);
   }
   
