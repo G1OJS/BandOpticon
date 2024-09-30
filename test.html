@@ -63,6 +63,9 @@ div {margin: 2px;  padding: 5px;}
   const defaultSquares=["IO","JO01","JO02","JO03","JO04"]
   let Squares=[];
   let myCall="G1OJS";
+  // count the spot processing stats just for fun:
+  let spotsAdded=0;
+  let spotsPurged=0;
   
   function saveConfig(){
       console.log("Saving config:");
@@ -144,7 +147,7 @@ div {margin: 2px;  padding: 5px;}
     controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
        "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"+
-       spots.length+" spots in database. Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
+       spots.length+" spots in database ("+spotsAdded+" added, "+spotsPurged+" purged). Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
   }
 
   // needs validation code
@@ -227,6 +230,7 @@ div {margin: 2px;  padding: 5px;}
       if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {del.push(iSpot)}
     }
     for(let iDel=0; iDel <del.length;iDel++) {spots.splice(del[iDel],1)}
+    spotsPurged+=del.length;
   }
   
   function addSpot(message){
@@ -237,6 +241,7 @@ div {margin: 2px;  padding: 5px;}
     receiverSq=getVal("rl",message).toUpperCase();
     tSpot=Date.now(); // working with time spot received not time spot generated
     spots.push([band,tSpot,senderCall,receiverCall,senderSq,receiverSq]);
+    spotsAdded+=1;
   }
   
   function writeBandSpotStats(){
@@ -296,54 +301,61 @@ div {margin: 2px;  padding: 5px;}
     const showSquaresWithCalls=false;
     var active_tx=new Set;
     var active_rx=new Set;
-    var Sq2_reached=new Set;
-    var Sq2_spotted=new Set;
-    var Sq4_reached=new Set;
-    var Sq4_spotted=new Set;
-    var Sq4_reachedByMe=new Set;
-    var Sq4_spottedByMe=new Set;
+    var Sqs_reached=new Set;
+    var Sqs_spotted=new Set;
+    var Sqs_reachedByMe=new Set;
+    var Sqs_spottedByMe=new Set;
     for (let iSpot=1; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
       if(spot[0]==Bands[iBand]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
-           if(txcall==myCall){Sq4_reachedByMe.add(spot[5].substr(0,4));}
+           if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,4)}
            active_tx.add(txcall);
-           Sq2_reached.add(spot[5].substr(0,2));
-           Sq4_reached.add(spot[5].substr(0,4));
+           Sqs_reached.add(spot[5].substr(0,4));
         }
         if(SquareInHome(spot[5])) {
            rxcall=spot[3];
-           if(rxcall==myCall){Sq4_spottedByMe.add(spot[4].substr(0,4));}
+           if(rxcall==myCall){Sqs_spottedByMe.add(spot[4].substr(0,4));}
            if(showSquaresWithCalls) {rxcall=rxcall+"-"+spot[5].substr(0,4)}
            active_rx.add(rxcall);
-           Sq2_spotted.add(spot[4].substr(0,2));
-           Sq4_spotted.add(spot[4].substr(0,4));
+           Sqs_spotted.add(spot[4].substr(0,4));
         }
       }
     }
-
-    // for squares reached and spotted, if they get too numerous, 
-    // step back from level 4 square to level 2
-    var Sq_reached="";
-    if(Sq4_reached.size>10) {Sq_reached=Sq2_reached;} else {Sq_reached=Sq4_reached;} 
-    var Sq_spotted="";
-    if(Sq4_spotted.size>10) {Sq_spotted=Sq2_spotted;} else {Sq_spotted=Sq4_spotted;} 
     
+    // if any of the lists of squares is very long, let's display them at level 2 instead of level 4
+    const ml=20;
+    var lvl=4;
+    if(Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml 
+       || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {lvl=2}
+   
     // done analysing, now write the HTML in the details div
     // together with button to revert to band layout reminder
-    detail.innerHTML="<div>"+ 
-       "<strong>"+Bands[iBand]+"</strong><br>"+ 
-       "<a href='#controls' onclick='updateDetails(-1);'> show layout</a><br>" +
-       "<p class='transmit'><strong>Tx calls:</strong> "+Array.from(active_tx).toSorted().join(' ')+"<br>"+
-       "<strong>Squares reached:</strong> "+Array.from(Sq_reached).toSorted().join(' ')+"<br></p>"+
-       "<strong>Squares reached by me:</strong> "+Array.from(Sq4_reachedByMe).toSorted().join(' ')+"<br></p>"+
-       "<p class='receive'><strong>Rx calls:</strong> "+Array.from(active_rx).toSorted().join(' ')+"<br>"+
-       "<strong>Squares spotted:</strong> "+Array.from(Sq_spotted).toSorted().join(' ')+"<br></p>"+
-       "<strong>Squares spotted by me:</strong> "+Array.from(Sq4_spottedByMe).toSorted().join(' ')+"<br></p>"+
-       "</div>";
+    // need a bit of processing here as it's a big wedge of text to generate
+    var topHTML="<div>"+ "<strong>"+Bands[iBand]+" details</strong> (<a href='#controls' onclick='updateDetails(-1);'>close</a>)<br>";
+    
+    var txHTML="<p class='transmit'><strong>Tx calls:</strong> "
+    txHTML+=Array.from(active_tx).toSorted().join(' ')+"<br><strong>Squares reached:</strong> "
+    var reachedArr=Array.from(Sqs_reached).toSorted();
+    var reachedByMeArr=Array.from(Sqs_reachedByMe).toSorted();
+    for (let i=0;i<reachedArr.length;i++){txHTML+=reachedArr[i].substr(0,lvl)+" ";}
+    txHTML+="<br><strong>Squares reached by me:</strong> "
+    for (let i=0;i<reachedByMeArr.length;i++){txHTML+=reachedArr[i].substr(0,lvl)+" ";}
+    txHTML+="<br></p>"
+    
+    var rxHTML="<p class='receive'><strong>Rx calls:</strong> "
+    rxHTML+=Array.from(active_rx).toSorted().join(' ')+"<br><strong>Squares spotted:</strong> "
+    var spottedArr=Array.from(Sqs_spotted).toSorted();
+    var spottedByMeArr=Array.from(Sqs_spottedByMe).toSorted();
+    for (let i=0;i<spottedArr.length;i++){rxHTML+=spottedArr[i].substr(0,lvl)+" ";}
+    rxHTML+="<br><strong>Squares spotted by me:</strong> "
+    for (let i=0;i<spottedByMeArr.length;i++){rxHTML+=spottedArr[i].substr(0,lvl)+" ";}
+    rxHTML+="<br></p>"
+       
+    detail.innerHTML=topHTML+txHTML+rxHTML+"</div>";
   }
 
   function validSquare(locator){
