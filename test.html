@@ -1,7 +1,8 @@
 <!-- To do:
-  Allow edit of purge time and refresh time
-  Add option to enter your own call & see the same stats but for your call only (under the TX,rx, sq in the band details box)
+
   Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
+  
+  Underline squares in main list spotted / reached by me
 -->
 
 <html>
@@ -53,8 +54,8 @@ div {margin: 2px;  padding: 5px;}
  // initialisation and functions to load and save configuration
  
   const Bands=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  const refreshSeconds=2;
-  const purgeMinutes=5;
+  let refreshSeconds=2;
+  let purgeMinutes=5;
   let detailWanted="Layout";
   let spots=[];
   let tWrite=0; // time of last write set to 1970 so screen will update asap
@@ -223,7 +224,7 @@ div {margin: 2px;  padding: 5px;}
       var tSpot=spot[1];
       if((Date.now()/1000-tSpot)/60 > purgeMinutes) {del.push(iSpot)}
     }
-    let iDel=0; iDel <del.length;iDel++){spots.splice(del[idel],1)}
+    for(let iDel=0; iDel <del.length;iDel++) {spots.splice(del[idel],1)}
   }
   
   function addSpot(message){
@@ -246,7 +247,7 @@ div {margin: 2px;  padding: 5px;}
         bandStats[i][1]=0;
         bandStats[i][2]=0;
     }
-    let iSpot=0; iSpot < spots.length; iSpot++) {
+    for(let iSpot=0; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       var dircode=0;    // dircode will be 0=H->H, 1=DX->H, 2=H->DX, 3=DX-DX
       if(!SquareInHome(spots[iSpot][4])) {dircode+=1};
