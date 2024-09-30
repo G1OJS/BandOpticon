@@ -1,4 +1,3 @@
-
 <!-- To do:
   Allow edit of purge time and refresh time
   Add option to enter your own call & see the same stats but for your call only (under the TX,rx, sq in the band details box)
@@ -7,8 +6,7 @@
 
 <html>
 <head><style>
-:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1em;}
-#main_content { background-color: #DFF8FE; color:black;text-align: left; font-size: 1em;}
+:root {background-color: #91FCFE; color:black;text-align: left;}
 div {margin: 2px;  padding: 5px;}
 #BO_title {text-align: center; font-size: 4em;}
 #BO_subtitle {text-align: center; font-size: 1.2em;}
@@ -21,7 +19,7 @@ div {margin: 2px;  padding: 5px;}
 .incoming {color:olive;}
 .bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
 .bandblock > div {background-color: rgba(255, 255, 255, 0.8);}
-
+.creditsblock {display: grid; grid-template-columns: 250px auto;}
 </style>
 </head>
 
@@ -31,7 +29,19 @@ div {margin: 2px;  padding: 5px;}
 <div class="detail" id="controls" name="controls"></div>
 <div class="detail" id="detail" name="detail"></div>
 <div class="bandblock" id="bandblock"></div>
-
+<div class="creditsblock" id="credits" name="credits">
+  <div>
+    Javascript & HTML developed by:<br>
+    Alan Robinson - G1OJS - G1OJS@yahoo.com <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a> <br>
+    BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+    BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
+  </div><div>
+    Thanks to:<br>
+    Philip Gladstone - N1DQ for https://pskreporter.info/<br>
+    Tom Stanton - M0LTE for mqtt.pskreporter.info, the MQTT feed for this app<br>
+    <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+  </div>
+</div>
 </div></body>
 
 <!--Get the library for MQTT functions -->
