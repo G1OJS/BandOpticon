@@ -1,4 +1,10 @@
 # BandOpticon
+### Where is each band open to from *my* local area? How active are they? What DX are others in my area receiving and being spotted by?
+
+## BONUS - works great on phones and tablets too! [click here]({{ site.baseurl }}/BandOpticon) 
+
+![BandOpticon 1](https://github.com/user-attachments/assets/d1b636e5-05aa-4f79-ad7b-c108101429fc)
+
 This software uses data from Pskreporter to present a view of band activity on all (main) bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also simultaneously view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares are being reached and spotted by them.
 
 Active stations and spots are drawn from your specified group of Maidenhead squares, which provides more control over the data selection than is available on the Pskreporter map views. Instead of "Country of callsign" you have access to a grouping of squares of any level (for example, IO, JO01, JO03kk can be added as one group).
