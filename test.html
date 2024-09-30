@@ -134,7 +134,7 @@ div {margin: 2px;  padding: 5px;}
     var sqs=Squares.join(';')+" <a href='#controls' onclick='editSquares();'>edit</a>";
     controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
-       "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a>";
+       "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"+
        "Spots purged when older than "+purgeMinutes+" minutes"
   }
 
@@ -295,7 +295,7 @@ div {margin: 2px;  padding: 5px;}
            if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,4)}
            active_tx.add(txcall);
            Sq2_reached.add(spot[5].substr(0,2));
-           Sq4_reached.add(spot[5].substr(0,2));
+           Sq4_reached.add(spot[5].substr(0,4));
         }
         if(SquareInHome(spot[5])) {
            rxcall=spot[3];
