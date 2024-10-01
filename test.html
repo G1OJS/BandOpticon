@@ -421,12 +421,37 @@ div {margin: 2px;  padding: 5px;}
         H2H_HTML+="<br>"+txCall+" -> ("+rxCalls.slice(0, -1)+")";
       }
     }
-
     
     var H2DX_HTML="";
-
+    for (let i=0;i<active_tx.size;i++){
+      var rxCalls="";
+      var txCall=Array.from(active_tx)[i];
+      for (let j=0;j<H2DX.size;j++){
+        var pair=Array.from(H2DX)[j];
+        if(pair.substr(0,txCall.length)==txCall){
+					rxCalls+=pair.split("-")[1]+",";
+        }
+      }
+      if(rxCalls.length>0){
+        H2DX_HTML+="<br>"+txCall+" -> ("+rxCalls.slice(0, -1)+")";
+      }
+     }
    
     var DX2H_HTML="";
+    for (let i=0;i<active_rx.size;i++){
+      var txCalls="";
+      var rxCall=Array.from(active_rx)[i];
+      for (let j=0;j<DX2H.size;j++){
+        var pair=Array.from(DX2H)[j];
+        console.log(pair.split(">")[1], rxCall);
+        if(pair.split(">")[1]==rxCall){
+					txCalls+=pair.split("-")[0]+",";
+        }
+      }
+      if(txCalls.length>0){
+        DX2H_HTML+="<br>"+rxcall+" <- ("+rxCalls.slice(0, -1)+")";
+      }
+     }
 
        
     detail.innerHTML="<div>"+topHTML
