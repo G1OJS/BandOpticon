@@ -1,10 +1,11 @@
 <!-- To do:
+  rename css elements more sensibly
+  idea - could have detail 1 and detail 2 both displayed, or even all 3 uses of the detail block with an open/close 
+  button on each (use an HTML detail/summary tag?) don't want all the code running under a closed one though.
+  nicer borders around things to group better
 
-  Use new divs for ordinary calls/squares detail
   Tidy analysis code in connectivity section if poss using set operations
-
   Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
-  
   Underline squares in main list spotted / reached by me
 -->
 
@@ -15,25 +16,30 @@
 div {margin: 0px;  padding: 0px;}
 #BO_title {text-align: center; font-size: 5rem;}
 #BO_subtitle {text-align: center; font-size: 1.5rem;}
+#controls > div {background-color: white; margin: 1px;  padding: 1px;}
 .detail {display: grid; grid-template-columns: min-content 20px auto; grid-template-rows: auto;}
 .detail > div {background-color: white; margin: 1px;  padding: 1px;}
 .detail > div:first-child {grid-column: 1 / 4;}
+.detail2 {display: grid; grid-template-columns: 120px auto; grid-template-rows: auto;}
+.detail2 > div {background-color: white; margin: 1px;  padding: 1px;}
+.detail2 > div:first-child {grid-column: 1 / 3;}
+.bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
+.bandblock > div {background-color: white; margin: 1px;  padding: 1px;}
+.creditsblock {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .transmit {color:red; }
 .receive {color:green; }
 .interzone {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
-.bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
-.bandblock > div {background-color: white; margin: 1px;  padding: 1px;}
-.creditsblock {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 </style>
 </head>
 
 <body id="BandOpticonBody"><div>
 <div id="BO_title" name="BO_title">BandOpticon</div>
 <div id="BO_subtitle" name="BO_subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
-<div class="detail" id="controls" name="controls"></div>
+<div id="controls" name="controls"></div>
 <div class="detail" id="detail" name="detail"></div>
+<div class="detail2" id="detail2" name="detail2"></div>
 <div class="bandblock" id="bandblock"></div>
 <div class="creditsblock" id="credits" name="credits">
   <div>
@@ -135,6 +141,7 @@ div {margin: 0px;  padding: 0px;}
     }
     
     if(detailWanted=="Layout"){
+      detail2.innerHTML="";
       detail.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
          Spots: number of spots "+
          "<span class='interzone'> Home &#8680 Home /</span>"+
@@ -358,26 +365,31 @@ div {margin: 0px;  padding: 0px;}
         +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show connectivity)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
         +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML+"</div>";
+        
+    document.getElementsByTagName('.detail').innerHTML="{display: grid; grid-template-columns: 200px auto; grid-template-rows: auto;}";
+
+
+    detail.innerHTML="";
+    detail2.innerHTML="<div>"+topHTML+"</div>"
+    detail2.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
+    			+Array.from(active_tx).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit'>"
+    			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
+          +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='transmit'>Squares reached only by me: </div><div class='transmit'>"
+          +Array.from(Sqs_reachedByMe.difference(Sqs_reached)).toSorted().join(' ')+"</div>";
     
-    var txHTML="<p class='transmit'><strong>Tx calls:</strong> "+Array.from(active_tx).toSorted().join(' ');
-    var Sqs_reachedByMeToo=Sqs_reachedByMe.intersection(Sqs_reached);
-    var Sqs_reachedOnlyByMe=Sqs_reachedByMe.difference(Sqs_reached);
-    txHTML+="<br><strong>Squares reached by group:</strong> "+Array.from(Sqs_reached).toSorted().join(' ');
-    txHTML+="<br><strong>Squares reached by me too:</strong> "+Array.from(Sqs_reachedByMeToo).toSorted().join(' ');
-    txHTML+="<br><strong>Squares reached only by me:</strong> "+Array.from(Sqs_reachedOnlyByMe).toSorted().join(' ');
-    txHTML+="<br></p>";
-    
-    var rxHTML="<p class='receive'><strong>Rx calls:</strong> "+Array.from(active_rx).toSorted().join(' ');
-    var Sqs_spottedByMeToo=Sqs_spottedByMe.intersection(Sqs_spotted);
-    var Sqs_spottedOnlyByMe=Sqs_spottedByMe.difference(Sqs_spotted);
-    rxHTML+="<br><strong>Squares spotted by group:</strong> "+Array.from(Sqs_spotted).toSorted().join(' ');
-    rxHTML+="<br><strong>Squares spotted by me too:</strong> "+Array.from(Sqs_spottedByMeToo).toSorted().join(' ');
-    rxHTML+="<br><strong>Squares spotted only by me:</strong> "+Array.from(Sqs_spottedOnlyByMe).toSorted().join(' ');
-    rxHTML+="<br></p>";
-    
-    rxHTML+="<br></p>";
-       
-    detail.innerHTML="<div>"+topHTML+txHTML+rxHTML+"</div>";
+    detail2.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
+    			+Array.from(active_rx).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='receive'>Squares spotted by group:</div><div class='receive'>"
+    			+Array.from(Sqs_spotted).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='receive'>Squares spotted by me too: </div><div class='receive'>"
+          +Array.from(Sqs_spottedByMe.intersection(Sqs_spotted)).toSorted().join(' ')+"</div>";
+    detail2.innerHTML+="<div class='receive'>Squares spotted only by me: </div><div class='receive'>"
+          +Array.from(Sqs_spottedByMe.difference(Sqs_spotted)).toSorted().join(' ')+"</div>";
+
+
   }
   
   
@@ -423,6 +435,7 @@ div {margin: 0px;  padding: 0px;}
         +" (close)</a><br>"
         + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
+    detail2.innerHTML="";
     detail.innerHTML="<div>"+topHTML+"</div>"
     for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
