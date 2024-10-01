@@ -403,7 +403,7 @@ div {margin: 2px;  padding: 5px;}
       }
     }
     
-    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong>"
+    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong> "+document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML
         +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'> (show compact details)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
     
