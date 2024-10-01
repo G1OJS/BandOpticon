@@ -345,9 +345,10 @@ div {margin: 2px;  padding: 5px;}
     // done analysing, now write the HTML in the details div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
-    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show full details)</a>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
+    var topHTML="<strong>"+Bands[iDetailBandIndex]+" Calls and Squares</strong>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show connectivity)</a>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
+        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
     var txHTML="<p class='transmit'><strong>Tx calls:</strong> "
     txHTML+=Array.from(active_tx).toSorted().join(' ');
@@ -403,9 +404,10 @@ div {margin: 2px;  padding: 5px;}
       }
     }
     
-    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong> "+document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML
-        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'> (show compact details)</a>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
+    var topHTML="<strong>"+Bands[iDetailBandIndex]+" Connectivity</strong> "
+        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'> (show active calls and DX squares)</a>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
+        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
     var H2H_HTML="";
     for (let i=0;i<active_tx.size;i++){
