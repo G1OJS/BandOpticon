@@ -17,7 +17,7 @@ div {margin: 0px;  padding: 0px;}
 #BO_title {text-align: center; font-size: 5rem;}
 #BO_subtitle {text-align: center; font-size: 1.5rem;}
 #controls > div {background-color: white; margin: 1px;  padding: 1px;}
-.detail {display: grid; grid-template-columns: min-content 20px auto; grid-template-rows: auto;}
+.detail {display: grid; grid-template-columns: 80px 20px auto; grid-template-rows: auto;}
 .detail > div {background-color: white; margin: 1px;  padding: 1px;}
 .detail > div:first-child {grid-column: 1 / 4;}
 .detail2 {display: grid; grid-template-columns: 120px auto; grid-template-rows: auto;}
@@ -448,7 +448,7 @@ div {margin: 0px;  padding: 0px;}
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        detail.innerHTML+="<div class='interzone'>"+txCall+"</div><div style='text-align:center;'>&#x1F80A</div>";
+        detail.innerHTML+="<div class='interzone'>"+txCall+"</div><div class='interzone' style='text-align:center;'>&#x1F80A</div>";
         detail.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
     }
@@ -464,7 +464,7 @@ div {margin: 0px;  padding: 0px;}
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        detail.innerHTML+="<div class='outgoing'>"+txCall+"</div><div style='text-align:center;'>&#x1F80A</div>";
+        detail.innerHTML+="<div class='outgoing'>"+txCall+"</div><div class='outgoing' style='text-align:center;'>&#x1F80A</div>";
         detail.innerHTML+="<div class='outgoing'>"+rxCalls.slice(0, -2)+"</div>";
       }
      }
@@ -480,7 +480,7 @@ div {margin: 0px;  padding: 0px;}
       }
       if(txCalls.length>0){
         if(rxCall==myCall){rxCall="<u>"+rxCall+"</u>"}
-        detail.innerHTML+="<div class='incoming'>"+rxCall+"</div><div style='text-align:center;'>&#x1F808</div>";
+        detail.innerHTML+="<div class='incoming'>"+rxCall+"</div><div class='incoming' style='text-align:center;'>&#x1F808</div>";
         detail.innerHTML+="<div class='incoming'>"+txCalls.slice(0, -2)+"</div>";
       }
      }
