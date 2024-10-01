@@ -139,7 +139,7 @@ div {margin: 2px;  padding: 5px;}
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
     } 
     
-    if(detailWanted=="CallsAndSquares") {writeBandActiveCallsInDetails();}
+    if(detailWanted=="CallsAndSquares") {writeBandCallsAndSquaresInDetails();}
     
     if(detailWanted=="Connectivity") {writeBandConnectivityInDetails();}
     
@@ -307,7 +307,7 @@ div {margin: 2px;  padding: 5px;}
      }
    }
     
-  function writeBandActiveCallsInDetails(){
+  function writeBandCallsAndSquaresInDetails(){
     const showSquaresWithCalls=false;
     var active_tx=new Set;
     var active_rx=new Set;
@@ -338,10 +338,14 @@ div {margin: 2px;  padding: 5px;}
     
     // if any of the lists of squares is very long, let's display them at level 2 instead of level 4
     const ml=20;
-    var lvl=4;
     if(Sqs_reached.size>ml || Sqs_reachedByMe.size>ml 
-       || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {lvl=2}
-   
+       || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {
+       Sqs_reached=chunkupSquaresSet(Sqs_reached,2);
+       Sqs_reachedByMe=chunkupSquaresSet(Sqs_reachedByMe,2);
+       Sqs_spotted=chunkupSquaresSet(Sqs_spotted,2);
+       Sqs_spottedByMe=chunkupSquaresSet(Sqs_spottedByMe,2);       
+    }
+    
     // done analysing, now write the HTML in the details div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
@@ -350,17 +354,23 @@ div {margin: 2px;  padding: 5px;}
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
         +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
-    var txHTML="<p class='transmit'><strong>Tx calls:</strong> "
-    txHTML+=Array.from(active_tx).toSorted().join(' ');
-    txHTML+="<br><strong>Squares reached:</strong> "+SquaresArrayFromSquaresSet(Sqs_reached,lvl).join(' ');
-    txHTML+="<br><strong>Squares reached by me:</strong> "+SquaresArrayFromSquaresSet(Sqs_reachedByMe,lvl).join(' ');
-    txHTML+="<br></p>"
+    var txHTML="<p class='transmit'><strong>Tx calls:</strong> "+Array.from(active_tx).toSorted().join(' ');
+    var Sqs_reachedByMeToo=Sqs_reachedByMe.intersection(Sqs_reached);
+    var Sqs_reachedOnlyByMe=Sqs_reachedByMe.difference(Sqs_reached);
+    txHTML+="<br><strong>Squares reached by group:</strong> "+Array.from(Sqs_reached).toSorted().join(' ');
+    txHTML+="<br><strong>Squares reached by me too:</strong> "+Array.from(Sqs_reachedByMeToo).toSorted().join(' ');
+    txHTML+="<br><strong>Squares reached only by me:</strong> "+Array.from(Sqs_reachedOnlyByMe).toSorted().join(' ');
+    txHTML+="<br></p>";
     
-    var rxHTML="<p class='receive'><strong>Rx calls:</strong> "
-    rxHTML+=Array.from(active_rx).toSorted().join(' ')
-    rxHTML+="<br><strong>Squares spotted:</strong> "+SquaresArrayFromSquaresSet(Sqs_spotted,lvl).join(' ');
-    rxHTML+="<br><strong>Squares spotted by me:</strong> "+SquaresArrayFromSquaresSet(Sqs_spottedByMe,lvl).join(' ');
-    rxHTML+="<br></p>"
+    var rxHTML="<p class='receive'><strong>Rx calls:</strong> "+Array.from(active_rx).toSorted().join(' ');
+    var Sqs_spottedByMeToo=Sqs_spottedByMe.intersection(Sqs_spotted);
+    var Sqs_spottedOnlyByMe=Sqs_spottedByMe.difference(Sqs_spotted);
+    rxHTML+="<br><strong>Squares spotted by group:</strong> "+Array.from(Sqs_spotted).toSorted().join(' ');
+    rxHTML+="<br><strong>Squares spotted by me too:</strong> "+Array.from(Sqs_spottedByMeToo).toSorted().join(' ');
+    rxHTML+="<br><strong>Squares spotted only by me:</strong> "+Array.from(Sqs_spottedOnlyByMe).toSorted().join(' ');
+    rxHTML+="<br></p>";
+    
+    rxHTML+="<br></p>";
        
     detail.innerHTML="<div>"+topHTML+txHTML+rxHTML+"</div>";
   }
@@ -382,22 +392,19 @@ div {margin: 2px;  padding: 5px;}
         var txcall=spot[2];
         var rxcall=spot[3];
         if(showSquaresWithCalls) {
-          txcall=txcall+"-"+spot[4].substr(0,4)
-          rxcall=rxcall+"-"+spot[5].substr(0,4)
+          txcall=txcall+"-"+spot[4].substr(0,4);
+          rxcall=rxcall+"-"+spot[5].substr(0,4);
         }
         if(SquareInHome(spot[4]) && SquareInHome(spot[5])) {
-        //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_tx.add(txcall);
            active_rx.add(rxcall);
            H2H.add(txcall + "," + rxcall);
         }
         if(SquareInHome(spot[4]) && !SquareInHome(spot[5])) {
-        //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_tx.add(txcall);
            H2DX.add(txcall + "," + rxcall);
         }
         if(!SquareInHome(spot[4]) && SquareInHome(spot[5])) {
-        //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_rx.add(rxcall);
            DX2H.add(txcall + "," + rxcall);
         }
@@ -405,9 +412,11 @@ div {margin: 2px;  padding: 5px;}
     }
     
     var topHTML="<strong>"+Bands[iDetailBandIndex]+" Connectivity</strong> "
-        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'> (show active calls and DX squares)</a>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
-        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
+        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'>"
+        +" (show active calls and DX squares)</a>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'>"
+        +" (close)</a><br>"
+        + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
     var H2H_HTML="";
     for (let i=0;i<active_tx.size;i++){
@@ -420,6 +429,7 @@ div {margin: 2px;  padding: 5px;}
         }
       }
       if(rxCalls.length>0){
+        if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
         H2H_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
       }
     }
@@ -435,6 +445,7 @@ div {margin: 2px;  padding: 5px;}
         }
       }
       if(rxCalls.length>0){
+        if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
         H2DX_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
       }
      }
@@ -445,12 +456,12 @@ div {margin: 2px;  padding: 5px;}
       var rxCall=Array.from(active_rx)[i];
       for (let j=0;j<DX2H.size;j++){
         var pair=Array.from(DX2H)[j];
-//        console.log(pair.split("<")[0], rxCall);
         if(pair.split(",")[1]==rxCall){
 					txCalls+=pair.split(",")[0]+", ";
         }
       }
       if(txCalls.length>0){
+        if(rxCall==myCall){rxCall="<u>"+rxCall+"</u>"}
         DX2H_HTML+="<br>"+rxCall+" <- "+txCalls.slice(0, -2);
       }
      }
@@ -463,14 +474,13 @@ div {margin: 2px;  padding: 5px;}
       +"</div>";
   }
   
-  function SquaresArrayFromSquaresSet(sqSet,lvl){
+  function chunkupSquaresSet(sqSet,lvl){
     // take the unique-valued squares Set at level 4 (or more)
-    // and produce a sorted squares Array at level=lvl
-    var sqArr=Array.from(sqSet).toSorted();
+    // and produce a squares Set at level=lvl
     var sqSet2=new Set;
     // going one by one because we need to apply substr to each element
-    for (let i=0;i<sqArr.length;i++){sqSet2.add(sqArr[i].substr(0,lvl))};
-    return Array.from(sqSet2)
+    for (let i=0;i<sqSet.size;i++){sqSet2.add(Array.from(sqSet)[i].substr(0,lvl))};
+    return sqSet2
   }
 
   function validSquare(locator){
