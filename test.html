@@ -1,5 +1,8 @@
 <!-- To do:
 
+  Use new divs for ordinary calls/squares detail
+  Tidy analysis code in connectivity section if poss using set operations
+
   Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
   
   Underline squares in main list spotted / reached by me
@@ -9,17 +12,19 @@
 <head><style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax;}
-div {margin: 2px;  padding: 5px;}
+div {margin: 0px;  padding: 0px;}
 #BO_title {text-align: center; font-size: 5rem;}
 #BO_subtitle {text-align: center; font-size: 1.5rem;}
-.detail > div {background-color: white;}
+.detail {display: grid; grid-template-columns: 60px 20px auto; grid-template-rows: auto;}
+.detail > div {background-color: white; margin: 1px;  padding: 1px;}
+.detail > div:first-child {grid-column: 1 / 4;}
 .transmit {color:red; }
 .receive {color:green; }
 .interzone {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
 .bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
-.bandblock > div {background-color: white;}
+.bandblock > div {background-color: white; margin: 1px;  padding: 1px;}
 .creditsblock {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 </style>
 </head>
@@ -349,10 +354,10 @@ div {margin: 2px;  padding: 5px;}
     // done analysing, now write the HTML in the details div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
-    var topHTML="<strong>"+Bands[iDetailBandIndex]+" Calls and DX Squares</strong>"
+    var topHTML="<div><strong>"+Bands[iDetailBandIndex]+" Calls and DX Squares</strong>"
         +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show connectivity)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
-        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
+        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML+"</div>";
     
     var txHTML="<p class='transmit'><strong>Tx calls:</strong> "+Array.from(active_tx).toSorted().join(' ');
     var Sqs_reachedByMeToo=Sqs_reachedByMe.intersection(Sqs_reached);
@@ -418,60 +423,55 @@ div {margin: 2px;  padding: 5px;}
         +" (close)</a><br>"
         + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
     
-    var H2H_HTML="";
+    detail.innerHTML="<div>"+topHTML+"</div>"
     for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
-      var txCall=Array.from(active_tx)[i];
+      var txCall=Array.from(active_tx).toSorted()[i];
       for (let j=0;j<H2H.size;j++){
-        var pair=Array.from(H2H)[j];
+        var pair=Array.from(H2H).toSorted()[j];
         if(pair.split(",")[0]==txCall){
 					rxCalls+=pair.split(",")[1]+", ";
         }
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        H2H_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
+        detail.innerHTML+="<div class='interzone'>"+txCall+"</div><div style='text-align:center;'>&#x1F80A</div>";
+        detail.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
     }
     
-    var H2DX_HTML="";
-    for (let i=0;i<active_tx.size;i++){
+		for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
-      var txCall=Array.from(active_tx)[i];
+      var txCall=Array.from(active_tx).toSorted()[i];
       for (let j=0;j<H2DX.size;j++){
-        var pair=Array.from(H2DX)[j];
+        var pair=Array.from(H2DX).toSorted()[j];
         if(pair.split(",")[0]==txCall){
 					rxCalls+=pair.split(",")[1]+", ";
         }
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        H2DX_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
+        detail.innerHTML+="<div class='outgoing'>"+txCall+"</div><div style='text-align:center;'>&#x1F80A</div>";
+        detail.innerHTML+="<div class='outgoing'>"+rxCalls.slice(0, -2)+"</div>";
       }
      }
    
-    var DX2H_HTML="";
     for (let i=0;i<active_rx.size;i++){
       var txCalls="";
-      var rxCall=Array.from(active_rx)[i];
+      var rxCall=Array.from(active_rx).toSorted()[i];
       for (let j=0;j<DX2H.size;j++){
-        var pair=Array.from(DX2H)[j];
+        var pair=Array.from(DX2H).toSorted()[j];
         if(pair.split(",")[1]==rxCall){
 					txCalls+=pair.split(",")[0]+", ";
         }
       }
       if(txCalls.length>0){
         if(rxCall==myCall){rxCall="<u>"+rxCall+"</u>"}
-        DX2H_HTML+="<br>"+rxCall+" <- "+txCalls.slice(0, -2);
+        detail.innerHTML+="<div class='incoming'>"+rxCall+"</div><div style='text-align:center;'>&#x1F808</div>";
+        detail.innerHTML+="<div class='incoming'>"+txCalls.slice(0, -2)+"</div>";
       }
      }
 
-       
-    detail.innerHTML="<div>"+topHTML
-      +"<p class='interzone'><strong>Home to Home:</strong> "+H2H_HTML
-      +"<p class='outgoing'><strong>Home to DX:</strong> "+H2DX_HTML
-      +"<p class='incoming'><strong>DX to Home:</strong> "+DX2H_HTML
-      +"</div>";
   }
   
   function chunkupSquaresSet(sqSet,lvl){
