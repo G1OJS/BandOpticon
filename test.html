@@ -366,6 +366,8 @@ div {margin: 2px;  padding: 5px;}
   
   
   function writeBandConnectivityInDetails(){
+    var active_tx=new Set;
+    var active_rx=new Set;
     var H2H=new Set;
     var H2DX=new Set;
     var DX2H=new Set;
@@ -384,37 +386,54 @@ div {margin: 2px;  padding: 5px;}
         }
         if(SquareInHome(spot[4]) && SquareInHome(spot[5])) {
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
-           H2H.add(txcall + "->" + rxcall+", ");
+           active_tx.add(txcall);
+           active_rx.add(rxcall);
+           H2H.add(txcall + "->" + rxcall);
         }
         if(SquareInHome(spot[4]) && !SquareInHome(spot[5])) {
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
-           H2DX.add(txcall + "->" + rxcall+", ");
+           active_tx.add(txcall);
+           H2DX.add(txcall + "->" + rxcall);
         }
         if(!SquareInHome(spot[4]) && SquareInHome(spot[5])) {
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
-           DX2H.add(rxcall + "<-" + txcall+", ");
+           active_rx.add(rxcall);
+           DX2H.add(rxcall + "<-" + txcall);
         }
       }
     }
     
-    // done analysing, now write the HTML in the details div
-    // together with button to revert to band layout reminder
-    // need a bit of processing here as it's a big wedge of text to generate
     var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong>"
         +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'> (show compact details)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
     
-    var H2H_HTML="<p class='interzone'><strong>Home to Home:</strong> "
-    H2H_HTML+=Array.from(H2H).toSorted().join(' ');
-    H2H_HTML+="<br></p>"
-    var H2DX_HTML="<p class='outgoing'><strong>Home to DX:</strong> "
-    H2DX_HTML+=Array.from(H2DX).toSorted().join(' ');
-    H2DX_HTML+="<br></p>"
-    var DX2H_HTML="<p class='incoming'><strong>DX to Home:</strong> "
-    DX2H_HTML+=Array.from(DX2H).toSorted().join(' ');
-    DX2H_HTML+="<br></p>"
+    var H2H_HTML="";
+    for (let i=0;i<active_tx.size;i++){
+      var rxCalls="";
+      var txCall=Array.from(active_tx)[i];
+      for (let j=0;j<H2H.size;j++){
+        var pair=Array.from(H2H)[j];
+        if(pair.substr(0,txCall.length)==txCall){
+					rxCalls+=pair.split(">")[1]+",";
+        }
+      }
+      if(rxCalls.length>0){
+        H2H_HTML+="<br>"+txCall+" -> ("+rxCalls.slice(0, -1)+")";
+      }
+    }
+
+    
+    var H2DX_HTML="";
+
+   
+    var DX2H_HTML="";
+
        
-    detail.innerHTML="<div>"+topHTML+H2H_HTML+H2DX_HTML+DX2H_HTML+"</div>";
+    detail.innerHTML="<div>"+topHTML
+      +"<p class='interzone'><strong>Home to Home:</strong> "+H2H_HTML
+      +"<p class='outgoing'><strong>Home to DX:</strong> "+H2DX_HTML
+      +"<p class='incoming'><strong>DX to Home:</strong> "+DX2H_HTML
+      +"</div>";
   }
   
   function SquaresArrayFromSquaresSet(sqSet,lvl){
