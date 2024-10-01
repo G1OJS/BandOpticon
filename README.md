@@ -19,7 +19,8 @@ equipment running & gone to work - or are they even a WEBSDR station?
 The software runs in Javascript on your machine and requires no downloads. Just click [here]({{ site.baseurl }}/BandOpticon) to watch the statistics evolve.
 
 [GitHub repo](https://github.com/G1OJS/BandOpticon/)
-[Current Version](https://github.com/G1OJS/BandOpticon/BandOpticon)
+
+[Current Version](https://g1ojs.github.io/BandOpticon/BandOpticon)
 
 Easter egg - you might find me fiddling with ideas for the next version [here]({{ site.baseurl }}/test) 
 
