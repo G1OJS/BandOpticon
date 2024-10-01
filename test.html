@@ -388,17 +388,17 @@ div {margin: 2px;  padding: 5px;}
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_tx.add(txcall);
            active_rx.add(rxcall);
-           H2H.add(txcall + "->" + rxcall);
+           H2H.add(txcall + "," + rxcall);
         }
         if(SquareInHome(spot[4]) && !SquareInHome(spot[5])) {
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_tx.add(txcall);
-           H2DX.add(txcall + "->" + rxcall);
+           H2DX.add(txcall + "," + rxcall);
         }
         if(!SquareInHome(spot[4]) && SquareInHome(spot[5])) {
         //   if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
            active_rx.add(rxcall);
-           DX2H.add(rxcall + "<-" + txcall);
+           DX2H.add(txcall + "," + rxcall);
         }
       }
     }
@@ -413,12 +413,12 @@ div {margin: 2px;  padding: 5px;}
       var txCall=Array.from(active_tx)[i];
       for (let j=0;j<H2H.size;j++){
         var pair=Array.from(H2H)[j];
-        if(pair.substr(0,txCall.length)==txCall){
-					rxCalls+=pair.split(">")[1]+",";
+        if(pair.split(",")[0]==txCall){
+					rxCalls+=pair.split(",")[1]+", ";
         }
       }
       if(rxCalls.length>0){
-        H2H_HTML+="<br>"+txCall+" -> ("+rxCalls.slice(0, -1)+")";
+        H2H_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
       }
     }
     
@@ -428,12 +428,12 @@ div {margin: 2px;  padding: 5px;}
       var txCall=Array.from(active_tx)[i];
       for (let j=0;j<H2DX.size;j++){
         var pair=Array.from(H2DX)[j];
-        if(pair.substr(0,txCall.length)==txCall){
-					rxCalls+=pair.split("-")[1]+",";
+        if(pair.split(",")[0]==txCall){
+					rxCalls+=pair.split(",")[1]+", ";
         }
       }
       if(rxCalls.length>0){
-        H2DX_HTML+="<br>"+txCall+" -> ("+rxCalls.slice(0, -1)+")";
+        H2DX_HTML+="<br>"+txCall+" -> "+rxCalls.slice(0, -2);
       }
      }
    
@@ -443,13 +443,13 @@ div {margin: 2px;  padding: 5px;}
       var rxCall=Array.from(active_rx)[i];
       for (let j=0;j<DX2H.size;j++){
         var pair=Array.from(DX2H)[j];
-        console.log(pair.split(">")[1], rxCall);
-        if(pair.split(">")[1]==rxCall){
-					txCalls+=pair.split("-")[0]+",";
+//        console.log(pair.split("<")[0], rxCall);
+        if(pair.split(",")[1]==rxCall){
+					txCalls+=pair.split(",")[0]+", ";
         }
       }
       if(txCalls.length>0){
-        DX2H_HTML+="<br>"+rxcall+" <- ("+rxCalls.slice(0, -1)+")";
+        DX2H_HTML+="<br>"+rxCall+" <- "+txCalls.slice(0, -2);
       }
      }
 
