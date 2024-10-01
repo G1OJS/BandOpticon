@@ -1,6 +1,6 @@
 <!-- To do:
 
-  Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
+  Add connectivity detail
   
   Underline squares in main list spotted / reached by me
 -->
@@ -62,6 +62,7 @@ div {margin: 2px;  padding: 5px;}
   let refreshSeconds=2;
   let purgeMinutes=5;
   let detailWanted="Layout";
+  let iDetailBandIndex=0;
   let spots=[];
   let tWrite=0; // time of last write set to 1 Jan 1970 so screen will update asap
   let tStart=Date.now(); // software start
@@ -121,12 +122,13 @@ div {margin: 2px;  padding: 5px;}
   // done with initialisation now
   
   // function to write HTML to the Details box
-  function updateDetails(newWant){
-  // this argument part is clunky 
-  // (pass nothing for no change, -1 for Layout, >=0 for band detail (iBand))
+  function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
-       if(newWant>=0) {detailWanted=newWant} else {detailWanted="Layout"}
-    };
+       detailWanted=newWant;
+       iDetailBandIndex=iDB;
+       console.log("New detail pane content requested: ",newWant,iDB);
+    }
+    
     if(detailWanted=="Layout"){
       detail.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
          Spots: number of spots "+
@@ -135,9 +137,12 @@ div {margin: 2px;  padding: 5px;}
          "<span class='incoming'> DX &#8680 Home</span><br>"+
          "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
-    } else {
-      writeBandActiveCallsInDetails(detailWanted);
-    }
+    } 
+    
+    if(detailWanted=="BandsAndSquares") {writeBandActiveCallsInDetails();}
+    
+     if(detailWanted=="Connectivity") {writeBandConnectivityInDetails();}
+    
   }
 
   // function to write HTML to the Controls box
@@ -195,7 +200,7 @@ div {margin: 2px;  padding: 5px;}
     var newDiv = document.createElement('div');
     newDiv.id = Bands[i];     
     newDiv.innerHTML="<strong>"+Bands[i]+"</strong> \
-      <a href='#controls' onclick='updateDetails("+i+");'> details</a><br> \
+      <a href='#controls' onclick='updateDetails(&quot;BandsAndSquares&quot;,"+i+");'> details</a><br> \
       <output id='"+Bands[i]+"spots'></output><br> \
       <output id='"+Bands[i]+"calls'></output>";
     toAdd.appendChild(newDiv);
@@ -302,7 +307,7 @@ div {margin: 2px;  padding: 5px;}
      }
    }
     
-  function writeBandActiveCallsInDetails(iBand){
+  function writeBandActiveCallsInDetails(){
     const showSquaresWithCalls=false;
     var active_tx=new Set;
     var active_rx=new Set;
@@ -313,7 +318,7 @@ div {margin: 2px;  padding: 5px;}
     for (let iSpot=1; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iBand]){
+      if(spot[0]==Bands[iDetailBandIndex]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
            if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
@@ -340,7 +345,9 @@ div {margin: 2px;  padding: 5px;}
     // done analysing, now write the HTML in the details div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
-    var topHTML="<div>"+ "<strong>"+Bands[iBand]+" details</strong> (<a href='#controls' onclick='updateDetails(-1);'>close</a>)<br>";
+    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show full details)</a>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
     
     var txHTML="<p class='transmit'><strong>Tx calls:</strong> "
     txHTML+=Array.from(active_tx).toSorted().join(' ');
@@ -354,7 +361,16 @@ div {margin: 2px;  padding: 5px;}
     rxHTML+="<br><strong>Squares spotted by me:</strong> "+SquaresArrayFromSquaresSet(Sqs_spottedByMe,lvl).join(' ');
     rxHTML+="<br></p>"
        
-    detail.innerHTML=topHTML+txHTML+rxHTML+"</div>";
+    detail.innerHTML="<div>"+topHTML+txHTML+rxHTML+"</div>";
+  }
+  
+  
+  function writeBandConnectivityInDetails(){
+    var topHTML="<strong>"+Bands[iDetailBandIndex]+"</strong>"
+      +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show full details)</a>"
+      +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>";
+  
+    detail.innerHTML="<div>"+topHTML+"<BR>Coming soon"+"</div>";
   }
   
   function SquaresArrayFromSquaresSet(sqSet,lvl){
