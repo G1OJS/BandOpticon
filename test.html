@@ -114,7 +114,7 @@ a:visited {color: blue;}
 
   function startRecording(){
     let params = `scrollbars=yes,resizable=yes,scrollbars=yes,width=500,height=200,left=0,top=0`;
-    newWindow = open('new.html', '_blank',params);
+    newWindow = open('/blank.html', '_blank',params);
     newWindow.onload = function() {
   	let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
   	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
@@ -127,7 +127,7 @@ a:visited {color: blue;}
     if( (Date.now()-twriteData)/1000 > dataWriteInterval) {
       twriteData=Date.now();
       t=new Date;
-      var data_html="<br>"+get_utc_timestamp(t)+"<br>"+data;
+      var data_html="<br>"+get_utc_timestamp(t)+","+data;
       newWindow.document.body.insertAdjacentHTML('beforebegin',data_html);
       console.log("Data window write:  "+data_html);
     }
@@ -359,7 +359,7 @@ a:visited {color: blue;}
         +"/<span class='outgoing'>"+snum[2]
         +"</span>/<span class='incoming'>"+snum[1]
         +"</span>";
-      if(recordData) {data+="<br>"+Bands[i]+ " spotcount "+snum}
+      if(recordData) {data+=Bands[i]+snum+";"}
     }
     if(recordData) {writeData(data)}
   }
