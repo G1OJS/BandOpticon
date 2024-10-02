@@ -103,15 +103,16 @@ a:visited {color: blue;}
   let recordData=false;
   let newWindow=null;
   let twriteData=0;
-  const dataWriteInterval=600;
+  const dataWriteInterval=10;
 
   function startRecording(){
     let params = `scrollbars=yes,resizable=yes,status=no,location=no,toolbar=yes,menubar=yes,width=500,height=200,left=0,top=0`;
     newWindow = open('', '_blank',params);
     newWindow.onload = function() {
-  	let html = `<div style="font-size:30px">BandOpticon recorded data</div>`;
+  	let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
   	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
 	recordData=true
+	console.log(html);
     };
   }
   function writeData(data){
