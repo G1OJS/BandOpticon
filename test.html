@@ -103,22 +103,33 @@ a:visited {color: blue;}
   let recordData=false;
   let newWindow=null;
   let twriteData=0;
-  const dataWriteInterval=10;
+  let dataWriteInterval=10;
+  
+  function get_utc_timestamp(t){ 
+    return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
+       +("0"+t.getUTCHours()).substr(-2)+":"
+       +("0"+t.getUTCMinutes()).substr(-2)+":"
+       +("0"+t.getUTCSeconds()).substr(-2)+" UTC";
+  }
 
   function startRecording(){
-    let params = `scrollbars=yes,resizable=yes,status=no,location=no,toolbar=yes,menubar=yes,width=500,height=200,left=0,top=0`;
-    newWindow = open('', '_blank',params);
+    let params = `scrollbars=yes,resizable=yes,scrollbars=yes,width=500,height=200,left=0,top=0`;
+    newWindow = open('new.html', '_blank',params);
     newWindow.onload = function() {
   	let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
   	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
-	recordData=true
-	console.log(html);
+	  recordData=true
+	  console.log(html);
     };
   }
+  
   function writeData(data){
-    if((Date.now()-twriteData)>dataWriteInterval){
-      twriteData=Date.now()/1000;
-      newWindow.document.body.insertAdjacentHTML(twriteData+" "+data, html);
+    if( (Date.now()-twriteData)/1000 > dataWriteInterval) {
+      twriteData=Date.now();
+      t=new Date;
+      var data_html="<br>"+get_utc_timestamp(t)+"<br>"+data;
+      newWindow.document.body.insertAdjacentHTML('beforebegin',data_html);
+      console.log("Data window write:  "+data_html);
     }
   }
 	
@@ -205,14 +216,11 @@ a:visited {color: blue;}
       connGrid.innerHTML="";
     }
   }
-
+   
   // function to write HTML to the Controls box
   function updateControls(){
     var now = new Date;
-    var utc_timestamp = now.getUTCDate()+"/"+(now.getUTCMonth()+1)+"/"+now.getUTCFullYear()+" "
-       +("0"+now.getUTCHours()).substr(-2)+":"
-       +("0"+now.getUTCMinutes()).substr(-2)+":"
-       +("0"+now.getUTCSeconds()).substr(-2)+" UTC";
+    var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var sqs=Squares.join(',')+" <a class='textAnchorButton' href='#controls' onclick='editSquares();'>edit</a>";
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
@@ -343,6 +351,7 @@ a:visited {color: blue;}
       }
     }
     // done counting so now write results to HTML
+    if(recordData){var data="";}
     for (let i=0; i < Bands.length; i++) {
       var snum=bandStats[i];
       document.getElementById(Bands[i]+"spots").innerHTML=
@@ -350,8 +359,9 @@ a:visited {color: blue;}
         +"/<span class='outgoing'>"+snum[2]
         +"</span>/<span class='incoming'>"+snum[1]
         +"</span>";
-      if(recordData) {writeData(Bands[i]+"Spots"+snum)}
+      if(recordData) {data+="<br>"+Bands[i]+ " spotcount "+snum}
     }
+    if(recordData) {writeData(data)}
   }
   
    function writeBandActiveCallStats(){
