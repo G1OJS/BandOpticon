@@ -114,7 +114,7 @@ a:visited {color: blue;}
 
   function startRecording(){
     let params = `scrollbars=yes,resizable=yes,scrollbars=yes,width=500,height=200,left=0,top=0`;
-    newWindow = open('/blank.html', '_blank',params);
+    newWindow = open('https://g1ojs.github.io/BandOpticon/blank.html', '_blank',params);
     newWindow.onload = function() {
   	let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
   	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
