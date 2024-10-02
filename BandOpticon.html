@@ -404,10 +404,10 @@ a:visited {color: blue;}
     callSqGrid.innerHTML="<div>"+topHTML+"</div>" //start writing our new text
    
     // Transmit section
-  var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+HLOff});
+    var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+HLOff});
     var sqs_reachedArr=Array.from(Sqs_reached).concat(sqs_reachedByMeArr).toSorted().join(' ');
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
-    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
+    			+Array.from(active_tx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
     var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
     			+sqs_reachedHTML+"</div>";
