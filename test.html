@@ -1,7 +1,8 @@
 <!-- To do:
   - Look at element margins to show nicer borders around things to group better
   - Tidy analysis code in connectivity section if poss using set operations
-  - Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
+  - Add tickbox to control inclusion of squares within the  callsigns list
+    in the calls and squares grid and/or make the square bit smaller or just abandon that idea
   - Underline squares in main list spotted / reached by me
 -->
 
@@ -156,7 +157,8 @@ div {margin: 0px;  padding: 0px;}
     }
     
     if(connGridWanted=="Layout"){
-      callSqGrid.innerHTML="";
+      callSqGrid.innerHTML=""; //clear any calls and squares grid text
+      // write layout info (using the first row of the connectivity grid which is a single column)
       connGrid.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
          Spots: number of spots "+
          "<span class='interzone'> Home &#8680 Home /</span>"+
@@ -381,41 +383,39 @@ div {margin: 0px;  padding: 0px;}
     // done analysing, now write the HTML in the connGrids div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
+    // the map function adds highlighting where squares are common to the active calls 
+    // and "me". The "me" row is only shown if it's not empty.
+    connGrid.innerHTML=""; // clear any layout or connectivity text
     var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong><br>"
         +document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"</div>";
-        
-    document.getElementsByTagName('.connGrid').innerHTML="{display: grid; grid-template-columns: 200px auto; grid-template-rows: auto;}";
+    callSqGrid.innerHTML="<div>"+topHTML+"</div>" //start writing our new text
 
-
-    connGrid.innerHTML="";
-    callSqGrid.innerHTML="<div>"+topHTML+"</div>"
+    // Transmit section
+    var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return '<b>'+item+'</b>'});
+    var sqs_reachedArr=Array.from(Sqs_reached).concat(sqs_reachedByMeArr).toSorted().join(' ');
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
-    			+Array.from(active_tx).toSorted().join(' ')+"</div>";
+    			+Array.from(active_rx).toSorted().join(' ')+"</div>";
+    var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return '<b><u>'+item+'</u></b>';} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
-    			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
-          
-    if(Sqs_reachedByMe.size>0) {
-      callSqGrid.innerHTML+="<div class='transmit' style='text-align:right;'>me too:</div><div class='transmit'>"
-          +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
-      callSqGrid.innerHTML+="<div class='transmit' style='text-align:right;'>only me:</div>"
-          +"<div class='transmit'>"
-          +Array.from(Sqs_reachedByMe.difference(Sqs_reached)).toSorted().join(' ')+"</div>";
+    			+sqs_reachedHTML+"</div>";
+    if(Sqs_reachedByMe.size>0){
+      var sqs_reachedByMeHTML=Array.from(Sqs_reachedByMe).toSorted().map(item => {if(Sqs_reached.has(item)){return '<b><u>'+item+'</u></b>';} else {return item;}}).join(' ');
+      callSqGrid.innerHTML+="<div class='transmit'>DX squares me:</div><div class='transmit'>"
+    			+sqs_reachedByMeHTML+"</div>";
     }
-    
+
+    // Receive section
     callSqGrid.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
     			+Array.from(active_rx).toSorted().join(' ')+"</div>";
+    var sqs_spottedHTML=Array.from(Sqs_spotted).toSorted().map(item => {if(Sqs_spottedByMe.has(item)){return '<b><u>'+item+'</u></b>';} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='receive'>DX squares:</div><div class='receive'>"
-    			+Array.from(Sqs_spotted).toSorted().join(' ')+"</div>";
-          
-    if(Sqs_spottedByMe.size>0) {
-      callSqGrid.innerHTML+="<div class='receive' style='text-align:right;'>me too:</div><div class='receive'>"
-          +Array.from(Sqs_spottedByMe.intersection(Sqs_spotted)).toSorted().join(' ')+"</div>";
-      callSqGrid.innerHTML+="<div class='receive' style='text-align:right;'>only me:</div><div class='receive'>"
-          +Array.from(Sqs_spottedByMe.difference(Sqs_spotted)).toSorted().join(' ')+"</div>";
+    			+sqs_spottedHTML+"</div>";
+    if(Sqs_spottedByMe.size>0){
+      var sqs_spottedByMeHTML=Array.from(Sqs_spottedByMe).toSorted().map(item => {if(Sqs_spotted.has(item)){return '<b><u>'+item+'</u></b>';} else {return item;}}).join(' ');
+      callSqGrid.innerHTML+="<div class='receive'>DX squares me:</div><div class='receive'>"
+    			+sqs_spottedByMeHTML+"</div>";
     }
-
   }
-  
   
   function writeBandConnectivity(){
     var active_tx=new Set;
