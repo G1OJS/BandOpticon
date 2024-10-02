@@ -1,14 +1,11 @@
 <!-- To do:
-  rename css elements more sensibly
-  idea - could have detail 1 and detail 2 both displayed, or even all 3 uses of the detail block with an open/close 
-  button on each (use an HTML detail/summary tag?) don't want all the code running under a closed one though.
+  idea - could have connGrid 1 and connGrid 2 both displayed, or even all 3 uses of the connGrid block with an open/close 
+  button on each (use an HTML connGrid/summary tag?) don't want all the code running under a closed one though.
   nicer borders around things to group better
 
   Tidy analysis code in connectivity section if poss using set operations
   Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
   Underline squares in main list spotted / reached by me
-
-
 -->
 
 <html>
@@ -16,18 +13,18 @@
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 div {margin: 0px;  padding: 0px;}
-#BO_title {text-align: center; font-size: 5rem;}
-#BO_subtitle {text-align: center; font-size: 1.5rem;}
+#title {text-align: center; font-size: 5rem;}
+#subtitle {text-align: center; font-size: 1.5rem;}
 #controls > div {background-color: white; margin: 1px;  padding: 1px;}
-.detail {display: grid; grid-template-columns: auto min-content 1fr; grid-template-rows: auto;}
-.detail > div {background-color: white; margin: 1px;  padding: 1px; }
-.detail > div:first-child {grid-column: 1 / 4;}
-.detail2 {display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto;}
-.detail2 > div {background-color: white; margin: 1px;  padding: 1px;}
-.detail2 > div:first-child {grid-column: 1 / 3;}
-.bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
-.bandblock > div {background-color: white; margin: 1px;  padding: 1px;}
-.creditsblock {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+.connGrid {display: grid; grid-template-columns: auto min-content 1fr; grid-template-rows: auto;}
+.connGrid > div {background-color: white; margin: 1px;  padding: 1px; }
+.connGrid > div:first-child {grid-column: 1 / 4;}
+.callSqGrid {display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto;}
+.callSqGrid > div {background-color: white; margin: 1px;  padding: 1px;}
+.callSqGrid > div:first-child {grid-column: 1 / 3;}
+.bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto;}
+.bandsGrid > div {background-color: white; margin: 1px;  padding: 1px;}
+.creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .transmit {color:red; font-size: 1rem;}
 .receive {color:green; }
 .interzone {color:blue; }
@@ -36,14 +33,14 @@ div {margin: 0px;  padding: 0px;}
 </style>
 </head>
 
-<body id="BandOpticonBody"><div>
-<div id="BO_title" name="BO_title">BandOpticon</div>
-<div id="BO_subtitle" name="BO_subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
+<body><div>
+<div id="title">BandOpticon</div>
+<div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
 <div id="controls" name="controls"></div>
-<div class="detail" id="detail" name="detail"></div>
-<div class="detail2" id="detail2" name="detail2"></div>
-<div class="bandblock" id="bandblock"></div>
-<div class="creditsblock" id="credits" name="credits">
+<div class="connGrid" id="connGrid"></div>
+<div class="callSqGrid" id="callSqGrid" ></div>
+<div class="bandsGrid" id="bandsGrid"></div>
+<div class="creditsGrid">
   <div>
     Javascript & HTML developed by Alan Robinson:<br>
     <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com/a>
@@ -74,8 +71,8 @@ div {margin: 0px;  padding: 0px;}
   const Bands=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
   let refreshSeconds=2;
   let purgeMinutes=5;
-  let detailWanted="Layout";
-  let iDetailBandIndex=0;
+  let connGridWanted="Layout";
+  let iconnGridBandIndex=0;
   let spots=[];
   let tWrite=0; // time of last write set to 1 Jan 1970 so screen will update asap
   let tStart=Date.now(); // software start
@@ -134,17 +131,17 @@ div {margin: 0px;  padding: 0px;}
   
   // done with initialisation now
   
-  // function to write HTML to the Details box
+  // function to write HTML to the connGrids box
   function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
-       detailWanted=newWant;
-       iDetailBandIndex=iDB;
-       console.log("New detail pane content requested: ",newWant,iDB);
+       connGridWanted=newWant;
+       iconnGridBandIndex=iDB;
+       console.log("New connGrid pane content requested: ",newWant,iDB);
     }
     
-    if(detailWanted=="Layout"){
-      detail2.innerHTML="";
-      detail.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
+    if(connGridWanted=="Layout"){
+      callSqGrid.innerHTML="";
+      connGrid.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
          Spots: number of spots "+
          "<span class='interzone'> Home &#8680 Home /</span>"+
          "<span class='outgoing'> Home &#8680 DX /</span>"+
@@ -153,9 +150,9 @@ div {margin: 0px;  padding: 0px;}
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
     } 
     
-    if(detailWanted=="CallsAndSquares") {writeBandCallsAndSquaresInDetails();}
+    if(connGridWanted=="CallsAndSquares") {writeBandCallsAndSquares();}
     
-    if(detailWanted=="Connectivity") {writeBandConnectivityInDetails();}
+    if(connGridWanted=="Connectivity") {writeBandConnectivity();}
     
   }
 
@@ -214,12 +211,12 @@ div {margin: 0px;  padding: 0px;}
     var newDiv = document.createElement('div');
     newDiv.id = Bands[i];     
     newDiv.innerHTML="<strong>"+Bands[i]+"</strong> \
-      <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot;,"+i+");'> details</a><br> \
+      <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot;,"+i+");'>details</a><br> \
       <output id='"+Bands[i]+"spots'></output><br> \
       <output id='"+Bands[i]+"calls'></output>";
     toAdd.appendChild(newDiv);
   }
-  document.getElementById('bandblock').appendChild(toAdd);
+  document.getElementById('bandsGrid').appendChild(toAdd);
 
   // Connect to Pskreporter and subscribe on connect
   const client=mqtt.connect("wss://mqtt.pskreporter.info:1886");
@@ -321,7 +318,7 @@ div {margin: 0px;  padding: 0px;}
      }
    }
     
-  function writeBandCallsAndSquaresInDetails(){
+  function writeBandCallsAndSquares(){
     const showSquaresWithCalls=false;
     var active_tx=new Set;
     var active_rx=new Set;
@@ -332,7 +329,7 @@ div {margin: 0px;  padding: 0px;}
     for (let iSpot=1; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iDetailBandIndex]){
+      if(spot[0]==Bands[iconnGridBandIndex]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
            if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
@@ -360,42 +357,42 @@ div {margin: 0px;  padding: 0px;}
        Sqs_spottedByMe=chunkupSquaresSet(Sqs_spottedByMe,2);       
     }
     
-    // done analysing, now write the HTML in the details div
+    // done analysing, now write the HTML in the connGrids div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
-    var topHTML="<div><strong>"+Bands[iDetailBandIndex]+" Calls and DX Squares</strong>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iDetailBandIndex+");'> (show connectivity)</a>"
+    var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong>"
+        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iconnGridBandIndex+");'> (show connectivity)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
-        +document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML+"</div>";
+        +document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"</div>";
         
-    document.getElementsByTagName('.detail').innerHTML="{display: grid; grid-template-columns: 200px auto; grid-template-rows: auto;}";
+    document.getElementsByTagName('.connGrid').innerHTML="{display: grid; grid-template-columns: 200px auto; grid-template-rows: auto;}";
 
 
-    detail.innerHTML="";
-    detail2.innerHTML="<div>"+topHTML+"</div>"
-    detail2.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
+    connGrid.innerHTML="";
+    callSqGrid.innerHTML="<div>"+topHTML+"</div>"
+    callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
     			+Array.from(active_tx).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit'>"
+    callSqGrid.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit'>"
     			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
+    callSqGrid.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='transmit'>Squares reached only by me: </div><div class='transmit'>"
+    callSqGrid.innerHTML+="<div class='transmit'>Squares reached only by me: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.difference(Sqs_reached)).toSorted().join(' ')+"</div>";
     
-    detail2.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
     			+Array.from(active_rx).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='receive'>Squares spotted by group:</div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'>Squares spotted by group:</div><div class='receive'>"
     			+Array.from(Sqs_spotted).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='receive'>Squares spotted by me too: </div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'>Squares spotted by me too: </div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.intersection(Sqs_spotted)).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='receive'>Squares spotted only by me: </div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'>Squares spotted only by me: </div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.difference(Sqs_spotted)).toSorted().join(' ')+"</div>";
 
 
   }
   
   
-  function writeBandConnectivityInDetails(){
+  function writeBandConnectivity(){
     var active_tx=new Set;
     var active_rx=new Set;
     var H2H=new Set;
@@ -407,7 +404,7 @@ div {margin: 0px;  padding: 0px;}
       var spot=spots[iSpot];
 
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iDetailBandIndex]){
+      if(spot[0]==Bands[iconnGridBandIndex]){
         var txcall=spot[2];
         var rxcall=spot[3];
         if(showSquaresWithCalls) {
@@ -430,18 +427,15 @@ div {margin: 0px;  padding: 0px;}
       }
     }
     
-    var topHTML="<strong>"+Bands[iDetailBandIndex]+" Connectivity</strong> "
-        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iDetailBandIndex+");'>"
+    var topHTML="<strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong> "
+        +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iconnGridBandIndex+");'>"
         +" (show active calls and DX squares)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'>"
         +" (close)</a><br>"
-        + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML
-	+ "<br>Colour code:<span class='interzone'> Home &#8680 Home /</span>"
-        + "<span class='outgoing'> Home &#8680 DX /</span>"
-        + "<span class='incoming'> DX &#8680 Home</span>";
+        + document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML;
     
-    detail2.innerHTML="";
-    detail.innerHTML="<div>"+topHTML+"</div>"
+    callSqGrid.innerHTML="";
+    connGrid.innerHTML="<div>"+topHTML+"</div>"
     for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
       var txCall=Array.from(active_tx).toSorted()[i];
@@ -453,8 +447,8 @@ div {margin: 0px;  padding: 0px;}
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        detail.innerHTML+="<div class='interzone'>"+txCall+"</div><div class='interzone' style='text-align:center;'>&#8680</div>";
-        detail.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
+        connGrid.innerHTML+="<div class='interzone'>"+txCall+"</div><div class='interzone' style='text-align:center;'>&#8680</div>";
+        connGrid.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
     }
     
@@ -469,8 +463,8 @@ div {margin: 0px;  padding: 0px;}
       }
       if(rxCalls.length>0){
         if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
-        detail.innerHTML+="<div class='outgoing'>"+txCall+"</div><div class='outgoing' style='text-align:center;'>&#8680</div>";
-        detail.innerHTML+="<div class='outgoing'>"+rxCalls.slice(0, -2)+"</div>";
+        connGrid.innerHTML+="<div class='outgoing'>"+txCall+"</div><div class='outgoing' style='text-align:center;'>&#8680</div>";
+        connGrid.innerHTML+="<div class='outgoing'>"+rxCalls.slice(0, -2)+"</div>";
       }
      }
    
@@ -485,8 +479,8 @@ div {margin: 0px;  padding: 0px;}
       }
       if(txCalls.length>0){
         if(rxCall==myCall){rxCall="<u>"+rxCall+"</u>"}
-        detail.innerHTML+="<div class='incoming'>"+rxCall+"</div><div class='incoming' style='text-align:center;'>&#8678</div>";
-        detail.innerHTML+="<div class='incoming'>"+txCalls.slice(0, -2)+"</div>";
+        connGrid.innerHTML+="<div class='incoming'>"+rxCall+"</div><div class='incoming' style='text-align:center;'>&#8678</div>";
+        connGrid.innerHTML+="<div class='incoming'>"+txCalls.slice(0, -2)+"</div>";
       }
      }
 
