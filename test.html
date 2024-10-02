@@ -192,11 +192,13 @@ a:visited {color: blue;}
        +("0"+now.getUTCSeconds()).substr(-2)+" UTC";
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var sqs=Squares.join(';')+" <a class='textAnchorButton' href='#controls' onclick='editSquares();'>edit</a>";
-    controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"
-       +"<br>Home = Squares "+sqs+"<br>"
-       +"My callsign = "+myCall+" <a class='textAnchorButton' href='#controls' onclick='editMyCall();'>edit</a><br>"
-       +spots.length+" spots in database ("+spotsAdded+" added, "+spotsPurged+" purged).<br>"
-       +" Spots purged when older than "+purgeMinutes+" minutes <a class='textAnchorButton' href='#controls' onclick='editPurgeMins();'>edit</a><br>"
+    controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
+       +"<br>-running for "+runningmins+" minutes"
+       +"<br>Home = "+sqs+"<br>"
+       +"My call = "+myCall+" <a class='textAnchorButton' href='#controls' onclick='editMyCall();'>edit</a><br>"
+       +spots.length+" spots in database"
+       +"<br>"+spotsAdded+" added, "+spotsPurged+" purged<br>"
+       +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#controls' onclick='editPurgeMins();'>edit</a><br>"
   }
 
   // needs validation code
