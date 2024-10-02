@@ -401,7 +401,7 @@ a:visited {color: blue;}
       if(spot[0]==Bands[iDetailsBandIndex]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
-           if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,6));}
+           if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,SquaresDisplayLevel));}
            if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,SquaresDisplayLevel)}
            active_tx.add(txcall);
            Sqs_reached.add(spot[5].substr(0,SquaresDisplayLevel));
@@ -519,15 +519,17 @@ a:visited {color: blue;}
     
     //below, we have to join tx and rx to pair so we can sort
     //top to bottom and left to right on the output grid
+
+    // Home to Home
     for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
       var txCall=Array.from(active_tx).toSorted()[i];
       for (let j=0;j<H2H.size;j++){
-        var pair=Array.from(H2H).toSorted()[j];
+        let pair=Array.from(H2H).toSorted()[j];
         if(pair.split(",")[0]==txCall){
-          var rxcall=pair.split(",")[1];
-          if (rxcall==myCall){rxCall=HLOn+rxCall+HLOff}
-	        rxCalls+=rxcall+", ";
+          let rxcall=pair.split(",")[1];
+          if (rxcall==myCall){rxcall=HLOn+rxcall+HLOff}
+	  rxCalls+=rxcall+", ";
         }
       }
       if(rxCalls.length>0){
@@ -536,16 +538,17 @@ a:visited {color: blue;}
         connGrid.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
     }
-    
-      for (let i=0;i<active_tx.size;i++){
+
+    // Home to DX
+    for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
       var txCall=Array.from(active_tx).toSorted()[i];
       for (let j=0;j<H2DX.size;j++){
-        var pair=Array.from(H2DX).toSorted()[j];
+        let pair=Array.from(H2DX).toSorted()[j];
         if(pair.split(",")[0]==txCall){
-          var rxcall=pair.split(",")[1];
-          if (rxcall==myCall){rxCall=HLOn+rxCall+HLOff}
-	        rxCalls+=rxcall+", ";
+          let rxcall=pair.split(",")[1];
+          if (rxcall==myCall){rxcall=HLOn+rxcall+HLOff}
+	  rxCalls+=rxcall+", ";
         }
       }
       if(rxCalls.length>0){
@@ -554,15 +557,16 @@ a:visited {color: blue;}
         connGrid.innerHTML+="<div class='outgoing'>"+rxCalls.slice(0, -2)+"</div>";
       }
      }
-   
+
+    // DX to Home
     for (let i=0;i<active_rx.size;i++){
       var txCalls="";
       var rxCall=Array.from(active_rx).toSorted()[i];
       for (let j=0;j<DX2H.size;j++){
-        var pair=Array.from(DX2H).toSorted()[j];
+        let pair=Array.from(DX2H).toSorted()[j];
         if(pair.split(",")[1]==rxCall){
-          var txcall=pair.split(",")[0];
-          if (txcall==myCall){txCall=HLOn+txCall+HLOff}
+          let txcall=pair.split(",")[0];
+          if (txcall==myCall){tcall=HLOn+txcall+HLOff}
           txCalls+=txcall+", ";
         }
       }
@@ -574,7 +578,6 @@ a:visited {color: blue;}
      }
 
   }
-
 
   function validSquare(locator){
     // if a valid level 2,4,6,8 or 10 square, return the level else return 0
