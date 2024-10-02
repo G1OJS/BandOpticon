@@ -415,7 +415,7 @@ a:visited {color: blue;}
     }
     
     // if any of the lists of squares is very long, let's display them at level 2 instead of level 4
-    const ml=20;
+    const ml=200;
     if(Sqs_reached.size>ml || Sqs_reachedByMe.size>ml 
        || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {
        Sqs_reached=chunkupSquaresSet(Sqs_reached,2);
