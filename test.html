@@ -41,11 +41,18 @@ div {margin: 0px;  padding: 0px;}
 <div id="title">BandOpticon</div>
 <div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
 <div class="controls" name="controls">
- <div id="controls_l"></div>
- <div id="controls_r"></div>
+ <div id="controls_l">
+ </div>
+ <div id="controls_r">
+   What to show above band summary tiles? <br>Click on 'details' in band tile below to set the band.<br>
+   <a href='#controls' onclick='updateDetails(&quot;Layout&quot);'> Band tile legend</a><br>
+   <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'> Active Callsigns and Squares</a><br>
+   <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'> Callsign to callsign spots</a><br>
+   <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'> Nothing</a>
+ </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
-<div class="callSqGrid" id="callSqGrid" ></div>
+<div class="callSqGrid" id="callSqGrid"></div>
 <div class="bandsGrid" id="bandsGrid"></div>
 <div class="creditsGrid">
   <div>
@@ -143,9 +150,15 @@ div {margin: 0px;  padding: 0px;}
   // function to write HTML to the connGrids box
   function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
-       connGridWanted=newWant;
-       iconnGridBandIndex=iDB;
-       console.log("New connGrid pane content requested: ",newWant,iDB);
+      connGridWanted=newWant;console.log("New connGrid pane content requested: ",newWant,iDB);
+      console.log("connGrid vars are: ",connGridWanted,iconnGridBandIndex);
+    }
+    if(!(typeof iDB==='undefined')) {
+      iconnGridBandIndex=iDB;console.log("New connGrid pane content requested: ",newWant,iDB);
+      console.log("connGrid vars are: ",connGridWanted,iconnGridBandIndex);
+      // user clicked on "details" in a band tile whilst legend showing
+      // user might not think to set the content type, so default it to calls and squares
+      if(connGridWanted=="Layout"){connGridWanted="CallsAndSquares"}
     }
     
     if(connGridWanted=="Layout"){
@@ -163,6 +176,10 @@ div {margin: 0px;  padding: 0px;}
     
     if(connGridWanted=="Connectivity") {writeBandConnectivity();}
     
+    if(connGridWanted=="Nothing") {
+      callSqGrid.innerHTML="&nbsp";
+      connGrid.innerHTML="&nbsp";
+    }
   }
 
   // function to write HTML to the Controls box
@@ -220,7 +237,7 @@ div {margin: 0px;  padding: 0px;}
     var newDiv = document.createElement('div');
     newDiv.id = Bands[i];     
     newDiv.innerHTML="<strong>"+Bands[i]+"</strong> \
-      <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot;,"+i+");'>details</a><br> \
+      <a href='#controls' onclick='updateDetails("+undefined+","+i+");'>details</a><br> \
       <output id='"+Bands[i]+"spots'></output><br> \
       <output id='"+Bands[i]+"calls'></output>";
     toAdd.appendChild(newDiv);
@@ -369,9 +386,7 @@ div {margin: 0px;  padding: 0px;}
     // done analysing, now write the HTML in the connGrids div
     // together with button to revert to band layout reminder
     // need a bit of processing here as it's a big wedge of text to generate
-    var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot,"+iconnGridBandIndex+");'> (show connectivity)</a>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'> (close)</a><br>"
+    var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong><br>"
         +document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"</div>";
         
     document.getElementsByTagName('.connGrid').innerHTML="{display: grid; grid-template-columns: 200px auto; grid-template-rows: auto;}";
@@ -436,11 +451,8 @@ div {margin: 0px;  padding: 0px;}
       }
     }
     
-    var topHTML="<strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong> "
+    var topHTML="<strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong><br> "
         +" <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot,"+iconnGridBandIndex+");'>"
-        +" (show active calls and DX squares)</a>"
-        +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'>"
-        +" (close)</a><br>"
         + document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML;
     
     callSqGrid.innerHTML="";
