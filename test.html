@@ -15,10 +15,14 @@
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem;}
-#controls > div {background-color: white; margin: 1px;  padding: 1px;}
+
+.controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
+.controls > div {background-color: white; margin: 1px;  padding: 1px;}
+
 .connGrid {display: grid; grid-template-columns: auto min-content 1fr; grid-template-rows: auto;}
 .connGrid > div {background-color: white; margin: 1px;  padding: 1px; }
 .connGrid > div:first-child {grid-column: 1 / 4;}
+
 .callSqGrid {display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto;}
 .callSqGrid > div {background-color: white; margin: 1px;  padding: 1px;}
 .callSqGrid > div:first-child {grid-column: 1 / 3;}
@@ -36,23 +40,28 @@ div {margin: 0px;  padding: 0px;}
 <body><div>
 <div id="title">BandOpticon</div>
 <div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
-<div id="controls" name="controls"></div>
+<div class="controls" name="controls">
+ <div id="controls_l"></div>
+ <div id="controls_r"></div>
+</div>
 <div class="connGrid" id="connGrid"></div>
 <div class="callSqGrid" id="callSqGrid" ></div>
 <div class="bandsGrid" id="bandsGrid"></div>
 <div class="creditsGrid">
   <div>
     Javascript & HTML developed by Alan Robinson:<br>
-    <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com/a>
+    <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com</a>
     <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
     <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
     <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a><br>
-  </div><div>
+  </div>
+  <div>
     Thanks to:<br>
     Philip Gladstone - N1DQ for https://pskreporter.info/<br>
     Tom Stanton - M0LTE for mqtt.pskreporter.info, the MQTT feed for this app<br>
     <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
-  </div><div>
+  </div>
+  <div>
     BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
     BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
     <BR>
@@ -165,7 +174,7 @@ div {margin: 0px;  padding: 0px;}
        +("0"+now.getUTCSeconds()).substr(-2)+" UTC";
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var sqs=Squares.join(';')+" <a href='#controls' onclick='editSquares();'>edit</a>";
-    controls.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
+    controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"+
        "<br>Home = Squares "+sqs+"<br>"+
        "My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"+
        spots.length+" spots in database ("+spotsAdded+" added, "+spotsPurged+" purged). Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
@@ -205,7 +214,7 @@ div {margin: 0px;  padding: 0px;}
     }
   }
 
-// Dynamically write the HTML needed to complete the layout (band boxes)
+// Write the <div>s for each band summary tile in the bandsGrid area
   var toAdd = document.createDocumentFragment();
   for(var i=0; i < Bands.length; i++){
     var newDiv = document.createElement('div');
