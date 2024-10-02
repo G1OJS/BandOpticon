@@ -395,9 +395,10 @@ div {margin: 0px;  padding: 0px;}
     			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
           
     if(Sqs_reachedByMe.size>0) {
-      callSqGrid.innerHTML+="<div class='transmit'>me too: </div><div class='transmit'>"
+      callSqGrid.innerHTML+="<div class='transmit' style='text-align:right;'>me too:</div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
-      callSqGrid.innerHTML+="<div class='transmit'>only me: </div><div class='transmit'>"
+      callSqGrid.innerHTML+="<div class='transmit' style='text-align:right;'>only me:</div>"
+          +"<div class='transmit'>"
           +Array.from(Sqs_reachedByMe.difference(Sqs_reached)).toSorted().join(' ')+"</div>";
     }
     
@@ -407,9 +408,9 @@ div {margin: 0px;  padding: 0px;}
     			+Array.from(Sqs_spotted).toSorted().join(' ')+"</div>";
           
     if(Sqs_spottedByMe.size>0) {
-      callSqGrid.innerHTML+="<div class='receive'>me too: </div><div class='receive'>"
+      callSqGrid.innerHTML+="<div class='receive' style='text-align:right;'>me too:</div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.intersection(Sqs_spotted)).toSorted().join(' ')+"</div>";
-      callSqGrid.innerHTML+="<div class='receive'>only me: </div><div class='receive'>"
+      callSqGrid.innerHTML+="<div class='receive' style='text-align:right;'>only me:</div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.difference(Sqs_spotted)).toSorted().join(' ')+"</div>";
     }
 
