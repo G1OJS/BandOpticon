@@ -435,7 +435,10 @@ div {margin: 0px;  padding: 0px;}
         +" (show active calls and DX squares)</a>"
         +" <a href='#controls' onclick='updateDetails(&quot;Layout&quot,0);'>"
         +" (close)</a><br>"
-        + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML;
+        + document.getElementById(Bands[iDetailBandIndex]+"spots").innerHTML
+	+ "<br>Colour code:<span class='interzone'> Home &#8680 Home /</span>"
+        + "<span class='outgoing'> Home &#8680 DX /</span>"
+        + "<span class='incoming'> DX &#8680 Home</span>";
     
     detail2.innerHTML="";
     detail.innerHTML="<div>"+topHTML+"</div>"
