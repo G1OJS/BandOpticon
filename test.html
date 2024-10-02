@@ -1,11 +1,8 @@
 <!-- To do:
-  idea - could have connGrid 1 and connGrid 2 both displayed, or even all 3 uses of the connGrid block with an open/close 
-  button on each (use an HTML connGrid/summary tag?) don't want all the code running under a closed one though.
-  nicer borders around things to group better
-
-  Tidy analysis code in connectivity section if poss using set operations
-  Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
-  Underline squares in main list spotted / reached by me
+  - Look at element margins to show nicer borders around things to group better
+  - Tidy analysis code in connectivity section if poss using set operations
+  - Add tickbox to control inclusion of squares with callsigns and/or make the square bit smaller
+  - Underline squares in main list spotted / reached by me
 -->
 
 <html>
@@ -15,14 +12,11 @@
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem;}
-
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
-
 .connGrid {display: grid; grid-template-columns: auto min-content 1fr; grid-template-rows: auto;}
 .connGrid > div {background-color: white; margin: 1px;  padding: 1px; }
 .connGrid > div:first-child {grid-column: 1 / 4;}
-
 .callSqGrid {display: grid; grid-template-columns: auto 1fr; grid-template-rows: auto;}
 .callSqGrid > div {background-color: white; margin: 1px;  padding: 1px;}
 .callSqGrid > div:first-child {grid-column: 1 / 3;}
@@ -397,22 +391,27 @@ div {margin: 0px;  padding: 0px;}
     callSqGrid.innerHTML="<div>"+topHTML+"</div>"
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
     			+Array.from(active_tx).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit'>"
+    callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
     			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
+          
+    if(Sqs_reachedByMe.size>0) {
+      callSqGrid.innerHTML+="<div class='transmit'>me too: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='transmit'>Squares reached only by me: </div><div class='transmit'>"
+      callSqGrid.innerHTML+="<div class='transmit'>only me: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.difference(Sqs_reached)).toSorted().join(' ')+"</div>";
+    }
     
     callSqGrid.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
     			+Array.from(active_rx).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='receive'>Squares spotted by group:</div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'>DX squares:</div><div class='receive'>"
     			+Array.from(Sqs_spotted).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='receive'>Squares spotted by me too: </div><div class='receive'>"
+          
+    if(Sqs_spottedByMe.size>0) {
+      callSqGrid.innerHTML+="<div class='receive'>me too: </div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.intersection(Sqs_spotted)).toSorted().join(' ')+"</div>";
-    callSqGrid.innerHTML+="<div class='receive'>Squares spotted only by me: </div><div class='receive'>"
+      callSqGrid.innerHTML+="<div class='receive'>only me: </div><div class='receive'>"
           +Array.from(Sqs_spottedByMe.difference(Sqs_spotted)).toSorted().join(' ')+"</div>";
-
+    }
 
   }
   
