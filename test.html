@@ -5,7 +5,6 @@
     in the calls and squares grid and/or make the square bit smaller or just abandon that idea
   - validation code for purge minutes (and callsign?)
   - use radio buttons instead of links for what to show above bands
-  - investigate broad margin when "nothing" is selected
   - check consistency of let, var, continuation + and \ and <br>
 -->
 
@@ -157,10 +156,10 @@ a:visited {color: blue;}
     }
     if(!(typeof iDB==='undefined')) {
       iDetailsBandIndex=iDB;console.log("New details pane content requested: ",newWant,iDB);
-      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
-      // user clicked on "details" in a band tile whilst legend showing
+      // user clicked on "details" in a band tile whilst legend or 'nothing' showing
       // user might not think to set the content type, so default it to calls and squares
-      if(detailsWanted=="Layout"){detailsWanted="CallsAndSquares"}
+      if(detailsWanted=="Layout" || detailsWanted=="Nothing" ){detailsWanted="CallsAndSquares"}
+      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
     }
     
     if(detailsWanted=="Layout"){
