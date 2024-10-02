@@ -3,6 +3,8 @@
   - Tidy analysis code in connectivity section if poss using set operations
   - Add tickbox to control inclusion of squares within the  callsigns list
     in the calls and squares grid and/or make the square bit smaller or just abandon that idea
+  - validation code for purge minutes (and callsign?)
+  - use radio buttons instead of links for what to show above bands
 -->
 
 <html>
@@ -11,7 +13,7 @@
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
-#subtitle {text-align: center; font-size: 1.5rem;}
+#subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
 .connGrid {display: grid; grid-template-columns: auto min-content 1fr; grid-template-rows: auto;}
@@ -28,6 +30,8 @@ div {margin: 0px;  padding: 0px;}
 .interzone {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
+a:link {color: blue;}
+a:visited {color: blue;}
 </style>
 </head>
 
@@ -39,10 +43,10 @@ div {margin: 0px;  padding: 0px;}
  </div>
  <div id="controls_r">
    What to show above band summary tiles? <br>Click on 'details' in band tile below to set the band.<br>
-   <a href='#controls' onclick='updateDetails(&quot;Layout&quot);'> Band tile legend</a><br>
-   <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'> Active Callsigns and Squares</a><br>
-   <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'> Callsign to callsign spots</a><br>
-   <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'> Nothing</a>
+   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Layout&quot);'> Band tile legend</a><br>
+   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'> Active Callsigns and Squares</a><br>
+   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'> Callsign to callsign spots</a><br>
+   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Nothing&quot);'> Nothing</a>
  </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
@@ -65,7 +69,6 @@ div {margin: 0px;  padding: 0px;}
   <div>
     BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
     BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
-    <BR>
     <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>                        
   </div>
 </div>
@@ -185,12 +188,12 @@ div {margin: 0px;  padding: 0px;}
        +("0"+now.getUTCMinutes()).substr(-2)+":"
        +("0"+now.getUTCSeconds()).substr(-2)+" UTC";
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=Squares.join(';')+" <a href='#controls' onclick='editSquares();'>edit</a>";
+    var sqs=Squares.join(';')+" <a class='textAnchorButton' href='#controls' onclick='editSquares();'>edit</a>";
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong> (running for "+runningmins+" minutes)"
        +"<br>Home = Squares "+sqs+"<br>"
-       +"My callsign = "+myCall+" <a href='#controls' onclick='editMyCall();'>edit</a><br>"
+       +"My callsign = "+myCall+" <a class='textAnchorButton' href='#controls' onclick='editMyCall();'>edit</a><br>"
        +spots.length+" spots in database ("+spotsAdded+" added, "+spotsPurged+" purged).<br>"
-       +" Spots purged when older than "+purgeMinutes+" minutes <a href='#controls' onclick='editPurgeMins();'>edit</a><br>"
+       +" Spots purged when older than "+purgeMinutes+" minutes <a class='textAnchorButton' href='#controls' onclick='editPurgeMins();'>edit</a><br>"
   }
 
   // needs validation code
@@ -233,7 +236,8 @@ div {margin: 0px;  padding: 0px;}
     var newDiv = document.createElement('div');
     newDiv.id = Bands[i];     
     newDiv.innerHTML="<strong>"+Bands[i]+"</strong> \
-      <a href='#controls' onclick='updateDetails("+undefined+","+i+");'>details</a><br> \
+      <a class='textAnchorButton' href='#controls' onclick='updateDetails("+undefined+","+i+");'> \
+         details</a><br> \
       <output id='"+Bands[i]+"spots'></output><br> \
       <output id='"+Bands[i]+"calls'></output>";
     toAdd.appendChild(newDiv);
@@ -388,7 +392,7 @@ div {margin: 0px;  padding: 0px;}
     const HLOn="<b><u>";
     const HLOff="</u></b>"; 
     var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong>" 
-        +" Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
+        +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
         +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+".</div>";
     
     connGrid.innerHTML=""; // clear any layout or connectivity text
