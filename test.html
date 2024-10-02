@@ -48,7 +48,7 @@ a:visited {color: blue;}
    - <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'>Active Callsigns and Squares</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'>Callsign to callsign spots</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
-   Click on 'details' in band tiles below to set the band
+   Click 'details' in band tiles below to set the band
  </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
@@ -165,7 +165,7 @@ a:visited {color: blue;}
     if(detailsWanted=="Layout"){
       callSqGrid.innerHTML=""; //clear any calls and squares grid text
       // write layout info (using the first row of the connectivity grid which is a single column)
-      connGrid.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
+      connGrid.innerHTML="<div>Band tile legend:<br><strong>Band</strong><br> \
          Spots: number of spots "+
          "<span class='interzone'> Home &#8680 Home /</span>"+
          "<span class='outgoing'> Home &#8680 DX /</span>"+
