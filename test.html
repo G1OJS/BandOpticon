@@ -375,7 +375,7 @@ div {margin: 0px;  padding: 0px;}
     detail2.innerHTML="<div>"+topHTML+"</div>"
     detail2.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
     			+Array.from(active_tx).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit'>"
+    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit' style='font-size:16px;'>"
     			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
     detail2.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
