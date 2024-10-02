@@ -296,7 +296,7 @@ a:visited {color: blue;}
       writeBandActiveCallStats();
       updateDetails();
       updateControls();
-      console.log("Analysis took "+Date.now()-tWrite+"mS");
+      console.log("Analysis took "+(Date.now()-tWrite).toString()+"mS");
     }
     //ignore nessages for bands we aren't set up to watch
     b=getVal("b",message); 
