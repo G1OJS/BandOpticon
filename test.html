@@ -324,7 +324,7 @@ a:visited {color: blue;}
     for (let i=0; i < Bands.length; i++) {
       var snum=bandStats[i];
       document.getElementById(Bands[i]+"spots").innerHTML=
-        "Spots "+snum[0]
+        "Spots <span class='interzone'>"+snum[0]
         +"/<span class='outgoing'>"+snum[2]
         +"</span>/<span class='incoming'>"+snum[1]
         +"</span>";
