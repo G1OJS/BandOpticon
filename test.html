@@ -359,7 +359,7 @@ a:visited {color: blue;}
         +"/<span class='outgoing'>"+snum[2]
         +"</span>/<span class='incoming'>"+snum[1]
         +"</span>";
-      if(recordData) {data+=Bands[i]+snum+";"}
+      if(recordData) {data+=Bands[i]+","+snum+","}
     }
     if(recordData) {writeData(data)}
   }
