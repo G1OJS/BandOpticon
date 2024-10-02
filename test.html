@@ -290,12 +290,13 @@ a:visited {color: blue;}
 
   function onMessage(message){    
     if ( (Date.now()-tWrite)/1000 > refreshSeconds ){
-    	tWrite=Date.now();
+      tWrite=Date.now();
       purgeSpots();
       writeBandSpotStats();
       writeBandActiveCallStats();
       updateDetails();
       updateControls();
+      console.log("Analysis took "+Date.now()-tWrite+"mS");
     }
     //ignore nessages for bands we aren't set up to watch
     b=getVal("b",message); 
@@ -425,7 +426,7 @@ a:visited {color: blue;}
         +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
         +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff
         +"<br>"+document.getElementById(Bands[iDetailsBandIndex]+"calls").innerHTML
-        +"Squares displayed at level <output id='SDL'>"+SquaresDisplayLevel+" <a class='textAnchorButton' href='#controls' onclick='cycleSDL();'>(cycle 2->4->6->2)</a></output><br>"
+        +"<br>Squares displayed at level <output id='SDL'>"+SquaresDisplayLevel+" <a class='textAnchorButton' href='#controls' onclick='cycleSDL();return;'>(cycle 2->4->6->2)</a></output><br>"
         +"</div>";
     
     connGrid.innerHTML=""; // clear any layout or connectivity text
