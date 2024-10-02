@@ -87,8 +87,8 @@ a:visited {color: blue;}
   const Bands=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
   let refreshSeconds=2;
   let purgeMinutes=5;
-  let connGridWanted="Layout";
-  let iconnGridBandIndex=0;
+  let detailsWanted="Layout";
+  let iDetailsBandIndex=0;
   let spots=[];
   let tWrite=0; // time of last write set to 1 Jan 1970 so screen will update asap
   let tStart=Date.now(); // software start
@@ -149,21 +149,21 @@ a:visited {color: blue;}
   
   // done with initialisation now
   
-  // function to write HTML to the connGrids box
+  // function to write HTML to the details box (connGrid or callSqGrid)
   function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
-      connGridWanted=newWant;console.log("New connGrid pane content requested: ",newWant,iDB);
-      console.log("connGrid vars are: ",connGridWanted,iconnGridBandIndex);
+      detailsWanted=newWant;console.log("New details pane content requested: ",newWant,iDB);
+      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
     }
     if(!(typeof iDB==='undefined')) {
-      iconnGridBandIndex=iDB;console.log("New connGrid pane content requested: ",newWant,iDB);
-      console.log("connGrid vars are: ",connGridWanted,iconnGridBandIndex);
+      iDetailsBandIndex=iDB;console.log("New details pane content requested: ",newWant,iDB);
+      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
       // user clicked on "details" in a band tile whilst legend showing
       // user might not think to set the content type, so default it to calls and squares
-      if(connGridWanted=="Layout"){connGridWanted="CallsAndSquares"}
+      if(detailsWanted=="Layout"){detailsWanted="CallsAndSquares"}
     }
     
-    if(connGridWanted=="Layout"){
+    if(detailsWanted=="Layout"){
       callSqGrid.innerHTML=""; //clear any calls and squares grid text
       // write layout info (using the first row of the connectivity grid which is a single column)
       connGrid.innerHTML="<div>Band box layout:<br><strong>Band</strong><br> \
@@ -175,13 +175,13 @@ a:visited {color: blue;}
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>"
     } 
     
-    if(connGridWanted=="CallsAndSquares") {writeBandCallsAndSquares();}
+    if(detailsWanted=="CallsAndSquares") {writeBandCallsAndSquares();}
     
-    if(connGridWanted=="Connectivity") {writeBandConnectivity();}
+    if(detailsWanted=="Connectivity") {writeBandConnectivity();}
     
-    if(connGridWanted=="Nothing") {
-      callSqGrid.innerHTML="&nbsp";
-      connGrid.innerHTML="&nbsp";
+    if(detailsWanted=="Nothing") {
+      callSqGrid.innerHTML="";
+      connGrid.innerHTML="";
     }
   }
 
@@ -362,7 +362,7 @@ a:visited {color: blue;}
     for (let iSpot=1; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iconnGridBandIndex]){
+      if(spot[0]==Bands[iDetailsBandIndex]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
            if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
@@ -396,18 +396,18 @@ a:visited {color: blue;}
     // the map function adds highlighting where squares are common to the active calls 
     // and "me". The "me" row is only shown if it's not empty.
     
-    var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong>" 
-        +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
+    var topHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Calls and DX Squares</strong>" 
+        +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+"<br>"
         +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+".</div>";
     
     connGrid.innerHTML=""; // clear any layout or connectivity text
     callSqGrid.innerHTML="<div>"+topHTML+"</div>" //start writing our new text
    
     // Transmit section
-  var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+HLOff});
+    var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+HLOff});
     var sqs_reachedArr=Array.from(Sqs_reached).concat(sqs_reachedByMeArr).toSorted().join(' ');
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
-    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
+    			+Array.from(active_tx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
     var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
     			+sqs_reachedHTML+"</div>";
@@ -442,7 +442,7 @@ a:visited {color: blue;}
       var spot=spots[iSpot];
 
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iconnGridBandIndex]){
+      if(spot[0]==Bands[iDetailsBandIndex]){
         var txcall=spot[2];
         var rxcall=spot[3];
         if(showSquaresWithCalls) {
@@ -465,8 +465,8 @@ a:visited {color: blue;}
       }
     }
     
-    var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong>" 
-        +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
+    var topHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Connectivity</strong>" 
+        +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+"<br>"
         +myCall+" is "+HLOn+"highlighted"+HLOff+"</div>";
     
     callSqGrid.innerHTML="";
