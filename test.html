@@ -44,11 +44,12 @@ a:visited {color: blue;}
  <div id="controls_l">
  </div>
  <div id="controls_r">
-   What to show above band summary tiles? <br>Click on 'details' in band tile below to set the band.<br>
+   What to show above band summary tiles? <br>
    - <a href='#controls' onclick='updateDetails(&quot;Layout&quot);'>Band tile legend</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'>Active Callsigns and Squares</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'>Callsign to callsign spots</a><br>
-   - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a>
+   - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
+   Click on 'details' in band tiles below to set the band
  </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
@@ -466,7 +467,7 @@ a:visited {color: blue;}
     
     var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong>" 
         +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
-        +myCall+" is "+HLOn+"highlighted"+HLOff+".</div>";
+        +myCall+" is "+HLOn+"highlighted"+HLOff+"</div>";
     
     callSqGrid.innerHTML="";
     connGrid.innerHTML="<div>"+topHTML+"</div>"
@@ -480,7 +481,7 @@ a:visited {color: blue;}
         }
       }
       if(rxCalls.length>0){
-        if(txCall==myCall){txCall="<u>"+txCall+"</u>"}
+        if(txCall==myCall){txCall=HLOn+txCall+HLOff}
         connGrid.innerHTML+="<div class='interzone'>"+txCall+"</div><div class='interzone' style='text-align:center;'>&#8680</div>";
         connGrid.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
