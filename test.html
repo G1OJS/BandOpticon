@@ -5,6 +5,7 @@
     in the calls and squares grid and/or make the square bit smaller or just abandon that idea
   - validation code for purge minutes (and callsign?)
   - use radio buttons instead of links for what to show above bands
+  - investigate broad margin when "nothing" is selected
 -->
 
 <html>
@@ -43,10 +44,10 @@ a:visited {color: blue;}
  </div>
  <div id="controls_r">
    What to show above band summary tiles? <br>Click on 'details' in band tile below to set the band.<br>
-   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Layout&quot);'> Band tile legend</a><br>
-   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'> Active Callsigns and Squares</a><br>
-   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'> Callsign to callsign spots</a><br>
-   <a class="textAnchorButton" href='#controls' onclick='updateDetails(&quot;Nothing&quot);'> Nothing</a>
+   - <a href='#controls' onclick='updateDetails(&quot;Layout&quot);'>Band tile legend</a><br>
+   - <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'>Active Callsigns and Squares</a><br>
+   - <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'>Callsign to callsign spots</a><br>
+   - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a>
  </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
