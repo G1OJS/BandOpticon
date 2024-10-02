@@ -102,6 +102,8 @@ a:visited {color: blue;}
   const HLOff="</u></b>"; 
   let recordData=false;
   let newWindow=null;
+  let twriteData=0;
+  const dataWriteInterval=600;
 
   function startRecording(){
     let params = `scrollbars=yes,resizable=yes,status=no,location=no,toolbar=yes,menubar=yes,width=500,height=200,left=0,top=0`;
@@ -113,8 +115,10 @@ a:visited {color: blue;}
     };
   }
   function writeData(data){
-    t=Date.now();
-    newWindow.document.body.insertAdjacentHTML(data, html);
+    if((Date.now()-twriteData)>dataWriteInterval){
+      twriteData=Date.now()/1000;
+      newWindow.document.body.insertAdjacentHTML(twriteData+" "+data, html);
+    }
   }
 	
   function saveConfig(){
