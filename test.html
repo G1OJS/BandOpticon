@@ -49,6 +49,7 @@ a:visited {color: blue;}
    - <a href='#controls' onclick='updateDetails(&quot;Connectivity&quot);'>Callsign to callsign spots</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
    Click 'details' in band tiles below to set the band
+   <a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
  </div>
 </div>
 <div class="connGrid" id="connGrid"></div>
@@ -99,7 +100,23 @@ a:visited {color: blue;}
   let spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-  
+  let recordData=false;
+  let newWindow=null;
+
+  function startRecording(){
+    let params = `scrollbars=yes,resizable=yes,status=no,location=no,toolbar=yes,menubar=yes,width=500,height=200,left=0,top=0`;
+    newWindow = open('/', 'example',params);
+    newWindow.onload = function() {
+  	let html = `<div style="font-size:30px">BandOpticon recorded data</div>`;
+  	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
+	recordData=true
+    };
+  }
+  function writeData(data){
+    t=Date.now();
+    newWindow.document.body.insertAdjacentHTML(data, html);
+  }
+	
   function saveConfig(){
       console.log("Saving config:");
       localStorage.setItem('Squares', JSON.stringify(Squares));
