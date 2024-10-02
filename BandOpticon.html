@@ -99,7 +99,7 @@ a:visited {color: blue;}
   let spotsAdded=0;
   let spotsPurged=0;
   const HLOn="<b><u>";
-  const HLOff="</u></b>"; 
+  const ="</u></b>"; 
   
   function saveConfig(){
       console.log("Saving config:");
@@ -398,33 +398,33 @@ a:visited {color: blue;}
     
     var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Calls and DX Squares</strong>" 
         +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
-        +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+".</div>";
+        +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"++".</div>";
     
     connGrid.innerHTML=""; // clear any layout or connectivity text
     callSqGrid.innerHTML="<div>"+topHTML+"</div>" //start writing our new text
    
     // Transmit section
-  var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+HLOff});
+  var sqs_reachedByMeArr=Array.from(Sqs_reachedByMe).map(function(item){return HLOn+item+});
     var sqs_reachedArr=Array.from(Sqs_reached).concat(sqs_reachedByMeArr).toSorted().join(' ');
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
-    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
-    var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
+    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+;} else {return item;}}).join(' ')+"</div>";
+    var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return HLOn+item+;} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
     			+sqs_reachedHTML+"</div>";
     if(Sqs_reachedByMe.size>0){
-      var sqs_reachedByMeHTML=Array.from(Sqs_reachedByMe).toSorted().map(item => {if(Sqs_reached.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');
+      var sqs_reachedByMeHTML=Array.from(Sqs_reachedByMe).toSorted().map(item => {if(Sqs_reached.has(item)){return HLOn+item+;} else {return item;}}).join(' ');
       callSqGrid.innerHTML+="<div class='transmit'>DX squares me:</div><div class='transmit'>"
     			+sqs_reachedByMeHTML+"</div>";
     }
 
     // Receive section
     callSqGrid.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
-    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
-    var sqs_spottedHTML=Array.from(Sqs_spotted).toSorted().map(item => {if(Sqs_spottedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
+    			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+;} else {return item;}}).join(' ')+"</div>";
+    var sqs_spottedHTML=Array.from(Sqs_spotted).toSorted().map(item => {if(Sqs_spottedByMe.has(item)){return HLOn+item+;} else {return item;}}).join(' ');          
     callSqGrid.innerHTML+="<div class='receive'>DX squares:</div><div class='receive'>"
     			+sqs_spottedHTML+"</div>";
     if(Sqs_spottedByMe.size>0){
-      var sqs_spottedByMeHTML=Array.from(Sqs_spottedByMe).toSorted().map(item => {if(Sqs_spotted.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');
+      var sqs_spottedByMeHTML=Array.from(Sqs_spottedByMe).toSorted().map(item => {if(Sqs_spotted.has(item)){return HLOn+item+;} else {return item;}}).join(' ');
       callSqGrid.innerHTML+="<div class='receive'>DX squares me:</div><div class='receive'>"
     			+sqs_spottedByMeHTML+"</div>";
     }
@@ -467,7 +467,7 @@ a:visited {color: blue;}
     
     var topHTML="<div><strong>"+Bands[iconnGridBandIndex]+" Connectivity</strong>" 
         +"<br>Total "+document.getElementById(Bands[iconnGridBandIndex]+"spots").innerHTML+"<br>"
-        +myCall+" is "+HLOn+"highlighted"+HLOff+"</div>";
+        +myCall+" is "+HLOn+"highlighted"++"</div>";
     
     callSqGrid.innerHTML="";
     connGrid.innerHTML="<div>"+topHTML+"</div>"
@@ -481,7 +481,7 @@ a:visited {color: blue;}
         }
       }
       if(rxCalls.length>0){
-        if(txCall==myCall){txCall=HLOn+txCall+HLOff"}
+        if(txCall==myCall){txCall=HLOn+txCall+HLOff}
         connGrid.innerHTML+="<div class='interzone'>"+txCall+"</div><div class='interzone' style='text-align:center;'>&#8680</div>";
         connGrid.innerHTML+="<div class='interzone'>"+rxCalls.slice(0, -2)+"</div>";
       }
