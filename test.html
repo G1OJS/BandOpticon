@@ -20,10 +20,10 @@ div {margin: 0px;  padding: 0px;}
 #BO_subtitle {text-align: center; font-size: 1.5rem;}
 #controls > div {background-color: white; margin: 1px;  padding: 1px;}
 .detail {display: grid; grid-template-columns: 80px 20px auto; grid-template-rows: auto;}
-.detail > div {background-color: white; margin: 1px;  padding: 1px; font-size: 16px;}
+.detail > div {background-color: white; margin: 1px;  padding: 1px; }
 .detail > div:first-child {grid-column: 1 / 4;}
 .detail2 {display: grid; grid-template-columns: 120px auto; grid-template-rows: auto;}
-.detail2 > div {background-color: white; margin: 1px;  padding: 1px; font-size: 16px;}
+.detail2 > div {background-color: white; margin: 1px;  padding: 1px;}
 .detail2 > div:first-child {grid-column: 1 / 3;}
 .bandblock {display: grid; grid-template-columns: auto auto auto auto auto;}
 .bandblock > div {background-color: white; margin: 1px;  padding: 1px;}
@@ -375,7 +375,7 @@ div {margin: 0px;  padding: 0px;}
     detail2.innerHTML="<div>"+topHTML+"</div>"
     detail2.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
     			+Array.from(active_tx).toSorted().join(' ')+"</div>";
-    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit' style='font-size:16px;'>"
+    detail2.innerHTML+="<div class='transmit'>Squares reached by group:</div><div class='transmit' style='font-size:6px;'>"
     			+Array.from(Sqs_reached).toSorted().join(' ')+"</div>";
     detail2.innerHTML+="<div class='transmit'>Squares reached by me too: </div><div class='transmit'>"
           +Array.from(Sqs_reachedByMe.intersection(Sqs_reached)).toSorted().join(' ')+"</div>";
