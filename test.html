@@ -8,9 +8,6 @@
   - validation code for purge minutes (and callsign?)
   - use radio buttons instead of links for what to show above bands
   - check consistency of let, var, continuation + and \ and <br>
-  - relabel "DX squares" to "spotted in"/"spotted" ? is this clearer?
-  - make condensing of level 4 to level 2 squares a toggle option onscreen as both views are useful
-
 -->
 
 <html>
@@ -99,6 +96,7 @@ a:visited {color: blue;}
   let tStart=Date.now(); // software start
   const defaultSquares=["IO","JO01","JO02","JO03","JO04"]
   let Squares=[];
+  let SquaresDisplayLevel=4;
   let myCall="G1OJS";
   // count the spot processing stats just for fun:
   let spotsAdded=0;
@@ -402,32 +400,20 @@ a:visited {color: blue;}
       if(spot[0]==Bands[iDetailsBandIndex]){
         if(SquareInHome(spot[4])) {
            txcall=spot[2];
-           if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,4));}
-           if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,4)}
+           if(txcall==myCall){Sqs_reachedByMe.add(spot[5].substr(0,6));}
+           if(showSquaresWithCalls) {txcall=txcall+"-"+spot[4].substr(0,SquaresDisplayLevel)}
            active_tx.add(txcall);
-           Sqs_reached.add(spot[5].substr(0,4));
+           Sqs_reached.add(spot[5].substr(0,SquaresDisplayLevel));
         }
         if(SquareInHome(spot[5])) {
            rxcall=spot[3];
-           if(rxcall==myCall){Sqs_spottedByMe.add(spot[4].substr(0,4));}
-           if(showSquaresWithCalls) {rxcall=rxcall+"-"+spot[5].substr(0,4)}
+           if(rxcall==myCall){Sqs_spottedByMe.add(spot[4].substr(0,SquaresDisplayLevel));}
+           if(showSquaresWithCalls) {rxcall=rxcall+"-"+spot[5].substr(0,SquaresDisplayLevel)}
            active_rx.add(rxcall);
-           Sqs_spotted.add(spot[4].substr(0,4));
+           Sqs_spotted.add(spot[4].substr(0,SquaresDisplayLevel));
         }
       }
     }
-    
-    // if any of the lists of squares is very long, let's display them at level 2 instead of level 4
-<!--
-    const ml=200;
-    if(Sqs_reached.size>ml || Sqs_reachedByMe.size>ml 
-       || Sqs_spotted.size>ml || Sqs_spottedByMe.size>ml) {
-       Sqs_reached=chunkupSquaresSet(Sqs_reached,2);
-       Sqs_reachedByMe=chunkupSquaresSet(Sqs_reachedByMe,2);
-       Sqs_spotted=chunkupSquaresSet(Sqs_spotted,2);
-       Sqs_spottedByMe=chunkupSquaresSet(Sqs_spottedByMe,2);       
-    }
--->
     
     // done analysing, now write the HTML in the connGrids div
     // together with button to revert to band layout reminder
@@ -439,6 +425,7 @@ a:visited {color: blue;}
         +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
         +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff
         +"<br>"+document.getElementById(Bands[iDetailsBandIndex]+"calls").innerHTML
+        +"Squares displayed at level <output id='SDL'>"+SquaresDisplayLevel+" <a class='textAnchorButton' href='#controls' onclick='cycleSDL();'>(cycle 2->4->6->2)</a></output><br>"
         +"</div>";
     
     connGrid.innerHTML=""; // clear any layout or connectivity text
@@ -450,30 +437,39 @@ a:visited {color: blue;}
     callSqGrid.innerHTML+="<div class='transmit'>Tx calls:</div><div class='transmit'>"
     			+Array.from(active_tx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
     var sqs_reachedHTML=Array.from(Sqs_reached).toSorted().map(item => {if(Sqs_reachedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
-    callSqGrid.innerHTML+="<div class='transmit'>DX squares:</div><div class='transmit'>"
+    callSqGrid.innerHTML+="<div class='transmit'> .. spotted in:</div><div class='transmit'>"
     			+sqs_reachedHTML+"</div>";
-    if(Sqs_reachedByMe.size>0){
+//    if(Sqs_reachedByMe.size>0){
       var sqs_reachedByMeHTML=Array.from(Sqs_reachedByMe).toSorted().map(item => {if(Sqs_reached.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');
-      callSqGrid.innerHTML+="<div class='transmit'>DX squares me:</div><div class='transmit'>"
+      callSqGrid.innerHTML+="<div class='transmit'>"+myCall+" spotted in:</div><div class='transmit'>"
     			+sqs_reachedByMeHTML+"</div>";
-    }
+//    }
 
     // Receive section
     callSqGrid.innerHTML+="<div class='receive'>Rx calls:</div><div class='receive'>"
     			+Array.from(active_rx).toSorted().map(item => {if(item==myCall){return HLOn+item+HLOff;} else {return item;}}).join(' ')+"</div>";
     var sqs_spottedHTML=Array.from(Sqs_spotted).toSorted().map(item => {if(Sqs_spottedByMe.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');          
-    callSqGrid.innerHTML+="<div class='receive'>DX squares:</div><div class='receive'>"
+    callSqGrid.innerHTML+="<div class='receive'> .. have spotted:</div><div class='receive'>"
     			+sqs_spottedHTML+"</div>";
-    if(Sqs_spottedByMe.size>0){
+ //   if(Sqs_spottedByMe.size>0){
       var sqs_spottedByMeHTML=Array.from(Sqs_spottedByMe).toSorted().map(item => {if(Sqs_spotted.has(item)){return HLOn+item+HLOff;} else {return item;}}).join(' ');
-      callSqGrid.innerHTML+="<div class='receive'>DX squares me:</div><div class='receive'>"
+      callSqGrid.innerHTML+="<div class='receive'>"+myCall+" spotted:</div><div class='receive'>"
     			+sqs_spottedByMeHTML+"</div>";
-    }
+ //   }
+  }
+  
+  function cycleSDL(){
+     SquaresDisplayLevel+=2;
+     if(SquaresDisplayLevel>6){SquaresDisplayLevel=2}
+     document.getElementById('SDL').value=SquaresDisplayLevel;
+     tWrite=0; //forces a screen update on next message
   }
   
   function writeBandConnectivity(){
     var active_tx=new Set;
     var active_rx=new Set;
+    var me2any=new Set;
+    var any2me=new Set;
     var H2H=new Set;
     var H2DX=new Set;
     var DX2H=new Set;
@@ -490,6 +486,8 @@ a:visited {color: blue;}
           txcall=txcall+"-"+spot[4].substr(0,4);
           rxcall=rxcall+"-"+spot[5].substr(0,4);
         }
+        if(txcall==myCall){me2any.add(rxcall)}
+        if(rxcall==myCall){any2me.add(txcall)}
         if(SquareInHome(spot[4]) && SquareInHome(spot[5])) {
            active_tx.add(txcall);
            active_rx.add(rxcall);
@@ -509,16 +507,26 @@ a:visited {color: blue;}
     var topHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Connectivity</strong>" 
         +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
         +myCall+" is "+HLOn+"highlighted"+HLOff+"</div>";
-    
+        
     callSqGrid.innerHTML="";
-    connGrid.innerHTML="<div>"+topHTML+"</div>"
+    connGrid.innerHTML="<div>"+topHTML+"</div>"    
+    
+    connGrid.innerHTML+="<div>"+HLOn+myCall+HLOff+"</div><div style='text-align:center;'>&#8680</div>";
+    connGrid.innerHTML+="<div>"+Array.from(me2any).toSorted().join(', ')+"</div>";
+    connGrid.innerHTML+="<div>"+HLOn+myCall+HLOff+"</div><div style='text-align:center;'>&#8678</div>";
+    connGrid.innerHTML+="<div>"+Array.from(any2me).toSorted().join(', ')+"</div>";
+    
+    //below, we have to join tx and rx to pair so we can sort
+    //top to bottom and left to right on the output grid
     for (let i=0;i<active_tx.size;i++){
       var rxCalls="";
       var txCall=Array.from(active_tx).toSorted()[i];
       for (let j=0;j<H2H.size;j++){
         var pair=Array.from(H2H).toSorted()[j];
         if(pair.split(",")[0]==txCall){
-	  rxCalls+=pair.split(",")[1]+", ";
+          var rxcall=pair.split(",")[1];
+          if (rxcall==myCall){rxCall=HLOn+rxCall+HLOff}
+	        rxCalls+=rxcall+", ";
         }
       }
       if(rxCalls.length>0){
@@ -534,7 +542,9 @@ a:visited {color: blue;}
       for (let j=0;j<H2DX.size;j++){
         var pair=Array.from(H2DX).toSorted()[j];
         if(pair.split(",")[0]==txCall){
-	  rxCalls+=pair.split(",")[1]+", ";
+          var rxcall=pair.split(",")[1];
+          if (rxcall==myCall){rxCall=HLOn+rxCall+HLOff}
+	        rxCalls+=rxcall+", ";
         }
       }
       if(rxCalls.length>0){
@@ -550,7 +560,9 @@ a:visited {color: blue;}
       for (let j=0;j<DX2H.size;j++){
         var pair=Array.from(DX2H).toSorted()[j];
         if(pair.split(",")[1]==rxCall){
-	  txCalls+=pair.split(",")[0]+", ";
+          var txcall=pair.split(",")[0];
+          if (txcall==myCall){txCall=HLOn+txCall+HLOff}
+          txCalls+=txcall+", ";
         }
       }
       if(txCalls.length>0){
@@ -561,15 +573,7 @@ a:visited {color: blue;}
      }
 
   }
-  
-  function chunkupSquaresSet(sqSet,lvl){
-    // take the unique-valued squares Set at level 4 (or more)
-    // and produce a squares Set at level=lvl
-    var sqSet2=new Set;
-    // going one by one because we need to apply substr to each element
-    for (let i=0;i<sqSet.size;i++){sqSet2.add(Array.from(sqSet)[i].substr(0,lvl))};
-    return sqSet2
-  }
+
 
   function validSquare(locator){
     // if a valid level 2,4,6,8 or 10 square, return the level else return 0
