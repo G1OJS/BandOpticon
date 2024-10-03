@@ -19,6 +19,7 @@ div {margin: 0px;  padding: 0px;}
 #legend > div {background-color: white; margin: 1px;  padding: 1px;  }
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
+
 .detailsTop > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
 .detailsGrid > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
@@ -38,23 +39,28 @@ a:visited {color: blue;}
 <body><div>
 <div id="title">BandOpticon</div>
 <div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
-<div class="controls" name="controls">
- <div id="controls_l">
- </div>
- <div id="controls_r">
+
+ <div class="controls" name="controls">
+  <div id="controls_l"></div>
+  <div id="controls_r">
    What to show above band summary tiles? <br>
    - <a href='#controls' onclick='updateDetails(&quot;Layout&quot);'>Band tile legend</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;CallsAndSquares&quot);'>Activity Detail</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
    Click 'details' in band tiles below to set the band
    <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
+  </div>
  </div>
-</div>
+
+
 <div id="legend"></div>
+
 </div>
+
 <div class="detailsTop" id="detailsTop"></div>
 <div class="detailsGrid" id="detailsGrid"></div>
-<div class="bandsGrid" id="bandsGrid"></div>
+
+<div class="bandsGrid" id="bandsGrid" style="border:solid;"></div>
 <div class="creditsGrid">
   <div>
     Javascript & HTML developed by Alan Robinson:<br>
@@ -393,24 +399,9 @@ a:visited {color: blue;}
   // Set = camel case plural
   function writeBandCallsAndSquares(){
  
-    var callsTransmitting=new Set;
-    var callsReceiving=new Set;
-    var entitiesReachedInHome=new Set;
-    var entitiesSpottedInHome=new Set;
-    var entitiesReachedInOther=new Set;
-    var entitiesSpottedInOther=new Set;
-    var entitiesReachedByMe=new Set;
-    var entitiesSpottedByMe=new Set;
+
   
-    var connections=new Set;
-    for (let iSpot=0; iSpot < spots.length; iSpot++) {
-      var spot=spots[iSpot];
-      //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-      if(spot[0]==Bands[iDetailsBandIndex]){
-        let conn=spot[2]+","+spot[3]+","+spot[4]+","+spot[5];
-        connections.add(conn);
-      }
-    }
+
     
       detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Band Activity Details</strong>" 
       +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
@@ -425,7 +416,24 @@ a:visited {color: blue;}
       +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
       +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>"
  
-
+     var connections=new Set;
+    for (let iSpot=0; iSpot < spots.length; iSpot++) {
+      var spot=spots[iSpot];
+      //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
+      if(spot[0]==Bands[iDetailsBandIndex]){
+        let conn=spot[2]+","+spot[3]+","+spot[4]+","+spot[5];
+        connections.add(conn);
+      }
+    }
+ 
+    var callsTransmitting=new Set;
+    var callsReceiving=new Set;
+    var entitiesReachedInHome=new Set;
+    var entitiesSpottedInHome=new Set;
+    var entitiesReachedInOther=new Set;
+    var entitiesSpottedInOther=new Set;
+    var entitiesReachedByMe=new Set;
+    var entitiesSpottedByMe=new Set;
     
     const connsIter = connections.values();
     for (let iConn=0; iConn < connections.size; iConn++) {
