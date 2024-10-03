@@ -1,5 +1,5 @@
 <!-- To do:
-  - add calls+squares to controls for RHS detail
+  - controls for RHS detail = squares, calls or calls+squares
   - check RHS detail code for "only by myCall" detail
   - see if RHS detail code can be condensed further
   - Look at element margins to show nicer borders around things to group better
@@ -7,6 +7,7 @@
   - combine writeBandSpotStats() and writeBandActiveCallStats() ?
     these were amongst the first to be written and never get called individually
   - validation code for purge minutes (and callsign?)
+  - use radio buttons instead of links for what to show above bands
   - check consistency of let, var, continuation + and \ and <br>
 -->
 
@@ -419,18 +420,18 @@ a:visited {color: blue;}
       }
     }
     
-    detailsTopLeft.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Calls and DX Squares</strong>" 
+      detailsTopLeft.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Calls and DX Squares</strong>" 
       +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
       +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+"</div>";
       
-      detailsGrid.innerHTML="<div>"
-      +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List</a>"
-      +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;tWrite=0;return;'>Group</a>"
-      +"</div><div>"
+      detailsGrid.innerHTML="<div><strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong></br>"
+      +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List each call</a>"
+      +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;tWrite=0;return;'>Group into Tx & Rx</a></div>"
+      +"<div><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong><br>"
       +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;;tWrite=0;return;'>Show callsigns </a>"
       +"<br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;tWrite=0;return;'>Show level 2 squares</a>"
       +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
-      +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a>"
+      +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>"
  
 
     
@@ -469,24 +470,22 @@ a:visited {color: blue;}
       }
     }
     
-    
-
     let callsTransmittingArr=Array.from(callsTransmitting).toSorted();
     let callsReceivingArr=Array.from(callsReceiving).toSorted();
     if(groupHomeCalls){  
-      let cellTLH=callsTransmittingArr.map(item => HL(item,myCall)).join(' ')+"</div>";
+      let cellTLH=callsTransmittingArr.map(item => HL(item,myCall)).join(' ');
       let entitiesReachedInHomeArr=Array.from(entitiesReachedInHome).toSorted().map(item => item.split(",")[1]);
       let cellTRH="<span class='interzone'>"+entitiesReachedInHomeArr.map(item => HL(item,entitiesReachedByMe.has(item))).join(' ')+"</span> ";
       let entitiesReachedInOtherArr=Array.from(entitiesReachedInOther).toSorted().map(item => item.split(",")[1]);
       cellTRH+="<span class='outgoing'>"+entitiesReachedInOtherArr.map(item => HL(item,entitiesReachedByMe.has(item))).join(' ')+"</span>";
-      detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH;
+      detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH+"</div>";
    
-      let cellBLH=callsReceivingArr.map(item => HL(item,myCall)).join(' ')+"</div>";
+      let cellBLH=callsReceivingArr.map(item => HL(item,myCall)).join(' ');
       let entitiesSpottedInHomeArr=Array.from(entitiesSpottedInHome).toSorted().map(item => item.split(",")[1]);
       let cellBRH="<span class='interzone'>"+entitiesSpottedInHomeArr.map(item => HL(item,entitiesSpottedByMe.has(item))).join(' ')+"</span> ";
       let entitiesSpottedInOtherArr=Array.from(entitiesSpottedInOther).toSorted().map(item => item.split(",")[1]);
-      cellBRH+="<span class='outgoing'>"+entitiesSpottedInOtherArr.map(item => HL(item,entitiesSpottedByMe.has(item))).join(' ')+"</span>";
-      detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH;
+      cellBRH+="<span class='incoming'>"+entitiesSpottedInOtherArr.map(item => HL(item,entitiesSpottedByMe.has(item))).join(' ')+"</span>";
+      detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH+"</div>";
     
     } else {
       for (let i=0;i<callsTransmitting.size;i++){
@@ -496,7 +495,7 @@ a:visited {color: blue;}
         let cellTRH="<span class='interzone'>"+entitiesReachedInHomeArr.map(item => {if(entitiesReachedByMe.has(item)){return HLOn+item+HLOff} else {return item}}).join(' ')+"</span> ";
         let entitiesReachedInOtherArr=Array.from(entitiesReachedInOther).toSorted().map(item => {if(item.split(",")[0]==txCall) {return item.split(",")[1]} else {return ""}});
       cellTRH+="<span class='outgoing'>"+entitiesReachedInOtherArr.map(item => {if(entitiesReachedByMe.has(item)){return HLOn+item+HLOff} else {return item;}}).join(' ')+"</span>";
-        detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH;
+        detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH+"</div>";
       }
       for (let i=0;i<callsReceiving.size;i++){
         let rxCall=callsReceivingArr[i];
@@ -505,7 +504,7 @@ a:visited {color: blue;}
         let cellBRH="<span class='interzone'>"+entitiesSpottedInHomeArr.map(item => {if(entitiesSpottedByMe.has(item)){return HLOn+item+HLOff} else {return item}}).join(' ')+"</span> ";
         let entitiesSpottedInOtherArr=Array.from(entitiesSpottedInOther).toSorted().map(item => {if(item.split(",")[0]==rxCall) {return item.split(",")[1]} else {return ""}});
         cellBRH+="<span class='incoming'>"+entitiesSpottedInOtherArr.map(item => {if(entitiesSpottedByMe.has(item)){return HLOn+item+HLOff} else {return item;}}).join(' ')+"</span>";
-        detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH;
+        detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH+"</div>";
       }
       
    }
