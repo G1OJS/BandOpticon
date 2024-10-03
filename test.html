@@ -294,7 +294,7 @@ a:visited {color: blue;}
   function onMessage(message){    
     if ( (Date.now()-tWrite)/1000 > refreshSeconds ){
       tWrite=Date.now();
-    //  purgeSpots();
+      purgeSpots();
       updateControls();
       writeStats();
       console.log("Analysis took "+(Date.now()-tWrite).toString()+"mS");
@@ -311,14 +311,14 @@ a:visited {color: blue;}
   
   function purgeSpots(){
     // get rid of spots older than purgeMinutes
-    var del=[];
+    var delArr=new Array();
     for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
       var spot=spotsArr[iSpot];
-      var tSpot=spotArr[1];
-      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {del.push(iSpot)}
+      var tSpot=spotsArr[1];
+      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {delArr.push(iSpot)}
     }
-    for(let iDel=0; iDel <del.length;iDel++) {spotsArr.splice(del[iDel],1)}
-    spotsPurged+=del.length;
+    for(let iDel=0; iDel <delArr.length;iDel++) {spotsArr.splice(delArr[iDel],1)}
+    spotsPurged+=delArr.length;
   }
   
   function addSpot(message){
