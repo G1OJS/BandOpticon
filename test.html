@@ -1,13 +1,11 @@
 <!-- To do:
-  - controls for RHS detail = squares, calls or calls+squares
-  - check RHS detail code for "only by myCall" detail
-  - see if RHS detail code can be condensed further
+  - check detail code for "only by myCall" detail
+  - see if detail code can be condensed further
   - Look at element margins to show nicer borders around things to group better
     in the calls and squares grid and/or make the square bit smaller or just abandon that idea
   - combine writeBandSpotStats() and writeBandActiveCallStats() ?
     these were amongst the first to be written and never get called individually
   - validation code for purge minutes (and callsign?)
-  - use radio buttons instead of links for what to show above bands
   - check consistency of let, var, continuation + and \ and <br>
 -->
 
@@ -21,9 +19,9 @@ div {margin: 0px;  padding: 0px;}
 #legend > div {background-color: white; margin: 1px;  padding: 1px;  }
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
-.detailsTop > div {background-color: silver; margin: 1px;  padding: 1px; font-size: 0.8rem; }
+.detailsTop > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
-.detailsGrid > div {background-color: silver; margin: 1px;  padding: 1px; font-size: 0.8rem; }
+.detailsGrid > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto;}
 .bandsGrid > div {background-color: white; margin: 1px;  padding: 1px; }
 .creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
@@ -414,9 +412,9 @@ a:visited {color: blue;}
       }
     }
     
-      detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Calls and DX Squares</strong>" 
+      detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Band Activity Details</strong>" 
       +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
-      +"Squares common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+"</div>";
+      +"Entities common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+"</div>";
       
       detailsGrid.innerHTML="<div><strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong></br>"
       +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List each call</a>"
