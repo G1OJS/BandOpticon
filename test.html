@@ -21,13 +21,13 @@ div {margin: 0px;  padding: 0px;}
 #legend > div {background-color: white; margin: 1px;  padding: 1px;  }
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
-.detailsTop > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
+.detailsTop > div {background-color: silver; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
-.detailsGrid > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
+.detailsGrid > div {background-color: silver; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto;}
 .bandsGrid > div {background-color: white; margin: 1px;  padding: 1px; }
 .creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
-.transmit {color:red; font-size: 1rem;}
+.transmit {color:red;}
 .receive {color:green; }
 .interzone {color:blue; }
 .outgoing {color:Fuchsia; }
@@ -405,7 +405,7 @@ a:visited {color: blue;}
     var entitiesSpottedByMe=new Set;
   
     var connections=new Set;
-    for (let iSpot=1; iSpot < spots.length; iSpot++) {
+    for (let iSpot=0; iSpot < spots.length; iSpot++) {
       var spot=spots[iSpot];
       //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
       if(spot[0]==Bands[iDetailsBandIndex]){
@@ -430,7 +430,7 @@ a:visited {color: blue;}
 
     
     const connsIter = connections.values();
-    for (let iConn=1; iConn < connections.size; iConn++) {
+    for (let iConn=0; iConn < connections.size; iConn++) {
       var connection=connsIter.next().value.split(",");
       //connections string array senderCall+","+receiverCall+","+senderSq+","+receiverSq
       let txCall=connection[0];
@@ -472,14 +472,14 @@ a:visited {color: blue;}
       let cellTRH="<span class='interzone'>"+entitiesReachedInHomeArr.map(item => HL(item,entitiesReachedByMe.has(item))).join(' ')+"</span> ";
       let entitiesReachedInOtherArr=Array.from(entitiesReachedInOther).toSorted().map(item => item.split(",")[1]);
       cellTRH+="<span class='outgoing'>"+entitiesReachedInOtherArr.map(item => HL(item,entitiesReachedByMe.has(item))).join(' ')+"</span>";
-      detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH+"</div>";
+      if(callsTransmittingArr.length>0){detailsGrid.innerHTML+="<div class='transmit'>"+cellTLH+"</div><div>"+cellTRH+"</div>"}
    
       let cellBLH=callsReceivingArr.map(item => HL(item,myCall)).join(' ');
       let entitiesSpottedInHomeArr=Array.from(entitiesSpottedInHome).toSorted().map(item => item.split(",")[1]);
       let cellBRH="<span class='interzone'>"+entitiesSpottedInHomeArr.map(item => HL(item,entitiesSpottedByMe.has(item))).join(' ')+"</span> ";
       let entitiesSpottedInOtherArr=Array.from(entitiesSpottedInOther).toSorted().map(item => item.split(",")[1]);
       cellBRH+="<span class='incoming'>"+entitiesSpottedInOtherArr.map(item => HL(item,entitiesSpottedByMe.has(item))).join(' ')+"</span>";
-      detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH+"</div>";
+      if(callsReceivingArr.length>0){detailsGrid.innerHTML+="<div class='receive'>"+cellBLH+"</div><div>"+cellBRH+"</div>"}
     
     } else {
       for (let i=0;i<callsTransmitting.size;i++){
