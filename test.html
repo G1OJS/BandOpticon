@@ -347,7 +347,7 @@ a:visited {color: blue;}
        var nSpotsH2H=0;
        var nSpotsH2DX=0;
        var nSpotsDX2H=0;
-			 for (let iSpot=1; iSpot < spotsArr.length; iSpot++) {
+			 for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          var spot=spotsArr[iSpot];
          if(spot[0]==Bands[iBand]){
            if(squareIsInHome(spot[4])) {
@@ -360,6 +360,30 @@ a:visited {color: blue;}
            }
          }
        }
+       
+        var entitiesReachedByMe=new Set;
+        var entitiesSpottedByMe=new Set;
+  //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
+        for(let i=0;i<spotsArr.length;i++){
+          if(spot[0]==Bands[iBand]){
+            if(spotsArr[i][2]==myCall){
+              if(entity=="Call"){entitiesReachedByMe.add(spotsArr[i][3])} 
+                else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}
+            }
+            if(spotsArr[i][3]==myCall){
+              if(entity=="Call"){entitiesSpottedByMe.add(spotsArr[i][2])} 
+                else {entitiesSpottedByMe.add(spotsArr[i][4].substr(0,squaresDisplayLevel))}
+            }
+          }
+        }
+
+        if(rxCalls.has(myCall) && entitiesSpottedByMe.size==0){
+          console.log(Array.from(rxCalls).toSorted());
+          console.log(Array.from(entitiesSpottedByMe).toSorted());
+          console.log("This shouldn't happen!")
+        }
+       
+       
        document.getElementById(Bands[iBand]+"spots").innerHTML=
          "Spots "+
          "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
@@ -384,25 +408,6 @@ a:visited {color: blue;}
         +"<br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;tWrite=0;return;'>Show level 2 squares</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>"
-
-        var entitiesReachedByMe=new Set;
-        var entitiesSpottedByMe=new Set;
-  //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-        for(i=0;i<spotsArr.length;i++){
-          if(spot[0]==Bands[iBand]){
-            if(spotsArr[i][2]==myCall){
-              if(entity=="Call"){entitiesReachedByMe.add(spotsArr[i][3])} 
-                else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}
-            }
-            if(spotsArr[i][3]==myCall){
-              if(entity=="Call"){entitiesSpottedByMe.add(spotsArr[i][2])} 
-                else {entitiesSpottedByMe.add(spotsArr[i][4].substr(0,squaresDisplayLevel))}
-            }
-          }
-        }
-  //      console.log(Array.from(entitiesReachedByMe).toSorted());
-        console.log(Array.from(entitiesSpottedByMe).toSorted());
- //       console.log(Array.from(rxCalls).toSorted());
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
