@@ -370,11 +370,18 @@ a:visited {color: blue;}
          }
        }
 
+// debugging code - think this is fixed now
+        if(txCalls.has(myCall) && entitiesReachedByMe.size==0){
+          console.log(Array.from(txCalls).toSorted());
+          console.log(Array.from(entitiesReachedByMe).toSorted());
+          console.log("This shouldn't happen!")
+        }
         if(rxCalls.has(myCall) && entitiesSpottedByMe.size==0){
           console.log(Array.from(rxCalls).toSorted());
           console.log(Array.from(entitiesSpottedByMe).toSorted());
           console.log("This shouldn't happen!")
         }
+// end of debugging code
        
        document.getElementById(Bands[iBand]+"spots").innerHTML=
          "Spots "+
