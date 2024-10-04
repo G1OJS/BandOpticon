@@ -15,7 +15,6 @@ lower priority:
   - investigate seperate timer event so we don't have to wait for new batch of messages when clicking
   - define functions to make flow more aparrent in writeStats
   - Look at element margins to show nicer borders around things to group better
-  - validation code for purge minutes (and callsign?)
   - check consistency of let, var, continuation + and \ and <br>
 -->
 
@@ -119,10 +118,11 @@ a:visited {color: blue;}
   const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
          + "<span class='outgoing'> Home &#8680 DX /</span>"
          + "<span class='incoming'> DX &#8680 Home</span>"
-  let recordData=false;
-  let newWindow=null;
-  let twriteData=0;
-  let dataWriteInterval=15;
+  var recordData=false;
+  var dataForRecord="";
+  var newWindow=null;
+  var twriteData=0;
+  var dataWriteInterval=15;
 
   
   function get_utc_timestamp(t){ 
@@ -134,22 +134,22 @@ a:visited {color: blue;}
 
   function startRecording(){
     let params = `scrollbars=yes,resizable=yes,scrollbars=yes,width=500,height=200,left=0,top=0`;
-    newWindow = open('https://g1ojs.github.io/BandOpticon/blank.html', '_blank',params);
+    newWindow = open('blank.html', '_blank',params);
     newWindow.onload = function() {
-  	let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
-  	newWindow.document.body.insertAdjacentHTML('afterbegin', html);
-	  recordData=true
-	  console.log(html);
+  	  let html = `<div style="font-size:30px">BandOpticon is recording data</div>`;
+  	  newWindow.document.body.insertAdjacentHTML('afterbegin', html);
+	    recordData=true
+	    console.log(html);
     };
   }
   
   function writeData(data){
+    if(!recordData){return}
     if( (Date.now()-twriteData)/1000 > dataWriteInterval) {
       twriteData=Date.now();
       t=new Date;
-      var data_html="<br>"+get_utc_timestamp(t)+","+data;
+      var data_html="<br>"+get_utc_timestamp(t)+","+data.slice(0, -1);
       newWindow.document.body.insertAdjacentHTML('beforebegin',data_html);
-      console.log("Data window write:  "+data_html);
     }
   }
 	
@@ -254,15 +254,20 @@ a:visited {color: blue;}
   // needs validation code
   function editMyCall(){
     var resp=prompt("Enter your callsign",myCall);
-    myCall=resp;
+    myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
   }
   
   // needs validation code
   function editPurgeMins(){
     var resp=prompt("Enter minutes for spot expiry",purgeMinutes);
-    purgeMinutes=resp;
-    localStorage.setItem('purgeMinutes',purgeMinutes);
+    if(!Number.isNaN(parseInt(resp))){
+      if(parseInt(resp)>0 && parseInt(resp)<60){
+          purgeMinutes=parseInt(resp);
+          localStorage.setItem('purgeMinutes',purgeMinutes);
+          return
+      } else {alert("Please enter a number between 1 and 59")}
+    } else  {alert("Please enter a number between 1 and 59")}
   }
   
   // function to allow the user to edit the home squares list
@@ -346,8 +351,13 @@ a:visited {color: blue;}
   }
   
   function writeStats(){
+      dataForRecord="";
+      for (let iBand=0; iBand<Bands.length; iBand++) {writeStatsForBand(iBand)};
+      writeData(dataForRecord);
+  }
+  
+  function writeStatsForBand(iBand){
     // this loop encloses the entire function. would it be more readable if taken outside the function?
-    for (let iBand=0; iBand<Bands.length; iBand++){
      
        var txCalls=new Set;
        var rxCalls=new Set;
@@ -368,28 +378,16 @@ a:visited {color: blue;}
              rxCalls.add(spot[3]);
              nSpotsDX2H+=1;
            }
-             if(spot[2]==myCall){
-               if(entity=="Call"){entitiesReachedByMe.add(spot[3])} 
-                 else {entitiesReachedByMe.add(spot[5].substr(0,squaresDisplayLevel))}}
-             if(spot[3]==myCall){
-               if(entity=="Call"){entitiesSpottedByMe.add(spot[2])} 
-                 else {entitiesSpottedByMe.add(spot[4].substr(0,squaresDisplayLevel))}} 
+           if(spot[2]==myCall){
+             if(entity=="Call"){entitiesReachedByMe.add(spot[3])} 
+               else {entitiesReachedByMe.add(spot[5].substr(0,squaresDisplayLevel))}}
+           if(spot[3]==myCall){
+             if(entity=="Call"){entitiesSpottedByMe.add(spot[2])} 
+               else {entitiesSpottedByMe.add(spot[4].substr(0,squaresDisplayLevel))}} 
          }
        }
 
-
-// debugging code - think this is fixed now
-        if(txCalls.has(myCall) && entitiesReachedByMe.size==0){
-          console.log(Array.from(txCalls).toSorted());
-          console.log(Array.from(entitiesReachedByMe).toSorted());
-          console.log("This shouldn't happen!")
-        }
-        if(rxCalls.has(myCall) && entitiesSpottedByMe.size==0){
-          console.log(Array.from(rxCalls).toSorted());
-          console.log(Array.from(entitiesSpottedByMe).toSorted());
-          console.log("This shouldn't happen!")
-        }
-// end of debugging code
+       dataForRecord+=Bands[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
        
        document.getElementById(Bands[iBand]+"spots").innerHTML=
          "Spots "+
@@ -469,8 +467,9 @@ a:visited {color: blue;}
           detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
         }
       }
-    }
   }
+  
+
 
   function HL(item,pattern){
       if(item==pattern || pattern==true){return HLOn+item+HLOff} else {return item}
