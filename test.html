@@ -1,14 +1,15 @@
+
 <!-- To do:
-  - give it a full check out! Check this timer version and if successful delete
-     all the twrite stuff (keep for recorder as it's easy?)
-    
+
   - add code for "only by myCall" detail
     - this is hard because we have to cope with both grouping and not grouping cases, and 
-    - consider spots in Home and Other
+      need to consider spots in Home and Other
 
 lower priority:
   - define functions to make flow more aparrent in writeStats
-  - Look at element margins to show nicer borders around things to group better
+  - look at updateDetails and updateControls - see if they can be rationalised
+     or clarified a bit (purpose vs name). updateDetails is more of a handler for 
+     click to change events than anything
   - check consistency of let, var, continuation + and \ and <br>
 -->
 
@@ -16,17 +17,25 @@ lower priority:
 <head><style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
-div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
-#legend > div {background-color: white; margin: 1px;  padding: 1px;  }
+#app_group {margin:2px;padding:0px; background-color:blue;}
+#legend > div {background-color: white; margin: 2px;  padding: 5px;  }
+#details_group {margin:2px;padding:0px; background-color:blue;}
+
+div {margin: 0px;  padding: 0px;}
+
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
-.controls > div {background-color: white; margin: 1px;  padding: 1px;}
-.detailsTop > div {background-color: white; margin: 1px;  padding: 1px; font-size: 1rem; }
+.controls > div {background-color: white; margin: 2px;  padding: 5px;}
+
+.detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
+
 .detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
-.detailsGrid > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
-.bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto;}
-.bandsGrid > div {background-color: white; margin: 1px;  padding: 1px; }
+.detailsGrid > div {background-color: white; margin: 0px;  padding-left: 5px; font-size: 0.8rem; }
+
+.bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto; margin: 1px;}
+.bandsGrid > div {background-color: white; margin: 1px;  padding: 5px; }
+
 .creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .transmit {color:red;}
 .receive {color:green; }
@@ -38,51 +47,51 @@ a:visited {color: blue;}
 </style>
 </head>
 
-<body><div>
+<body>
 <div id="title">BandOpticon</div>
 <div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for FT8 spots on all bands between Home and DX</div>
 
- <div class="controls" name="controls">
-  <div id="controls_l"></div>
-  <div id="controls_r">
-   What to show above band summary tiles? <br>
-   - <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
-   - <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
-   - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
-   <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
-  </div>
- </div>
-
-
-<div id="legend"></div>
-
+<div id="app_group">
+   <div class="controls" name="controls">
+      <div id="controls_l"></div>
+      <div id="controls_r">
+      What to show above band summary tiles? <br>
+      - <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
+      - <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
+      - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
+      <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
+     </div>
+   </div>
+   <div id="legend"></div>
+   <div id="details_group">
+     <div class="detailsTop" id="detailsTop"></div>
+     <div class="detailsGrid" id="detailsGrid"></div>
+   </div>
+   <div class="bandsGrid" id="bandsGrid"></div>
 </div>
 
-<div class="detailsTop" id="detailsTop"></div>
-<div class="detailsGrid" id="detailsGrid"></div>
-
-<div class="bandsGrid" id="bandsGrid" style="border:solid;"></div>
 <div class="creditsGrid">
-  <div>
-    Javascript & HTML developed by Alan Robinson:<br>
-    <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com</a>
-    <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
-    <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
-    <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a><br>
-  </div>
-  <div>
-    Thanks to:<br>
-    Philip Gladstone - N1DQ for https://pskreporter.info/<br>
-    Tom Stanton - M0LTE for mqtt.pskreporter.info, the MQTT feed for this app<br>
-    <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
-  </div>
-  <div>
-    BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
-    BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
-    <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>                        
-  </div>
+    <div>
+        Javascript & HTML developed by Alan Robinson:<br>
+        <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com</a>
+        <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+        <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
+        <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a><br>
+   </div>
+   <div>
+        Thanks to:<br>
+        Philip Gladstone - N1DQ for https://pskreporter.info/<br>
+        Tom Stanton - M0LTE for mqtt.pskreporter.info, the MQTT feed for this app<br>
+        <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+   </div>
+   <div>
+      BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+      BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
+      <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>                        
+   </div>
 </div>
-</div></body>
+
+</body>
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -394,10 +403,12 @@ a:visited {color: blue;}
         +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List each call</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;tWrite=0;return;'>Group into Tx & Rx</a></div>"
         +"<div><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong><br>"
-        +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;;tWrite=0;return;'>Show callsigns </a>"
-        +"<br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;tWrite=0;return;'>Show level 2 squares</a>"
+        +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;;tWrite=0;return;'>Show callsigns</a> "
+        +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;tWrite=0;return;'>Show level 2 squares</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
-        +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>"
+        +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>";
+        
+        detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -450,7 +461,9 @@ a:visited {color: blue;}
         if(groupHomeCalls){
           detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
         }
+              detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
       }
+
   }
   
 
