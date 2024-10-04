@@ -1,7 +1,6 @@
 <!-- To do:
-  - add code for "only by myCall" detail
-    - this is hard because we have to cope with both grouping and not grouping cases, and 
-      need to consider spots in Home and Other
+  - add code to work out if entities spotted only by myCall, or received only by myCall, 
+    are in Home or Other.
 
 lower priority:
   - define functions to make flow more aparrent in writeStats
@@ -395,7 +394,7 @@ a:visited {color: blue;}
           +"<br>click on 'details' in band tiles below to change band"
           +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
           +document.getElementById(Bands[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+"</div>";
+          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff+"</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'><strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong></br>"
         +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List each call</a>"
@@ -406,6 +405,7 @@ a:visited {color: blue;}
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>";
         
+    //    detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -458,17 +458,49 @@ a:visited {color: blue;}
         if(groupHomeCalls){
           detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
         }
-        
-        let entitiesReachedOnlyByMe=entitiesReachedByMe.difference(entitiesReachedInHome.union(entitiesReachedInOther));
-        if (entitiesReachedOnlyByMe.size>0) {
-            detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+' only',true)+"</div><div><span class='intraHome'></span><span class='incoming'>"+Array.from(entitiesReachedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+         
+        // Find the entities reached & spotted by myCall but not others.
+        // We already have the entities eached & spotted by myCall and/or others
+        // collected for use in the highlighting above, so start with them and subtract
+        // where myCall wasn't the only one to reached / spot the other entity.
+        // Need to make a DEEP COPY first (otherwise we are working with only one copy of data)
+        var entitiesSpottedOnlyByMe=new Set;
+        for (let i=0;i<entitiesSpottedByMe.size;i++) {
+            entitiesSpottedOnlyByMe.add(Array.from(entitiesSpottedByMe)[i]);
         }
-        let entitiesSpottedOnlyByMe=entitiesSpottedByMe.difference(entitiesSpottedInHome.union(entitiesSpottedInOther));
-        if (entitiesReachedOnlyByMe.size>0) {
-           detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+ ' only',true)+"</div><div><span class='intraHome'></span><span class='incoming'>"+Array.from(entitiesSpottedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+        var entitiesReachedOnlyByMe=new Set;
+        for (let i=0;i<entitiesReachedByMe.size;i++) {
+            entitiesReachedOnlyByMe.add(Array.from(entitiesReachedByMe)[i]);
         }
-      }
 
+        for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
+        //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
+          var spot=spotsArr[iSpot];
+          if(spot[0]==Bands[iBand]){
+          
+            if(entity=="Call"){
+              senderEntity=spot[2];
+              receiverEntity=spot[3];
+            } else {
+              senderEntity=spot[4].substr(0,squaresDisplayLevel);
+              receiverEntity=spot[5].substr(0,squaresDisplayLevel);
+            }         
+            if(squareIsInHome(spot[4]) && spot[2]!=myCall){entitiesReachedOnlyByMe.delete(receiverEntity);}
+            if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
+          }
+        }
+
+         if(entitiesReachedOnlyByMe.size>0){
+            detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div><div><span class='intraHome'>"
+             +"</span><span class='outgoing'>"+Array.from(entitiesReachedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+         }
+    
+         if(entitiesSpottedOnlyByMe.size>0){
+            detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div><div><span class='intraHome'>"
+            +"</span><span class='incoming'>"+Array.from(entitiesSpottedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+         }  
+         
+      }
   }
   
 
