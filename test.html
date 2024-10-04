@@ -1,12 +1,19 @@
 <!-- To do:
-  - add code for "only by myCall" detail (additional Tx and Rx rows irrespective of grouping)
-  - column widths in detail grid work for all cases
-  - blank rows show when activity details opened with no activity
-  
   - add back the recorder functions (same place as H2H/H2DX/DX2H stats)
+  
+  - blank rows show when activity details opened with no activity
+    
+  - add code for "only by myCall" detail
+    - this is hard because we have to cope with both grouping and not grouping cases, and 
+    - consider spots in Home and Other
+    
+  - take the band loop outside writeStats 
+    - should make clearer and might make the above easier to think about
+    -  & also prevent future mods forgetting to check the band so if a call changes band their new spots appear in details when they shouldn't
+
+lower priority:
   - investigate seperate timer event so we don't have to wait for new batch of messages when clicking
-  - define functions to make flow aparrent in writeStats
-  - take off highlighting of RH entities when it's my call on the left?
+  - define functions to make flow more aparrent in writeStats
   - Look at element margins to show nicer borders around things to group better
   - validation code for purge minutes (and callsign?)
   - check consistency of let, var, continuation + and \ and <br>
@@ -339,9 +346,9 @@ a:visited {color: blue;}
   }
   
   function writeStats(){
-
- 
-     for (let iBand=0; iBand<Bands.length; iBand++){
+    // this loop encloses the entire function. would it be more readable if taken outside the function?
+    for (let iBand=0; iBand<Bands.length; iBand++){
+     
        var txCalls=new Set;
        var rxCalls=new Set;
        var nSpotsH2H=0;
@@ -361,14 +368,15 @@ a:visited {color: blue;}
              rxCalls.add(spot[3]);
              nSpotsDX2H+=1;
            }
-           if(spot[2]==myCall){
-             if(entity=="Call"){entitiesReachedByMe.add(spot[3])} 
-               else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}}
-           if(spot[3]==myCall){
-             if(entity=="Call"){entitiesSpottedByMe.add(spot[2])} 
-               else {entitiesSpottedByMe.add(spot[4].substr(0,squaresDisplayLevel))}} 
+             if(spot[2]==myCall){
+               if(entity=="Call"){entitiesReachedByMe.add(spot[3])} 
+                 else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}}
+             if(spot[3]==myCall){
+               if(entity=="Call"){entitiesSpottedByMe.add(spot[2])} 
+                 else {entitiesSpottedByMe.add(spot[4].substr(0,squaresDisplayLevel))}} 
          }
        }
+
 
 // debugging code - think this is fixed now
         if(txCalls.has(myCall) && entitiesReachedByMe.size==0){
@@ -393,7 +401,7 @@ a:visited {color: blue;}
          "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
 
       if(iBand==iDetailsBandIndex && detailsWanted=="BandActivityDetails"){
-      
+
         detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Band Activity Details</strong>"
           +"<br>click on 'details' in band tiles below to change band"
           +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
@@ -416,7 +424,7 @@ a:visited {color: blue;}
           var txCall=txCallsArr[iCall];
           //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
           for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][2]==txCall){
+            if(spotsArr[i][0]==Bands[iBand] && spotsArr[i][2]==txCall){
                let reachedEntity="";
                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
                  else {reachedEntity=spotsArr[i][5].substr(0,squaresDisplayLevel)}
@@ -445,7 +453,7 @@ a:visited {color: blue;}
 
           //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
           for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][3]==rxCall){
+            if(spotsArr[i][0]==Bands[iBand] && spotsArr[i][3]==rxCall){
                let spottedEntity="";
                if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substr(0,squaresDisplayLevel)}
                if(squareIsInHome(spotsArr[i][4])){entitiesSpottedInHome.add(spottedEntity)} else {entitiesSpottedInOther.add(spottedEntity)} 
