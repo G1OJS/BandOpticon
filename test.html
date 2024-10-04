@@ -1,8 +1,9 @@
 <!-- To do:
-  - check code works for highlighting of myCall when entities are not calls
-  - check detail code for "only by myCall" detail
+  - add code for "only by myCall" detail (additional Tx and Rx rows irrespective of grouping)
   - define functions to make flow aparrent in writeStats
-  - add back the H2H/H2DX/DX2H stats
+  - add back the H2H/H2DX/DX2H stats in the band tiles
+  - stop the grid going wild on grouped version 
+  - take off highlighting of RH entities when it's my call on the left?
   - Look at element margins to show nicer borders around things to group better
   - validation code for purge minutes (and callsign?)
   - check consistency of let, var, continuation + and \ and <br>
@@ -18,7 +19,6 @@ div {margin: 0px;  padding: 0px;}
 #legend > div {background-color: white; margin: 1px;  padding: 1px;  }
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 1px;  padding: 1px;}
-
 .detailsTop > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
 .detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
 .detailsGrid > div {background-color: white; margin: 1px;  padding: 1px; font-size: 0.8rem; }
@@ -370,11 +370,13 @@ a:visited {color: blue;}
             if(entity=="Call"){entitiesReachedByMe.add(spotsArr[i][3])} 
               else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}
           }
-          if(spotsArr[i][5]==myCall){
+          if(spotsArr[i][3]==myCall){
             if(entity=="Call"){entitiesSpottedByMe.add(spotsArr[i][2])} 
               else {entitiesSpottedByMe.add(spotsArr[i][4].substr(0,squaresDisplayLevel))}
           }
         }
+        console.log(Array.from(entitiesReachedByMe).toSorted());
+        console.log(Array.from(entitiesSpottedByMe).toSorted());
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -401,7 +403,7 @@ a:visited {color: blue;}
           }
         }
         if(groupHomeCalls){ 
-          detailsGrid.innerHTML+="<div class='transmit'>"+txCallsArr.map(item => HL(item,myCall))+"</div><div><span class='intraHome'>"+Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span> <span class='outgoing'>"+Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='transmit'>"+Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span> <span class='outgoing'>"+Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span><div>";
         }
         // receiver loop
         var rxCallsArr=Array.from(rxCalls).toSorted();
@@ -425,7 +427,7 @@ a:visited {color: blue;}
           }
         }
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+rxCallsArr.map(item => HL(item,myCall))+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
         }
       }
     }
