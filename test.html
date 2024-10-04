@@ -1,6 +1,7 @@
 <!-- To do:
   - add code for "only by myCall" detail (additional Tx and Rx rows irrespective of grouping)
   - column widths in detail grid work for all cases
+  - blank rows show when activity details opened with no activity
   
   - add back the recorder functions (same place as H2H/H2DX/DX2H stats)
   - investigate seperate timer event so we don't have to wait for new batch of messages when clicking
@@ -46,9 +47,8 @@ a:visited {color: blue;}
   <div id="controls_r">
    What to show above band summary tiles? <br>
    - <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
-   - <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details *</a><br>
+   - <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
    - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
-   * Click 'details' in band tiles below to set the band
    <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
   </div>
  </div>
@@ -394,7 +394,8 @@ a:visited {color: blue;}
 
       if(iBand==iDetailsBandIndex && detailsWanted=="BandActivityDetails"){
       
-        detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Band Activity Details</strong>" 
+        detailsTop.innerHTML="<div><strong>"+Bands[iDetailsBandIndex]+" Band Activity Details</strong>"
+          +"<br>click on 'details' in band tiles below to change band"
           +"<br>Total "+document.getElementById(Bands[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
           +document.getElementById(Bands[iDetailsBandIndex]+"calls").innerHTML+"<br>"
           +"Entities common to "+myCall+" and the other calls are "+HLOn+"highlighted"+HLOff+"</div>";
