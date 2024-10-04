@@ -1,10 +1,10 @@
 <!-- To do:
   - add code for "only by myCall" detail (additional Tx and Rx rows irrespective of grouping)
   - column widths in detail grid work for all cases
+  
   - add back the recorder functions (same place as H2H/H2DX/DX2H stats)
   - investigate lag when clicking on different views - order of calls in onMessage?
   - define functions to make flow aparrent in writeStats
-  - stop the grid going wild on grouped version 
   - take off highlighting of RH entities when it's my call on the left?
   - Look at element margins to show nicer borders around things to group better
   - validation code for purge minutes (and callsign?)
@@ -92,8 +92,8 @@ a:visited {color: blue;}
  // initialisation and functions to load and save configuration
  
   const Bands=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refreshSeconds=1;
-  let purgeMinutes=5;
+  let refreshSeconds=10;
+  let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
   let spotsArr=[];
@@ -102,8 +102,9 @@ a:visited {color: blue;}
   const defaultSquares=["IO","JO01","JO02","JO03","JO04"]
   let Squares=[];
   var squaresDisplayLevel=4;
+  var entity="Square";
+  var groupHomeCalls=true;
   let myCall="G1OJS";
-  // count the spot processing stats just for fun:
   let spotsAdded=0;
   let spotsPurged=0;
   const HLOn="<b><u>";
@@ -115,8 +116,7 @@ a:visited {color: blue;}
   let newWindow=null;
   let twriteData=0;
   let dataWriteInterval=15;
-  var entity="Call";
-  var groupHomeCalls=false;
+
   
   function get_utc_timestamp(t){ 
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
@@ -426,6 +426,7 @@ a:visited {color: blue;}
         }
         // receiver loop
         var rxCallsArr=Array.from(rxCalls).toSorted();
+        console.log(rxCallsArr);
         var entitiesSpottedInHome=new Set;
         var entitiesSpottedInOther=new Set;
         for (let iCall=0;iCall<rxCallsArr.length;iCall++){
@@ -452,7 +453,6 @@ a:visited {color: blue;}
     }
   }
 
-   
   function HL(item,pattern){
       if(item==pattern || pattern==true){return HLOn+item+HLOff} else {return item}
   }
