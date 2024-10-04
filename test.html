@@ -1,12 +1,12 @@
 <!-- To do:
-  - give it a full check out!
+  - give it a full check out! Check this timer version and if successful delete
+     all the twrite stuff (keep for recorder as it's easy?)
     
   - add code for "only by myCall" detail
     - this is hard because we have to cope with both grouping and not grouping cases, and 
     - consider spots in Home and Other
 
 lower priority:
-  - investigate seperate timer event so we don't have to wait for new batch of messages when clicking
   - define functions to make flow more aparrent in writeStats
   - Look at element margins to show nicer borders around things to group better
   - check consistency of let, var, continuation + and \ and <br>
@@ -92,7 +92,7 @@ a:visited {color: blue;}
  // initialisation and functions to load and save configuration
  
   const Bands=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refresh_mSeconds=100;
+  let refresh_mSeconds=1000;
   let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
@@ -304,13 +304,13 @@ a:visited {color: blue;}
   client.on("message", (filter,message) => {onMessage(message.toString());}  );
 
   function onMessage(message){    
-    if ( (Date.now()-tWrite) > refresh_mSeconds ){
-      tWrite=Date.now();
-      purgeSpots();
-      updateControls();
-      writeStats();
+   // if ( (Date.now()-tWrite) > refresh_mSeconds ){
+   //   tWrite=Date.now();
+  //    purgeSpots();
+  //    updateControls();
+  //    writeStats();
   //    console.log("Analysis took "+(Date.now()-tWrite).toString()+"mS");
-    }
+  //  }
     //ignore nessages for bands we aren't set up to watch
     b=getVal("b",message); 
     if(!Bands.includes(b)) {return;}
@@ -344,7 +344,12 @@ a:visited {color: blue;}
     spotsAdded+=1;
   }
   
+  
+  setInterval(writeStats, refresh_mSeconds);
+  
   function writeStats(){
+      purgeSpots();
+      updateControls();
       dataForRecord="";
       for (let iBand=0; iBand<Bands.length; iBand++) {writeStatsForBand(iBand)};
       writeData(dataForRecord);
