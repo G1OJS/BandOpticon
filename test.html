@@ -280,7 +280,7 @@ a:visited {color: blue;}
 
 // Write the <div>s for each band summary tile in the bandsGrid area
   var toAdd = document.createDocumentFragment();
-  for(var i=0; i < Bands.length; i++){
+  for(let i=0; i < Bands.length; i++){
     var newDiv = document.createElement('div');
     newDiv.id = Bands[i];     
     newDiv.innerHTML="<strong>"+Bands[i]+"</strong> \
@@ -407,7 +407,7 @@ a:visited {color: blue;}
         for (let iCall=0;iCall<txCallsArr.length;iCall++){
           var txCall=txCallsArr[iCall];
           //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-          for(i=0;i<spotsArr.length;i++){
+          for(let i=0;i<spotsArr.length;i++){
             if(spotsArr[i][2]==txCall){
                let reachedEntity="";
                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
@@ -436,7 +436,7 @@ a:visited {color: blue;}
           var rxCall=rxCallsArr[iCall];
 
           //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-          for(i=0;i<spotsArr.length;i++){
+          for(let i=0;i<spotsArr.length;i++){
             if(spotsArr[i][3]==rxCall){
                let spottedEntity="";
                if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substr(0,squaresDisplayLevel)}
