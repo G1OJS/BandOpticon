@@ -1,6 +1,5 @@
 <!-- To do:
   - add code for "only by myCall" detail (additional Tx and Rx rows irrespective of grouping)
-  - add back the H2H/H2DX/DX2H stats in the band tiles
   - column widths in detail grid work for all cases
   - add back the recorder functions (same place as H2H/H2DX/DX2H stats)
   - investigate lag when clicking on different views - order of calls in onMessage?
@@ -345,13 +344,25 @@ a:visited {color: blue;}
      for (let iBand=0; iBand<Bands.length; iBand++){
        var txCalls=new Set;
        var rxCalls=new Set;
-       for (let iSpot=1; iSpot < spotsArr.length; iSpot++) {
+       var nSpotsH2H=0;
+       var nSpotsH2DX=0;
+       var nSpotsDX2H=0;
+			 for (let iSpot=1; iSpot < spotsArr.length; iSpot++) {
          var spot=spotsArr[iSpot];
          if(spot[0]==Bands[iBand]){
-           if(squareIsInHome(spot[4])) {txCalls.add(spot[2])};
+           if(squareIsInHome(spot[4])) {
+             txCalls.add(spot[2])
+             if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
+           };
            if(squareIsInHome(spot[5])) {rxCalls.add(spot[3])};
+           nSpotsDX2H+=1;
          }
        }
+       document.getElementById(Bands[iBand]+"spots").innerHTML=
+         "Spots "+
+         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
+         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
+         "<span class='incoming'>"+nSpotsDX2H+"</span>";
        document.getElementById(Bands[iBand]+"calls").innerHTML=
          "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
          "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
