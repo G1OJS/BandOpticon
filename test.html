@@ -1,6 +1,4 @@
-
 <!-- To do:
-
   - add code for "only by myCall" detail
     - this is hard because we have to cope with both grouping and not grouping cases, and 
       need to consider spots in Home and Other
@@ -56,9 +54,9 @@ a:visited {color: blue;}
       <div id="controls_l"></div>
       <div id="controls_r">
       What to show above band summary tiles? <br>
-      - <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
-      - <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
-      - <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
+      <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
+      <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
+      <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
       <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
      </div>
    </div>
@@ -408,7 +406,6 @@ a:visited {color: blue;}
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>";
         
-    //    detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -461,7 +458,15 @@ a:visited {color: blue;}
         if(groupHomeCalls){
           detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
         }
-         //     detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
+        
+        let entitiesReachedOnlyByMe=entitiesReachedByMe.difference(entitiesReachedInHome.union(entitiesReachedInOther));
+        if (entitiesReachedOnlyByMe.size>0) {
+            detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+' only',true)+"</div><div><span class='intraHome'></span><span class='incoming'>"+Array.from(entitiesReachedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+        }
+        let entitiesSpottedOnlyByMe=entitiesSpottedByMe.difference(entitiesSpottedInHome.union(entitiesSpottedInOther));
+        if (entitiesReachedOnlyByMe.size>0) {
+           detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+ ' only',true)+"</div><div><span class='intraHome'></span><span class='incoming'>"+Array.from(entitiesSpottedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
+        }
       }
 
   }
