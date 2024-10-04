@@ -354,8 +354,10 @@ a:visited {color: blue;}
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
            };
-           if(squareIsInHome(spot[5])) {rxCalls.add(spot[3])};
-           nSpotsDX2H+=1;
+           if(squareIsInHome(spot[5])) {
+             rxCalls.add(spot[3]);
+             nSpotsDX2H+=1;
+           }
          }
        }
        document.getElementById(Bands[iBand]+"spots").innerHTML=
@@ -385,18 +387,22 @@ a:visited {color: blue;}
 
         var entitiesReachedByMe=new Set;
         var entitiesSpottedByMe=new Set;
+  //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
         for(i=0;i<spotsArr.length;i++){
-          if(spotsArr[i][2]==myCall){
-            if(entity=="Call"){entitiesReachedByMe.add(spotsArr[i][3])} 
-              else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}
-          }
-          if(spotsArr[i][3]==myCall){
-            if(entity=="Call"){entitiesSpottedByMe.add(spotsArr[i][2])} 
-              else {entitiesSpottedByMe.add(spotsArr[i][4].substr(0,squaresDisplayLevel))}
+          if(spot[0]==Bands[iBand]){
+            if(spotsArr[i][2]==myCall){
+              if(entity=="Call"){entitiesReachedByMe.add(spotsArr[i][3])} 
+                else {entitiesReachedByMe.add(spotsArr[i][5].substr(0,squaresDisplayLevel))}
+            }
+            if(spotsArr[i][3]==myCall){
+              if(entity=="Call"){entitiesSpottedByMe.add(spotsArr[i][2])} 
+                else {entitiesSpottedByMe.add(spotsArr[i][4].substr(0,squaresDisplayLevel))}
+            }
           }
         }
   //      console.log(Array.from(entitiesReachedByMe).toSorted());
-   //     console.log(Array.from(entitiesSpottedByMe).toSorted());
+        console.log(Array.from(entitiesSpottedByMe).toSorted());
+ //       console.log(Array.from(rxCalls).toSorted());
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
