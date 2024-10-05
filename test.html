@@ -373,7 +373,7 @@ a:visited {color: blue;}
   function writeStats(){
       purgeSpots();
       updateControls();
-      dataForRecord="";
+      dataForRecord="Mode="+Mode+" ";
       for (let iBand=0; iBand<Bands.length; iBand++) {writeStatsForBand(iBand)};
       writeData(dataForRecord);
   }
