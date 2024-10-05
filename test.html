@@ -20,17 +20,13 @@ lower priority:
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
-#detailsGrid {display: grid; grid-template-columns: 1fr 10px 4fr; grid-template-rows: auto;}
+#detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
 div {margin: 0px;  padding: 0px;}
 
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 2px;  padding: 5px;}
-
-
-
-
 
 .bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto; margin: 1px;}
 .bandsGrid > div {background-color: white; margin: 1px;  padding: 5px; }
@@ -117,8 +113,8 @@ a:visited {color: blue;}
   let spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-  const leftArrow="←";
-  const rightArrow="→";
+  const leftArrow="<span style='text-align:centre; font-size:2rem;'>←</span>";
+  const rightArrow="<span style='text-align:centre; font-size:2rem;'>→</span>";
   const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
          + "<span class='outgoing'> Home &#8680 DX /</span>"
          + "<span class='incoming'> DX &#8680 Home</span>"
@@ -445,7 +441,7 @@ a:visited {color: blue;}
         if(groupHomeCalls){ 
           detailsGrid.innerHTML+="<div class='transmit'>"
           +Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')
-          +"</div><div>+leftArrow+</div><div><span class='intraHome'>"
+          +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span> <span class='outgoing'>"
           +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -524,7 +520,7 @@ a:visited {color: blue;}
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='transmit'>"
             +HL(myCall+" only",true)
-            +"</div><div>""+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"</div><div>"+rightArrow+"</div><div><span class='intraHome'></span>"
             +"<span class='outgoing'>"+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'>"+reachedOtherArr.join(', ')+"</span><div>";
         }
