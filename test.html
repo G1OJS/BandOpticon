@@ -5,7 +5,8 @@
 
 lower priority:
   - analysis of modes vs bands?
-  - do I *have* to clear out all spots when changing modes, or should I keep all spots and filter later? Would need to redefine the spots array to include mode.
+  - do I *have* to clear out all spots when changing modes, or should I keep all spots and filter later? 
+      - Would need to redefine the spots array to include mode.
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
@@ -119,11 +120,13 @@ a:visited {color: blue;}
   var spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-  const rightArrow="<span style='text-align:center; font-size:1rem;'>⇒</span>";
-  const leftArrow="<span style='text-align:center; font-size:1rem;'>⇐</span>";
-  const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
-         + "<span class='outgoing'> Home &#8680 DX /</span>"
-         + "<span class='incoming'> DX &#8680 Home</span>"
+//  const rightArrow="<span style='text-align:center; font-size:1rem;'>⇒</span>";
+//  const leftArrow="<span style='text-align:center; font-size:1rem;'>⇐</span>";
+  const rightArrow="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
+  const leftArrow="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
+  const SpotsLegend="<span class='intraHome'> Home "+rightArrow+" Home /</span>"
+         + "<span class='outgoing'> Home "+rightArrow+" DX /</span>"
+         + "<span class='incoming'> DX "+rightArrow+" Home</span>"
   var recordData=false;
   var dataForRecord="";
   var newWindow=null;
