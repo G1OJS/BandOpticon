@@ -432,7 +432,7 @@ a:visited {color: blue;}
               +HL(txCall,myCall)
               +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span> <span class='outgoing'>"
+              +"</span> <span class='outgoing'> "
               +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span><div>";
             entitiesReachedInHome.clear();
@@ -445,7 +445,7 @@ a:visited {color: blue;}
           +Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')
           +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-          +"</span> <span class='outgoing'>"
+          +"</span> <span class='outgoing'> "
           +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span><div>";
         }
@@ -522,8 +522,8 @@ a:visited {color: blue;}
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
             +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
-            +"<span class='outgoing'>"+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'>"+reachedOtherArr.join(', ')+"</span><div>";
+            +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
@@ -531,8 +531,8 @@ a:visited {color: blue;}
             var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
             +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
-            +"<span class='intrahome'>"+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'>"+spottedOtherArr.join(', ')+"</span><div>";
+            +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
          
       }
