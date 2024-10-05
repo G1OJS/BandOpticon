@@ -113,8 +113,8 @@ a:visited {color: blue;}
   let spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-  const leftArrow="<span style='text-align:centre; font-size:2rem;'>←</span>";
-  const rightArrow="<span style='text-align:centre; font-size:2rem;'>→</span>";
+  const rightArrow="<span style='text-align:center; font-size:1rem;'>⇒</span>";
+  const leftArrow="<span style='text-align:center; font-size:1rem;'>⇐</span>";
   const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
          + "<span class='outgoing'> Home &#8680 DX /</span>"
          + "<span class='incoming'> DX &#8680 Home</span>"
@@ -518,9 +518,8 @@ a:visited {color: blue;}
         if(entitiesReachedOnlyByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"
-            +HL(myCall+" only",true)
-            +"</div><div>"+rightArrow+"</div><div><span class='intraHome'></span>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
+            +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
             +"<span class='outgoing'>"+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'>"+reachedOtherArr.join(', ')+"</span><div>";
         }
@@ -528,9 +527,8 @@ a:visited {color: blue;}
         if(entitiesSpottedOnlyByMe.size>0){
             var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="</div>"+rightArrow+"<div><div class='transmit'>"
-            +HL(myCall+" only",true)
-            +"</div><div><span class='intraHome'></span>"
+          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
+            +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
             +"<span class='intrahome'>"+spottedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'>"+spottedOtherArr.join(', ')+"</span><div>";
         }
