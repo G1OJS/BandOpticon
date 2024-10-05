@@ -350,7 +350,7 @@ a:visited {color: blue;}
       let md=getVal("md",message);
       if(Bands.includes(band) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
         Modes.add(md)
-        if(md=Mode){
+        if(md==Mode){
           let senderCall=getVal("sc",message);
           let receiverCall=getVal("rc",message);
           let tSpot=Date.now(); // working with time spot received not time spot generated
