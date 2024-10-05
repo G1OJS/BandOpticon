@@ -1,8 +1,10 @@
 <!-- To do:
-  - add code to work out if entities spotted only by myCall, or received only by myCall, 
-    are in Home or Other. 
+ - add mode selectors and include modes like olivia, psk31, msk144
+ - separate myCall into its own row (x2) when grouping by tx & rx 
+     (makes meaning of myCall and myCall only clearer)
 
 lower priority:
+  - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
      or clarified a bit (purpose vs name). updateDetails is more of a handler for 
@@ -113,8 +115,8 @@ a:visited {color: blue;}
   let spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-  const leftArrow="<span style='text-align:centre; font-size:2rem;'>←</span>";
-  const rightArrow="<span style='text-align:centre; font-size:2rem;'>→</span>";
+  const rightArrow="<span style='text-align:center; font-size:1rem;'>⇒</span>";
+  const leftArrow="<span style='text-align:center; font-size:1rem;'>⇐</span>";
   const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
          + "<span class='outgoing'> Home &#8680 DX /</span>"
          + "<span class='incoming'> DX &#8680 Home</span>"
@@ -401,8 +403,8 @@ a:visited {color: blue;}
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;'>List each call</a>"
-          +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;'>Group into Tx & Rx</a>"
+          +" <br><a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
+          +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div><div style='font-size:1rem;'>"
           +"<strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
           +" <br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;'>Show callsigns</a>"
@@ -430,7 +432,7 @@ a:visited {color: blue;}
               +HL(txCall,myCall)
               +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span> <span class='outgoing'>"
+              +"</span> <span class='outgoing'> "
               +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span><div>";
             entitiesReachedInHome.clear();
@@ -443,7 +445,7 @@ a:visited {color: blue;}
           +Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')
           +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-          +"</span> <span class='outgoing'>"
+          +"</span> <span class='outgoing'> "
           +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span><div>";
         }
@@ -518,21 +520,19 @@ a:visited {color: blue;}
         if(entitiesReachedOnlyByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"
-            +HL(myCall+" only",true)
-            +"</div><div>"+rightArrow+"</div><div><span class='intraHome'></span>"
-            +"<span class='outgoing'>"+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'>"+reachedOtherArr.join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
+            +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
             var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="</div>"+rightArrow+"<div><div class='transmit'>"
-            +HL(myCall+" only",true)
-            +"</div><div><span class='intraHome'></span>"
-            +"<span class='intrahome'>"+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'>"+spottedOtherArr.join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
+            +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
+            +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
          
       }
