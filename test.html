@@ -1,6 +1,6 @@
 <!-- To do:
   - add code to work out if entities spotted only by myCall, or received only by myCall, 
-    are in Home or Other.
+    are in Home or Other. 
 
 lower priority:
   - define functions to make flow more aparrent in writeStats
@@ -19,16 +19,18 @@ lower priority:
 #app_group {margin:2px;padding:0px; background-color:blue;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
+#detailsGrid {display: grid; grid-template-columns: 1fr 10px 4fr; grid-template-rows: auto;}
+#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
 div {margin: 0px;  padding: 0px;}
 
 .controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 .controls > div {background-color: white; margin: 2px;  padding: 5px;}
 
-.detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
 
-.detailsGrid {display: grid; grid-template-columns: 1fr 4fr; grid-template-rows: auto;}
-.detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+
+
 
 .bandsGrid {display: grid; grid-template-columns: auto auto auto auto auto; margin: 1px;}
 .bandsGrid > div {background-color: white; margin: 1px;  padding: 5px; }
@@ -61,8 +63,8 @@ a:visited {color: blue;}
    </div>
    <div id="legend"></div>
    <div id="details_group">
-     <div class="detailsTop" id="detailsTop"></div>
-     <div class="detailsGrid" id="detailsGrid"></div>
+     <div id="detailsTop"></div>
+     <div id="detailsGrid"></div>
    </div>
    <div class="bandsGrid" id="bandsGrid"></div>
 </div>
@@ -115,6 +117,8 @@ a:visited {color: blue;}
   let spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
+  const leftArrow="←";
+  const rightArrow="→";
   const SpotsLegend="<span class='intraHome'> Home &#8680 Home /</span>"
          + "<span class='outgoing'> Home &#8680 DX /</span>"
          + "<span class='incoming'> DX &#8680 Home</span>"
@@ -356,24 +360,27 @@ a:visited {color: blue;}
        var nSpotsDX2H=0;
        var entitiesReachedByMe=new Set;
        var entitiesSpottedByMe=new Set;
+       var entitiesHome=new Set;
+       var senderEntity="";
+       var receiverEntity="";
 			 for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
          var spot=spotsArr[iSpot];
          if(spot[0]==Bands[iBand]){
+           if(entity=="Call"){senderEntity=spot[2]; receiverEntity=spot[3];} 
+               else {senderEntity=spot[4].substr(0,squaresDisplayLevel);receiverEntity=spot[5].substr(0,squaresDisplayLevel);} 
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
+             entitiesHome.add(senderEntity);
            }
            if(squareIsInHome(spot[5])) {
              rxCalls.add(spot[3]);
              nSpotsDX2H+=1;
+             entitiesHome.add(receiverEntity);
            }
-           if(spot[2]==myCall){
-             if(entity=="Call"){entitiesReachedByMe.add(spot[3])} 
-               else {entitiesReachedByMe.add(spot[5].substr(0,squaresDisplayLevel))}}
-           if(spot[3]==myCall){
-             if(entity=="Call"){entitiesSpottedByMe.add(spot[2])} 
-               else {entitiesSpottedByMe.add(spot[4].substr(0,squaresDisplayLevel))}} 
+           if(spot[2]==myCall){entitiesReachedByMe.add(receiverEntity)} 
+           if(spot[3]==myCall){entitiesSpottedByMe.add(senderEntity)} 
          }
        }
 
@@ -396,16 +403,16 @@ a:visited {color: blue;}
           +document.getElementById(Bands[iDetailsBandIndex]+"calls").innerHTML+"<br>"
           +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff+"</div>";
       
-        detailsGrid.innerHTML="<div style='font-size:1rem;'><strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong></br>"
-        +"<a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;tWrite=0;return;'>List each call</a>"
-        +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;tWrite=0;return;'>Group into Tx & Rx</a></div>"
-        +"<div  style='font-size:1rem;'><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong><br>"
-        +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;;tWrite=0;return;'>Show callsigns</a> "
-        +"<a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;tWrite=0;return;'>Show level 2 squares</a>"
-        +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;tWrite=0;return;'>Show level 4 squares</a>"
-        +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;tWrite=0;return;'>Show level 6 squares</a></div>";
-        
-    //    detailsGrid.innerHTML+="<div>&nbsp</div><div>&nbsp</div>";
+        detailsGrid.innerHTML="<div style='font-size:1rem;'>"
+          +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
+          +" <br><a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;'>List each call</a>"
+          +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;'>Group into Tx & Rx</a>"
+          +"</div><div></div><div style='font-size:1rem;'>"
+          +"<strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
+          +" <br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;'>Show callsigns</a>"
+          +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show level 2 squares</a>"
+         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show level 4 squares</a>"
+         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show level 6 squares</a></div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -423,16 +430,26 @@ a:visited {color: blue;}
             }
           }
           if(!groupHomeCalls){ 
-            detailsGrid.innerHTML+="<div class='transmit'>"+HL(txCall,myCall)
-              +"</div><div><span class='intraHome'>"
+            detailsGrid.innerHTML+="<div class='transmit'>"
+              +HL(txCall,myCall)
+              +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span> <span class='outgoing'>"+Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span><div>";
+              +"</span> <span class='outgoing'>"
+              +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+              +"</span><div>";
             entitiesReachedInHome.clear();
             entitiesReachedInOther.clear();
           }
         }
+  
         if(groupHomeCalls){ 
-          detailsGrid.innerHTML+="<div class='transmit'>"+Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span> <span class='outgoing'>"+Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='transmit'>"
+          +Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')
+          +"</div><div>+leftArrow+</div><div><span class='intraHome'>"
+          +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+          +"</span> <span class='outgoing'>"
+          +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+          +"</span><div>";
         }
         // receiver loop
         var rxCallsArr=Array.from(rxCalls).toSorted();
@@ -450,15 +467,27 @@ a:visited {color: blue;}
             }
           }
           if(!groupHomeCalls){
-            detailsGrid.innerHTML+="<div class='receive'>"+HL(rxCall,myCall)+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
+            detailsGrid.innerHTML+="<div class='receive'>"
+            +HL(rxCall,myCall)
+            +"</div><div>"+leftArrow+"</div><div><span class='intraHome'>"
+            +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +"</span> <span class='incoming'>"
+            +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +"</span><div>";
             entitiesSpottedInHome.clear();
             entitiesSpottedInOther.clear();
           }
         }
+  
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')+"</div><div><span class='intraHome'>"+Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span> <span class='incoming'>"+Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')+"</span><div>";
+          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')
+          +"</div><div>"+leftArrow+"</div><div><span class='intraHome'>"
+          +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+          +"</span> <span class='incoming'>"
+          +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+          +"</span><div>";
         }
-         
+    
         // Find the entities reached & spotted by myCall but not others.
         // We already have the entities eached & spotted by myCall and/or others
         // collected for use in the highlighting above, so start with them and subtract
@@ -490,15 +519,25 @@ a:visited {color: blue;}
           }
         }
 
-         if(entitiesReachedOnlyByMe.size>0){
-            detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div><div><span class='intraHome'>"
-             +"</span><span class='outgoing'>"+Array.from(entitiesReachedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
-         }
-    
-         if(entitiesSpottedOnlyByMe.size>0){
-            detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div><div><span class='intraHome'>"
-            +"</span><span class='incoming'>"+Array.from(entitiesSpottedOnlyByMe).toSorted().map(item => HL(item,true)).join(', ')+"</span><div>";
-         }  
+        if(entitiesReachedOnlyByMe.size>0){
+            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
+            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
+          detailsGrid.innerHTML+="<div class='transmit'>"
+            +HL(myCall+" only",true)
+            +"</div><div>""+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"<span class='outgoing'>"+reachedHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'>"+reachedOtherArr.join(', ')+"</span><div>";
+        }
+       
+        if(entitiesSpottedOnlyByMe.size>0){
+            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
+            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
+          detailsGrid.innerHTML+="</div>"+rightArrow+"<div><div class='transmit'>"
+            +HL(myCall+" only",true)
+            +"</div><div><span class='intraHome'></span>"
+            +"<span class='intrahome'>"+spottedHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'>"+spottedOtherArr.join(', ')+"</span><div>";
+        }
          
       }
   }
