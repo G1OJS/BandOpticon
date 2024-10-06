@@ -111,8 +111,8 @@ a:visited {color: blue;}
   let tStart=Date.now(); // software start time
   const defaultSquaresArr=["IO","JO01","JO02","JO03","JO04"]
   let Squares=[]; // needs careful search and replace to squaresArr
-  var squaresDisplayLevel=4;
   var entity="Square";
+  var squaresDisplayLevel=4;
   var groupHomeCalls=true;
   let myCall="G1OJS";
   var Mode="FT8"; // better as myMode mainMode?
@@ -436,9 +436,9 @@ a:visited {color: blue;}
           +"</div><div></div><div style='font-size:1rem;'>"
           +"<strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -593,18 +593,10 @@ a:visited {color: blue;}
       }
   }
   
-
-
   function HL(item,pattern){
       if(item==pattern || pattern==true){return HLOn+item+HLOff} else {return item}
   }
   
-  function cycleSDL(){
-     squaresDisplayLevel+=2;
-     if(squaresDisplayLevel>6){squaresDisplayLevel=2}
-     document.getElementById('SDL').value=squaresDisplayLevel;
-  }
-
   function validSquare(locator){
     // if a valid level 2,4,6,8 or 10 square, return the level else return 0
     if(RegExp("^[A-R]{2}$").test(locator)) {return 2};
