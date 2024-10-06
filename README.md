@@ -19,7 +19,9 @@ What you can see using this software includes:
 - See which bands are open and which have no activity
 
 **All on one screen**
+
 **All for free**
+
 **All from anywhere**
 
 The software runs in Javascript on your machine and requires no downloads. Just click [here]({{ site.baseurl }}/BandOpticon) to watch the statistics evolve.
