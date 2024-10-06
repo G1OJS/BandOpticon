@@ -4,6 +4,7 @@
      (makes meaning of myCall and myCall only clearer)
 
 lower priority:
+  - add clickable links to "modes on this band"
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
@@ -416,7 +417,7 @@ a:visited {color: blue;}
           +"<br>click on 'details' in band tiles below to change band"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff+"</div>";
+          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               +"<br>Modes on this band: "+Array.from(modesByBand[iBand]).toSorted()+"</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
