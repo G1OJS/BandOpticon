@@ -1,7 +1,5 @@
 <!-- To do:
  
- - separate myCall into its own row (x2) when grouping by tx & rx 
-     (makes meaning of myCall and myCall only clearer)
 
 lower priority:
   - add clickable links to "modes on this band"
@@ -284,6 +282,7 @@ a:visited {color: blue;}
   // needs validation code
   function editMyCall(){
     var resp=prompt("Enter your callsign",myCall);
+    if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
     updateControls();
@@ -292,6 +291,7 @@ a:visited {color: blue;}
   
   function editPurgeMins(){
     var resp=prompt("Enter minutes for spot expiry",purgeMinutes);
+    if(resp==null){return}
     if(!Number.isNaN(parseInt(resp))){
       if(parseInt(resp)>0 && parseInt(resp)<60){
           purgeMinutes=parseInt(resp);
@@ -305,6 +305,7 @@ a:visited {color: blue;}
   // function to allow the user to edit the home squares list
   function editSquares(){
     var resp=prompt("Enter Squares",Squares);
+      if(resp==null){return}
       var respArr=resp.split(','); // need to convert resp string to array
       squaresValid=true;
       for (let i=0;i<respArr.length;i++){
@@ -440,6 +441,7 @@ a:visited {color: blue;}
         for (let iCall=0;iCall<txCallsArr.length;iCall++){
           var txCall=txCallsArr[iCall];
           //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
+ 
           for(let i=0;i<spotsArr.length;i++){
             if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
                let reachedEntity="";
@@ -449,6 +451,7 @@ a:visited {color: blue;}
                  else {entitiesReachedInOther.add(reachedEntity)} 
             }
           }
+     
           if(!groupHomeCalls){ 
             detailsGrid.innerHTML+="<div class='transmit'>"
               +HL(txCall,myCall)
@@ -464,13 +467,16 @@ a:visited {color: blue;}
   
         if(groupHomeCalls){ 
           detailsGrid.innerHTML+="<div class='transmit'>"
-          +Array.from(txCalls).toSorted().map(item => HL(item,myCall)).join(', ')
+          +Array.from(txCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span> <span class='outgoing'> "
           +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span><div>";
         }
+        
+        
+        
         // receiver loop
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
@@ -500,7 +506,7 @@ a:visited {color: blue;}
         }
   
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls).toSorted().map(item => HL(item,myCall)).join(', ')
+          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().map(item => HL(item,myCall)).join(', ')
           +"</div><div>"+leftArrow+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
@@ -538,6 +544,15 @@ a:visited {color: blue;}
             if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
           }
         }
+        
+        if(entitiesReachedByMe.size>0){
+            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
+            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
+          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,true)+"</div>"
+            +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+        }
 
         if(entitiesReachedOnlyByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
@@ -546,6 +561,15 @@ a:visited {color: blue;}
             +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+        }
+        
+        if(entitiesSpottedByMe.size>0){
+            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
+            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
+          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall,true)+"</div>"
+            +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
+            +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
@@ -556,6 +580,8 @@ a:visited {color: blue;}
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
+        
+
          
       }
   }
