@@ -3,7 +3,7 @@
 
 ## BONUS - works great on phones and tablets too! [click here]({{ site.baseurl }}/BandOpticon) 
 
-![BandOpticon 1](https://github.com/user-attachments/assets/d1b636e5-05aa-4f79-ad7b-c108101429fc)
+![BandOpticon Screenshots](https://github.com/user-attachments/assets/649ad87f-8726-4581-a807-e2c565cf62d5)
 
 This software uses data from Pskreporter to present a view of band activity on all (main) bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also simultaneously view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares are being reached and spotted by them.
 
