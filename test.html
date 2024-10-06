@@ -38,8 +38,8 @@ lower priority:
 div {margin: 0px;  padding: 0px;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
-#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;} 
-#bandsGrid > div {background-color: #e6e6ff; margin: 1px;  padding: 5px; } // the individual band boxes
+#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .transmit {color:red;}
 .receive {color:green; }
@@ -379,8 +379,7 @@ a:visited {color: blue;}
        var entitiesHome=new Set;
        var senderEntity="";
        var receiverEntity="";
-	  
-       for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
+			 for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
