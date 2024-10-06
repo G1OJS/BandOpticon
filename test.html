@@ -13,7 +13,8 @@ lower priority:
      or clarified a bit (purpose vs name). updateDetails is more of a handler for 
      click to change events than anything
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
-     - UPPERCASEPLURALS = Set
+     - IMMUTABLE = const
+     - Capital_plurals = Set
      - camelCasePluralsArr = Array 
 -->
 
@@ -104,29 +105,28 @@ a:visited {color: blue;}
   let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
-
-  let tStart=Date.now(); // software start
-  const defaultSquares=["IO","JO01","JO02","JO03","JO04"]
-  let Squares=[];
+  let tStart=Date.now(); // software start time
+  const defaultSquaresArr=["IO","JO01","JO02","JO03","JO04"]
+  let Squares=[]; // needs careful search and replace to squaresArr
   var squaresDisplayLevel=4;
   var entity="Square";
   var groupHomeCalls=true;
   let myCall="G1OJS";
-  var Mode="FT8";
-  var Modes=new Set(["FT4","FT8","JS8","WSPR","CW"]);
-  var modesByBand=new Array();
+  var Mode="FT8"; // better as myMode mainMode?
+  var Modes=new Set(["FT4","FT8","JS8","WSPR","CW"]); // OK as capital plural to indicate set?
+  var modesByBandArr=new Array();
   var spotsArr=[];
   var spotsAdded=0;
   var spotsPurged=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
-//  const rightArrow="<span style='text-align:center; font-size:1rem;'>⇒</span>";
-//  const leftArrow="<span style='text-align:center; font-size:1rem;'>⇐</span>";
-  const rightArrow="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
-  const leftArrow="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
-  const SpotsLegend="<span class='intraHome'> Home "+rightArrow+" Home /</span>"
-         + "<span class='outgoing'> Home "+rightArrow+" DX /</span>"
-         + "<span class='incoming'> DX "+rightArrow+" Home</span>"
+//  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>⇒</span>";
+//  const LEFTARROW="<span style='text-align:center; font-size:1rem;'>⇐</span>";
+  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
+  const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
+  const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
+         + "<span class='outgoing'> Home "+RIGHTARROW+" DX /</span>"
+         + "<span class='incoming'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -150,7 +150,7 @@ a:visited {color: blue;}
   document.getElementById('bandsGrid').appendChild(toAdd);
 
   for (let i=0;i<bandsArr.length;i++){
-     modesByBand.push(new Set);
+     modesByBandArr.push(new Set);
   }
 
   setInterval(writeStats, refresh_mSeconds);
@@ -206,12 +206,12 @@ a:visited {color: blue;}
       catch(err) {
         console.log("Local storage result for squares: "+Squares);
         localStorage.removeItem('Squares');
-        Squares=defaultSquares;
+        Squares=defaultSquaresArr;
         localStorage.setItem('Squares', JSON.stringify(Squares));
         console.log("Error loading local config data: defaults applied and local copy replaced");
         }
     } else {
-      Squares=defaultSquares;
+      Squares=defaultSquaresArr;
       console.log("No local config data found: defaults applied.");
       saveConfig();
     }
@@ -245,7 +245,7 @@ a:visited {color: blue;}
     
     if(detailsWanted=="BandTileLegend"){
       legend.innerHTML="<div>Band tile legend:<br><strong>Band</strong><br> \
-         Spots: number of spots "+SpotsLegend+"<br>"+
+         Spots: number of spots "+spotsLegend+"<br>"+
          "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>";
       detailsGrid.innerHTML="";
@@ -335,7 +335,7 @@ a:visited {color: blue;}
       let md=getVal("md",message);
       if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
         Modes.add(md)
-        modesByBand[bandsArr.indexOf(b)].add(md);
+        modesByBandArr[bandsArr.indexOf(b)].add(md);
           let senderCall=getVal("sc",message);
           let receiverCall=getVal("rc",message);
           let tSpot=Date.now(); // working with time spot received not time spot generated
@@ -402,7 +402,7 @@ a:visited {color: blue;}
        document.getElementById(bandsArr[iBand]+"band").innerHTML=bandsArr[iBand]+" "+Mode;
        
        let tmp=(new Set()).add(Mode); 
-       let otherModes=Array.from(modesByBand[iBand].difference(tmp)).toSorted().join(', ');
+       let otherModes=Array.from(modesByBandArr[iBand].difference(tmp)).toSorted().join(', ');
        if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML="+ "+otherModes;}
        
        document.getElementById(bandsArr[iBand]+"spots").innerHTML=
@@ -422,9 +422,9 @@ a:visited {color: blue;}
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
           +"<br>click on 'details' in band tiles below to change band"
-          +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+SpotsLegend+"<br>"
+          +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               +"<br>Modes on this band: "+Array.from(modesByBand[iBand]).toSorted()+"</div>";
+          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               +"<br>Modes on this band: "+Array.from(modesByBandArr[iBand]).toSorted()+"</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -458,7 +458,7 @@ a:visited {color: blue;}
           if(!groupHomeCalls){ 
             detailsGrid.innerHTML+="<div class='transmit'>"
               +HL(txCall,myCall)
-              +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
+              +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span> <span class='outgoing'> "
               +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -471,7 +471,7 @@ a:visited {color: blue;}
         if(groupHomeCalls){ 
           detailsGrid.innerHTML+="<div class='transmit'>"
           +Array.from(txCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
-          +"</div><div>"+rightArrow+"</div><div><span class='intraHome'>"
+          +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
           +"</span> <span class='outgoing'> "
           +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -499,7 +499,7 @@ a:visited {color: blue;}
           if(!groupHomeCalls){
             detailsGrid.innerHTML+="<div class='receive'>"
             +HL(rxCall,myCall)
-            +"</div><div>"+leftArrow+"</div><div><span class='intraHome'>"
+            +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
             +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span> <span class='incoming'>"
             +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
@@ -511,7 +511,7 @@ a:visited {color: blue;}
   
         if(groupHomeCalls){
           detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().map(item => HL(item,myCall)).join(', ')
-          +"</div><div>"+leftArrow+"</div><div><span class='intraHome'>"
+          +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
           +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
@@ -553,7 +553,7 @@ a:visited {color: blue;}
             var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,true)+"</div>"
-            +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
@@ -562,7 +562,7 @@ a:visited {color: blue;}
             var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
-            +"<div>"+rightArrow+"</div><div><span class='intraHome'></span>"
+            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
@@ -571,7 +571,7 @@ a:visited {color: blue;}
             var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall,true)+"</div>"
-            +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
+            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
@@ -580,7 +580,7 @@ a:visited {color: blue;}
             var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
             var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
           detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
-            +"<div>"+leftArrow+"</div><div><span class='intraHome'></span>"
+            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
