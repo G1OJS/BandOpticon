@@ -2,6 +2,8 @@
 
 <!-- To do:
  
+  - allow user to enter bottom left to top right square & construct list of level 4 squares from that
+      would have to be as part of string like IO70:J003,J094,JO95ku
 
 lower priority:
   - given the highlighting, do we need the "myCall" lines as well as the "myCall Only" lines?
@@ -109,7 +111,7 @@ a:visited {color: blue;}
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
   let tStart=Date.now(); // software start time
-  const defaultSquaresArr=["IO","JO01","JO02","JO03","JO04"]
+  const defaultSquaresArr=["IO93","IO94"];
   let Squares=[]; // needs careful search and replace to squaresArr
   var entity="Square";
   var squaresDisplayLevel=4;
@@ -162,9 +164,19 @@ a:visited {color: blue;}
   // Connect to Pskreporter and subscribe on connect
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
   const client=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-  client.onSuccess=client.subscribe('pskr/filter/v2/+/+/+/+/+/+/+/#');
+  client.onSuccess=subscribeSquares();
   client.on("message", (filter,message) => {onMessage(message.toString());}  );
  
+  function subscribeSquares(){
+    for(let i=0;i<Squares.length;i++){
+      var error=null;
+      client.subscribe('pskr/filter/v2/+/+/+/+/'+Squares[i]+'/+/+/#', (error) => {if (error) {
+              console.error('subscription failed to '+Squares[i]+' tx', error)}});
+      client.subscribe('pskr/filter/v2/+/+/+/+/+/'+Squares[i]+'/+/#', (error) => {if (error) {
+              console.error('subscription failed to '+Squares[i]+' rx', error)}});
+    }
+  
+  }
 
   // done with initialisation now
   
@@ -267,7 +279,7 @@ a:visited {color: blue;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=Squares.join(',')+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
+    var sqs=Squares.join(', ')+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
@@ -313,7 +325,7 @@ a:visited {color: blue;}
       var respArr=resp.split(','); // need to convert resp string to array
       squaresValid=true;
       for (let i=0;i<respArr.length;i++){
-        if(validSquare(respArr[i])==0) squaresValid=false;
+        if(validSquare(respArr[i])<4) squaresValid=false;
       }
       if(squaresValid){
       Squares=respArr;
@@ -324,7 +336,7 @@ a:visited {color: blue;}
       spotsAdded=0;
       spotsPurged=0;
     } else {
-      alert("Please enter a comma-separated list of valid squares.\n\nYou entered "+resp);
+      alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
   }
   
