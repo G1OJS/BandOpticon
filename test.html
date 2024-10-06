@@ -10,7 +10,9 @@ lower priority:
   - look at updateDetails and updateControls - see if they can be rationalised
      or clarified a bit (purpose vs name). updateDetails is more of a handler for 
      click to change events than anything
-  - check consistency of let, var, continuation + and \ and <br>
+  - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
+     - UPPERCASEPLURALS = Set
+     - camelCasePluralsArr = Array
 -->
 
 <html>
@@ -96,7 +98,7 @@ a:visited {color: blue;}
  // initialisation and functions to load and save configuration
  
   const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refresh_mSeconds=1000;
+  let refresh_mSeconds=2000;
   let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
