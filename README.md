@@ -36,11 +36,14 @@ Easter egg - you might find me fiddling with ideas for the next version [here](h
 
 ### Screenshots
 
+<!--
+
 Click the thumbnails below to see the full size version. 
 
 Main Screen                       |  Band Detail - Calls and Squares  | Band Detail - Call to Call Spots
 :--------------------------------:|:---------------------------------:|:--------------------------------:
 ![BandOpticon 02-10-2024 test version Screenshot 1](https://github.com/user-attachments/assets/2577113d-ea35-4c80-8965-3c82003597d6)|![BandOpticon 02-10-2024 test version Screenshot 2](https://github.com/user-attachments/assets/703332ef-7534-44a2-ba62-7e59b1824436)|![BandOpticon 02-10-2024 test version Screenshot 3](https://github.com/user-attachments/assets/94f4b0f7-7b5e-4f1b-aef7-12db135ff2a9)
 
+-->
 
 
