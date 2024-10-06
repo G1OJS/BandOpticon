@@ -5,7 +5,9 @@
 
 ![BandOpticon Screenshots](https://github.com/user-attachments/assets/649ad87f-8726-4581-a807-e2c565cf62d5)
 
-This software uses data from Pskreporter to present a view of band activity on all (main) bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also simultaneously view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares are being reached and spotted by them.
+This software uses data from Pskreporter to present a view of band activity on all (main*) bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also simultaneously view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares are being reached and spotted by them.
+
+(*) it's on my list to make the bands list customisable.
 
 Active stations and spots are drawn from your specified group of Maidenhead squares, which provides fine control over what you want to specify as "Home". You can specify a grouping of squares of any level (for example, IO, JO01, JO03kk can be added as one group to represent your Home location). Spots are counted if at least one 'end' is in Home, and ignored if both ends are outside Home.
 
