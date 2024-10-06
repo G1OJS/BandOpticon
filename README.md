@@ -1,7 +1,7 @@
 ---
 Title: BandOpticon
 SubTitle: Live Pskreporter statistics for all bands between Home and DX
-permalink: /README/
+permalink: /
 ---
 
 # BandOpticon
