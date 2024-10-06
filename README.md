@@ -7,7 +7,7 @@
 
 This software uses data from Pskreporter to present a view of band activity on all (main) bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also simultaneously view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares are being reached and spotted by them.
 
-Active stations and spots are drawn from your specified group of Maidenhead squares, which provides more control over the data selection than is available on the Pskreporter map views. Instead of "Country of callsign" you have access to a grouping of squares of any level (for example, IO, JO01, JO03kk can be added as one group).
+Active stations and spots are drawn from your specified group of Maidenhead squares, which provides fine control over what you want to specify as "Home". You can specify a grouping of squares of any level (for example, IO, JO01, JO03kk can be added as one group to represent your Home location). Spots are counted if at least one 'end' is in Home, and ignored if both ends are outside Home.
 
 What you can see using this software includes:
 - See which active stations are transmitting or just receiving. In other words, are there stations actively working the bands, or have they just left their equipment running & gone to work - or are they even a WEBSDR station?
