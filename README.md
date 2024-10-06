@@ -1,9 +1,3 @@
----
-Title: BandOpticon
-SubTitle: Live Pskreporter statistics for all bands between Home and DX
-permalink: /
----
-
 # BandOpticon
 ### Where is each band open to from *my* local area? How active are they? What modes are being used? What DX are others in my area receiving and being spotted by? What squares are they reaching and spotting? What squares and callsigns am I reaching and spotting that other stations aren't? All on one screen??
 
