@@ -36,9 +36,9 @@ Easter egg - you might find me fiddling with ideas for the next version [here](h
 
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter) from https://hits.seeyoufarm.com     
 
-### Screenshots
-
 <!--
+
+### Screenshots
 
 Click the thumbnails below to see the full size version. 
 
