@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+
 <!-- To do:
  
 
@@ -12,11 +14,14 @@ lower priority:
      click to change events than anything
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - UPPERCASEPLURALS = Set
-     - camelCasePluralsArr = Array
+     - camelCasePluralsArr = Array 
 -->
 
-<html>
-<head><style>
+
+<html lang="en">
+<head>
+<title>BandOpticon Header</title>
+<style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 #title {text-align: center; font-size: 5rem;}
@@ -42,20 +47,19 @@ a:link {color: blue;}
 a:visited {color: blue;}
 </style>
 </head>
-
 <body>
 <div id="title">BandOpticon</div>
-<div id="subtitle">Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
+<div id="subtitle">Live <a https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
 <div id="app_group">
-   <div id="controls" name="controls">
+   <div id="controls">
       <div id="controls_l"></div>
       <div id="controls_r">
       What to show above band summary tiles? <br>
-      <a href='#controls' onclick='updateDetails(&quot;BandTileLegend&quot);'>Band tile legend</a><br>
-      <a href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot);'>Band Activity Details</a><br>
-      <a href='#controls' onclick='updateDetails(&quot;Nothing&quot);'>Nothing</a><br>
-      <br><a href='#controls' onclick='startRecording();'>Experimental stats recorder</a> 
+      <a href='#' onclick='updateDetails(&quot;BandTileLegend&quot;);'>Band tile legend</a><br>
+      <a href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;);'>Band Activity Details</a><br>
+      <a href='#' onclick='updateDetails(&quot;Nothing&quot;);'>Nothing</a><br>
+      <br><a href='#' onclick='startRecording();'>Experimental stats recorder</a> 
      </div>
    </div>
    <div id="legend"></div>
@@ -69,7 +73,7 @@ a:visited {color: blue;}
 <div id="creditsGrid">
     <div>
         Javascript & HTML developed by Alan Robinson:<br>
-        <a href='https://www.qrz.com/db/G1OJS'><G1OJS @QRZ.com</a>
+        <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a>
         <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
         <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
         <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a><br>
@@ -83,11 +87,9 @@ a:visited {color: blue;}
    <div>
       BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
       BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/BandOpticon</a><br>
-      <a href="https://hits.seeyoufarm.com"><img src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"/></a>                        
+      <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"></a>                        
    </div>
 </div>
-
-</body>
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -98,7 +100,7 @@ a:visited {color: blue;}
  // initialisation and functions to load and save configuration
  
   const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refresh_mSeconds=1000;
+  let refresh_mSeconds=2000;
   let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
@@ -139,7 +141,7 @@ a:visited {color: blue;}
     var newDiv = document.createElement('div');
     newDiv.id = bandsArr[i];     
     newDiv.innerHTML="<strong><output id='"+bandsArr[i]+"band'>"+bandsArr[i]+"</output></strong>"
-      +" <a class='textAnchorButton' href='#controls' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+i+");'>details</a><br>"
+      +" <a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+i+");'>details</a><br>"
       +"<output id='"+bandsArr[i]+"spots'></output><br>"
       +"<output id='"+bandsArr[i]+"calls'></output><br>"
       +"<output id='"+bandsArr[i]+"modes' style='font-size:0.7rem'></output>";
@@ -266,20 +268,20 @@ a:visited {color: blue;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=Squares.join(',')+" <a class='textAnchorButton' href='#controls' onclick='editSquares();'>edit</a>";
+    var sqs=Squares.join(',')+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
-      modeSelector+=" <a class='textAnchorButton' href='#controls' onclick='Mode=&quot;"+md+"&quot;;'>"+HL(md,md==Mode)+"</a> "
+      modeSelector+=" <a class='textAnchorButton' href='#' onclick='Mode=&quot;"+md+"&quot;'>"+HL(md,md==Mode)+"</a> "
     }
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
        +"<br> - running for "+runningmins+" minutes"
        +"<br>Home = "+sqs+"<br>"
-       +"My call = "+myCall+" <a class='textAnchorButton' href='#controls' onclick='editMyCall();'>edit</a><br>"
+       +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
        +"Mode: "+modeSelector+"<br>"
        +spotsArr.length+" spots in database"
        +"<br>"+spotsAdded+" added, "+spotsPurged+" purged<br>"
-       +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#controls' onclick='editPurgeMins();'>edit</a><br>"
+       +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
   }
 
   // needs validation code
@@ -429,14 +431,14 @@ a:visited {color: blue;}
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
-          +" <a class='textAnchorButton' href='#controls' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
+          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div><div style='font-size:1rem;'>"
           +"<strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
-          +" <br><a class='textAnchorButton' href='#controls' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#controls' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +" <br><a class='textAnchorButton' href='#' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
@@ -628,6 +630,6 @@ a:visited {color: blue;}
   }
 
 </script>
-
-
+	
+</body>
 </html>
