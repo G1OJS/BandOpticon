@@ -372,9 +372,11 @@ a:visited {color: blue;}
   
   // function to allow the user to edit the home squares list
   function editSquares(){
-    var resp=prompt("Please enter a list of squares separated by commas."
-		   +"\n 4,6,8 and 10 character squares are accepted."
-		   +"You can specify a rectangle within a 2-character square using the format LLNN:NN, e.g. IO50:85",squaresList);
+    var resp=prompt("Please enter a list of squares separated by commas.\n"
+		   +"4,6,8 and 10 character squares are accepted.\n"
+		   +"You can specify a rectangle within a 2-character square\n"
+		   +"by using the format LLNN:NN, e.g. IO50:85\n"
+		   +"Example: 'IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
     let respArr=resp.split(',');
     squaresListValid=true;
