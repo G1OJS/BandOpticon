@@ -126,6 +126,8 @@ a:visited {color: blue;}
   var spotsArr=[];
   var spotsAdded=0;
   var spotsPurged=0;
+  var messagesReceived=0;
+  var messagesProcessed=0;
   const HLOn="<b><u>";
   const HLOff="</u></b>"; 
 //  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>⇒</span>";
@@ -341,6 +343,8 @@ a:visited {color: blue;}
        +"Mode: "+modeSelector+"<br>"
        +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
+       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>"
+
   }
 
   // needs validation code
@@ -410,7 +414,9 @@ a:visited {color: blue;}
           let tSpot=Date.now(); // working with time spot received not time spot generated
           spotsArr.push([b,tSpot,senderCall,receiverCall,senderSq,receiverSq,md]);
           spotsAdded+=1;
+          messagesProcessed+=1;
       }
+      messagesReceived+=1;
    }
   
   function purgeSpots(){
