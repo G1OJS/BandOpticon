@@ -149,8 +149,10 @@ a:visited {color: blue;}
     newDiv.innerHTML=""
       +" <a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+i+");'>"
       +"<strong><output id='"+bandsArr[i]+"band'>"+bandsArr[i]+"</output></strong></a>"
-      +" <a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandTileLegend&quot;,"+null+");'>legend</a><br>"
-      +"<output id='"+bandsArr[i]+"spots'></output><br>"
+    if(detailsWanted!="BandTileLegend" {
+      newDiv.innerHTML+=" <a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandTileLegend&quot;,"+null+");'>legend</a><br>"
+    }
+     newDiv.innerHTML+="<output id='"+bandsArr[i]+"spots'></output><br>"
       +"<output id='"+bandsArr[i]+"calls'></output><br>"
       +"<output id='"+bandsArr[i]+"modes' style='font-size:0.7rem'></output>";
     toAdd.appendChild(newDiv);
