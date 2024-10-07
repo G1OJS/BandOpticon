@@ -10,7 +10,8 @@ lower priority:
   - add header for data recording window
   - given the highlighting, do we need the "myCall" lines as well as the "myCall Only" lines?
   - data recorder to do all modes simultaneously?
-  - add Xclose button to Legend (and Band Activity Details?)
+
+code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
@@ -231,8 +232,10 @@ a:visited {color: blue;}
 
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
+      htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
+    +"Time (UTC), n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home)]<BR> ";
       newWindow.onload = function() {
-  	  newWindow.document.body.insertAdjacentHTML('afterbegin', html);
+  	  newWindow.document.body.insertAdjacentHTML('afterbegin', htmlTmp);
     }
   }
   
