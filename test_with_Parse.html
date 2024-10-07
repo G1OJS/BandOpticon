@@ -245,7 +245,13 @@ a:visited {color: blue;}
     if(localStorage.getItem('Squares')){
       try {
         squaresList=JSON.parse(localStorage.getItem('squaresList'));
-        console.log("Loaded local config. squaresList= "+squaresList);
+        if(squaresList==null){
+           squaresList=defaultSquaresList;
+           localStorage.setItem('squaresList', JSON.stringify(squaresList));
+           console.log("Loaded local config. squaresList as null, defaults applied and local copy replaced");
+        } else {
+           console.log("Loaded local config. squaresList= "+squaresList);
+        }
       }
       catch(err) {
         console.log("Local storage result for squaresList: "+squaresList);
@@ -351,9 +357,10 @@ a:visited {color: blue;}
   function editSquares(){
     var resp=prompt("Enter Squares",squaresList);
     if(resp==null){return}
+    let respArr=resp.split(',');
     squaresListValid=true;
     for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
-      if(respArr[i].find(":")>0) {let sq=respArr[i][0:3]} else {let sq=respArr[i]}
+      if(respArr[i].search(":")>0) {let sq=respArr[i].substring(0,4)} else {let sq=respArr[i]}
       if(validSquare(respArr[i])<4) squaresValid=false;
     }
     if(squaresValid){
