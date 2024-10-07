@@ -231,6 +231,7 @@ a:visited {color: blue;}
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
       htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
+    +"'Home' = "+squaresList
     +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home)]</strong><BR> ";
   	  newWindow.document.write(htmlTmp);
   }
