@@ -483,6 +483,10 @@ a:visited {color: blue;}
        
        let tmp=(new Set()).add(Mode); 
        let otherModes=Array.from(modesByBandArr[iBand].difference(tmp)).toSorted().join(', ');
+       let html="+ ";
+       for (i=0;i<otherModes.length;i++){
+         html+="<a href='' onclick=''>"+otherModes[i]+"</a> ";
+       }
        if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML="+ "+otherModes;}
        
        document.getElementById(bandsArr[iBand]+"spots").innerHTML=
