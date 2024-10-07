@@ -176,10 +176,14 @@ a:visited {color: blue;}
   function subscribeSquares(){
     for(let i=0;i<Squares.length;i++){
       var error=null;
-      client.subscribe('pskr/filter/v2/+/+/+/+/'+Squares[i]+'/+/+/#', (error) => {if (error) {
-              console.error('subscription failed to '+Squares[i]+' tx', error)}});
-      client.subscribe('pskr/filter/v2/+/+/+/+/+/'+Squares[i]+'/+/#', (error) => {if (error) {
-              console.error('subscription failed to '+Squares[i]+' rx', error)}});
+      var topic='pskr/filter/v2/+/+/+/+/'+Squares[i]+'/+/+/#';
+      console.log("Subscribe to "+topic);
+      client.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+      topic='pskr/filter/v2/+/+/+/+/+/'+Squares[i]+'/+/#';
+      console.log("Subscribe to "+topic);
+      client.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
     }
   
   }
@@ -187,6 +191,7 @@ a:visited {color: blue;}
   function parseSquares(sqsList){
     var outputSqsArr=new Array();
     var inputSqs=sqsList.split(',');
+    console.log("Parsing squares list "+inputSqs);
     for(i=0;i<inputSqs.length;i++){
       let sq=inputSqs[i];
       if(sq.search(":")<0){
@@ -194,12 +199,12 @@ a:visited {color: blue;}
       } else {
         let letters=sq.substring(0,2);
         let corners=sq.substring(2,7).split(":");
-        console.log(letters,corners);
+  //      console.log("Parsing squares list item ",letters,corners);
         let x1=parseInt(corners[0][0]);
         let x2=parseInt(corners[1][0]);
         let y1=parseInt(corners[0][1]);
         let y2=parseInt(corners[1][1]);
-        console.log(x1,x2,y1,y2);
+ //       console.log(x1,x2,y1,y2);
         for(x=x1;x<x2+1;x++){
           for (y=y1;y<y2+1;y++){
             outputSqsArr.push(letters+x.toString()+y.toString());
@@ -207,6 +212,7 @@ a:visited {color: blue;}
         }
       }   
     }
+    console.log("Parsed result "+outputSqsArr);
     return outputSqsArr;
   }
 	
@@ -233,8 +239,8 @@ a:visited {color: blue;}
 	
   function saveConfig(){
       console.log("Saving config:");
-      localStorage.setItem('Squares', JSON.stringify(Squares));
-      console.log("Saved Squares: "+Squares);
+      localStorage.setItem('squaresList', JSON.stringify(squaresList));
+      console.log("Saved Squares List: "+squaresList);
       localStorage.setItem('myCall', myCall);
       console.log("Saved myCall: "+myCall);
       localStorage.setItem('purgeMinutes', purgeMinutes);
@@ -314,7 +320,7 @@ a:visited {color: blue;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=Squares.join(', ')+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
+    var sqs=squaresList+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
@@ -360,10 +366,11 @@ a:visited {color: blue;}
     let respArr=resp.split(',');
     squaresListValid=true;
     for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
-      if(respArr[i].search(":")>0) {let sq=respArr[i].substring(0,4)} else {let sq=respArr[i]}
-      if(validSquare(respArr[i])<4) squaresValid=false;
+      let sq="";
+      if(respArr[i].search(":")>0) {sq=respArr[i].substring(0,4)} else {sq=respArr[i]}
+      if(validSquare(sq)<4) squaresListValid=false;
     }
-    if(squaresValid){
+    if(squaresListValid){
       squaresList=resp; 
       console.log("Squares list updated to: "+resp);
       saveConfig();
