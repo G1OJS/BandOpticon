@@ -456,7 +456,8 @@ a:visited {color: blue;}
        var entitiesHome=new Set;
        var senderEntity="";
        var receiverEntity="";
-			 for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
+	  
+       for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
@@ -496,7 +497,8 @@ a:visited {color: blue;}
          "<span class='incoming'>"+nSpotsDX2H+"</span>";
        document.getElementById(bandsArr[iBand]+"calls").innerHTML=
          "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>"
+	 +html;
       
       let parentBox=document.getElementById(bandsArr[iBand]+"calls").parentElement
       if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
