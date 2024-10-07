@@ -1,9 +1,14 @@
 <!DOCTYPE html>
 
-<!-- To do:
- 
+<!-- 
+   - This version allows user to specify squares like IO95:99,JO63,JO64lj
+
+To do:
+  - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
+  - get rid of substr() and replace with substring() 
 
 lower priority:
+  - add header for data recording window
   - given the highlighting, do we need the "myCall" lines as well as the "myCall Only" lines?
   - add clickable links to "modes on this band"
   - data recorder to do all modes simultaneously?
@@ -39,7 +44,7 @@ div {margin: 0px;  padding: 0px;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
-#bandsGrid > div {background-color: white; margin: 1px;  padding: 5px; }
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .transmit {color:red;}
 .receive {color:green; }
@@ -83,14 +88,14 @@ a:visited {color: blue;}
    </div>
    <div>
         Thanks to:<br>
-        Philip Gladstone - N1DQ for <a href='https://pskreporter.info'/>Pskreporter.info</a><br>
+        Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
         Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
         <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
    </div>
    <div>
       BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
       BandOpticon Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
-      BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>G1OJS/github.com/G1OJS/BandOpticon</a><br>
+      BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
       <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fgjbae1212%2Fhit-counter"></a>                        
    </div>
 </div>
@@ -105,11 +110,12 @@ a:visited {color: blue;}
  
   const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
   let refresh_mSeconds=1000;
+  var mqttClient=null;
   let purgeMinutes=15;
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
   let tStart=Date.now(); // software start time
-  const defaultSquaresArr=["IO","JO01","JO02","JO03","JO04"]
+  const defaultSquaresList="IO50:99,JO01,JO02,JO03";
   let Squares=[]; // needs careful search and replace to squaresArr
   var entity="Square";
   var squaresDisplayLevel=4;
@@ -137,6 +143,7 @@ a:visited {color: blue;}
   var dataWriteSeconds=15;
 
   loadConfig();
+  Squares=parseSquares(squaresList);
   updateDetails();
   updateControls();
   
@@ -160,17 +167,66 @@ a:visited {color: blue;}
 
   setInterval(writeStats, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
-  
-  // Connect to Pskreporter and subscribe on connect
-  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-  const client=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-  client.onSuccess=client.subscribe('pskr/filter/v2/+/+/+/+/+/+/+/#');
-  client.on("message", (filter,message) => {onMessage(message.toString());}  );
- 
 
+  connectToFeed();
+  
+  function connectToFeed(){
+  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. Should also alert the user that this will happen and give chance not to edit the squares.
+    // if already connected, disconnect (happens if user edits squares list)
+    try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
+    // now connect and subscribe on success
+    mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
+    mqttClient.onSuccess=subscribeSquares();
+    mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
+  }
+  
   // done with initialisation now
+
+	
+  function subscribeSquares(){
+    for(let i=0;i<Squares.length;i++){
+      var error=null;
+      var topic='pskr/filter/v2/+/+/+/+/'+Squares[i]+'/+/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+      topic='pskr/filter/v2/+/+/+/+/+/'+Squares[i]+'/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+    }
   
-  
+  }
+
+  function parseSquares(sqsList){
+    var outputSqsArr=new Array();
+    var inputSqs=sqsList.split(',');
+    console.log("Parsing squares list "+inputSqs);
+    for(i=0;i<inputSqs.length;i++){
+      let sq=inputSqs[i];
+      if(sq.search(":")<0){
+        outputSqsArr.push(sq)
+      } else {
+        let letters=sq.substring(0,2);
+        let corners=sq.substring(2,7).split(":");
+  //      console.log("Parsing squares list item ",letters,corners);
+        let x1=parseInt(corners[0][0]);
+        let x2=parseInt(corners[1][0]);
+        let y1=parseInt(corners[0][1]);
+        let y2=parseInt(corners[1][1]);
+ //       console.log(x1,x2,y1,y2);
+        for(x=x1;x<x2+1;x++){
+          for (y=y1;y<y2+1;y++){
+            outputSqsArr.push(letters+x.toString()+y.toString());
+          }
+        }
+      }   
+    }
+    console.log("Parsed result "+outputSqsArr);
+    return outputSqsArr;
+  }
+	
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
@@ -194,8 +250,8 @@ a:visited {color: blue;}
 	
   function saveConfig(){
       console.log("Saving config:");
-      localStorage.setItem('Squares', JSON.stringify(Squares));
-      console.log("Saved Squares: "+Squares);
+      localStorage.setItem('squaresList', JSON.stringify(squaresList));
+      console.log("Saved Squares List: "+squaresList);
       localStorage.setItem('myCall', myCall);
       console.log("Saved myCall: "+myCall);
       localStorage.setItem('purgeMinutes', purgeMinutes);
@@ -205,19 +261,25 @@ a:visited {color: blue;}
   function loadConfig(){
     if(localStorage.getItem('Squares')){
       try {
-        Squares=JSON.parse(localStorage.getItem('Squares'));
-        console.log("Loaded local config. Squares= "+Squares);
+        squaresList=JSON.parse(localStorage.getItem('squaresList'));
+        if(squaresList==null){
+           squaresList=defaultSquaresList;
+           localStorage.setItem('squaresList', JSON.stringify(squaresList));
+           console.log("Loaded local config. squaresList as null, defaults applied and local copy replaced");
+        } else {
+           console.log("Loaded local config. squaresList= "+squaresList);
+        }
       }
       catch(err) {
-        console.log("Local storage result for squares: "+Squares);
-        localStorage.removeItem('Squares');
-        Squares=defaultSquaresArr;
-        localStorage.setItem('Squares', JSON.stringify(Squares));
-        console.log("Error loading local config data: defaults applied and local copy replaced");
+        console.log("Local storage result for squaresList: "+squaresList);
+        localStorage.removeItem('squaresList');
+        squaresList=defaultSquaresList;
+        localStorage.setItem('squaresList', JSON.stringify(squaresList));
+        console.log("Error loading local squares list: defaults applied and local copy replaced");
         }
     } else {
-      Squares=defaultSquaresArr;
-      console.log("No local config data found: defaults applied.");
+      squaresList=defaultSquaresList;
+      console.log("No local config data found for squares list: defaults applied.");
       saveConfig();
     }
     if(localStorage.getItem('myCall')){
@@ -269,7 +331,7 @@ a:visited {color: blue;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=Squares.join(',')+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
+    var sqs=squaresList+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
@@ -280,10 +342,10 @@ a:visited {color: blue;}
        +"<br>Home = "+sqs+"<br>"
        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
        +"Mode: "+modeSelector+"<br>"
-       +spotsArr.length+" spots in database"
-       +"<br>"+spotsAdded+" added, "+spotsPurged+" purged<br>"
+       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-       +messagesReceived+" messages received, "+messagesProcessed+" processed"
+       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>"
+
   }
 
   // needs validation code
@@ -311,23 +373,33 @@ a:visited {color: blue;}
   
   // function to allow the user to edit the home squares list
   function editSquares(){
-    var resp=prompt("Enter Squares",Squares);
-      if(resp==null){return}
-      var respArr=resp.split(','); // need to convert resp string to array
-      squaresValid=true;
-      for (let i=0;i<respArr.length;i++){
-        if(validSquare(respArr[i])==0) squaresValid=false;
-      }
-      if(squaresValid){
-      Squares=respArr;
-      console.log("Squares updated to: "+Squares);
+    var resp=prompt("Please enter a list of squares separated by commas.\n"
+		   +"4,6,8 and 10 character squares are accepted.\n"
+		   +"You can specify a rectangle within a 2-character square\n"
+		   +"by using the format LLNN:NN, e.g. IO50:85\n"
+		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
+    if(resp==null){return}
+    let respArr=resp.toUpperCase().split(',');
+    squaresListValid=true;
+    for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
+      let sq="";
+      if(respArr[i].search(":")>0) {sq=respArr[i].substring(0,4)} else {sq=respArr[i]}
+      if(validSquare(sq)<4) squaresListValid=false;
+    }
+    if(squaresListValid){
+      squaresList=resp; 
+      console.log("Squares list updated to: "+resp);
       saveConfig();
+      Squares=parseSquares(resp);
       updateControls();
       spotsArr=[];
       spotsAdded=0;
       spotsPurged=0;
+      writeStats();
+      console.clear();
+      connectToFeed();
     } else {
-      alert("Please enter a comma-separated list of valid squares.\n\nYou entered "+resp);
+      alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
   }
   
