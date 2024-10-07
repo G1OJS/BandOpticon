@@ -484,7 +484,7 @@ a:visited {color: blue;}
        let otherModes=Array.from(modeSetByBandArr[iBand].difference(tmp)).toSorted();
        let html="+ ";
        for (i=0;i<otherModes.length;i++){
-         html+="<a href='#' onclick='Mode=&quot;"+otherModes[i]+"&quot;;'>"+otherModes[i]+"</a> ";
+         html+="<a href='#' onclick='Mode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
        }
        if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=html;}
        
@@ -507,7 +507,8 @@ a:visited {color: blue;}
           +"<br>click on 'details' in band tiles below to change band"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               +"<br>Modes on this band: "+Array.from(modeSetByBandArr[iBand]).toSorted()+"</div>";
+          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               
+	  +"<br>Modes on this band: "+Array.from(modeSetByBandArr[iBand]).toSorted()+"</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
