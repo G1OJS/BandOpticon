@@ -1,19 +1,17 @@
 <!DOCTYPE html>
 
 <!-- 
-   - This version allows user to specify squares like IO95:99,JO63,JO64lj
+   - This version allows user to specify squares like IO65:99,JO63,JO64lj
 
 To do:
   - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
-  - get rid of substr() and replace with substring() 
+  - switch to https://www.brailleinstitute.org/freefont/
 
-lower priority:
-  - add header for data recording window
+ideas:
   - given the highlighting, do we need the "myCall" lines as well as the "myCall Only" lines?
-  - add clickable links to "modes on this band"
   - data recorder to do all modes simultaneously?
-  - replace the links top right with Xclose button (top right) on band details and legend panes
-      where to put the data recorder button then?
+
+code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
@@ -63,11 +61,6 @@ a:visited {color: blue;}
    <div id="controls">
       <div id="controls_l"></div>
       <div id="controls_r">
-      What to show above band summary tiles? <br>
-      <a href='#' onclick='updateDetails(&quot;BandTileLegend&quot;);'>Band tile legend</a><br>
-      <a href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;);'>Band Activity Details</a><br>
-      <a href='#' onclick='updateDetails(&quot;Nothing&quot;);'>Nothing</a><br>
-      <br><a href='#' onclick='startRecording();'>Experimental stats recorder</a> 
      </div>
    </div>
    <div id="legend"></div>
@@ -123,7 +116,7 @@ a:visited {color: blue;}
   let myCall="G1OJS";
   var Mode="FT8"; // better as myMode mainMode?
   var Modes=new Set(["FT4","FT8","JS8","WSPR","CW"]); // OK as capital plural to indicate set?
-  var modesByBandArr=new Array();
+  var modeSetByBandArr=new Array();
   var spotsArr=[];
   var spotsAdded=0;
   var spotsPurged=0;
@@ -152,8 +145,8 @@ a:visited {color: blue;}
   for(let i=0; i < bandsArr.length; i++){
     var newDiv = document.createElement('div');
     newDiv.id = bandsArr[i];     
-    newDiv.innerHTML="<strong><output id='"+bandsArr[i]+"band'>"+bandsArr[i]+"</output></strong>"
-      +" <a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+i+");'>details</a><br>"
+    newDiv.innerHTML=""
+      +"<output id='"+bandsArr[i]+"band'>"+bandsArr[i]+"</output></a>"
       +"<output id='"+bandsArr[i]+"spots'></output><br>"
       +"<output id='"+bandsArr[i]+"calls'></output><br>"
       +"<output id='"+bandsArr[i]+"modes' style='font-size:0.7rem'></output>";
@@ -162,7 +155,7 @@ a:visited {color: blue;}
   document.getElementById('bandsGrid').appendChild(toAdd);
 
   for (let i=0;i<bandsArr.length;i++){
-     modesByBandArr.push(new Set);
+     modeSetByBandArr.push(new Set);
   }
 
   setInterval(writeStats, refresh_mSeconds);
@@ -230,21 +223,22 @@ a:visited {color: blue;}
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
-       +("0"+t.getUTCHours()).substr(-2)+":"
-       +("0"+t.getUTCMinutes()).substr(-2)+":"
-       +("0"+t.getUTCSeconds()).substr(-2)+" UTC";
+       +("0"+t.getUTCHours()).substring(1,3)+":"
+       +("0"+t.getUTCMinutes()).substring(1,3)+":"
+       +("0"+t.getUTCSeconds()).substring(1,3)+" UTC";
   }
 
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
-      newWindow.onload = function() {
-  	  newWindow.document.body.insertAdjacentHTML('afterbegin', html);
-    }
+      htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
+    +"'Home' = "+squaresList
+    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home)]</strong><BR> ";
+  	  newWindow.document.write(htmlTmp);
   }
   
   function writeData(){
     if(newWindow==null){return}
-    var data_html="<br>"+get_utc_timestamp()+" "+dataForRecord.slice(0,-1);
+    var data_html="<br>"+get_utc_timestamp()+","+dataForRecord.slice(0,-1);
     newWindow.document.write(data_html);
   }
 	
@@ -311,8 +305,9 @@ a:visited {color: blue;}
     }
     
     if(detailsWanted=="BandTileLegend"){
-      legend.innerHTML="<div>Band tile legend:<br><strong>Band</strong><br> \
-         Spots: number of spots "+spotsLegend+"<br>"+
+      legend.innerHTML="<div>Band tile legend:"
+         +" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
+         +"<br><strong>Band & Mode</strong> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"+
          "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
          "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>";
       detailsGrid.innerHTML="";
@@ -331,20 +326,22 @@ a:visited {color: blue;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var sqs=squaresList+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>";
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
       modeSelector+=" <a class='textAnchorButton' href='#' onclick='Mode=&quot;"+md+"&quot;'>"+HL(md,md==Mode)+"</a> "
     }
+    
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
-       +"<br> - running for "+runningmins+" minutes"
-       +"<br>Home = "+sqs+"<br>"
-       +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
-       +"Mode: "+modeSelector+"<br>"
+       +"<br>Running for "+runningmins+" minutes<br>"
        +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
-       +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>"
+       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
+
+    controls_r.innerHTML="Home = "+squaresList+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>"
+	           +"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span><br>"
+             +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
+      +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
+             +"Mode: "+modeSelector+"<br>";
 
   }
 
@@ -413,7 +410,7 @@ a:visited {color: blue;}
       let md=getVal("md",message);
       if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
         Modes.add(md)
-        modesByBandArr[bandsArr.indexOf(b)].add(md);
+        modeSetByBandArr[bandsArr.indexOf(b)].add(md);
           let senderCall=getVal("sc",message);
           let receiverCall=getVal("rc",message);
           let tSpot=Date.now(); // working with time spot received not time spot generated
@@ -456,12 +453,14 @@ a:visited {color: blue;}
        var entitiesHome=new Set;
        var senderEntity="";
        var receiverEntity="";
-			 for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
+       var htmlTmp="";
+	  
+       for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
            if(entity=="Call"){senderEntity=spot[2]; receiverEntity=spot[3];} 
-               else {senderEntity=spot[4].substr(0,squaresDisplayLevel);receiverEntity=spot[5].substr(0,squaresDisplayLevel);} 
+               else {senderEntity=spot[4].substring(0,squaresDisplayLevel);receiverEntity=spot[5].substring(0,squaresDisplayLevel);} 
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
@@ -478,12 +477,22 @@ a:visited {color: blue;}
        }
 
        dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
-       
-       document.getElementById(bandsArr[iBand]+"band").innerHTML=bandsArr[iBand]+" "+Mode;
-       
+
+       // update first row of the band tile
+       htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+bandsArr[iBand]+" "+Mode+"</a></strong>";
+       if(detailsWanted!="BandTileLegend") {
+         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
+       }
+       document.getElementById(bandsArr[iBand]+"band").innerHTML=htmlTmp+"<br>";
+
+       // get the modes specific to this band and write clickable links for BandActivityDetails
        let tmp=(new Set()).add(Mode); 
-       let otherModes=Array.from(modesByBandArr[iBand].difference(tmp)).toSorted().join(', ');
-       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML="+ "+otherModes;}
+       let otherModes=Array.from(modeSetByBandArr[iBand].difference(tmp)).toSorted();
+       htmlTmp="+ ";
+       for (i=0;i<otherModes.length;i++){
+         htmlTmp+="<a class='textAnchorButton' href='#' onclick='Mode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
+       }
+       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
        
        document.getElementById(bandsArr[iBand]+"spots").innerHTML=
          "Spots "+
@@ -501,10 +510,10 @@ a:visited {color: blue;}
         legend.innerHTML="";
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
-          +"<br>click on 'details' in band tiles below to change band"
+          +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff               +"<br>Modes on this band: "+Array.from(modesByBandArr[iBand]).toSorted()+"</div>";
+          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff+"</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -528,7 +537,7 @@ a:visited {color: blue;}
             if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
                let reachedEntity="";
                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
-                 else {reachedEntity=spotsArr[i][5].substr(0,squaresDisplayLevel)}
+                 else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
                if(squareIsInHome(spotsArr[i][5])){entitiesReachedInHome.add(reachedEntity)} 
                  else {entitiesReachedInOther.add(reachedEntity)} 
             }
@@ -571,7 +580,7 @@ a:visited {color: blue;}
           for(let i=0;i<spotsArr.length;i++){
             if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall){
                let spottedEntity="";
-               if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substr(0,squaresDisplayLevel)}
+               if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
                if(squareIsInHome(spotsArr[i][4])){entitiesSpottedInHome.add(spottedEntity)} else {entitiesSpottedInOther.add(spottedEntity)} 
             }
           }
@@ -621,8 +630,8 @@ a:visited {color: blue;}
               senderEntity=spot[2];
               receiverEntity=spot[3];
             } else {
-              senderEntity=spot[4].substr(0,squaresDisplayLevel);
-              receiverEntity=spot[5].substr(0,squaresDisplayLevel);
+              senderEntity=spot[4].substring(0,squaresDisplayLevel);
+              receiverEntity=spot[5].substring(0,squaresDisplayLevel);
             }         
             if(squareIsInHome(spot[4]) && spot[2]!=myCall){entitiesReachedOnlyByMe.delete(receiverEntity);}
             if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
@@ -685,8 +694,8 @@ a:visited {color: blue;}
   }
 
   function squareIsInHome(sq){
-    // return true if the level 2,4 or 6 square sq is in the home squares array
-    return (Squares.includes(sq.substr(0,2)) || Squares.includes(sq.substr(0,4)) || Squares.includes(sq.substr(0,6)));
+    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+    return (Squares.includes(sq.substring(0,4)) || Squares.includes(sq.substring(0,6)) || Squares.includes(sq.substring(0,8)) || Squares.includes(sq.substring(0,10)));
   }
   
   function getVal(key,message){
