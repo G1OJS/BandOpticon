@@ -378,7 +378,7 @@ a:visited {color: blue;}
 		   +"by using the format LLNN:NN, e.g. IO50:85\n"
 		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
-    let respArr=resp.split(',');
+    let respArr=resp.toUpperCase().split(',');
     squaresListValid=true;
     for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
       let sq="";
