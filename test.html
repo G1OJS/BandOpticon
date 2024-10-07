@@ -482,7 +482,7 @@ a:visited {color: blue;}
        document.getElementById(bandsArr[iBand]+"band").innerHTML=bandsArr[iBand]+" "+Mode;
        
        let tmp=(new Set()).add(Mode); 
-       let otherModes=Array.from(modesByBandArr[iBand].difference(tmp)).toSorted().join(', ');
+       let otherModes=Array.from(modesByBandArr[iBand]).difference(tmp)).toSorted().join(', ');
        let html="+ ";
        for (i=0;i<otherModes.length;i++){
          html+="<a href='' onclick='Mode=&quot;"+md+"&quot;'>"+otherModes[i]+"</a> ";
