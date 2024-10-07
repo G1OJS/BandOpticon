@@ -168,9 +168,11 @@ a:visited {color: blue;}
   connectToFeed();
   
   function connectToFeed(){
-  // Connect to Pskreporter and subscribe on connect
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. Should also alert the user that this will happen and give chance not to edit the squares.
+    // if already connected, disconnect (happens if user edits squares list)
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
+    // now connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
     mqttClient.onSuccess=subscribeSquares();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
@@ -337,8 +339,7 @@ a:visited {color: blue;}
        +"<br>Home = "+sqs+"<br>"
        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
        +"Mode: "+modeSelector+"<br>"
-       +spotsArr.length+" spots in database"
-       +"<br>"+spotsAdded+" added, "+spotsPurged+" purged<br>"
+       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
   }
 
@@ -385,6 +386,8 @@ a:visited {color: blue;}
       spotsArr=[];
       spotsAdded=0;
       spotsPurged=0;
+      writeStats();
+      console.clear();
       connectToFeed();
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
