@@ -506,9 +506,7 @@ a:visited {color: blue;}
           }
      
           if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
-            detailsGrid.innerHTML+="<div class='transmit'>"
-              +HL(txCall,myCall)
-              +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
+            detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span> <span class='outgoing'> "
               +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -547,8 +545,7 @@ a:visited {color: blue;}
           }
           }
           if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
-            detailsGrid.innerHTML+="<div class='receive'>"
-            +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
+            detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
             +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span> <span class='incoming'>"
             +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
