@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-<meta http-equiv="Pragma" content="no-cache"/>
-<meta http-equiv="Expires" content="0"/>
-</head>
-<body>
-  
-<h1>Changes</h1>
+
+# Changes 
 
 <table>
 <tr>
@@ -37,7 +29,7 @@
 </table>  
 
 
-<h1>Numbering scheme</h1> 
+# Numbering scheme
 From [https://semver.org/](https://semver.org/)
 
 Given a version number MAJOR.MINOR.PATCH, increment the:   
@@ -47,7 +39,7 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
 
-<h1>To-do list & ideas</h1> 
+# To-do list & ideas
 
 To do:
   - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
@@ -65,5 +57,4 @@ Code tidying:
      - Capital_plurals = Set
      - camelCasePluralsArr = Array 
 
-</body>
-</html>
+
