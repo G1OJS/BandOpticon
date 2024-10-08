@@ -32,8 +32,6 @@ The software runs in Javascript on your machine and requires no downloads. Just 
 
 [Current Version](https://g1ojs.github.io/BandOpticon/BandOpticon)
 
-Easter egg - you might find me fiddling with ideas for the next version [here](https://g1ojs.github.io/BandOpticon/test) 
-
 ![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/) from https://hits.seeyoufarm.com     
 
 <!--
