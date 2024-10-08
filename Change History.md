@@ -5,7 +5,7 @@
 </tr>
   
 <tr>
-  <td>08-10-2024</td>V1.0.0</td><td>V1.0.0</td><td>Added V1.0.0 to Title tag of live version</td>
+  <td>08-10-2024</td><td>V1.0.0</td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
 
 <tr>
@@ -19,6 +19,7 @@
       <li>Internal code change - rename Squares to squaresArr</li>
       <li>Internal code change - removed redundant code from configuration loader introduced due to error in localstorage tag name for squares (now fixed)</li>
       <li>Removed duplicate copy of [myCall] appearing in main table when not grouping calls into Tx and Rx lists</li>
+      <li>Added link to this change history</li>
     </ol>
   </td>
 </tr>
