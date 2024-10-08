@@ -621,20 +621,21 @@ a:visited {color: blue;}
             if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
           }
         }
-        
+
+	const highlightHere=false;
         if(entitiesReachedByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,true)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,highlightHere));
+            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,highlightHere));
+          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,highlightHere)+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
 
         if(entitiesReachedOnlyByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,highlightHere));
+            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,highlightHere));
+          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",highlightHere)+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
