@@ -627,10 +627,10 @@ a:visited {color: blue;}
         if(entitiesReachedByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted();
             var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"</div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
         }
 
         if(entitiesReachedOnlyByMe.size>0){
@@ -639,7 +639,7 @@ a:visited {color: blue;}
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
         }
         
         if(entitiesSpottedByMe.size>0){
@@ -648,7 +648,7 @@ a:visited {color: blue;}
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
@@ -657,7 +657,7 @@ a:visited {color: blue;}
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
         }
         
 
