@@ -9,7 +9,7 @@
 </tr>
 
 <tr>
-  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Prior%20Versions/BandOpticon%20V1.0.0'>V1.0.1</a></td>
+  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Prior%20Versions/BandOpticon%20V1.0.1'>V1.0.1</a></td>
   <td>
     <ol>
       <li>Fixed clock error (12:01:05 displays as 12:1:5) reintroduced when eliminating deprecated substr()</li>
