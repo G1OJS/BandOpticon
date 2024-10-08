@@ -1,32 +1,7 @@
 <!DOCTYPE html>
-
-<!-- 
-   - This version allows user to specify squares like IO65:99,JO63,JO64lj
-
-To do:
-  - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
-  - switch to https://www.brailleinstitute.org/freefont/
-
-ideas:
-  - given the highlighting, do we need the "myCall" lines as well as the "myCall Only" lines?
-  - data recorder to do all modes simultaneously?
-
-code tidying:
-  - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
-  - define functions to make flow more aparrent in writeStats
-  - look at updateDetails and updateControls - see if they can be rationalised
-     or clarified a bit (purpose vs name). updateDetails is more of a handler for 
-     click to change events than anything
-  - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
-     - IMMUTABLE = const
-     - Capital_plurals = Set
-     - camelCasePluralsArr = Array 
--->
-
-
 <html lang="en">
 <head>
-<title>BandOpticon V1.0.0</title>
+<title>BandOpticon V1.0.1</title>
 <style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
@@ -86,9 +61,11 @@ a:visited {color: blue;}
         <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
    </div>
    <div>
-      BandOpticon License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
-      BandOpticon Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
-      BandOpticon GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+      License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+      Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
+      GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+      Changes: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Change History</a><br>
+	   
       <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/BandOpticon"></a>                        
    </div>
 </div>
@@ -109,7 +86,7 @@ a:visited {color: blue;}
   let iDetailsBandIndex=0;
   let tStart=Date.now(); // software start time
   const defaultSquaresList="IO50:99,JO01,JO02,JO03";
-  let Squares=[]; // needs careful search and replace to squaresArr
+  let squaresArr=[]; 
   var entity="Square";
   var squaresDisplayLevel=4;
   var groupHomeCalls=true;
@@ -136,7 +113,7 @@ a:visited {color: blue;}
   var dataWriteSeconds=15;
 
   loadConfig();
-  Squares=parseSquares(squaresList);
+  squaresArr=parseSquares(squaresList);
   updateDetails();
   updateControls();
   
@@ -178,13 +155,13 @@ a:visited {color: blue;}
 
 	
   function subscribeSquares(){
-    for(let i=0;i<Squares.length;i++){
+    for(let i=0;i<squaresArr.length;i++){
       var error=null;
-      var topic='pskr/filter/v2/+/+/+/+/'+Squares[i]+'/+/+/#';
+      var topic='pskr/filter/v2/+/+/+/+/'+squaresArr[i]+'/+/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-      topic='pskr/filter/v2/+/+/+/+/+/'+Squares[i]+'/+/#';
+      topic='pskr/filter/v2/+/+/+/+/+/'+squaresArr[i]+'/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
@@ -223,9 +200,9 @@ a:visited {color: blue;}
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
-       +("0"+t.getUTCHours()).substring(1,3)+":"
-       +("0"+t.getUTCMinutes()).substring(1,3)+":"
-       +("0"+t.getUTCSeconds()).substring(1,3)+" UTC";
+       +("0"+t.getUTCHours()).slice(-2)+":"
+       +("0"+t.getUTCMinutes()).slice(-2)+":"
+       +("0"+t.getUTCSeconds()).slice(-2)+" UTC";
   }
 
   function startRecording(){
@@ -253,24 +230,8 @@ a:visited {color: blue;}
   }
   
   function loadConfig(){
-    if(localStorage.getItem('Squares')){
-      try {
-        squaresList=JSON.parse(localStorage.getItem('squaresList'));
-        if(squaresList==null){
-           squaresList=defaultSquaresList;
-           localStorage.setItem('squaresList', JSON.stringify(squaresList));
-           console.log("Loaded local config. squaresList as null, defaults applied and local copy replaced");
-        } else {
-           console.log("Loaded local config. squaresList= "+squaresList);
-        }
-      }
-      catch(err) {
-        console.log("Local storage result for squaresList: "+squaresList);
-        localStorage.removeItem('squaresList');
-        squaresList=defaultSquaresList;
-        localStorage.setItem('squaresList', JSON.stringify(squaresList));
-        console.log("Error loading local squares list: defaults applied and local copy replaced");
-        }
+    if(localStorage.getItem('squaresList')){
+      squaresList=JSON.parse(localStorage.getItem('squaresList'));
     } else {
       squaresList=defaultSquaresList;
       console.log("No local config data found for squares list: defaults applied.");
@@ -387,7 +348,7 @@ a:visited {color: blue;}
       squaresList=resp; 
       console.log("Squares list updated to: "+resp);
       saveConfig();
-      Squares=parseSquares(resp);
+      squaresArr=parseSquares(resp);
       updateControls();
       spotsArr=[];
       spotsAdded=0;
@@ -513,7 +474,7 @@ a:visited {color: blue;}
           +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities common to "+myCall+" and all calls including "+myCall+" are "+HLOn+"highlighted"+HLOff+"</div>";
+          +"Entities spotting / being spotted by " +myCall+" are "+HLOn+"highlighted"+HLOff+" when also spotted / being spotted by other stations in 'Home'</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -544,7 +505,7 @@ a:visited {color: blue;}
           }
           }
      
-          if(!groupHomeCalls){ 
+          if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='transmit'>"
               +HL(txCall,myCall)
               +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
@@ -585,9 +546,8 @@ a:visited {color: blue;}
             }
           }
           }
-          if(!groupHomeCalls){
+          if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='receive'>"
-            +HL(rxCall,myCall)
             +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
             +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span> <span class='incoming'>"
@@ -607,10 +567,11 @@ a:visited {color: blue;}
           +"</span><div>";
         }
     
-        // Find the entities reached & spotted by myCall but not others.
-        // We already have the entities eached & spotted by myCall and/or others
+        // Find the entities reached & spotted by myCall but not others, to display below 
+	// the "spotting myCall" and "spotted by myCall" rows
+        // We already have the entities reached & spotted by myCall 
         // collected for use in the highlighting above, so start with them and subtract
-        // where myCall wasn't the only one to reached / spot the other entity.
+        // where myCall wasn't the only one to reach / spot the other entity.
         // Need to make a DEEP COPY first (otherwise we are working with only one copy of data)
         var entitiesSpottedOnlyByMe=new Set;
         for (let i=0;i<entitiesSpottedByMe.size;i++) {
@@ -637,41 +598,41 @@ a:visited {color: blue;}
             if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
           }
         }
-        
+
         if(entitiesReachedByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,true)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted();
+            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
         }
 
         if(entitiesReachedOnlyByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",true)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted();
+            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
+            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
         }
         
         if(entitiesSpottedByMe.size>0){
-            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall,true)+"</div>"
+            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
-            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,true));
-            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,true));
-          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
+            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
+            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
         }
         
 
@@ -695,7 +656,7 @@ a:visited {color: blue;}
 
   function squareIsInHome(sq){
     // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
-    return (Squares.includes(sq.substring(0,4)) || Squares.includes(sq.substring(0,6)) || Squares.includes(sq.substring(0,8)) || Squares.includes(sq.substring(0,10)));
+    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
   }
   
   function getVal(key,message){
