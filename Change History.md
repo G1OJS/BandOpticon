@@ -5,7 +5,7 @@
 </tr>
   
 <tr>
-  <td>08-10-2024</td>V1.0.0</td><td>Changes</td>
+  <td>08-10-2024</td>V1.0.0</td><td>V1.0.0</td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
 
 <tr>
