@@ -627,7 +627,7 @@ a:visited {color: blue;}
         if(entitiesReachedByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted();
             var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='transmit'></div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
@@ -636,7 +636,7 @@ a:visited {color: blue;}
         if(entitiesReachedOnlyByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted();
             var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='transmit'></div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
@@ -645,7 +645,7 @@ a:visited {color: blue;}
         if(entitiesSpottedByMe.size>0){
             var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted();
             var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='receive'></div>"
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
@@ -654,7 +654,7 @@ a:visited {color: blue;}
         if(entitiesSpottedOnlyByMe.size>0){
             var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted();
             var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='receive'></div>"
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
