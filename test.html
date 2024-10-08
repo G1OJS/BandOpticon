@@ -223,9 +223,9 @@ a:visited {color: blue;}
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
-       +("0"+t.getUTCHours()).slice(1)+":"
-       +("0"+t.getUTCMinutes()).slice(1)+":"
-       +("0"+t.getUTCSeconds()).slice(1)+" UTC";
+       +("0"+t.getUTCHours()).slice(-2)+":"
+       +("0"+t.getUTCMinutes()).slice(-2)+":"
+       +("0"+t.getUTCSeconds()).slice(-2)+" UTC";
   }
 
   function startRecording(){
