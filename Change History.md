@@ -15,7 +15,7 @@
       <li>Fixed clock error (12:01:05 displays as 12:1:5) reintroduced when eliminating deprecated substr()</li>
       <li>Changed text in details pane from
         "Entities common to [myCall] and all calls including [myCall] are highlighted"
-        to "Entities spotting / being spotted by [myCall] are highlighted when also spotted by other calls in Home"</li>
+        to "Entities spotting / being spotted by [myCall] are highlighted where also spotted by other calls in Home"</li>
       <li>Internal code change - rename Squares to squaresArr</li>
       <li>Internal code change - removed redundant code from configuration loader introduced due to error in localstorage tag name for squares (now fixed)</li>
       <li>Removed duplicate copy of [myCall] appearing in main table when not grouping calls into Tx and Rx lists</li>
