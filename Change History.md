@@ -44,6 +44,7 @@ To do:
   - switch to https://www.brailleinstitute.org/freefont/
 
 Code tidying:
+  - delete lines 566 to 598 and use a set difference in lines 608-615 and 625-633 to get "only by me" rows. This info is already in the myCall rows, but the extra row helps to highlight it
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
   - define functions to make flow more aparrent in writeStats
   - look at updateDetails and updateControls - see if they can be rationalised
