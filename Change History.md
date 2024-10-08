@@ -36,3 +36,20 @@ Given a version number MAJOR.MINOR.PATCH, increment the:
 - PATCH version when you make backward compatible bug fixes
 
 Additional labels for pre-release and build metadata are available as extensions to the MAJOR.MINOR.PATCH format.
+
+# To-do list & ideas
+
+To do:
+  - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
+  - switch to https://www.brailleinstitute.org/freefont/
+
+Code tidying:
+  - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
+  - define functions to make flow more aparrent in writeStats
+  - look at updateDetails and updateControls - see if they can be rationalised
+     or clarified a bit (purpose vs name). updateDetails is more of a handler for 
+     click to change events than anything
+  - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
+     - IMMUTABLE = const
+     - Capital_plurals = Set
+     - camelCasePluralsArr = Array 
