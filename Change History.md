@@ -1,6 +1,6 @@
 # Changes
-| Date | Version | Changes
-|08-10-2024| V1.0.0 | Live version of BandOpticon republished with V1.0.0 in the <title> tag.
+Date | Version | Changes
+08-10-2024| V1.0.0 | Live version of BandOpticon republished with V1.0.0 in the <title> tag.
 
 
 # Numbering scheme
