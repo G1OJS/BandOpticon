@@ -625,40 +625,36 @@ a:visited {color: blue;}
         }
 
         if(entitiesReachedByMe.size>0){
-	    // the map isn't necessary (it's nullified by the false) but leaving here incase I want to reawaken it
-            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,false));
-            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,false));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall,highlightHere)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted();
+            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='transmit'></div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
 
         if(entitiesReachedOnlyByMe.size>0){
-	    // the map isn't necessary (it's nullified by the false) but leaving here incase I want to reawaken it
-            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,false));
-            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,false));
-          detailsGrid.innerHTML+="<div class='transmit'>"+HL(myCall+" only",highlightHere)+"</div>"
+            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted();
+            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='transmit'></div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span><div>";
         }
         
         if(entitiesSpottedByMe.size>0){
-	    // the map isn't necessary (it's nullified by the false) but leaving here incase I want to reawaken it
-            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,false));
-            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,false));
-          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall,true)+"</div>"
+            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='receive'></div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
-            // the map isn't necessary (it's nullified by the false) but leaving here incase I want to reawaken it
-            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,false));
-            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted().map(item => HL(item,false));
-          detailsGrid.innerHTML+="<div class='receive'>"+HL(myCall+" only",true)+"</div>"
+            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='receive'></div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span><div>";
