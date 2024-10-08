@@ -18,7 +18,7 @@
       <li>Internal code change - rename Squares to squaresArr</li>
       <li>Internal code change - removed redundant code from configuration loader introduced due to error in localstorage tag name for squares (now fixed)</li>
       <li>Removed duplicate copy of [myCall] appearing in main table when not grouping calls into Tx and Rx lists</li>
-    <ol>
+    </ol>
   </td>
 </tr>
 
