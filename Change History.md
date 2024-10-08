@@ -5,7 +5,7 @@
 </tr>
   
 <tr>
-  <td>08-10-2024</td><td>V1.0.0</td><td>Added V1.0.0 to Title tag of live version</td>
+  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Prior%20Versions/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
 
 <tr>
