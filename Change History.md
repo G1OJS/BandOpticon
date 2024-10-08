@@ -9,7 +9,8 @@
 </tr>
 
 <tr>
-  <td>in progress</td><th>V1.0.1</td><td>
+  <td>in progress</td><td>V1.0.1</td>
+  <td>
     <ol>
       <li>Fixed clock error (12:01:05 displays as 12:1:5) reintroduced when eliminating deprecated substr()</li>
       <li>Changed text in details pane from
