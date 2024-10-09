@@ -14,19 +14,25 @@ div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
+	
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
+
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
+#detailsTop {display: grid; grid-template-columns: 1fr 1px; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding-top:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
+
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
+
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
+
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+	
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
@@ -37,6 +43,7 @@ div {margin: 0px;  padding: 0px;}
 .HL2 {background-color:#ffff66;}
 a:link {color: blue; font-weight:normal;}
 a:visited {color: blue; font-weight:normal;}
+	
 </style>
 </head>
 <body>
@@ -481,9 +488,9 @@ a:visited {color: blue; font-weight:normal;}
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
           +"<span class='notesText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
 	  +"<span class='notesText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+          +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"</div><div>"
-      +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
-    +"</div>";
+          +"</div>";
       
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
