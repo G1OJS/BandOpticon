@@ -597,7 +597,7 @@ a:visited {color: blue;}
        
         if(entitiesSpottedOnlyByMe.size>0){
             var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome).difference(entitiesSpottedHome)).toSorted();
-            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome).difference(entitiesSpottedOther).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome).difference(entitiesSpottedOther)).toSorted();
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
