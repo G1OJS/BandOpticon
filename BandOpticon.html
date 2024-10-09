@@ -1,7 +1,8 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.0.1</title>
+<title>BandOpticon V1.0.2</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -9,27 +10,33 @@
 <style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
+div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; }
-#detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
-#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-div {margin: 0px;  padding: 0px;}
+#detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
+#detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto; border-top:solid; border-width:1px; }
+#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
+		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+#detailsGrid > div.titleRow {padding-top:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+.notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
-a:link {color: blue;}
-a:visited {color: blue;}
+.HL1 {background-color:#d1d1e0;}
+.HL2 {background-color:#ffff66;}
+a:link {color: blue; font-weight:normal;}
+a:visited {color: blue; font-weight:normal;}
 </style>
 </head>
 <body>
@@ -103,10 +110,6 @@ a:visited {color: blue;}
   var spotsPurged=0;
   var messagesReceived=0;
   var messagesProcessed=0;
-  const HLOn="<b><u>";
-  const HLOff="</u></b>"; 
-//  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>⇒</span>";
-//  const LEFTARROW="<span style='text-align:center; font-size:1rem;'>⇐</span>";
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
@@ -294,7 +297,7 @@ a:visited {color: blue;}
     var modeSelector="";
     for (let i=0; i<Modes.size;i++){
       let md=Array.from(Modes)[i]
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='Mode=&quot;"+md+"&quot;'>"+HL(md,md==Mode)+"</a> "
+      modeSelector+=" <a class='textAnchorButton' href='#' onclick='Mode=&quot;"+md+"&quot;'>"+md+"</a> "
     }
     
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
@@ -406,7 +409,6 @@ a:visited {color: blue;}
   }
   
   function writeStatsForBand(iBand){
-    // this loop encloses the entire function. would it be more readable if taken outside the function?
      
        var txCalls=new Set;
        var rxCalls=new Set;
@@ -415,7 +417,7 @@ a:visited {color: blue;}
        var nSpotsDX2H=0;
        var entitiesReachedByMe=new Set;
        var entitiesSpottedByMe=new Set;
-       var entitiesHome=new Set;
+       var entitiesInHome=new Set;
        var senderEntity="";
        var receiverEntity="";
        var htmlTmp="";
@@ -429,12 +431,12 @@ a:visited {color: blue;}
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
-             entitiesHome.add(senderEntity);
+             entitiesInHome.add(senderEntity);
            }
            if(squareIsInHome(spot[5])) {
              rxCalls.add(spot[3]);
              nSpotsDX2H+=1;
-             entitiesHome.add(receiverEntity);
+             entitiesInHome.add(receiverEntity);
            }
            if(spot[2]==myCall){entitiesReachedByMe.add(receiverEntity)} 
            if(spot[3]==myCall){entitiesSpottedByMe.add(senderEntity)} 
@@ -475,17 +477,20 @@ a:visited {color: blue;}
         legend.innerHTML="";
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
-          +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities spotting / being spotted by " +myCall+" are "+HLOn+"highlighted"+HLOff+" when also spotted / being spotted by other stations in 'Home'</div>";
+          +"<span class='notesText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+	  +"<span class='notesText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+          +"</div><div>"
+      +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
+    +"</div>";
       
-        detailsGrid.innerHTML="<div style='font-size:1rem;'>"
+        detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
-          +"</div><div></div><div style='font-size:1rem;'>"
-          +"<strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
+          +"</div><div></div>"
+          +"<div class='titleRow'><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
           +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
@@ -497,26 +502,30 @@ a:visited {color: blue;}
         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
         for (let iCall=0;iCall<txCallsArr.length;iCall++){
           var txCall=txCallsArr[iCall];
+	  var entitiesReachedInHomeByThisCall=new Set;
+          var entitiesReachedInOtherByThisCall=new Set;
           if(txCall!=myCall){
-          for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
-               let reachedEntity="";
-               if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
-                 else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
-               if(squareIsInHome(spotsArr[i][5])){entitiesReachedInHome.add(reachedEntity)} 
-                 else {entitiesReachedInOther.add(reachedEntity)} 
+            for(let i=0;i<spotsArr.length;i++){
+              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
+                let reachedEntity="";
+                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
+                  else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
+                if(squareIsInHome(spotsArr[i][5])){
+		  entitiesReachedInHomeByThisCall.add(reachedEntity);
+		  entitiesReachedInHome.add(reachedEntity);
+		} else {
+		  entitiesReachedInOtherByThisCall.add(reachedEntity);
+		  entitiesReachedInOther.add(reachedEntity);
+		} 
+              }
             }
           }
-          }
-     
           if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
-              +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+              +Array.from(entitiesReachedInHomeByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span> <span class='outgoing'> "
-              +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+              +Array.from(entitiesReachedInOtherByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span><div>";
-            entitiesReachedInHome.clear();
-            entitiesReachedInOther.clear();
           }
         }
   
@@ -530,8 +539,6 @@ a:visited {color: blue;}
           +"</span><div>";
         }
         
-        
-        
         // receiver loop
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
@@ -539,108 +546,77 @@ a:visited {color: blue;}
         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
         for (let iCall=0;iCall<rxCallsArr.length;iCall++){
           var rxCall=rxCallsArr[iCall];
+	  var entitiesSpottedInHomeByThisCall=new Set;
+          var entitiesSpottedInOtherByThisCall=new Set;
           if(rxCall!=myCall){
-          for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall){
-               let spottedEntity="";
-               if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
-               if(squareIsInHome(spotsArr[i][4])){entitiesSpottedInHome.add(spottedEntity)} else {entitiesSpottedInOther.add(spottedEntity)} 
+	    for(let i=0;i<spotsArr.length;i++){
+              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
+                let spottedEntity="";
+                if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
+                if(squareIsInHome(spotsArr[i][4])){
+		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
+		  entitiesSpottedInHome.add(spottedEntity);
+		} else {
+		  entitiesSpottedInOtherByThisCall.add(spottedEntity);
+		  entitiesSpottedInOther.add(spottedEntity);  
+		} 
+              }
             }
-          }
           }
           if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
-            +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +Array.from(entitiesSpottedInHomeByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span> <span class='incoming'>"
-            +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +Array.from(entitiesSpottedInOtherByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span><div>";
-            entitiesSpottedInHome.clear();
-            entitiesSpottedInOther.clear();
           }
         }
   
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().map(item => HL(item,myCall)).join(', ')
+          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
           +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span><div>";
         }
-    
-        // Find the entities reached & spotted by myCall but not others, to display below 
-	// the "spotting myCall" and "spotted by myCall" rows
-        // We already have the entities reached & spotted by myCall 
-        // collected for use in the highlighting above, so start with them and subtract
-        // where myCall wasn't the only one to reach / spot the other entity.
-        // Need to make a DEEP COPY first (otherwise we are working with only one copy of data)
-        var entitiesSpottedOnlyByMe=new Set;
-        for (let i=0;i<entitiesSpottedByMe.size;i++) {
-            entitiesSpottedOnlyByMe.add(Array.from(entitiesSpottedByMe)[i]);
-        }
-        var entitiesReachedOnlyByMe=new Set;
-        for (let i=0;i<entitiesReachedByMe.size;i++) {
-            entitiesReachedOnlyByMe.add(Array.from(entitiesReachedByMe)[i]);
-        }
-
-        for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-        //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-          var spot=spotsArr[iSpot];
-          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
-          
-            if(entity=="Call"){
-              senderEntity=spot[2];
-              receiverEntity=spot[3];
-            } else {
-              senderEntity=spot[4].substring(0,squaresDisplayLevel);
-              receiverEntity=spot[5].substring(0,squaresDisplayLevel);
-            }         
-            if(squareIsInHome(spot[4]) && spot[2]!=myCall){entitiesReachedOnlyByMe.delete(receiverEntity);}
-            if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
-          }
-        }
 
         if(entitiesReachedByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item)));
-            var reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)));
+            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
+            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
-        }
-
-        if(entitiesReachedOnlyByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted();
-            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" Only</div>"
-            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedOtherArr.join(', ')+"</span></div>";
-        }
+            +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
+            +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
+        } else {
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div>"+RIGHTARROW+"</div><div></div>";
+	}
         
         if(entitiesSpottedByMe.size>0){
-            var spottedHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item)));
-            var spottedOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item)));
+            let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
+            let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
-        }
-       
-        if(entitiesSpottedOnlyByMe.size>0){
-            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted();
-            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
-            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedOtherArr.join(', ')+"</span></div>";
-        }
-        
+            +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
+            +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
+        } else {
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div><div>"+LEFTARROW+"</div><div></div>";
+	}
       }
   }
   
-  function HL(item,pattern){
-      if(item==pattern || pattern==true){return HLOn+item+HLOff} else {return item}
+  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
+  if(item==pattern || pattern==true){
+        return "<span class='"+hlClass1+"'>"+item+"</span>";
+    } else {
+	    if(hlClass2==""){
+	      return item;
+	    } else {
+	      return "<span class='"+hlClass2+"'>"+item+"</span>";
+	    }
+    }
   }
   
   function validSquare(locator){
