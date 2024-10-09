@@ -26,6 +26,16 @@
   </td>
 </tr>
 
+<tr>
+  <td>09-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.2'>V1.0.2</a></td>
+  <td>
+    <ol>
+      <li>Updated highlighting and explanation of highlighting in the Band Activity Details grid</li>
+      <li>Internal code change - simplified method of gathering entities spotted / reached by myCall</li>
+    </ol>
+  </td>
+</tr>
+
 </table>  
 
 
