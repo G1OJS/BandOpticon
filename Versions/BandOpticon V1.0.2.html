@@ -584,10 +584,12 @@ a:visited {color: blue;}
           +"</span><div>";
         }
 
+	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive"</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("highlighting",true,"HL2")+" shows emtities exclusive to "+myCall+"</div>";
+
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+": Entities also reached by others "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" transmitting</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
@@ -596,7 +598,7 @@ a:visited {color: blue;}
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
             let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+": Entities also spotted by others "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>"
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" receiving</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
