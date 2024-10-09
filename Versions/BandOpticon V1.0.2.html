@@ -28,6 +28,8 @@ div {margin: 0px;  padding: 0px;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
+.HL1 {text-decoration: underline; text-decoration: bold;}
+.HL2 {text-decoration: italic; text-decoration: bold;}
 a:link {color: blue;}
 a:visited {color: blue;}
 </style>
@@ -569,8 +571,8 @@ a:visited {color: blue;}
         }
 
         if(entitiesReachedByMe.size>0){
-            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"mark"));
-            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)),"mark");
+            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
+            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)),"HL1","HL2");
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
@@ -578,8 +580,8 @@ a:visited {color: blue;}
         }
         
         if(entitiesSpottedByMe.size>0){
-            let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"mark"));
-            let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"mark"));
+            let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
+            let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
@@ -588,17 +590,17 @@ a:visited {color: blue;}
       }
   }
   
-  function HL(item,pattern,otherwise=""){
-    // adds the HLon,HLoff tags if item==pattern or pattern=true
-    // returns the item unchanged if not, or the item with <mark> if "otherwise"="mark" 
+  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
       if(item==pattern || pattern==true){
-	return HLOn+item+HLOff
+        return "<span class='"+hlClass1+"'>"+item+"</span>"
       } else {
-	if (otherwise=="mark"){
-	  return +"<mark>"+item+"</mark>"
-        } else {
+	if(hlClass2==""){
 	  return item
-        }
+	} else {
+	  return "<span class='"+hlClass2+"'>"+item+"</span>"
+	}
       }
   }
   
