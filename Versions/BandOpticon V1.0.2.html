@@ -27,7 +27,7 @@ div {margin: 0px;  padding: 0px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
-.normalText {color:grey; font-weight:normal;}
+.notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
 .intraHome {color:blue; }
@@ -479,8 +479,8 @@ a:visited {color: blue; font-weight:normal;}
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"<span class='normalText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<span class='normalText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+          +"<span class='notesText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+	  +"<span class='notesText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
           +"</div><div>"
       +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
     +"</div>";
