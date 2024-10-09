@@ -28,8 +28,8 @@ div {margin: 0px;  padding: 0px;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
-.HL1 {text-decoration: underline; text-decoration: bold;}
-.HL2 {font-style: italic; text-decoration: bold;}
+.HL1 {background-color:#d1d1e0;}
+.HL2 {background-color:#ffff66;}
 a:link {color: blue;}
 a:visited {color: blue;}
 </style>
@@ -483,7 +483,7 @@ a:visited {color: blue;}
           +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities spotting / being spotted by " +myCall+" are "+HL("highlighted",true)+" when also spotted / being spotted by other stations in 'Home'"
+          +"Entities spotting / being spotted by " +myCall+" are "+HL("highlighted",true)+" when also spotted / being spotted by other stations in 'Home'<br>"
 	  +"Entities spotting / being spotted by " +myCall+" are "+HL("highlighted",true,"HL2")+" when *not* spotted / being spotted by other stations in 'Home'</div>";
       
         detailsGrid.innerHTML="<div style='font-size:1rem;'>"
