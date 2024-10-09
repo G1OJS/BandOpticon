@@ -571,38 +571,42 @@ a:visited {color: blue;}
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item)));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)));
+	    reachedInHomeArr+=Array.from(entitiesReachedByMe.intersection(entitiesInHome).difference(entitiesReachedInHome)).toSorted();
+            reachedInOtherArr+=Array.from(entitiesReachedByMe.difference(entitiesInHome).difference(entitiesReachedInOther)).toSorted();
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         }
 
-        let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome).difference(entitiesReachedInHome)).toSorted();
-        let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome).difference(entitiesReachedInOther)).toSorted();
-	if((reachedInHomeArr.size+reachedInOtherArr)>0){
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" Only</div>"
-            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
-        }
+//        let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome).difference(entitiesReachedInHome)).toSorted();
+//        let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome).difference(entitiesReachedInOther)).toSorted();
+//	if((reachedInHomeArr.size+reachedInOtherArr)>0){
+//          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" Only</div>"
+//            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
+//            +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
+//            +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
+//        }
         
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item)));
             let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item)));
+	    spottedInHomeArr+=Array.from(entitiesSpottedByMe.intersection(entitiesInHome).difference(entitiesSpottedInHome)).toSorted();
+            spottedInOtherArr+=Array.from(entitiesSpottedByMe.difference(entitiesInHome).difference(entitiesSpottedInOther)).toSorted();
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         }
 
-	let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome).difference(entitiesSpottedInHome)).toSorted();
-        let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome).difference(entitiesSpottedInOther)).toSorted();
-        if((spottedInHomeArr.size+spottedInOtherArr)>0){
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
-            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
-        }
+//	let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome).difference(entitiesSpottedInHome)).toSorted();
+//        let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome).difference(entitiesSpottedInOther)).toSorted();
+//        if((spottedInHomeArr.size+spottedInOtherArr)>0){
+//          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
+//            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
+//            +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
+//            +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
+//        }
         
       }
   }
