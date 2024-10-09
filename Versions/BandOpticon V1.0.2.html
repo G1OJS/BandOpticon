@@ -577,8 +577,8 @@ a:visited {color: blue;}
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         }
 
-        let reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome).difference(entitiesReachedInHome)).toSorted();
-        let reachedOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome).difference(entitiesReachedInOther)).toSorted();
+        let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome).difference(entitiesReachedInHome)).toSorted();
+        let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesHome).difference(entitiesReachedInOther)).toSorted();
 	if((reachedInHomeArr.size+reachedInOtherArr)>0){
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" Only</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
@@ -597,7 +597,7 @@ a:visited {color: blue;}
 
 	let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesHome).difference(entitiesSpottedInHome)).toSorted();
         let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesHome).difference(entitiesSpottedInOther)).toSorted();
-        if((reachedHomeArr.size+reachedOtherArr)>0){
+        if((spottedInHomeArr.size+spottedInOtherArr)>0){
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
