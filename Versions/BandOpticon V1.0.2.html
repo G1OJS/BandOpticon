@@ -408,7 +408,6 @@ a:visited {color: blue;}
   }
   
   function writeStatsForBand(iBand){
-    // this loop encloses the entire function. would it be more readable if taken outside the function?
      
        var txCalls=new Set;
        var rxCalls=new Set;
@@ -503,26 +502,31 @@ a:visited {color: blue;}
         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
         for (let iCall=0;iCall<txCallsArr.length;iCall++){
           var txCall=txCallsArr[iCall];
+	  var entitiesReachedInHomeByThisCall=new Set;
+          var entitiesReachedInOtherByThisCall=new Set;
           if(txCall!=myCall){
-          for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
-               let reachedEntity="";
-               if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
-                 else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
-               if(squareIsInHome(spotsArr[i][5])){entitiesReachedInHome.add(reachedEntity)} 
-                 else {entitiesReachedInOther.add(reachedEntity)} 
+            for(let i=0;i<spotsArr.length;i++){
+   //           if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
+                 let reachedEntity="";
+                 if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
+                   else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
+                 if(squareIsInHome(spotsArr[i][5])){
+		   entitiesReachedInHomeByThisCall.add(reachedEntity);
+		   entitiesReachedInHome.add(reachedEntity);
+		 } else {
+		   entitiesReachedInOtherByThisCall.add(reachedEntity);
+		   entitiesReachedInOther.add(reachedEntity);
+		 } 
+   //           }
             }
-          }
           }
      
           if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
-              +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+              +Array.from(entitiesReachedInHomeByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span> <span class='outgoing'> "
-              +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
+              +Array.from(entitiesReachedInOtherByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
               +"</span><div>";
-            entitiesReachedInHome.clear();
-            entitiesReachedInOther.clear();
           }
         }
   
@@ -545,23 +549,31 @@ a:visited {color: blue;}
         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
         for (let iCall=0;iCall<rxCallsArr.length;iCall++){
           var rxCall=rxCallsArr[iCall];
+	  var entitiesSpottedInHomeByThisCall=new Set;
+          var entitiesSpottedInOtherByThisCall=new Set;
           if(rxCall!=myCall){
-          for(let i=0;i<spotsArr.length;i++){
-            if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall){
-               let spottedEntity="";
-               if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
-               if(squareIsInHome(spotsArr[i][4])){entitiesSpottedInHome.add(spottedEntity)} else {entitiesSpottedInOther.add(spottedEntity)} 
-            }
-          }
-          }
+  //          if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
+	      for(let i=0;i<spotsArr.length;i++){
+                if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall){
+                  let spottedEntity="";
+                  if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
+                  if(squareIsInHome(spotsArr[i][4])){
+		    entitiesSpottedInHomeByThisCall.add(spottedEntity);
+		    entitiesSpottedInHome.add(spottedEntity);
+		  } else {
+		    entitiesSpottedInOtherByThisCall.add(spottedEntity);
+		    entitiesSpottedInOther.add(spottedEntity);  
+		  } 
+                }
+              }
+   //         }
+	  }
           if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
-            +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +Array.from(entitiesSpottedInHomeByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span> <span class='incoming'>"
-            +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
+            +Array.from(entitiesSpottedInOtherByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
             +"</span><div>";
-            entitiesSpottedInHome.clear();
-            entitiesSpottedInOther.clear();
           }
         }
   
