@@ -574,8 +574,8 @@ a:visited {color: blue;}
         }
 
         if(entitiesReachedByMe.size>0){
-            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item)),"HL1","HL2"));
-            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)),"HL1","HL2");
+            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
+            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
