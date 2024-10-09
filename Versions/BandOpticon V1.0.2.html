@@ -17,13 +17,15 @@ div {margin: 0px;  padding: 0px;}
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
-#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding-top: 20px; font-size: 1rem; font-weight:bold;}
+#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; 
+		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+#detailsGrid > div.titleRow {padding-top: 20px; font-size: 0.8rem; font-weight:bold;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+.normalText {color:black; font-weight:normal;}
 .transmit {color:red;}
 .receive {color:green; }
 .intraHome {color:blue; }
@@ -439,9 +441,6 @@ a:visited {color: blue; font-weight:normal;}
          }
        }
 
-       entitiesReachedByMe.add("test");
-       entitiesSpottedByMe.add("test");
-
        dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
 
        // update first row of the band tile
@@ -492,7 +491,7 @@ a:visited {color: blue; font-weight:normal;}
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
-	detailsGrid.innerHTML+="<div class='titleRow'>Transmitters in Home</div><div></div><div class='titleRow'>Entities Reached. Entities also reached by "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>Transmitters in Home</div><div></div><div class='titleRow'>Entities Reached. Entities also reached by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span></div>";
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
         var entitiesReachedInOther=new Set;
@@ -540,7 +539,7 @@ a:visited {color: blue; font-weight:normal;}
         
         
         // receiver loop
-	detailsGrid.innerHTML+="<div class='titleRow'>Receivers in Home</div><div></div><div class='titleRow'>Entities Spotted. Entities also spotted by "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>Receivers in Home</div><div></div><div class='titleRow'>Entities Spotted. Entities also spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span></div>";
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
         var entitiesSpottedInOther=new Set;
@@ -584,7 +583,8 @@ a:visited {color: blue; font-weight:normal;}
           +"</span><div>";
         }
 
-	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("Highlighting",true,"HL2")+" shows entities exclusive to "+myCall+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div>"
+		+"<div class='titleRow'>Entities reached & spotted. <span class='normalText'>"+HL("Highlighting",true,"HL2")+"</span> shows entities exclusive to "+myCall+"</div>";
 
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
