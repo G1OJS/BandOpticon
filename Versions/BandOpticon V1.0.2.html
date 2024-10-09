@@ -18,7 +18,7 @@ div {margin: 0px;  padding: 0px;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding-top: 20px; font-style:bold;}
+#detailsGrid > div.titleRow {padding-top: 20px; font-weight:bold;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
@@ -593,7 +593,9 @@ a:visited {color: blue;}
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
-        }
+        } else {
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" transmitting</div><div></div><div>No spots</div>";
+	}
         
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
@@ -602,7 +604,9 @@ a:visited {color: blue;}
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
-        }
+        } else {
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" receiving</div><div></div><div>No spots</div>";
+	}
       }
   }
   
