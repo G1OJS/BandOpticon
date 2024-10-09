@@ -15,7 +15,7 @@ div {margin: 0px;  padding: 0px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
@@ -478,11 +478,9 @@ a:visited {color: blue; font-weight:normal;}
           +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities also reached/spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span>"
-	  +"<span class='normalText'>"+HL("Highlighting",true,"HL2")+"</span> shows entities exclusive to "+myCall+"</div>";
+          +"Entities also reached/spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+".</span>"
+	  +"<span class='normalText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span></div>";
           +"</div>";
-
-	
       
         detailsGrid.innerHTML="<div class='titleRow;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -588,12 +586,12 @@ a:visited {color: blue; font-weight:normal;}
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" transmitting</div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" transmitting</div><div></div><div>No spots</div>";
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div></div><div>No spots</div>";
 	}
         
         if(entitiesSpottedByMe.size>0){
