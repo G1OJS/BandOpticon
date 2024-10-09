@@ -584,7 +584,7 @@ a:visited {color: blue;}
           +"</span><div>";
         }
 
-	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive"</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("highlighting",true,"HL2")+" shows emtities exclusive to "+myCall+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("highlighting",true,"HL2")+" shows emtities exclusive to "+myCall+"</div>";
 
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
