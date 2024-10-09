@@ -512,17 +512,15 @@ a:visited {color: blue; font-weight:normal;}
                 if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
                   else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
                 if(squareIsInHome(spotsArr[i][5])){
-		    entitiesReachedInHomeByThisCall.add(reachedEntity);
-		    entitiesReachedInHome.add(reachedEntity);
-		  } else {
-		     entitiesReachedInOtherByThisCall.add(reachedEntity);
-		     entitiesReachedInOther.add(reachedEntity);
-		   } 
-                }
+		  entitiesReachedInHomeByThisCall.add(reachedEntity);
+		  entitiesReachedInHome.add(reachedEntity);
+		} else {
+		  entitiesReachedInOtherByThisCall.add(reachedEntity);
+		  entitiesReachedInOther.add(reachedEntity);
+		} 
               }
             }
-	  }
-     
+          }
           if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
               +Array.from(entitiesReachedInHomeByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -557,16 +555,15 @@ a:visited {color: blue; font-weight:normal;}
                 let spottedEntity="";
                 if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
                 if(squareIsInHome(spotsArr[i][4])){
-		    entitiesSpottedInHomeByThisCall.add(spottedEntity);
-		    entitiesSpottedInHome.add(spottedEntity);
-		  } else {
-		    entitiesSpottedInOtherByThisCall.add(spottedEntity);
-		    entitiesSpottedInOther.add(spottedEntity);  
-		  } 
-                }
+		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
+		  entitiesSpottedInHome.add(spottedEntity);
+		} else {
+		  entitiesSpottedInOtherByThisCall.add(spottedEntity);
+		  entitiesSpottedInOther.add(spottedEntity);  
+		} 
               }
             }
-	  }
+          }
           if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
             +Array.from(entitiesSpottedInHomeByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
