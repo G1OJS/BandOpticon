@@ -507,7 +507,7 @@ a:visited {color: blue; font-weight:normal;}
           var entitiesReachedInOtherByThisCall=new Set;
           if(txCall!=myCall){
             for(let i=0;i<spotsArr.length;i++){
-   //           if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
+              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
                  let reachedEntity="";
                  if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
                    else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
@@ -518,7 +518,7 @@ a:visited {color: blue; font-weight:normal;}
 		   entitiesReachedInOtherByThisCall.add(reachedEntity);
 		   entitiesReachedInOther.add(reachedEntity);
 		 } 
-   //           }
+              }
             }
           }
      
@@ -553,7 +553,7 @@ a:visited {color: blue; font-weight:normal;}
 	  var entitiesSpottedInHomeByThisCall=new Set;
           var entitiesSpottedInOtherByThisCall=new Set;
           if(rxCall!=myCall){
-  //          if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
+            if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
 	      for(let i=0;i<spotsArr.length;i++){
                 if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall){
                   let spottedEntity="";
@@ -567,7 +567,7 @@ a:visited {color: blue; font-weight:normal;}
 		  } 
                 }
               }
-   //         }
+            }
 	  }
           if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
             detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
