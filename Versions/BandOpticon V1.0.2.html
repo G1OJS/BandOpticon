@@ -15,6 +15,7 @@ div {margin: 0px;  padding: 0px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
+#detailsTop {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; 
@@ -475,12 +476,12 @@ a:visited {color: blue; font-weight:normal;}
         legend.innerHTML="";
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
-          +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"Entities also reached/spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+".</span>"
-	  +"<span class='normalText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span></div>";
-          +"</div>";
+          +"</div><div>"
+	  +"Entities also reached/spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+".</span>"
+	  +"<span class='normalText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+	  +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"</div>";
       
         detailsGrid.innerHTML="<div class='titleRow;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -591,7 +592,7 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div></div><div>No spots</div>";
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div>"+RIGHTARROW+"</div><div>No spots</div>";
 	}
         
         if(entitiesSpottedByMe.size>0){
@@ -602,7 +603,7 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" receiving</div><div></div><div>No spots</div>";
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" receiving</div><div>"+LEFTARROW+"</div><div>No spots</div>";
 	}
       }
   }
