@@ -443,6 +443,9 @@ a:visited {color: blue;}
          }
        }
 
+       entitiesReachedByMe.add("test");
+       entitiesSpottedByMe.add("test");
+
        dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
 
        // update first row of the band tile
@@ -562,7 +565,7 @@ a:visited {color: blue;}
         }
   
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().map(item => HL(item,myCall)).join(', ')
+          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
@@ -571,7 +574,7 @@ a:visited {color: blue;}
         }
 
         if(entitiesReachedByMe.size>0){
-            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
+            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item)),"HL1","HL2"));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item)),"HL1","HL2");
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
