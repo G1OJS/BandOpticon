@@ -567,38 +567,6 @@ a:visited {color: blue;}
           +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span><div>";
         }
-    
-        // Find the entities reached & spotted by myCall but not others, to display below 
-	// the "spotting myCall" and "spotted by myCall" rows
-        // We already have the entities reached & spotted by myCall 
-        // collected for use in the highlighting above, so start with them and subtract
-        // where myCall wasn't the only one to reach / spot the other entity.
-        // Need to make a DEEP COPY first (otherwise we are working with only one copy of data)
-        var entitiesSpottedOnlyByMe=new Set;
-        for (let i=0;i<entitiesSpottedByMe.size;i++) {
-            entitiesSpottedOnlyByMe.add(Array.from(entitiesSpottedByMe)[i]);
-        }
-        var entitiesReachedOnlyByMe=new Set;
-        for (let i=0;i<entitiesReachedByMe.size;i++) {
-            entitiesReachedOnlyByMe.add(Array.from(entitiesReachedByMe)[i]);
-        }
-
-        for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-        //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq
-          var spot=spotsArr[iSpot];
-          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
-          
-            if(entity=="Call"){
-              senderEntity=spot[2];
-              receiverEntity=spot[3];
-            } else {
-              senderEntity=spot[4].substring(0,squaresDisplayLevel);
-              receiverEntity=spot[5].substring(0,squaresDisplayLevel);
-            }         
-            if(squareIsInHome(spot[4]) && spot[2]!=myCall){entitiesReachedOnlyByMe.delete(receiverEntity);}
-            if(squareIsInHome(spot[5]) && spot[3]!=myCall){entitiesSpottedOnlyByMe.delete(senderEntity);}
-          }
-        }
 
         if(entitiesReachedByMe.size>0){
             var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item)));
@@ -610,8 +578,8 @@ a:visited {color: blue;}
         }
 
         if(entitiesReachedOnlyByMe.size>0){
-            var reachedHomeArr=Array.from(entitiesReachedOnlyByMe.intersection(entitiesHome)).toSorted();
-            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome)).toSorted();
+            var reachedHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesHome).difference(entitiesReachedHome)).toSorted();
+            var reachedOtherArr=Array.from(entitiesReachedOnlyByMe.difference(entitiesHome).difference(entitiesReachedOther)).toSorted();
           detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" Only</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedHomeArr.join(', ')+"</span>"
@@ -628,8 +596,8 @@ a:visited {color: blue;}
         }
        
         if(entitiesSpottedOnlyByMe.size>0){
-            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome)).toSorted();
-            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome)).toSorted();
+            var spottedHomeArr=Array.from(entitiesSpottedOnlyByMe.intersection(entitiesHome).difference(entitiesSpottedHome)).toSorted();
+            var spottedOtherArr=Array.from(entitiesSpottedOnlyByMe.difference(entitiesHome).difference(entitiesSpottedOther).toSorted();
           detailsGrid.innerHTML+="<div class='receive'>"+myCall+" Only</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedHomeArr.join(', ')+"</span>"
