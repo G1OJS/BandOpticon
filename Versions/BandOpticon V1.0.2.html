@@ -9,6 +9,7 @@
 <style>
 
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
+div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
@@ -17,7 +18,7 @@
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-div {margin: 0px;  padding: 0px;}
+#detailsGrid > div.titleRow {padding-top: 10px;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
@@ -491,7 +492,7 @@ a:visited {color: blue;}
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
-	detailsGrid.innerHTML+="<div>Transmitters in Home</div><div></div><div>Entities Reached. Entities also reached by "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>Transmitters in Home</div><div></div><div class='titleRow'>Entities Reached. Entities also reached by "+myCall+" are "+HL("highlighted",true,"HL1")+"</div>";
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
         var entitiesReachedInOther=new Set;
