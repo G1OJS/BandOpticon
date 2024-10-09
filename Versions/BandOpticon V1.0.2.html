@@ -15,10 +15,10 @@ div {margin: 0px;  padding: 0px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; }
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid;border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding-top: 20px; font-weight:bold;}
+#detailsGrid > div.titleRow {padding-top: 20px; font-size: 1rem; font-weight:bold;}
 #controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
@@ -31,8 +31,8 @@ div {margin: 0px;  padding: 0px;}
 .incoming {color:olive;}
 .HL1 {background-color:#d1d1e0;}
 .HL2 {background-color:#ffff66;}
-a:link {color: blue;}
-a:visited {color: blue;}
+a:link {color: blue; font-weight:normal;}
+a:visited {color: blue; font-weight:normal;}
 </style>
 </head>
 <body>
@@ -481,7 +481,7 @@ a:visited {color: blue;}
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
           +"</div>";
       
-        detailsGrid.innerHTML="<div style='font-size:1rem;'>"
+        detailsGrid.innerHTML="<div class='titleRow;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
@@ -584,7 +584,7 @@ a:visited {color: blue;}
           +"</span><div>";
         }
 
-	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("highlighting",true,"HL2")+" shows emtities exclusive to "+myCall+"</div>";
+	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div><div class='titleRow'>Entities reached & spotted. "+HL("Highlighting",true,"HL2")+" shows entities exclusive to "+myCall+"</div>";
 
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
