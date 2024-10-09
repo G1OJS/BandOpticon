@@ -478,7 +478,11 @@ a:visited {color: blue; font-weight:normal;}
           +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
+          +"Entities also reached/spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span>"
+	  +"<span class='normalText'>"+HL("Highlighting",true,"HL2")+"</span> shows entities exclusive to "+myCall+"</div>";
           +"</div>";
+
+	
       
         detailsGrid.innerHTML="<div class='titleRow;'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
@@ -491,7 +495,6 @@ a:visited {color: blue; font-weight:normal;}
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
-	detailsGrid.innerHTML+="<div class='titleRow'>Transmitters in Home</div><div></div><div class='titleRow'>Entities Reached. Entities also reached by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span></div>";
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
         var entitiesReachedInOther=new Set;
@@ -539,7 +542,6 @@ a:visited {color: blue; font-weight:normal;}
         
         
         // receiver loop
-	detailsGrid.innerHTML+="<div class='titleRow'>Receivers in Home</div><div></div><div class='titleRow'>Entities Spotted. Entities also spotted by "+myCall+" are <span class='normalText'>"+HL("highlighted",true,"HL1")+"</span></div>";
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
         var entitiesSpottedInOther=new Set;
@@ -582,9 +584,6 @@ a:visited {color: blue; font-weight:normal;}
           +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span><div>";
         }
-
-	detailsGrid.innerHTML+="<div class='titleRow'>"+myCall+" Transmit and Receive</div><div></div>"
-		+"<div class='titleRow'>Entities reached & spotted. <span class='normalText'>"+HL("Highlighting",true,"HL2")+"</span> shows entities exclusive to "+myCall+"</div>";
 
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
