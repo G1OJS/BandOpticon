@@ -116,6 +116,8 @@ a:visited {color: blue; font-weight:normal;}
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
+  var senderSquares=new Set;
+  var receiverSquares=new Set;
 
   loadConfig();
   squaresArr=parseSquares(squaresList);
@@ -364,6 +366,9 @@ a:visited {color: blue; font-weight:normal;}
     // if either end of the spot is in home squares, and is in bands we're watching, 
     // and on the mode we're watching, add this spot
     // have a look at all modes first though as we want to see what's around
+      senderSquares.add(getVal("sl",message));
+      receiverSquares.add(getVal("sl",message));
+
       let senderSq=getVal("sl",message).toUpperCase();
       let receiverSq=getVal("rl",message).toUpperCase();
       let b=getVal("b",message);
@@ -398,6 +403,8 @@ a:visited {color: blue; font-weight:normal;}
       updateDetails();
       dataForRecord="Mode="+Mode+" ";
       for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
+      console.log(Array.from(senderSquares).toSorted());
+      console.log(Array.from(receiverSquares).toSorted());
   }
   
   function writeStatsForBand(iBand){
