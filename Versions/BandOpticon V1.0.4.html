@@ -424,7 +424,7 @@ a:visited {color: blue; font-weight:normal;}
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
 	   let senderEntity=constructEntity(spot[2],spot[4]);
-	   let receiverEntity=constructEntity(spot[3],spots[5]);
+	   let receiverEntity=constructEntity(spot[3],spot[5]);
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
@@ -503,11 +503,11 @@ a:visited {color: blue; font-weight:normal;}
 	  var entitiesReachedInHomeByThisCall=new Set;
           var entitiesReachedInOtherByThisCall=new Set;
           if(txCall!=myCall){
-            for(let i=0;i<spotsArr.length;i++){
-	      // add in spot=spotsArr[i] (& even make i be iSpot too) for consistency
-              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
-                let reachedEntity=constructEntity(spotsArr[i][3],spotsArr[i][5]);
-                if(squareIsInHome(spotsArr[i][5])){
+            for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
+	      var spot=spotsArr[iSpot];
+              if(spot[0]==bandsArr[iBand] && spot[2]==txCall && spot[6]==Mode){
+                let reachedEntity=constructEntity(spot[3],spot[5]);
+                if(squareIsInHome(spot[5])){
 		  entitiesReachedInHomeByThisCall.add(reachedEntity);
 		  entitiesReachedInHome.add(reachedEntity);
 		} else {
@@ -546,11 +546,11 @@ a:visited {color: blue; font-weight:normal;}
 	  var entitiesSpottedInHomeByThisCall=new Set;
           var entitiesSpottedInOtherByThisCall=new Set;
           if(rxCall!=myCall){
-	    for(let i=0;i<spotsArr.length;i++){
-	      // add in spot=spotsArr[i] (& even make i be iSpot too) for consistency    
-              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
-                let spottedEntity=constructEntity(spotsArr[i][2],spotsArr[i][4]);
-                if(squareIsInHome(spotsArr[i][4])){
+	    for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
+	      var spot=spotsArr[iSpot];
+              if(spot[0]==bandsArr[iBand] && spot[3]==rxCall && spot[6]==Mode){  
+                let spottedEntity=constructEntity(spot[2],spot[4]);
+                if(squareIsInHome(spot[4])){
 		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
 		  entitiesSpottedInHome.add(spottedEntity);
 		} else {
