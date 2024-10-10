@@ -335,10 +335,11 @@ a:visited {color: blue; font-weight:normal;}
   // function to allow the user to edit the home squares list
   function editSquares(){
     var resp=prompt("Please enter a list of squares separated by commas.\n"
-		   +"4,6,8 and 10 character squares are accepted.\n"
-		   +"You can specify a rectangle within a 2-character square\n"
-		   +"by using the format LLNN:NN, e.g. IO50:85\n"
-		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
+		   +"Level 4(LLNN), 6(LLNNLL), 8(LLNNLLNN),\n"
+		   +"and 10(LLNNLLNNLL) squares are accepted.\n"
+		   +"You can specify a rectangle within a larger square\n"
+		   +"by using a colon after the square e.g. IO50:85, IO50ab:pq\n"
+		   +"Input example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
     let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
