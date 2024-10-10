@@ -51,9 +51,9 @@
   <td>10-10-2024</td><td>in progress</td>
   <td>
     <ol>
-      <li>Update instructions in squares list edit dialogue</li>
-      <li>Internal code change - take call,square to entity conversion into function in prep for allowing more options for entity type</li>
-      <li>to do - search this: // add in spot=spotsArr[i] (& even make i be iSpot too) for consistency</li>
+      <li>Updated instructions in squares list edit dialogue</li>
+      <li>Internal code change - (call,square) to entity conversion taken into function in prep for allowing more options for entity type</li>
+      <li></li>
     </ol>
   </td>
 </tr>
@@ -75,10 +75,9 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - switch to https://www.brailleinstitute.org/freefont/
-  - allow LHS of band detail to be seen as squares (all levels) as well as calls
+  - allow LHS of band detail to be seen as squares (all levels) as well as calls just like RHS?
   - also call-square for both sides?
   - add "show distance and bearing" to RHS
-  - option to combine callsign with selected detail?
 
 Code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
