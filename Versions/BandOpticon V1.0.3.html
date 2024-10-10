@@ -182,28 +182,22 @@ a:visited {color: blue; font-weight:normal;}
     console.log("Parsing squares list "+inputSqs);
     for(i=0;i<inputSqs.length;i++){
       let sq=inputSqs[i];
-      if(sq.search(":")<0){
+      let cln=sq.search(":");
+      if(cln<0){
         outputSqsArr.push(sq)
       } else {
-        let letters=sq.substring(0,2);
-        let corners=sq.substring(2,7).split(":");
-  //      console.log("Parsing squares list item ",letters,corners);
-        let x1=parseInt(corners[0][0]);
-        let x2=parseInt(corners[1][0]);
-        let y1=parseInt(corners[0][1]);
-        let y2=parseInt(corners[1][1]);
- //       console.log(x1,x2,y1,y2);
-        for(x=x1;x<x2+1;x++){
-          for (y=y1;y<y2+1;y++){
-            outputSqsArr.push(letters+x.toString()+y.toString());
+        let root=sq.substring(0,cln-2);
+        for(let x=sq.charCodeAt(cln-2);x<sq.charCodeAt(cln+1)+1;x++){
+          for(let y=sq.charCodeAt(cln-1);y<sq.charCodeAt(cln+2)+1;y++){
+            outputSqsArr.push(root+String.fromCharCode(x)+String.fromCharCode(y))
           }
         }
       }   
     }
-    console.log("Parsed result "+outputSqsArr);
+    console.log("Parsed squares result "+outputSqsArr);
     return outputSqsArr;
   }
-	
+   	
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
