@@ -53,7 +53,7 @@
     <ol>
       <li>Updated instructions in squares list edit dialogue</li>
       <li>Internal code change - (call,square) to entity conversion taken into function in prep for allowing more options for entity type</li>
-      <li></li>
+      <li>Internal code change - changes to variable names for better consistency and readability</li>
     </ol>
   </td>
 </tr>
