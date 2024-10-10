@@ -61,6 +61,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - check if subscription to level 6+ squares actually returns anything - if not (and reduces number of subs anyway) subscribe to all level4 squares containing squares of interest, and filter messages
   - switch to https://www.brailleinstitute.org/freefont/
   - allow LHS of band detail to be seen as squares (all levels) as well as calls
   - also call-square for both sides?
