@@ -47,6 +47,15 @@
   </td>
 </tr>
 
+<tr>
+  <td>10-10-2024</td><td>in progress</td>
+  <td>
+    <ol>
+      <li>Update instructions in squares list edit dialogue</li>
+    </ol>
+  </td>
+</tr>
+
 </table>  
 
 
