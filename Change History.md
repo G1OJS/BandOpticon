@@ -41,7 +41,7 @@
   <td>
     <ol>
       <li>Squares can now be specified using the LLNN:NN method at any level e.g. IO90ju:qr</li>
-      <li>Fixed error which prevented level 6,8 and 10 squares in the Squares List resulting in a subscription to the server</li>
+      <li>Fixed error in V1.0.0 to V1.0.2 inclusive which prevented level 6,8 and 10 squares in the squares list resulting in a subscription to the server</li>
     </ol>
   </td>
 </tr>
