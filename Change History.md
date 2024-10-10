@@ -36,6 +36,15 @@
   </td>
 </tr>
 
+<tr>
+  <td>10-10-2024</td><td>in progress</a></td>
+  <td>
+    <ol>
+      <li>Squares can now be specified using the XXXXXYY:ZZ method at any level e.g. IO90ju:qr</li>
+    </ol>
+  </td>
+</tr>
+
 </table>  
 
 
@@ -52,7 +61,6 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - also allow users to specify JO64bd:lj (Good for me to get south coast without France in JO00!)
   - switch to https://www.brailleinstitute.org/freefont/
 
 Code tidying:
