@@ -428,13 +428,11 @@ a:visited {color: blue; font-weight:normal;}
            if(entity=="Call"){senderEntity=spot[2]; receiverEntity=spot[3];} 
                else {senderEntity=spot[4].substring(0,squaresDisplayLevel);receiverEntity=spot[5].substring(0,squaresDisplayLevel);} 
            if(squareIsInHome(spot[4])) {
-             console.log(spot[5]);
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
              entitiesInHome.add(senderEntity);
            }
            if(squareIsInHome(spot[5])) {
-	     console.log(spot[5]);
              rxCalls.add(spot[3]);
              nSpotsDX2H+=1;
              entitiesInHome.add(receiverEntity);
