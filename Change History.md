@@ -42,6 +42,7 @@
     <ol>
       <li>Squares can now be specified using the LLNN:NN method at any level e.g. IO90ju:qr</li>
       <li>Fixed error in V1.0.0 to V1.0.2 inclusive which prevented level 6,8 and 10 squares in the squares list resulting in a subscription to the server</li>
+      <li>Internal code change - moved validation of squares input including nn:mm to the function with regexps rather than checking for ':' before the call</li>
     </ol>
   </td>
 </tr>
@@ -62,7 +63,6 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - check if subscription to level 6+ squares actually returns anything - if not (and reduces number of subs anyway) subscribe to all level4 squares containing squares of interest, and filter messages
   - switch to https://www.brailleinstitute.org/freefont/
   - allow LHS of band detail to be seen as squares (all levels) as well as calls
   - also call-square for both sides?
