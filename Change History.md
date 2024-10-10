@@ -62,6 +62,8 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - switch to https://www.brailleinstitute.org/freefont/
+  - allow LHS of band detail to be seen as squares (all levels) as well as calls
+  - also call-square for both sides?
 
 Code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
