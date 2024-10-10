@@ -53,6 +53,7 @@
     <ol>
       <li>Update instructions in squares list edit dialogue</li>
       <li>Internal code change - take call,square to entity conversion into function in prep for allowing more options for entity type</li>
+      <li>to do - search this: // add in spot=spotsArr[i] (& even make i be iSpot too) for consistency</li>
     </ol>
   </td>
 </tr>
