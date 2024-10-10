@@ -37,11 +37,11 @@
 </tr>
 
 <tr>
-  <td>10-10-2024</td><td>in progress</a></td>
+  <td>10-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.3'>V1.0.3</a></td>
   <td>
     <ol>
-      <li>Squares can now be specified using the XXXXXYY:ZZ method at any level e.g. IO90ju:qr</li>
-      <li>Fixed error which prevented level 6,8 and 10 squares in the Squares Loat resulting in a subscription to the server</li>
+      <li>Squares can now be specified using the LLNN:NN method at any level e.g. IO90ju:qr</li>
+      <li>Fixed error which prevented level 6,8 and 10 squares in the Squares List resulting in a subscription to the server</li>
     </ol>
   </td>
 </tr>
