@@ -346,6 +346,7 @@ a:visited {color: blue; font-weight:normal;}
       if(validSquaresListEntry(respArr[i])<4) squaresListValid=false;
     }
     if(squaresListValid){
+      console.clear();
       squaresList=resp; // potentially mixed case but that's OK
       console.log("Squares list updated to: "+resp);
       saveConfig();
@@ -355,7 +356,6 @@ a:visited {color: blue; font-weight:normal;}
       spotsAdded=0;
       spotsPurged=0;
       writeStats();
-      console.clear();
       connectToFeed();
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
