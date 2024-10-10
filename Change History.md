@@ -75,6 +75,8 @@ To do:
   - switch to https://www.brailleinstitute.org/freefont/
   - allow LHS of band detail to be seen as squares (all levels) as well as calls
   - also call-square for both sides?
+  - add "show distance and bearing" to RHS
+  - option to combine callsign with selected detail?
 
 Code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
