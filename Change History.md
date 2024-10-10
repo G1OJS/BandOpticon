@@ -41,6 +41,7 @@
   <td>
     <ol>
       <li>Squares can now be specified using the XXXXXYY:ZZ method at any level e.g. IO90ju:qr</li>
+      <li>Fixed error which prevented level 6,8 and 10 squares in the Squares Loat resulting in a subscription to the server</li>
     </ol>
   </td>
 </tr>
