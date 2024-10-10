@@ -116,11 +116,9 @@ a:visited {color: blue; font-weight:normal;}
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
-  var senderSquares=new Set;
-  var receiverSquares=new Set;
 
   loadConfig();
-  squaresArr=parseSquares(squaresList);
+  squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
   updateDetails();
   updateControls();
   
@@ -177,8 +175,9 @@ a:visited {color: blue; font-weight:normal;}
   }
 
   function parseSquares(sqsList){
+    // returns uppercase squares, expanded if necessary
     var outputSqsArr=new Array();
-    var inputSqs=sqsList.split(',');
+    var inputSqs=sqsList.toUpperCase().split(','); // internally we work with uppercase squares
     console.log("Parsing squares list "+inputSqs);
     for(i=0;i<inputSqs.length;i++){
       let sq=inputSqs[i];
@@ -338,7 +337,7 @@ a:visited {color: blue; font-weight:normal;}
 		   +"by using the format LLNN:NN, e.g. IO50:85\n"
 		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
-    let respArr=resp.toUpperCase().split(',');
+    let respArr=resp.toUpperCase().split(','); // validSquare() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
     for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
       let sq="";
@@ -346,10 +345,10 @@ a:visited {color: blue; font-weight:normal;}
       if(validSquare(sq)<4) squaresListValid=false;
     }
     if(squaresListValid){
-      squaresList=resp; 
+      squaresList=resp; // potentially mixed case but that's OK
       console.log("Squares list updated to: "+resp);
       saveConfig();
-      squaresArr=parseSquares(resp);
+      squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
       updateControls();
       spotsArr=[];
       spotsAdded=0;
@@ -366,15 +365,15 @@ a:visited {color: blue; font-weight:normal;}
     // if either end of the spot is in home squares, and is in bands we're watching, 
     // and on the mode we're watching, add this spot
     // have a look at all modes first though as we want to see what's around
-      senderSquares.add(getVal("sl",message));
-      receiverSquares.add(getVal("sl",message));
 
+    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
+    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
       let senderSq=getVal("sl",message).toUpperCase();
       let receiverSq=getVal("rl",message).toUpperCase();
       let b=getVal("b",message);
       let md=getVal("md",message);
       if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
-        Modes.add(md)
+        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
         modeSetByBandArr[bandsArr.indexOf(b)].add(md);
           let senderCall=getVal("sc",message);
           let receiverCall=getVal("rc",message);
@@ -403,8 +402,6 @@ a:visited {color: blue; font-weight:normal;}
       updateDetails();
       dataForRecord="Mode="+Mode+" ";
       for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
-      console.log(Array.from(senderSquares).toSorted());
-      console.log(Array.from(receiverSquares).toSorted());
   }
   
   function writeStatsForBand(iBand){
