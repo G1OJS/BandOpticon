@@ -52,6 +52,7 @@
   <td>
     <ol>
       <li>Update instructions in squares list edit dialogue</li>
+      <li>Internal code change - take call,square to entity conversion into function in prep for allowing more options for entity type</li>
     </ol>
   </td>
 </tr>
