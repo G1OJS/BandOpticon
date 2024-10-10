@@ -96,7 +96,7 @@ a:visited {color: blue; font-weight:normal;}
   let tStart=Date.now(); // software start time
   const defaultSquaresList="IO50:99,JO01,JO02,JO03";
   let squaresArr=[]; 
-  var entity="Square";
+  var displayEntityType="Square";
   var squaresDisplayLevel=4;
   var groupHomeCalls=true;
   let myCall="G1OJS";
@@ -147,7 +147,8 @@ a:visited {color: blue; font-weight:normal;}
   
   function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. Should also alert the user that this will happen and give chance not to edit the squares.
+    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. 
+    // Should also alert the user that this will happen and give chance not to edit the squares.
     // if already connected, disconnect (happens if user edits squares list)
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
@@ -422,8 +423,8 @@ a:visited {color: blue; font-weight:normal;}
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
-           if(entity=="Call"){senderEntity=spot[2]; receiverEntity=spot[3];} 
-               else {senderEntity=spot[4].substring(0,squaresDisplayLevel);receiverEntity=spot[5].substring(0,squaresDisplayLevel);} 
+	   let senderEntity=constructEntity(spotsArr[i][2],spotsArr[i][4]);
+	   let receiverEntity=constructEntity(spotsArr[i][3],spotsArr[i][5]);
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
@@ -487,11 +488,12 @@ a:visited {color: blue; font-weight:normal;}
           +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +" <br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
+	// find and list senders in Home with their spotters
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
         var entitiesReachedInOther=new Set;
@@ -503,9 +505,7 @@ a:visited {color: blue; font-weight:normal;}
           if(txCall!=myCall){
             for(let i=0;i<spotsArr.length;i++){
               if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
-                let reachedEntity="";
-                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
-                  else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
+                let reachedEntity=constructEntity(spotsArr[i][3],spotsArr[i][5]);
                 if(squareIsInHome(spotsArr[i][5])){
 		  entitiesReachedInHomeByThisCall.add(reachedEntity);
 		  entitiesReachedInHome.add(reachedEntity);
@@ -535,7 +535,7 @@ a:visited {color: blue; font-weight:normal;}
           +"</span><div>";
         }
         
-        // receiver loop
+        // find and list receivers in home with the stations they're spotting
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
         var entitiesSpottedInOther=new Set;
@@ -547,8 +547,7 @@ a:visited {color: blue; font-weight:normal;}
           if(rxCall!=myCall){
 	    for(let i=0;i<spotsArr.length;i++){
               if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
-                let spottedEntity="";
-                if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
+                let spottedEntity=constructEntity(spotsArr[i][2],spotsArr[i][4]);
                 if(squareIsInHome(spotsArr[i][4])){
 		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
 		  entitiesSpottedInHome.add(spottedEntity);
@@ -600,7 +599,14 @@ a:visited {color: blue; font-weight:normal;}
 	}
       }
   }
-  
+
+  function constructEntity(call,square){
+    if(entityDisplayType=="Call"){return call;}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
+  }
+	  
+
   function HL(item,pattern,hlClass1="HL1",hlClass2=""){
     // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
