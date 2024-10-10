@@ -1,15 +1,12 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.0.2</title>
+<title>BandOpticon V1.0.3</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
 	
 <style>
-
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
@@ -121,7 +118,7 @@ a:visited {color: blue; font-weight:normal;}
   var dataWriteSeconds=15;
 
   loadConfig();
-  squaresArr=parseSquares(squaresList);
+  squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
   updateDetails();
   updateControls();
   
@@ -163,13 +160,16 @@ a:visited {color: blue; font-weight:normal;}
 
 	
   function subscribeSquares(){
-    for(let i=0;i<squaresArr.length;i++){
+    let subs=new Set;
+    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
+    let subsArr=Array.from(subs);
+    for(let i=0;i<subsArr.length;i++){
       var error=null;
-      var topic='pskr/filter/v2/+/+/+/+/'+squaresArr[i]+'/+/+/#';
+      var topic='pskr/filter/v2/+/+/+/+/'+subsArr[i]+'/+/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-      topic='pskr/filter/v2/+/+/+/+/+/'+squaresArr[i]+'/+/#';
+      topic='pskr/filter/v2/+/+/+/+/+/'+subsArr[i]+'/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
@@ -178,33 +178,28 @@ a:visited {color: blue; font-weight:normal;}
   }
 
   function parseSquares(sqsList){
+    // returns uppercase squares, expanded if necessary
     var outputSqsArr=new Array();
-    var inputSqs=sqsList.split(',');
+    var inputSqs=sqsList.toUpperCase().split(','); // internally we work with uppercase squares
     console.log("Parsing squares list "+inputSqs);
     for(i=0;i<inputSqs.length;i++){
       let sq=inputSqs[i];
-      if(sq.search(":")<0){
+      let cln=sq.search(":");
+      if(cln<0){
         outputSqsArr.push(sq)
       } else {
-        let letters=sq.substring(0,2);
-        let corners=sq.substring(2,7).split(":");
-  //      console.log("Parsing squares list item ",letters,corners);
-        let x1=parseInt(corners[0][0]);
-        let x2=parseInt(corners[1][0]);
-        let y1=parseInt(corners[0][1]);
-        let y2=parseInt(corners[1][1]);
- //       console.log(x1,x2,y1,y2);
-        for(x=x1;x<x2+1;x++){
-          for (y=y1;y<y2+1;y++){
-            outputSqsArr.push(letters+x.toString()+y.toString());
+        let root=sq.substring(0,cln-2);
+        for(let x=sq.charCodeAt(cln-2);x<sq.charCodeAt(cln+1)+1;x++){
+          for(let y=sq.charCodeAt(cln-1);y<sq.charCodeAt(cln+2)+1;y++){
+            outputSqsArr.push(root+String.fromCharCode(x)+String.fromCharCode(y))
           }
         }
       }   
     }
-    console.log("Parsed result "+outputSqsArr);
+    console.log("Parsed squares result "+outputSqsArr);
     return outputSqsArr;
   }
-	
+   	
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
@@ -345,18 +340,16 @@ a:visited {color: blue; font-weight:normal;}
 		   +"by using the format LLNN:NN, e.g. IO50:85\n"
 		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
-    let respArr=resp.toUpperCase().split(',');
+    let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
-    for (let i=0;i<respArr.length;i++){ // also need to add check for mm in LLnn:mm
-      let sq="";
-      if(respArr[i].search(":")>0) {sq=respArr[i].substring(0,4)} else {sq=respArr[i]}
-      if(validSquare(sq)<4) squaresListValid=false;
+    for (let i=0;i<respArr.length;i++){
+      if(validSquaresListEntry(respArr[i])<4) squaresListValid=false;
     }
     if(squaresListValid){
-      squaresList=resp; 
+      squaresList=resp; // potentially mixed case but that's OK
       console.log("Squares list updated to: "+resp);
       saveConfig();
-      squaresArr=parseSquares(resp);
+      squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
       updateControls();
       spotsArr=[];
       spotsAdded=0;
@@ -373,12 +366,15 @@ a:visited {color: blue; font-weight:normal;}
     // if either end of the spot is in home squares, and is in bands we're watching, 
     // and on the mode we're watching, add this spot
     // have a look at all modes first though as we want to see what's around
+
+    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
+    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
       let senderSq=getVal("sl",message).toUpperCase();
       let receiverSq=getVal("rl",message).toUpperCase();
       let b=getVal("b",message);
       let md=getVal("md",message);
       if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
-        Modes.add(md)
+        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
         modeSetByBandArr[bandsArr.indexOf(b)].add(md);
           let senderCall=getVal("sc",message);
           let receiverCall=getVal("rc",message);
@@ -620,13 +616,18 @@ a:visited {color: blue; font-weight:normal;}
     }
   }
   
-  function validSquare(locator){
+  function validSquaresListEntry(locator){
     // if a valid level 2,4,6,8 or 10 square, return the level else return 0
+    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
     if(RegExp("^[A-R]{2}$").test(locator)) {return 2};
     if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
+    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 8};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 10};
     return 0;
   }
 
