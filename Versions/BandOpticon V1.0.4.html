@@ -631,17 +631,16 @@ a:visited {color: blue; font-weight:normal;}
   }
   
   function validSquaresListEntry(locator){
-    // if a valid level 2,4,6,8 or 10 square, return the level else return 0
+    // if a valid level 4,6,8 or 10 square, return the level else return 0
     // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
-    if(RegExp("^[A-R]{2}$").test(locator)) {return 2};
     if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
     if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
     return 0;
   }
 
