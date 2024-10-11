@@ -29,6 +29,7 @@ div {margin: 0px;  padding: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
+.twoWay {color:black; font-weight:bold;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
@@ -111,6 +112,7 @@ a:visited {color: blue; font-weight:normal;}
   var messagesProcessed=0;
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
+  const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
   const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
          + "<span class='outgoing'> Home "+RIGHTARROW+" DX /</span>"
          + "<span class='incoming'> DX "+RIGHTARROW+" Home</span>"
@@ -626,6 +628,16 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         } else {
 	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div><div>"+LEFTARROW+"</div><div></div>";
+	}
+	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
+            let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
+            let twoWayInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div>"
+            +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
+            +"<span class='intraHome'> "+twoWayInHomeArr.join(', ')+"</span>"
+            +"<span class='incoming'> "+twoWayInOtherArr.join(', ')+"</span></div>";
+        } else {
+	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
       }
   }
