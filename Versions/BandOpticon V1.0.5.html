@@ -633,7 +633,7 @@ a:visited {color: blue; font-weight:normal;}
 	}
 	// add this list to the grid, below the grouped tx and rx calls or the list of individual calls
 	if(txrxCalls.size>0){
-            let twoWayArr=Array.from(reachedAndSpottedByOthers.toSorted();
+            let twoWayArr=Array.from(reachedAndSpottedByOthers).toSorted();
           detailsGrid.innerHTML+="<div class='twoWay'>"+Array.from(txrxCalls).toSorted().join(', ')+"</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='twoWay'> "+twoWayArr.join(', ')+"</span>"
