@@ -636,7 +636,7 @@ a:visited {color: blue; font-weight:normal;}
 	if(txrxCalls.size>0){
             let twoWayInHomeArr=Array.from(reachedAndSpottedByOthers.intersection(entitiesInHome)).toSorted();
             let twoWayInOtherArr=Array.from(reachedAndSpottedByOthers.difference(entitiesInHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='twoWay'>"+Array.from(txrxCalls).toSorted().join(', ')+" reaching and spotting</div>"
+          detailsGrid.innerHTML+="<div class='twoWay'>"+Array.from(txrxCalls).toSorted().join(', ')+"</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
             +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
@@ -655,7 +655,7 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div><div>"+RIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div>"+RIGHTARROW+"</div><div></div>";
 	}
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
@@ -665,7 +665,7 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div><div>"+LEFTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div><div>"+LEFTARROW+"</div><div></div>";
 	}
 
 	// build a list of entities reached and spotted by myCall and add this to the grid below myCall tx and myCall rx
@@ -677,7 +677,7 @@ a:visited {color: blue; font-weight:normal;}
             +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
             +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
       }
   }
