@@ -79,6 +79,7 @@ To do:
   - allow LHS of band detail to be seen as squares (all levels) as well as calls just like RHS?
   - also call-square for both sides?
   - add "show distance and bearing" to RHS
+  - when grouping callsigns on the left, find a way to measure text in grid and reproportion band activity details grid accordingly
 
 Code tidying:
   - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
