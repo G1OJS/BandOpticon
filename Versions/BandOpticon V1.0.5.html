@@ -16,7 +16,7 @@ div {margin: 0px;  padding: 0px;}
 #controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
+#detailsTop {display: grid; grid-template-columns: max-content auto; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
@@ -30,7 +30,6 @@ div {margin: 0px;  padding: 0px;}
 .transmit {color:red;}
 .receive {color:green; }
 .twoWay {color:blue; font-style:italic;}
-.twoWay-other {color:grey; font-style:italic;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
@@ -492,25 +491,26 @@ a:visited {color: blue; font-weight:normal;}
         legend.innerHTML="";
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
+          +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+"<br>"+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"<span class='notesText'>Entities reached both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+          +"</div><div>"
+          +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
+	  +"<span class='notesText'>Entities reached both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
 	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
-          +"</div><div>"
-      +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
-    +"</div>";
+          +"</div>";
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span>, <span class='receive'>Rx Calls</span> and <span class='twoWay'>Tx-Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div>"
-          +"<div class='titleRow'><strong>Entities reached by <span class='transmit'>Tx Calls</span>, spotted by <span class='receive'>Rx Calls</span> and both reached and spotted by <span class='twoWay'>Tx-Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +"<div class='titleRow'><strong>Entities reached by <span class='transmit'>Tx Calls</span>, "
+	  +"spotted by <span class='receive'>Rx Calls</span>, and both reached and spotted by any individual <span class='twoWay'>Tx-Rx Call</span></strong><br>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>Entity=&nbsp;level&nbsp;2&nbsp;square</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>Entity=&nbsp;level&nbsp;4&nbsp;square</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>Entity=&nbsp;level&nbsp;6&nbsp;square</a></div>"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>Entity=&nbsp;callsign</a>";
 	      
 	// go through active transmitters in Home and list the entities they're reaching
         var txCallsArr=Array.from(txCalls).toSorted();
@@ -626,7 +626,6 @@ a:visited {color: blue; font-weight:normal;}
                 spotted.add(constructEntity(spot[2],spot[4]));
               }
             }
-       //     console.log(txrxCall,Array.from(reached),Array.from(spotted));
             for (const reachedAndSpottedEntity of reached.intersection(spotted)){
         	    reachedAndSpottedByOthers.add(reachedAndSpottedEntity);    
             }
@@ -634,18 +633,14 @@ a:visited {color: blue; font-weight:normal;}
 	}
 	// add this list to the grid, below the grouped tx and rx calls or the list of individual calls
 	if(txrxCalls.size>0){
-            let twoWayInHomeArr=Array.from(reachedAndSpottedByOthers.intersection(entitiesInHome)).toSorted();
-            let twoWayInOtherArr=Array.from(reachedAndSpottedByOthers.difference(entitiesInHome)).toSorted();
+            let twoWayArr=Array.from(reachedAndSpottedByOthers.toSorted();
           detailsGrid.innerHTML+="<div class='twoWay'>"+Array.from(txrxCalls).toSorted().join(', ')+"</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
-            +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
+            +"<span class='twoWay'> "+twoWayArr.join(', ')+"</span>"
         } else {
 	  detailsGrid.innerHTML+="<div class='twoWay'>no calls above are both transmitting and receiving</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
  
-
-
 	// add two rows for entities reached and spotted by myCall
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
@@ -670,12 +665,10 @@ a:visited {color: blue; font-weight:normal;}
 
 	// build a list of entities reached and spotted by myCall and add this to the grid below myCall tx and myCall rx
 	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
-            let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
-            let twoWayInOtherArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).difference(entitiesInHome)).toSorted();
+            let twoWayArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe)).toSorted();
           detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
-            +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
+            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>";
         } else {
 	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
