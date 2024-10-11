@@ -29,7 +29,8 @@ div {margin: 0px;  padding: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
-.twoWay {color:black; font-weight:bold;}
+.twoWay {color:blue; font-style:italic;}
+.twoWay-other {color:grey; font-style:italic;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
@@ -612,32 +613,32 @@ a:visited {color: blue; font-weight:normal;}
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div>"+RIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div><div>"+RIGHTARROW+"</div><div></div>";
 	}
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
             let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div><div>"+LEFTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div><div>"+LEFTARROW+"</div><div></div>";
 	}
 	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
             let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
             let twoWayInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted();
           detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+twoWayInHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+twoWayInOtherArr.join(', ')+"</span></div>";
+            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
+            +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
       }
   }
