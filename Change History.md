@@ -61,6 +61,15 @@
   </td>
 </tr>
 
+<tr>
+  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.5'>V1.0.5</a></td>
+  <td>
+    <ol>
+      <li>Added row to show calls in home who are both transmitting and receiving, and the entities that any call in that list is both reaching and spotting</li>
+    </ol>
+  </td>
+</tr>
+
 </table>  
 
 
