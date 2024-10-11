@@ -633,12 +633,12 @@ a:visited {color: blue; font-weight:normal;}
 	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
             let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
             let twoWayInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"</div>"
+          detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div>"
             +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
             +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+"reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
       }
   }
