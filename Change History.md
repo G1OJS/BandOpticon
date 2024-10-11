@@ -86,6 +86,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - tidy up variable usage - no need to carry home/other info in variable names now we have entitiesHome that can be used to colour code at the end
   - switch to https://www.brailleinstitute.org/freefont/
   - allow LHS of band detail to be seen as squares (all levels) as well as calls just like RHS?
   - also call-square for both sides?
