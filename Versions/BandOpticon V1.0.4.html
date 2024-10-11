@@ -596,8 +596,8 @@ a:visited {color: blue; font-weight:normal;}
         let gridDiv=document.getElementById('detailsGrid');	  
         if (groupHomeCalls) {
 	  let lhChars=Math.max(document.getElementById('transmitterGroup').innerHTML.length,document.getElementById('receiverGroup').innerHTML.length);
-          let rhChars=Math.max(Array.from(entitiesReachedInHome).join("").length + Array.from(entitiesReachedInOther).join("").length,
-			       Array.from(entitiesSpottedInHome).join("").length + Array.from(entitiesSpottedInOther).join("").length);
+          let rhChars=Math.max(Array.from(entitiesReachedInHome).join(", ").length + Array.from(entitiesReachedInOther).join(", ").length,
+			       Array.from(entitiesSpottedInHome).join(", ").length + Array.from(entitiesSpottedInOther).join(", ").length);
 	  let centreColumnNominalChars=7;
 	  let p1=100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5);
 	  gridDiv.style.gridTemplateColumns = max(min-content,p1+"%) 30px auto";
