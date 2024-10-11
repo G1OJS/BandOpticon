@@ -48,7 +48,7 @@
 </tr>
 
 <tr>
-  <td>10-10-2024</td><td>in progress</td>
+  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.4'>V1.0.4</a></td>
   <td>
     <ol>
       <li>Updated instructions in squares list edit dialogue</li>
