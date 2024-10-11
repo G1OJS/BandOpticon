@@ -42,9 +42,9 @@ a:visited {color: blue; font-weight:normal;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
 <div id="app_group">
-   <div id="controls">
-      <div id="controls_l"></div>
-      <div id="controls_r">
+   <div id="">
+      <div id="_l"></div>
+      <div id="_r">
      </div>
    </div>
    <div id="legend"></div>
@@ -120,7 +120,7 @@ a:visited {color: blue; font-weight:normal;}
 
   loadConfig();
   updateDetails();
-  updateControls();
+  update();
 
   // initialise an array of sets to gather modes used on each band
   for (let i=0;i<bandsArr.length;i++){
@@ -311,7 +311,8 @@ a:visited {color: blue; font-weight:normal;}
        +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
        +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
 
-    controls_r.innerHTML="Home = "+squaresList+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a>"
+    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+    controls_r.innerHTML="Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a>"
 	           +"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span><br>"
              +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
       +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
