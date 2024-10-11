@@ -87,6 +87,14 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - tidy up variable usage - no need to carry home/other info in variable names now we have entitiesHome that can be used to colour code at the end
+  - e.g. below if statement can disappear
+  if(squareIsInHome(spot[4])){
+		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
+		  entitiesSpottedInHome.add(spottedEntity);
+		} else {
+		  entitiesSpottedInOtherByThisCall.add(spottedEntity);
+		  entitiesSpottedInOther.add(spottedEntity);  
+		} 
   - switch to https://www.brailleinstitute.org/freefont/
   - allow LHS of band detail to be seen as squares (all levels) as well as calls just like RHS?
   - also call-square for both sides?
