@@ -89,6 +89,7 @@ To do:
   - revisit the construction of the txrxCalls and the simultaneously spotted and reached entities
       - can ungroup this row to show far "duplex endpoints" for each txrxCall as an option to the group
       - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
+  - combine controls and detailsTop grids? Two rows of "header"?
   - tidy up variable usage - no need to carry home/other info in variable names now we have entitiesHome that can be used to colour code at the end
   - e.g. below if statement can disappear
   if(squareIsInHome(spot[4])){
