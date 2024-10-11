@@ -541,7 +541,7 @@ a:visited {color: blue; font-weight:normal;}
           }
         }
         if(groupHomeCalls){ 
-          detailsGrid.innerHTML+="<div class='transmit'>"
+          detailsGrid.innerHTML+="<div class='transmit' id='transmitterGroup'>"
           +Array.from(txCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -583,7 +583,8 @@ a:visited {color: blue; font-weight:normal;}
           }
         }
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
+          detailsGrid.innerHTML+="<div class='receive' id='receiverGroup'>"
+	  +Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
@@ -591,12 +592,17 @@ a:visited {color: blue; font-weight:normal;}
           +"</span><div>";
         }
 
-	// redistribute grid columns
-	let gridDiv=document.getElementById("detailsGrid");	      
-	if (groupHomeCalls) {
-	  gridDiv.style.gridTemplateColumns = "30% 30px auto"
+        // redistribute grid columns
+        let gridDiv=document.getElementById('detailsGrid');	  
+        if (groupHomeCalls) {
+	  let lhChars=Math.max(document.getElementById('transmitterGroup').innerHTML.length,document.getElementById('receiverGroup').innerHTML.length);
+          let rhChars=Math.max(Array.from(entitiesReachedInHome).join("").length + Array.from(entitiesReachedInOther).join("").length,
+			       Array.from(entitiesSpottedInHome).join("").length + Array.from(entitiesSpottedInOther).join("").length);
+	  let centreColumnNominalChars=7;
+	  let p1=100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.2),0.6);
+	  gridDiv.style.gridTemplateColumns = p1+"% 30px auto";
 	} else {
-	  gridDiv.style.gridTemplateColumns = "min-content 30px auto"
+	  gridDiv.style.gridTemplateColumns = "min-content 30px auto";
 	}
 
 	// add two rows for entities reached and spotted by myCall
