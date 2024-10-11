@@ -600,7 +600,7 @@ a:visited {color: blue; font-weight:normal;}
 			       Array.from(entitiesSpottedInHome).join(", ").length + Array.from(entitiesSpottedInOther).join(", ").length);
 	  let centreColumnNominalChars=7;
 	  let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
-	  gridDiv.style.gridTemplateColumns = minmax(min-content,"+p1+"%) 30px auto";
+	  gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) 30px auto";
 	} else {
 	  gridDiv.style.gridTemplateColumns = "min-content 30px auto";
 	}
