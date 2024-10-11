@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.0.3</title>
+<title>BandOpticon V1.0.4</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -12,22 +12,25 @@ div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
+#controls {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#controls > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
-#detailsGrid {display: grid; grid-template-columns: 1fr 30px 4fr; grid-template-rows: auto; border-top:solid; border-width:1px; }
+#detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding-top:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
-#controls {display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto;}
-#controls > div {background-color: white; margin: 2px;  padding: 5px;}
+#detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+.hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
+.twoWay {color:blue; font-style:italic;}
+.twoWay-other {color:grey; font-style:italic;}
 .intraHome {color:blue; }
 .outgoing {color:Fuchsia; }
 .incoming {color:olive;}
@@ -40,12 +43,11 @@ a:visited {color: blue; font-weight:normal;}
 <body>
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
-
+ 
 <div id="app_group">
    <div id="controls">
       <div id="controls_l"></div>
-      <div id="controls_r">
-     </div>
+      <div id="controls_r"></div>
    </div>
    <div id="legend"></div>
    <div id="details_group">
@@ -94,9 +96,10 @@ a:visited {color: blue; font-weight:normal;}
   let detailsWanted="BandTileLegend";
   let iDetailsBandIndex=0;
   let tStart=Date.now(); // software start time
-  const defaultSquaresList="IO50:99,JO01,JO02,JO03";
-  let squaresArr=[]; 
-  var entity="Square";
+  var squaresList="";
+  const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
+  let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
+  var entityDisplayType="Square";
   var squaresDisplayLevel=4;
   var groupHomeCalls=true;
   let myCall="G1OJS";
@@ -110,6 +113,7 @@ a:visited {color: blue; font-weight:normal;}
   var messagesProcessed=0;
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
+  const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
   const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
          + "<span class='outgoing'> Home "+RIGHTARROW+" DX /</span>"
          + "<span class='incoming'> DX "+RIGHTARROW+" Home</span>"
@@ -118,10 +122,19 @@ a:visited {color: blue; font-weight:normal;}
   var dataWriteSeconds=15;
 
   loadConfig();
-  squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
   updateDetails();
   updateControls();
-  
+
+  // initialise an array of sets to gather modes used on each band
+  for (let i=0;i<bandsArr.length;i++){
+     modeSetByBandArr.push(new Set);
+  }
+
+  setInterval(writeStats, refresh_mSeconds);
+  setInterval(writeData, 1000*dataWriteSeconds);
+
+  connectToFeed();
+
   // Write the <div>s for each band summary tile in the bandsGrid area
   var toAdd = document.createDocumentFragment();
   for(let i=0; i < bandsArr.length; i++){
@@ -136,18 +149,14 @@ a:visited {color: blue; font-weight:normal;}
   }
   document.getElementById('bandsGrid').appendChild(toAdd);
 
-  for (let i=0;i<bandsArr.length;i++){
-     modeSetByBandArr.push(new Set);
-  }
-
-  setInterval(writeStats, refresh_mSeconds);
-  setInterval(writeData, 1000*dataWriteSeconds);
-
-  connectToFeed();
-  
+  // ***********************************
+  // * End of main: Functions below    *
+  // ***********************************
+	
   function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. Should also alert the user that this will happen and give chance not to edit the squares.
+    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. 
+    // Should also alert the user that this will happen and give chance not to edit the squares.
     // if already connected, disconnect (happens if user edits squares list)
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
@@ -156,13 +165,14 @@ a:visited {color: blue; font-weight:normal;}
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
   
-  // done with initialisation now
-
-	
   function subscribeSquares(){
+    
+    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
     let subs=new Set;
     for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
     let subsArr=Array.from(subs);
+	  
+    // now do the subscribing
     for(let i=0;i<subsArr.length;i++){
       var error=null;
       var topic='pskr/filter/v2/+/+/+/+/'+subsArr[i]+'/+/+/#';
@@ -240,12 +250,15 @@ a:visited {color: blue; font-weight:normal;}
       console.log("No local config data found for squares list: defaults applied.");
       saveConfig();
     }
+    squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
+    
     if(localStorage.getItem('myCall')){
       myCall=localStorage.getItem('myCall');
     } else {
       myCall="G1OJS";
       saveConfig();
     }
+	  
     if(localStorage.getItem('purgeMinutes')){
       purgeMinutes=localStorage.getItem('purgeMinutes');
     } else {
@@ -253,7 +266,7 @@ a:visited {color: blue; font-weight:normal;}
       saveConfig();
     }
   }
-  
+
   // function to write HTML to the details grid
   function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
@@ -301,12 +314,13 @@ a:visited {color: blue; font-weight:normal;}
        +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
        +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
 
-    controls_r.innerHTML="Home = "+squaresList+" <a class='textAnchorButton' href='#' onclick='editSquares();'>edit</a>"
-	           +"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span><br>"
-             +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
-      +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-             +"Mode: "+modeSelector+"<br>";
-
+    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+    controls_r.innerHTML=""
+	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
+        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
+        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
+        +"Mode: "+modeSelector+"<br>"
+        +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>";
   }
 
   // needs validation code
@@ -333,12 +347,11 @@ a:visited {color: blue; font-weight:normal;}
   }
   
   // function to allow the user to edit the home squares list
-  function editSquares(){
-    var resp=prompt("Please enter a list of squares separated by commas.\n"
-		   +"4,6,8 and 10 character squares are accepted.\n"
-		   +"You can specify a rectangle within a 2-character square\n"
-		   +"by using the format LLNN:NN, e.g. IO50:85\n"
-		   +"Example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
+  function editSquaresList(){
+    var resp=prompt("Please enter a list of squares (level 4,6,8 or 10) separated by commas.\n\n"
+		   +"To specify a rectangle within a larger square, use a colon to \n"
+		   +"separate the 'lower left' and 'top right' corners.g. IO50:85, IO50ab:pq\n\n"
+		   +"Input example: IO50:85,JO01,JO03ku,JO80:87",squaresList);
     if(resp==null){return}
     let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
@@ -346,6 +359,7 @@ a:visited {color: blue; font-weight:normal;}
       if(validSquaresListEntry(respArr[i])<4) squaresListValid=false;
     }
     if(squaresListValid){
+      console.clear();
       squaresList=resp; // potentially mixed case but that's OK
       console.log("Squares list updated to: "+resp);
       saveConfig();
@@ -355,7 +369,6 @@ a:visited {color: blue; font-weight:normal;}
       spotsAdded=0;
       spotsPurged=0;
       writeStats();
-      console.clear();
       connectToFeed();
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
@@ -407,8 +420,8 @@ a:visited {color: blue; font-weight:normal;}
   
   function writeStatsForBand(iBand){
      
-       var txCalls=new Set;
-       var rxCalls=new Set;
+       var txCalls=new Set;  // active transmitters in Home
+       var rxCalls=new Set;  // active receivers in Home
        var nSpotsH2H=0;
        var nSpotsH2DX=0;
        var nSpotsDX2H=0;
@@ -419,12 +432,13 @@ a:visited {color: blue; font-weight:normal;}
        var receiverEntity="";
        var htmlTmp="";
 	  
+       // go through all spots, get counts for band tile for this band, build entitiesInHome set and entitiesReachedByMe, entitiesSpottedByMe 
        for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
          var spot=spotsArr[iSpot];
          if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
-           if(entity=="Call"){senderEntity=spot[2]; receiverEntity=spot[3];} 
-               else {senderEntity=spot[4].substring(0,squaresDisplayLevel);receiverEntity=spot[5].substring(0,squaresDisplayLevel);} 
+	   let senderEntity=constructEntity(spot[2],spot[4]);
+	   let receiverEntity=constructEntity(spot[3],spot[5]);
            if(squareIsInHome(spot[4])) {
              txCalls.add(spot[2])
              if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
@@ -440,6 +454,7 @@ a:visited {color: blue; font-weight:normal;}
          }
        }
 
+       // save the stats from above to the recording string
        dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
 
        // update first row of the band tile
@@ -457,7 +472,8 @@ a:visited {color: blue; font-weight:normal;}
          htmlTmp+="<a class='textAnchorButton' href='#' onclick='Mode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
        }
        if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
-       
+
+       // write the counts for this band's band tile
        document.getElementById(bandsArr[iBand]+"spots").innerHTML=
          "Spots "+
          "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
@@ -466,33 +482,37 @@ a:visited {color: blue; font-weight:normal;}
        document.getElementById(bandsArr[iBand]+"calls").innerHTML=
          "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
          "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
-      
+
+      // set background colour of band tile to grey if no activity
       let parentBox=document.getElementById(bandsArr[iBand]+"calls").parentElement
       if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
+      // big block of script to fill in the Band Activity Details if wanted
       if(iBand==iDetailsBandIndex && detailsWanted=="BandActivityDetails"){
         legend.innerHTML="";
 
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"<span class='notesText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<br><span class='notesText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+          +"<span class='notesText'>Entities reached both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
           +"</div><div>"
       +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
     +"</div>";
-      
+		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='entity=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entity=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +" <br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
+         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
 
+	// go through active transmitters in Home and list the entities they're reaching
         var txCallsArr=Array.from(txCalls).toSorted();
         var entitiesReachedInHome=new Set;
         var entitiesReachedInOther=new Set;
@@ -502,12 +522,11 @@ a:visited {color: blue; font-weight:normal;}
 	  var entitiesReachedInHomeByThisCall=new Set;
           var entitiesReachedInOtherByThisCall=new Set;
           if(txCall!=myCall){
-            for(let i=0;i<spotsArr.length;i++){
-              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][2]==txCall && spotsArr[i][6]==Mode){
-                let reachedEntity="";
-                if(entity=="Call"){reachedEntity=spotsArr[i][3]} 
-                  else {reachedEntity=spotsArr[i][5].substring(0,squaresDisplayLevel)}
-                if(squareIsInHome(spotsArr[i][5])){
+            for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
+	      var spot=spotsArr[iSpot];
+              if(spot[0]==bandsArr[iBand] && spot[2]==txCall && spot[6]==Mode){
+                let reachedEntity=constructEntity(spot[3],spot[5]);
+                if(squareIsInHome(spot[5])){
 		  entitiesReachedInHomeByThisCall.add(reachedEntity);
 		  entitiesReachedInHome.add(reachedEntity);
 		} else {
@@ -525,9 +544,8 @@ a:visited {color: blue; font-weight:normal;}
               +"</span><div>";
           }
         }
-  
         if(groupHomeCalls){ 
-          detailsGrid.innerHTML+="<div class='transmit'>"
+          detailsGrid.innerHTML+="<div class='transmit' id='transmitterGroup'>"
           +Array.from(txCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
@@ -536,7 +554,7 @@ a:visited {color: blue; font-weight:normal;}
           +"</span><div>";
         }
         
-        // receiver loop
+        // go through active receivers in Home and list the entities they're spotting
         var rxCallsArr=Array.from(rxCalls).toSorted();
         var entitiesSpottedInHome=new Set;
         var entitiesSpottedInOther=new Set;
@@ -546,11 +564,11 @@ a:visited {color: blue; font-weight:normal;}
 	  var entitiesSpottedInHomeByThisCall=new Set;
           var entitiesSpottedInOtherByThisCall=new Set;
           if(rxCall!=myCall){
-	    for(let i=0;i<spotsArr.length;i++){
-              if(spotsArr[i][0]==bandsArr[iBand] && spotsArr[i][3]==rxCall && spotsArr[i][6]==Mode){
-                let spottedEntity="";
-                if(entity=="Call"){spottedEntity=spotsArr[i][2]} else {spottedEntity=spotsArr[i][4].substring(0,squaresDisplayLevel)}
-                if(squareIsInHome(spotsArr[i][4])){
+	    for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
+	      var spot=spotsArr[iSpot];
+              if(spot[0]==bandsArr[iBand] && spot[3]==rxCall && spot[6]==Mode){  
+                let spottedEntity=constructEntity(spot[2],spot[4]);
+                if(squareIsInHome(spot[4])){
 		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
 		  entitiesSpottedInHome.add(spottedEntity);
 		} else {
@@ -568,9 +586,9 @@ a:visited {color: blue; font-weight:normal;}
             +"</span><div>";
           }
         }
-  
         if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive'>"+Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
+          detailsGrid.innerHTML+="<div class='receive' id='receiverGroup'>"
+	  +Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
           +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
           +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span> <span class='incoming'>"
@@ -578,30 +596,60 @@ a:visited {color: blue; font-weight:normal;}
           +"</span><div>";
         }
 
+        // redistribute grid columns
+        let gridDiv=document.getElementById('detailsGrid');	  
+        if (groupHomeCalls) {
+	  let lhChars=Math.max(document.getElementById('transmitterGroup').innerHTML.length,document.getElementById('receiverGroup').innerHTML.length);
+          let rhChars=Math.max(Array.from(entitiesReachedInHome).join(", ").length + Array.from(entitiesReachedInOther).join(", ").length,
+			       Array.from(entitiesSpottedInHome).join(", ").length + Array.from(entitiesSpottedInOther).join(", ").length);
+	  let centreColumnNominalChars=7;
+	  let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
+	  gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
+	} else {
+	  gridDiv.style.gridTemplateColumns = "min-content min-content auto";
+	}
+
+	// add two rows for entities reached and spotted by myCall
         if(entitiesReachedByMe.size>0){
             let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
             let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div>"
+          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div>"
             +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
             +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+"</div><div>"+RIGHTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div><div>"+RIGHTARROW+"</div><div></div>";
 	}
-        
         if(entitiesSpottedByMe.size>0){
             let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
             let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div>"
+          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div>"
             +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
             +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
             +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
         } else {
-	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+"</div><div>"+LEFTARROW+"</div><div></div>";
+	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div><div>"+LEFTARROW+"</div><div></div>";
+	}
+	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
+            let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
+            let twoWayInOtherArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).difference(entitiesInHome)).toSorted();
+          detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div>"
+            +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
+            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
+            +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
+        } else {
+	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
 	}
       }
   }
-  
+
+  function constructEntity(call,square){
+    if(entityDisplayType=="Call"){return call;}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
+  }
+	  
+
   function HL(item,pattern,hlClass1="HL1",hlClass2=""){
     // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
@@ -617,17 +665,16 @@ a:visited {color: blue; font-weight:normal;}
   }
   
   function validSquaresListEntry(locator){
-    // if a valid level 2,4,6,8 or 10 square, return the level else return 0
+    // if a valid level 4,6,8 or 10 square, return the level else return 0
     // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
-    if(RegExp("^[A-R]{2}$").test(locator)) {return 2};
     if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
     if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
     if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
     return 0;
   }
 
