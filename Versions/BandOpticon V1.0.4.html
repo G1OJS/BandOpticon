@@ -25,6 +25,7 @@ div {margin: 0px;  padding: 0px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+.hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .transmit {color:red;}
 .receive {color:green; }
@@ -316,8 +317,7 @@ a:visited {color: blue; font-weight:normal;}
         +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
         +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
         +"Mode: "+modeSelector+"<br>"
-        +"Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a>";
-
+        +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>";
   }
 
   // needs validation code
