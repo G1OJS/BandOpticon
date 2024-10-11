@@ -16,7 +16,7 @@ div {margin: 0px;  padding: 0px;}
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
-#detailsGrid {display: grid; grid-template-columns: minmax(min-content,40vw) 30px auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
+#detailsGrid {display: grid; grid-template-columns: 20% 30px auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding-top:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
@@ -427,7 +427,7 @@ a:visited {color: blue; font-weight:normal;}
        var senderEntity="";
        var receiverEntity="";
        var htmlTmp="";
-
+	  
        // go through all spots, get counts for band tile for this band, build entitiesInHome set and entitiesReachedByMe, entitiesSpottedByMe 
        for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
          //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
@@ -495,7 +495,7 @@ a:visited {color: blue; font-weight:normal;}
           +"</div><div>"
       +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
     +"</div>";
-      
+		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
@@ -589,6 +589,14 @@ a:visited {color: blue; font-weight:normal;}
           +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
           +"</span><div>";
         }
+
+	// redistribute grid columns
+	let gridDiv=document.getElementById("detailsGrid");	      
+	if (groupHomeCalls) {
+	  gridDiv.style.gridTemplateColumns = "30% 30px auto"
+	} else {
+	  gridDiv.style.gridTemplateColumns = "min-content 30px auto"
+	}
 
 	// add two rows for entities reached and spotted by myCall
         if(entitiesReachedByMe.size>0){
