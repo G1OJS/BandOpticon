@@ -9,7 +9,7 @@
 <tr>
   <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
-
+ 
 <tr>
   <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.1'>V1.0.1</a></td>
   <td>
