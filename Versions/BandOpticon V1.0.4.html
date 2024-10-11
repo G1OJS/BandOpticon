@@ -311,11 +311,12 @@ a:visited {color: blue; font-weight:normal;}
        +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
 
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-    controls_r.innerHTML="Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a>"
-	           +"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span><br>"
-             +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
-      +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-             +"Mode: "+modeSelector+"<br>";
+    controls_r.innerHTML=""
+	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
+        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
+        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
+        +"Mode: "+modeSelector+"<br>"
+        +"Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a>";
 
   }
 
