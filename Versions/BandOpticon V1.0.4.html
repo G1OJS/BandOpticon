@@ -491,8 +491,9 @@ a:visited {color: blue; font-weight:normal;}
         detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
           +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
           +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"<span class='notesText'>Entities reached/spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<br><span class='notesText'> Entities exclusive to "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+          +"<span class='notesText'>Entities reached by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+          +"<span class='notesText'>Entities spotted by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
           +"</div><div>"
       +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
     +"</div>";
