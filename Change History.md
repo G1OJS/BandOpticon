@@ -62,9 +62,10 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.5'>V1.0.5</a></td>
+  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
+      <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
       <li>Added row to show calls in home who are both transmitting and receiving, and the entities that any call in that list is both reaching and spotting</li>
     </ol>
   </td>
