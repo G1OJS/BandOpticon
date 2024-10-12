@@ -477,9 +477,12 @@ a:visited {color: blue; font-weight:normal;}
        }
        document.getElementById(band+"band").innerHTML=htmlTmp+"<br>";
        
-       for (const [key, value] of Object.entries(connections)) {
-  console.log(`${key}: ${value}`);
-}
+       for (const [id, conn] of Object.entries(connections)) {
+           if (conn["band"]==band && conn["mode"]==watchedMode) {
+           for (const [id, conn] of Object.entries(conn)) {      
+              console.log(`${key}: ${value}`);
+           }
+       }
    
 
        // get the modes specific to this band and write clickable links for BandActivityDetails
