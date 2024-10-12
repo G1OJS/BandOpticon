@@ -10,7 +10,7 @@
   const squaresArr=["IO90","IO91","IO92"];
 
   const callSquares = {};
-  var connections = new Set;
+  const connections = {};
 
   mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
   mqttClient.onSuccess=subscribe();
@@ -37,12 +37,20 @@
     // sl/rl - sender locator / receiver locator
     // sa / ra - sender ADIF country code / receiver ADIF country code
     // b - band
-    if (squareIsInHome(getVal("sl",msg))){
-      connections.add([getVal("b",msg), getVal("md",msg), getVal("sc",msg), getVal("rc",msg)]);
+    
+    
+    const conn={band:getVal("b",msg), mode:getVal("md",msg)}
+    if (squareIsInHome(getVal("sl",msg))) {
+       conn["HomeCall"]=getVal("sc",msg);
+       conn["ConnectedCall"]=getVal("sl",msg);
     } else {
-      connections.add([getVal("b",msg), getVal("md",msg), getVal("rc",msg), getVal("sc",msg)]);
+       conn["HomeCall"]=getVal("rc",msg);
+       conn["ConnectedCall"]=getVal("rl",msg);
     }
-
+    if ([getVal("sq",msg)] in connections) console.log("SQ is not unique");
+   
+    connections[getVal("sq",msg)]=conn;
+   
     callSquares[getVal("sc",msg)]= getVal("sl",msg);
     callSquares[getVal("rc",msg)]= getVal("rl",msg);
 
@@ -51,7 +59,11 @@
   
   
   function listConnections(band){
-     connections.forEach((v) => {  if(v[0]==band){console.log(v)}  }); 
+   for (const [id, conn] of Object.entries(connections)) {
+    for (const [key, value] of Object.entries(conn)) {
+      console.log(`${key}: ${value}`);
+    }
+   }
   }
   
   function listCallSquares(){
