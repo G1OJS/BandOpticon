@@ -114,8 +114,8 @@ a:visited {color: blue; font-weight:normal;}
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
   const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
-         + "<span class='outgoing'> Home "+RIGHTARROW+" DX /</span>"
-         + "<span class='incoming'> DX "+RIGHTARROW+" Home</span>"
+         + "<span class='Txfarend'> Home "+RIGHTARROW+" DX /</span>"
+         + "<span class='Rxfarend'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -504,11 +504,11 @@ a:visited {color: blue; font-weight:normal;}
        document.getElementById(band+"spots").innerHTML=
          "Spots "+
          "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
-         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
-         "<span class='incoming'>"+nSpotsDX2H+"</span>";
+         "<span class='Txfarend'>"+nSpotsH2DX+"</span>/"+
+         "<span class='Rxfarend'>"+nSpotsDX2H+"</span>";
        document.getElementById(band+"calls").innerHTML=
-         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+         "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"+
+         "<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span>";
 
        // set background colour of band tile to grey if no activity
        let parentBox=document.getElementById(band+"calls").parentElement
