@@ -103,7 +103,7 @@ a:visited {color: blue; font-weight:normal;}
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
   var squaresDisplayLevel=4;
-  var groupHomeCalls=true;
+  var groupHomeEntities=true;
   let myCall="G1OJS";
 
   var mqttClient=null;	
@@ -523,9 +523,6 @@ a:visited {color: blue; font-weight:normal;}
 //       }
 //       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
 
-
-
-  
   }
  
   function showBandDetails(){
@@ -543,8 +540,8 @@ a:visited {color: blue; font-weight:normal;}
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='transmit'>Tx Calls</span>, <span class='receive'>Rx Calls</span> and <span class='twoWay'>Tx-Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
+          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false;'>List&nbsp;each&nbsp;call</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='transmit'>Tx Calls</span>, "
 	  +"spotted by <span class='receive'>Rx Calls</span>, and both reached and spotted by any <span class='twoWay'>Tx-Rx Call</span></strong><br>"
@@ -556,17 +553,17 @@ a:visited {color: blue; font-weight:normal;}
        // txCalls, rxCalls, txrxCalls = active stations in Home
        // connections - sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
        //               hc:home, call hl:home loc, cc:connected call, cl:connected call loc
-       var homeCalls={};
+       var objHomeEntities={};
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
-           homeCalls[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
+           objHomeEntities[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
          }
        }
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
-           if(connections[id].dd[0]=="h") {homeCalls[connections[id].hc].tx=true} 
-           if(connections[id].dd[1]=="d") {homeCalls[connections[id].hc].rx=true}
-           homeCalls[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cl);
+           if(connections[id].dd[0]=="h") {objHomeEntities[connections[id].hc].tx=true} 
+           if(connections[id].dd[1]=="d") {objHomeEntities[connections[id].hc].rx=true}
+           objHomeEntities[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cl);
          }      
        }
 
@@ -574,12 +571,12 @@ a:visited {color: blue; font-weight:normal;}
        let reachedEntitiesHomeAll=new Set;
        let reachedEntitiesOtherAll=new Set;
        tmpHTML="";
-       for (const call in homeCalls) {
-         if(homeCalls[call].tx) {
+       for (const call in objHomeEntities) {
+         if(objHomeEntities[call].tx) {
            let reachedEntitiesHome=new Set;
            let reachedEntitiesOther=new Set;
-           for(const conn in homeCalls[call].conns) {
-             if(homeCalls[call].conns[conn]) {
+           for(const conn in objHomeEntities[call].conns) {
+             if(objHomeEntities[call].conns[conn]==true) {
                reachedEntitiesHome.add(conn);
                reachedEntitiesHomeAll.add(conn);
              } else {
@@ -587,7 +584,7 @@ a:visited {color: blue; font-weight:normal;}
                reachedEntitiesOtherAll.add(conn);
              }          
            }
-           if(groupHomeCalls){ 
+           if(groupHomeEntities){ 
              homeTxCalls.push(call);
            } else {
              tmpHTML+="<div class='transmit'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
@@ -596,8 +593,7 @@ a:visited {color: blue; font-weight:normal;}
            }
          }
        }
- 
-       if (groupHomeCalls){
+       if (groupHomeEntities){
          tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
          tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHomeAll).toSorted().join(', ')+"</span>";
          tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
