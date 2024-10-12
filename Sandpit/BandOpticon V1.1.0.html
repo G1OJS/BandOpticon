@@ -12,8 +12,8 @@ div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
-#controls {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
-#controls > div {background-color: white; margin: 2px;  padding: 5px;}
+#appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#appTop > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
@@ -44,9 +44,9 @@ a:visited {color: blue; font-weight:normal;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
  
 <div id="app_group">
-   <div id="controls">
-      <div id="controls_l"></div>
-      <div id="controls_r"></div>
+   <div id="appTop">
+      <div id="appTop_l"></div>
+      <div id="appTop_r"></div>
    </div>
    <div id="legend"></div>
    <div id="details_group">
@@ -123,7 +123,7 @@ a:visited {color: blue; font-weight:normal;}
 
   loadConfig();
   setDisplayConfig();
-  updateControls();
+  updateappTop();
 
   // initialise an array of sets to gather modes used on each band
   var modeSetByBandArr=new Array();
@@ -245,8 +245,8 @@ a:visited {color: blue; font-weight:normal;}
     }
   }
 
-  // function to write HTML to the Controls box
-  function updateControls(){
+  // function to write HTML to the appTop box
+  function updateappTop(){
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
@@ -256,13 +256,13 @@ a:visited {color: blue; font-weight:normal;}
   //    modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;'>"+md+"</a> "
   //  }
     
-    controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
+    appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
        +"<br>Running for "+runningmins+" minutes<br>";
 //       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
  //      +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
 
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-    controls_r.innerHTML=""
+    appTop_r.innerHTML=""
 	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
         +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
         +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
@@ -406,7 +406,7 @@ a:visited {color: blue; font-weight:normal;}
     if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
-    updateControls();
+    updateappTop();
     setDisplayConfig();
   }
   
@@ -417,7 +417,7 @@ a:visited {color: blue; font-weight:normal;}
       if(parseInt(resp)>0 && parseInt(resp)<60){
           purgeMinutes=parseInt(resp);
           localStorage.setItem('purgeMinutes',purgeMinutes);
-          updateControls();
+          updateappTop();
           return
       } else {alert("Please enter a number between 1 and 59")}
     } else  {alert("Please enter a number between 1 and 59")}
@@ -442,7 +442,7 @@ a:visited {color: blue; font-weight:normal;}
       saveConfig();
       squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
       connections = {};
-      updateControls();
+      updateappTop();
       updateDisplays();
       connectToFeed();
     } else {
@@ -452,7 +452,7 @@ a:visited {color: blue; font-weight:normal;}
 
   function updateDisplays(){
       purgeSpots();
-      updateControls();
+      updateappTop();
       setDisplayConfig();
       dataForRecord="Mode="+watchedMode+" ";
  //     for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
