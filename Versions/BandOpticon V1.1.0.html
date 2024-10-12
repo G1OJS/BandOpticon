@@ -501,14 +501,14 @@ a:visited {color: blue; font-weight:normal;}
        dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
        
        // write the counts for this band's band tile
-       document.getElementById(band+"spots").innerHTML=
-         "Spots "+
-         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
-         "<span class='Txfarend'>"+nSpotsH2DX+"</span>/"+
-         "<span class='Rxfarend'>"+nSpotsDX2H+"</span>";
+       document.getElementById(band+"spots").innerHTML="Spots "
+         +"<span class='intraHome'>"+nSpotsH2H+"</span>/"
+         +"<span class='Txfarend'>"+nSpotsH2DX+"</span>/"
+         +"<span class='Rxfarend'>"+nSpotsDX2H+"</span>";
        document.getElementById(band+"calls").innerHTML=
-         "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span>";
+         "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"
+         +"<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span><br>"
+         +"<span class='TxRx'>"+"TxRx Calls "+txCalls.intersection(rxCalls).size+"</span>";
 
        // set background colour of band tile to grey if no activity
        let parentBox=document.getElementById(band+"calls").parentElement
