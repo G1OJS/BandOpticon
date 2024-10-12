@@ -539,12 +539,12 @@ a:visited {color: blue; font-weight:normal;}
           +"</div>";
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
-          +"<strong>Home <span class='transmit'>Tx Calls</span>, <span class='receive'>Rx Calls</span> and <span class='twoWay'>Tx-Rx Calls</span></strong>"
+          +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false;'>List&nbsp;each&nbsp;call</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
           +"</div><div></div>"
-          +"<div class='titleRow'><strong>Entities reached by <span class='transmit'>Tx Calls</span>, "
-	  +"spotted by <span class='receive'>Rx Calls</span>, and both reached and spotted by any <span class='twoWay'>Tx-Rx Call</span></strong><br>"
+          +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
+	  +"spotted by <span class='Tx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
           +"<a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
@@ -580,6 +580,10 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
   let reachedEntitiesHomeAll=new Set;
   let reachedEntitiesOtherAll=new Set;
   let tmpHTML="";
+  let Arrow=""
+  if (TxRx=="Tx"){Arrow=RIGHTARROW}
+  if (TxRx=="Rx"){Arrow=LEFTARROW}
+  if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   for (const call in objHomeEntities) {
      if(((TxRx=="Tx") && objHomeEntities[call].tx)
      || ((TxRx=="Rx") && objHomeEntities[call].rx) 
@@ -598,14 +602,14 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
        if(groupHomeEntities){ 
          homeTxCalls.push(call);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
+         tmpHTML+="<div class='"+TxRx+"'>"+call+"</div><div>"+Arrow+"</div><div>";   
          tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHome).toSorted().join(', ')+"</span>";
          tmpHTML+="<span class='"+TxRx+"farend'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
-     tmpHTML="<div class='"+TxRx+"'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+     tmpHTML="<div class='"+TxRx+"'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div>";
      tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHomeAll).toSorted().join(', ')+"</span>";
      tmpHTML+="<span class='"+TxRx+"farend'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
    }
