@@ -89,27 +89,25 @@ a:visited {color: blue; font-weight:normal;}
  // initialisation and functions to load and save configuration
  
   const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refresh_mSeconds=1000;
-  var mqttClient=null;
-  let purgeMinutes=15;
-  let detailsWanted="BandTileLegend";
-  let iDetailsBandIndex=0;
-  let tStart=Date.now(); // software start time
-  var squaresList="";
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
+  var squaresList=""; // the human-firendly list of squares to watch
+
+  var watchedMode="FT8";
+  var modesArr=new Set(["FT4","FT8","JS8","WSPR","CW"]);
+  var modesByBandArr=new Array();
+
+  var refresh_mSeconds=1000;
+  var purgeMinutes=15;
+  var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
   var squaresDisplayLevel=4;
   var groupHomeCalls=true;
   let myCall="G1OJS";
-  var Mode="FT8"; // better as myMode mainMode?
-  var Modes=new Set(["FT4","FT8","JS8","WSPR","CW"]); // OK as capital plural to indicate set?
-  var modeSetByBandArr=new Array();
-  var spotsArr=[];
-  var spotsAdded=0;
-  var spotsPurged=0;
-  var messagesReceived=0;
-  var messagesProcessed=0;
+
+  var mqttClient=null;	
+  var tStart=Date.now(); // software start time
+ 
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
@@ -151,6 +149,54 @@ a:visited {color: blue; font-weight:normal;}
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
+
+  function constructEntity(call,square){
+    if(entityDisplayType=="Call"){return call;}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
+  }
+	  
+  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
+  if(item==pattern || pattern==true){
+        return "<span class='"+hlClass1+"'>"+item+"</span>";
+    } else {
+	    if(hlClass2==""){
+	      return item;
+	    } else {
+	      return "<span class='"+hlClass2+"'>"+item+"</span>";
+	    }
+    }
+  }
+  
+  function validSquaresListEntry(locator){
+    // if a valid level 4,6,8 or 10 square, return the level else return 0
+    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
+    if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
+    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
+    return 0;
+  }
+
+  function squareIsInHome(sq){
+    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
+  }
+  
+  function getVal(key,message){
+    // parse the MQTT message to get the part we want (key)
+    var iVal=message.indexOf('"'+key+'":');
+    var iColon=message.indexOf(':',iVal);
+    var iComma=message.indexOf(",",iColon);
+    var val=message.slice(iColon+1,iComma).replace(/"/g, '');
+    return val;
+  }
 	
   function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
@@ -266,6 +312,42 @@ a:visited {color: blue; font-weight:normal;}
     }
   }
 
+  function onMessage(message){
+    // if either end of the spot is in home squares, and is in bands we're watching, 
+    // and on the mode we're watching, add this spot
+    // have a look at all modes first though as we want to see what's around
+
+    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
+    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
+      let senderSq=getVal("sl",message).toUpperCase();
+      let receiverSq=getVal("rl",message).toUpperCase();
+      let b=getVal("b",message);
+      let md=getVal("md",message);
+      if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
+        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
+        modeSetByBandArr[bandsArr.indexOf(b)].add(md);
+          let senderCall=getVal("sc",message);
+          let receiverCall=getVal("rc",message);
+          let tSpot=Date.now(); // working with time spot received not time spot generated
+          spotsArr.push([b,tSpot,senderCall,receiverCall,senderSq,receiverSq,md]);
+          spotsAdded+=1;
+          messagesProcessed+=1;
+      }
+      messagesReceived+=1;
+   }
+  
+   function purgeSpots(){
+     // get rid of spots older than purgeMinutes
+    var delArr=new Array();
+    for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
+      var tSpot=spotsArr[iSpot][1];
+      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {delArr.push(iSpot)}
+    }
+    for(let iDel=0; iDel <delArr.length;iDel++) {spotsArr.splice(delArr[iDel],1)}
+    spotsPurged+=delArr.length;
+   }
+
+/*
   // function to write HTML to the details grid
   function updateDetails(newWant,iDB){
     if(!(typeof newWant==='undefined')) {
@@ -372,41 +454,6 @@ a:visited {color: blue; font-weight:normal;}
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
-  }
-  
-  function onMessage(message){
-    // if either end of the spot is in home squares, and is in bands we're watching, 
-    // and on the mode we're watching, add this spot
-    // have a look at all modes first though as we want to see what's around
-
-    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
-    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
-      let senderSq=getVal("sl",message).toUpperCase();
-      let receiverSq=getVal("rl",message).toUpperCase();
-      let b=getVal("b",message);
-      let md=getVal("md",message);
-      if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
-        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
-        modeSetByBandArr[bandsArr.indexOf(b)].add(md);
-          let senderCall=getVal("sc",message);
-          let receiverCall=getVal("rc",message);
-          let tSpot=Date.now(); // working with time spot received not time spot generated
-          spotsArr.push([b,tSpot,senderCall,receiverCall,senderSq,receiverSq,md]);
-          spotsAdded+=1;
-          messagesProcessed+=1;
-      }
-      messagesReceived+=1;
-   }
-  
-  function purgeSpots(){
-     // get rid of spots older than purgeMinutes
-    var delArr=new Array();
-    for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-      var tSpot=spotsArr[iSpot][1];
-      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {delArr.push(iSpot)}
-    }
-    for(let iDel=0; iDel <delArr.length;iDel++) {spotsArr.splice(delArr[iDel],1)}
-    spotsPurged+=delArr.length;
   }
   
   function writeStats(){
@@ -685,55 +732,9 @@ a:visited {color: blue; font-weight:normal;}
 	}
       }
   }
+*/
+	
 
-  function constructEntity(call,square){
-    if(entityDisplayType=="Call"){return call;}
-    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
-    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
-  }
-	  
-
-  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
-  if(item==pattern || pattern==true){
-        return "<span class='"+hlClass1+"'>"+item+"</span>";
-    } else {
-	    if(hlClass2==""){
-	      return item;
-	    } else {
-	      return "<span class='"+hlClass2+"'>"+item+"</span>";
-	    }
-    }
-  }
-  
-  function validSquaresListEntry(locator){
-    // if a valid level 4,6,8 or 10 square, return the level else return 0
-    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
-    if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
-    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
-    return 0;
-  }
-
-  function squareIsInHome(sq){
-    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
-    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
-  }
-  
-  function getVal(key,message){
-    // parse the MQTT message to get the part we want (key)
-    var iVal=message.indexOf('"'+key+'":');
-    var iColon=message.indexOf(':',iVal);
-    var iComma=message.indexOf(",",iColon);
-    var val=message.slice(iColon+1,iComma).replace(/"/g, '');
-    return val;
-  }
 
 </script>
 	
