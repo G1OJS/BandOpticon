@@ -251,7 +251,10 @@ a:visited {color: blue; font-weight:normal;}
     
     if(detailsWanted=="BandTileLegend"){showBandTileLegend()} 
     
-    if(detailsWanted=="BandDetails"){showBandDetails()} 
+    if(detailsWanted=="BandDetails"){
+      watchedBand=band;
+      showBandDetails()
+    } 
     
   }
   
@@ -466,7 +469,7 @@ a:visited {color: blue; font-weight:normal;}
       updateappTop();
       dataForRecord="Mode="+watchedMode+" ";
       bandsArr.forEach((band) => updateBandTile(band));
-      if(detailsWanted=="BandDetails") {showBandDetails};
+      if(detailsWanted=="BandDetails") {showBandDetails()};
   }
   
   
@@ -559,28 +562,24 @@ a:visited {color: blue; font-weight:normal;}
        var txrxCalls=new Set;
        for (id in connections) {
          let conn=connections[id];
-         console.log(conn);
          if (conn.b==watchedBand && conn.md==watchedMode) {
-           console.log("bingo");
            bmConns[conn.sq]=conn;
            if(conn.dd[0]=="h") {txCalls.add(conn.hc)} else {rxCalls.add(conn.hc)}
          }
        }
        txrxCalls=txCalls.intersection(rxCalls);
-       console.log(Array.from(txCalls).join(", "));
        
+       tmpHTML="";
        txCalls.forEach(function (txCall) {
-       console.log(txCall);
-       detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
-         //     +Array.from(entitiesReachedInHomeByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-         //     +"</span> <span class='outgoing'> "
-         //     +Array.from(entitiesReachedInOtherByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span><div>";
-       
+           tmpHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>";
+           for (id in bmConns) {if(bmConns[id].hc==txCall && bmConns[id].dd=="hh") {tmpHTML+=bmConns[id].cc+" " } }
+           tmpHTML+="</span><span class='outgoing'>"
+           for (id in bmConns) {if(bmConns[id].hc==txCall && bmConns[id].dd=="hd") {tmpHTML+=bmConns[id].cc+" " } }
+           tmpHTML+="</span></div>";
        });
+       detailsGrid.innerHTML+=tmpHTML;
+       
 
-    
-    
     
     
 
