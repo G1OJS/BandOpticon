@@ -196,10 +196,11 @@ a:visited {color: blue; font-weight:normal;}
 	  
     // first, build conn object for this msg using same keys as PSKR MQTT:
     const conn={};
-    msg.slice(1, -1).replaceAll('"','').split(',').forEach(function(v) {
-    let kvp=v.split(":");
-      conn[kvp[0]]=kvp[1];
-    });
+    msg.slice(1, -1).replaceAll('"','').split(',')
+	.forEach(function(v) {
+           let kvp=v.split(":");
+           conn[kvp[0]]=kvp[1];
+         });
     
     // accumulate modes head on each band
     modeSetByBandArr[bandsArr.indexOf(conn.b)].add(conn.md);
