@@ -87,31 +87,17 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - revisit the construction of the txrxCalls and the simultaneously spotted and reached entities
-      - can ungroup this row to show far "duplex endpoints" for each txrxCall as an option to the group
-      - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
+  V1.1.0:
+  - add back highlighting and myCall-only rows. See notes around line 558.
+  - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
   - combine controls and detailsTop grids? Two rows of "header"?
-  - tidy up variable usage - no need to carry home/other info in variable names now we have entitiesHome that can be used to colour code at the end
-  - e.g. below if statement can disappear
-  if(squareIsInHome(spot[4])){
-		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
-		  entitiesSpottedInHome.add(spottedEntity);
-		} else {
-		  entitiesSpottedInOtherByThisCall.add(spottedEntity);
-		  entitiesSpottedInOther.add(spottedEntity);  
-		} 
-  - switch to https://www.brailleinstitute.org/freefont/
-  - allow LHS of band detail to be seen as squares (all levels) as well as calls just like RHS?
-  - also call-square for both sides?
+
+  - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
-  - when grouping callsigns on the left, find a way to measure text in grid and reproportion band activity details grid accordingly
+  - switch to https://www.brailleinstitute.org/freefont/
+
 
 Code tidying:
-  - rewrite with less 'data in variable names' (the entities spotted and received by, etc)'
-  - define functions to make flow more aparrent in writeStats
-  - look at updateDetails and updateControls - see if they can be rationalised
-     or clarified a bit (purpose vs name). updateDetails is more of a handler for 
-     click to change events than anything
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
