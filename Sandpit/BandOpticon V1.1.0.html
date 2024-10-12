@@ -455,7 +455,52 @@ a:visited {color: blue; font-weight:normal;}
       updateappTop();
       setDisplayConfig();
       dataForRecord="Mode="+watchedMode+" ";
- //     for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
+      bandsArr.forEach((band) => updateBandTile(band));
+  }
+  
+  
+  function updateBandTile(band){
+       
+       nSpotsH2H=0;
+       nSpotsH2DX=0;
+       nSpotsDX2H=0;
+       txCalls=new Set;
+       rxCalls=new Set;
+   
+         // save the stats from above to the recording string
+       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
+
+       // update first row of the band tile
+       htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+band+");'>"+band+" "+watchedMode+"</a></strong>";
+       if(detailsWanted!="BandTileLegend") {
+         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
+       }
+       document.getElementById(band+"band").innerHTML=htmlTmp+"<br>";
+
+       // get the modes specific to this band and write clickable links for BandActivityDetails
+//       let tmp=(new Set()).add(watchedMode); 
+//       let otherModes=Array.from(modeSetByBandArr[iBand].difference(tmp)).toSorted();
+//       htmlTmp="+ ";
+//       for (i=0;i<otherModes.length;i++){
+//         htmlTmp+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
+//       }
+//       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
+
+       // write the counts for this band's band tile
+       document.getElementById(band+"spots").innerHTML=
+         "Spots "+
+         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
+         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
+         "<span class='incoming'>"+nSpotsDX2H+"</span>";
+       document.getElementById(band+"calls").innerHTML=
+         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
+         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+
+      // set background colour of band tile to grey if no activity
+      let parentBox=document.getElementById(band+"calls").parentElement
+      if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
+
+  
   }
  
 /*
@@ -492,38 +537,6 @@ a:visited {color: blue; font-weight:normal;}
          }
        }
 
-       // save the stats from above to the recording string
-       dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
-
-       // update first row of the band tile
-       htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+bandsArr[iBand]+" "+watchedMode+"</a></strong>";
-       if(detailsWanted!="BandTileLegend") {
-         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
-       }
-       document.getElementById(bandsArr[iBand]+"band").innerHTML=htmlTmp+"<br>";
-
-       // get the modes specific to this band and write clickable links for BandActivityDetails
-       let tmp=(new Set()).add(watchedMode); 
-       let otherModes=Array.from(modeSetByBandArr[iBand].difference(tmp)).toSorted();
-       htmlTmp="+ ";
-       for (i=0;i<otherModes.length;i++){
-         htmlTmp+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
-       }
-       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
-
-       // write the counts for this band's band tile
-       document.getElementById(bandsArr[iBand]+"spots").innerHTML=
-         "Spots "+
-         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
-         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
-         "<span class='incoming'>"+nSpotsDX2H+"</span>";
-       document.getElementById(bandsArr[iBand]+"calls").innerHTML=
-         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
-
-      // set background colour of band tile to grey if no activity
-      let parentBox=document.getElementById(bandsArr[iBand]+"calls").parentElement
-      if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
       // big block of script to fill in the Band Activity Details if wanted
       if(iBand==iDetailsBandIndex && detailsWanted=="BandActivityDetails"){
