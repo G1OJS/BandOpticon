@@ -27,12 +27,13 @@ div {margin: 0px;  padding: 0px;}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
-.transmit {color:red;}
-.receive {color:green; }
-.twoWay {color:blue; font-style:italic;}
+.Tx {color:red;}
+.Rx {color:green; }
+.TxRx {color:blue; font-style:italic;}
 .intraHome {color:blue; }
-.outgoing {color:Fuchsia; }
-.incoming {color:olive;}
+.Txfarend {color:Fuchsia; }
+.Rxfarend {color:olive;}
+.TxRxfarend {color:blue; font-style:italic;}
 .HL1 {background-color:#d1d1e0;}
 .HL2 {background-color:#ffff66;}
 a:link {color: blue; font-weight:normal;}
@@ -561,17 +562,19 @@ a:visited {color: blue; font-weight:normal;}
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
            if(connections[id].dd[0]=="h") {objHomeEntities[connections[id].hc].tx=true} 
-           if(connections[id].dd[1]=="d") {objHomeEntities[connections[id].hc].rx=true}
+           if(connections[id].dd[0]=="d") {objHomeEntities[connections[id].hc].rx=true}
            objHomeEntities[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cl);
          }      
        }
  
        detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Tx");
        detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Rx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"TxRx");
       
 }	
 
 function getBandDetailsRowHTML(objHomeEntities,TxRx){
+  // need to rename variables to be agnostic to direction
 
   let homeTxCalls=new Array(); // OK because we're going to add unique values
   let reachedEntitiesHomeAll=new Set;
@@ -580,7 +583,7 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
   for (const call in objHomeEntities) {
      if(((TxRx=="Tx") && objHomeEntities[call].tx)
      || ((TxRx=="Rx") && objHomeEntities[call].rx) 
-     || ((TxRx=="Both") && (objHomeEntities[call].tx && objHomeEntities[call].rx))) {
+     || ((TxRx=="TxRx") && (objHomeEntities[call].tx && objHomeEntities[call].rx))) {
        let reachedEntitiesHome=new Set;
        let reachedEntitiesOther=new Set;
        for(const conn in objHomeEntities[call].conns) {
@@ -595,16 +598,16 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
        if(groupHomeEntities){ 
          homeTxCalls.push(call);
        } else {
-         tmpHTML+="<div class='transmit'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
+         tmpHTML+="<div class='"+TxRx+"'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
          tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHome).toSorted().join(', ')+"</span>";
-         tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span></div>";
+         tmpHTML+="<span class='"+TxRx+"farend'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
-     tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+     tmpHTML="<div class='"+TxRx+"'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
      tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHomeAll).toSorted().join(', ')+"</span>";
-     tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
+     tmpHTML+="<span class='"+TxRx+"farend'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
    }
    return tmpHTML;
 }
