@@ -559,28 +559,28 @@ a:visited {color: blue; font-weight:normal;}
        // txCalls, rxCalls, txrxCalls = active stations in Home
        // connections - sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
        //               hc:home, call hl:home loc, cc:connected call, cl:connected call loc
-       var objHomeEntities={};
+       var objHomeCallData={};
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
-           objHomeEntities[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
+           objHomeCallData[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
          }
        }
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
-           if(connections[id].dd[0]=="h") {objHomeEntities[connections[id].hc].tx=true} 
-           if(connections[id].dd[0]=="d") {objHomeEntities[connections[id].hc].rx=true}
+           if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].tx=true} 
+           if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].rx=true}
            farEntity=getEntity(connections[id].cc,connections[id].cl);
-           objHomeEntities[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
+           objHomeCallData[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
          }      
        }
  
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Tx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Rx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"TxRx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
       
 }	
 
-function getBandDetailsRowHTML(objHomeEntities,TxRx){
+function getBandDetailsRowHTML(objHomeCallData,TxRx){
   // need to rename variables to be agnostic to direction
 
   let homeCalls=new Array(); // OK because we're going to add unique values
@@ -591,14 +591,14 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
-  for (const homeCall in objHomeEntities) { // objHomeEntities so named in case we ever generalise homeCall
-     if(((TxRx=="Tx") && objHomeEntities[homeCall].tx)
-     || ((TxRx=="Rx") && objHomeEntities[homeCall].rx) 
-     || ((TxRx=="TxRx") && (objHomeEntities[homeCall].tx && objHomeEntities[homeCall].rx))) {
+  for (const homeCall in objHomeCallData) {
+     if(((TxRx=="Tx") && objHomeCallData[homeCall].tx)
+     || ((TxRx=="Rx") && objHomeCallData[homeCall].rx) 
+     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].tx && objHomeCallData[homeCall].rx))) {
        let farEntitiesHome=new Set;
        let farEntitiesOther=new Set;
-       for(const farEntity in objHomeEntities[homeCall].conns) {
-         if(objHomeEntities[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
+       for(const farEntity in objHomeCallData[homeCall].conns) {
+         if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
            farEntitiesHome.add(farEntity);
            farEntitiesHomeAll.add(farEntity);
          } else {
