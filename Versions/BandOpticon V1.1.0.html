@@ -371,7 +371,7 @@ a:visited {color: blue; font-weight:normal;}
     newWindow = window.open("", "newWindow", "width=1800, height=300");
     let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
     +"'Home' = "+squaresList
-    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home)]</strong><BR> ";
+    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)]</strong><BR> ";
   	  newWindow.document.write(htmlTmp);
   }
   
@@ -501,7 +501,7 @@ a:visited {color: blue; font-weight:normal;}
        }
        
        // save the stats from above to the recording string
-       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
+       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+","+txCalls.intersection(rxCalls).size+",";
        
        // write the counts for this band's band tile
        document.getElementById(band+"spots").innerHTML="Spots "
