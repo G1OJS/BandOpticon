@@ -570,18 +570,22 @@ a:visited {color: blue; font-weight:normal;}
            homeCalls[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cc);
          }      
        }
-	//		for (const call in homeCalls) => {if(homeCalls[call].tx) {console.log(`${call}: ${homeCalls[call].tx}`)};}
+
          let homeTxCalls=new Array();
-         Object.keys(homeCalls).forEach(key => {if(homeCalls[key].tx){homeTxCalls.push(key)}});
-         for (const call of homeTxCalls) {
-           console.log(call)
-           let reachedEntities=homeCalls[call].conns
-           console.log(reachedEntities);
-         };
+         let reachedEntities=new Array();
+         for (const call in homeCalls) {
+           if(homeCalls[call].tx) {
+           	 homeTxCalls.push(call);
+             for(const conn in homeCalls[call].conns) {
+               console.log(call,conn);
+               reachedEntities.push(conn);          
+             }
+           }
+         }
  
    //    if (groupHomeCalls){
-    //     tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
-   //      tmpHTML+="<span class='intraHome'>"+reachedEntities.toSorted().join(', ')+"</span>";
+         tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+    //     tmpHTML+="<span class='intraHome'>"+reachedEntities.toSorted().join(', ')+"</span>";
   //       tmpHTML+=" <span class='outgoing'>"+Array.from(connEntsOther).join(' ')+"</span>";
   //       tmpHTML+="</div>"
   //     } else {
@@ -595,7 +599,7 @@ a:visited {color: blue; font-weight:normal;}
    //        tmpHTML+="</div>";
    //      });
      //  }
-    //   detailsGrid.innerHTML+=tmpHTML;
+       detailsGrid.innerHTML+=tmpHTML;
       
 
     
