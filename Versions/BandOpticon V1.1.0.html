@@ -572,20 +572,21 @@ a:visited {color: blue; font-weight:normal;}
        }
 
          let homeTxCalls=new Array();
-         let reachedEntities=new Array();
+         let reachedEntitiesHome=new Set;
+         let reachedEntitiesOther=new Set;
          for (const call in homeCalls) {
            if(homeCalls[call].tx) {
            	 homeTxCalls.push(call);
              for(const conn in homeCalls[call].conns) {
-               console.log(call,conn);
-               reachedEntities.push(conn);          
+               if(homeCalls[call].conns[conn]) {reachedEntitiesHome.add(conn)} else {reachedEntitiesOther.add(conn)};          
              }
            }
          }
  
    //    if (groupHomeCalls){
          tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
-    //     tmpHTML+="<span class='intraHome'>"+reachedEntities.toSorted().join(', ')+"</span>";
+         tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHome).toSorted().join(', ')+"</span>";
+         tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span>";
   //       tmpHTML+=" <span class='outgoing'>"+Array.from(connEntsOther).join(' ')+"</span>";
   //       tmpHTML+="</div>"
   //     } else {
