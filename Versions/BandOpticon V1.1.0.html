@@ -123,7 +123,6 @@ a:visited {color: blue; font-weight:normal;}
   const connections = {};
   
   var once=true;
-  var htmlTmp="";
 
   loadConfig();
   setDisplayConfig();
@@ -566,46 +565,49 @@ a:visited {color: blue; font-weight:normal;}
            objHomeEntities[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cl);
          }      
        }
-
-       let homeTxCalls=new Array(); // OK because we're going to add unique values
-       let reachedEntitiesHomeAll=new Set;
-       let reachedEntitiesOtherAll=new Set;
-       tmpHTML="";
-       for (const call in objHomeEntities) {
-         if(objHomeEntities[call].tx) {
-           let reachedEntitiesHome=new Set;
-           let reachedEntitiesOther=new Set;
-           for(const conn in objHomeEntities[call].conns) {
-             if(objHomeEntities[call].conns[conn]==true) {
-               reachedEntitiesHome.add(conn);
-               reachedEntitiesHomeAll.add(conn);
-             } else {
-               reachedEntitiesOther.add(conn);
-               reachedEntitiesOtherAll.add(conn);
-             }          
-           }
-           if(groupHomeEntities){ 
-             homeTxCalls.push(call);
-           } else {
-             tmpHTML+="<div class='transmit'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
-             tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHome).toSorted().join(', ')+"</span>";
-             tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span></div>";
-           }
-         }
-       }
-       if (groupHomeEntities){
-         tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
-         tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHomeAll).toSorted().join(', ')+"</span>";
-         tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
-       }
  
-       detailsGrid.innerHTML+=tmpHTML;
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Tx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeEntities,"Rx");
       
-
-    
-    
-
 }	
+
+function getBandDetailsRowHTML(objHomeEntities,TxRx){
+
+  let homeTxCalls=new Array(); // OK because we're going to add unique values
+  let reachedEntitiesHomeAll=new Set;
+  let reachedEntitiesOtherAll=new Set;
+  let tmpHTML="";
+  for (const call in objHomeEntities) {
+     if(((TxRx=="Tx") && objHomeEntities[call].tx)
+     || ((TxRx=="Rx") && objHomeEntities[call].rx) 
+     || ((TxRx=="Both") && (objHomeEntities[call].tx && objHomeEntities[call].rx))) {
+       let reachedEntitiesHome=new Set;
+       let reachedEntitiesOther=new Set;
+       for(const conn in objHomeEntities[call].conns) {
+         if(objHomeEntities[call].conns[conn]==true) { // home vs other flag (remote entity)
+           reachedEntitiesHome.add(conn);
+           reachedEntitiesHomeAll.add(conn);
+         } else {
+           reachedEntitiesOther.add(conn);
+           reachedEntitiesOtherAll.add(conn);
+         }          
+       }
+       if(groupHomeEntities){ 
+         homeTxCalls.push(call);
+       } else {
+         tmpHTML+="<div class='transmit'>"+call+"</div><div>"+RIGHTARROW+"</div><div>";   
+         tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHome).toSorted().join(', ')+"</span>";
+         tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOther).toSorted().join(', ')+"</span></div>";
+       }
+     }
+   }
+   if (groupHomeEntities){      
+     tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+     tmpHTML+="<span class='intraHome'>"+Array.from(reachedEntitiesHomeAll).toSorted().join(', ')+"</span>";
+     tmpHTML+="<span class='outgoing'>"+Array.from(reachedEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
+   }
+   return tmpHTML;
+}
 
 
 </script>
