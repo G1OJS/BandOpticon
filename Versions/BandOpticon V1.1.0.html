@@ -573,9 +573,14 @@ a:visited {color: blue; font-weight:normal;}
 	//		for (const call in homeCalls) => {if(homeCalls[call].tx) {console.log(`${call}: ${homeCalls[call].tx}`)};}
          let homeTxCalls=new Array();
          Object.keys(homeCalls).forEach(key => {if(homeCalls[key].tx){homeTxCalls.push(key)}});
+         for (const call of homeTxCalls) {
+           console.log(call)
+           let reachedEntities=homeCalls[call].conns
+           console.log(reachedEntities);
+         };
  
    //    if (groupHomeCalls){
-         tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+    //     tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
    //      tmpHTML+="<span class='intraHome'>"+reachedEntities.toSorted().join(', ')+"</span>";
   //       tmpHTML+=" <span class='outgoing'>"+Array.from(connEntsOther).join(' ')+"</span>";
   //       tmpHTML+="</div>"
@@ -590,7 +595,7 @@ a:visited {color: blue; font-weight:normal;}
    //        tmpHTML+="</div>";
    //      });
      //  }
-       detailsGrid.innerHTML+=tmpHTML;
+    //   detailsGrid.innerHTML+=tmpHTML;
       
 
     
