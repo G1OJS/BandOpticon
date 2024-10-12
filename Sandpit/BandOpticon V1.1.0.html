@@ -194,7 +194,7 @@ a:visited {color: blue; font-weight:normal;}
 	  
     // first, build conn object for this msg using same keys as PSKR MQTT:
     const conn={};
-    msg.replaceAll('"','').split(',').forEach(function(v) {
+    msg.slice(1, -1).replaceAll('"','').split(',').forEach(function(v) {
     let kvp=v.split(":");
       conn[kvp[0]]=kvp[1];
     });
@@ -485,7 +485,6 @@ a:visited {color: blue; font-weight:normal;}
               
        for (id in connections) {
          let conn=connections[id];
-         if (once) {console.log(conn); once=false;}
          if (conn.b==band && conn.md==watchedMode) {
            if(conn.dd=="hh") {nSpotsH2H+=1}
            if(conn.dd=="hd") {nSpotsH2DX+=1}
