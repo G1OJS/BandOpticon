@@ -559,22 +559,26 @@ a:visited {color: blue; font-weight:normal;}
        var txCalls=new Set;
        var rxCalls=new Set;
        var txrxCalls=new Set;
-       const connEnts={};
+       var connEntsHome=new Set;
+       var connEntsOther=new Set;
+       const bmConns={};
        for (id in connections) {
          let conn=connections[id];
          if (conn.b==watchedBand && conn.md==watchedMode) {
+           bmConns[id]=conn;
            if(conn.dd[0]=="h") {txCalls.add(conn.hc)} else {rxCalls.add(conn.hc)}
-           connEnts[conn.hc]=conn.cc;
+           if(squareIsInHome(conn.cl)){connEntsHome.add(conn.cc)} else {connEntsOther.add(conn.cc)};
          }
        }
        txrxCalls=txCalls.intersection(rxCalls);
        
        tmpHTML="";
        txCalls.forEach(function (txCall) {
-           tmpHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>";
-           for (id in connEnts) {
-     //      console.log(id);
-           if(id==txCall) {tmpHTML+=connEnts[id].cc+" " } }
+           tmpHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div>";
+           for(id in bmConns){
+             if(bmConns[id].hc==txCall && connEntsHome.has(bmConns[id].cc)) {tmpHTML+="<span class='intraHome'>"+bmConns[id].cc+" </span>"}
+             if(bmConns[id].hc==txCall && connEntsOther.has(bmConns[id].cc)) {tmpHTML+="<span class='outgoing'>"+bmConns[id].cc+" </span>"}
+           }
            tmpHTML+="</span></div>";
        });
        detailsGrid.innerHTML+=tmpHTML;
