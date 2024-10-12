@@ -186,25 +186,36 @@ a:visited {color: blue; font-weight:normal;}
   }
   
   function onMessage(msg){
-    // sq - sequence number f - frequency md - mode rp - report (snr) t - seconds since 1970-01-01
-    // sc/rc - sender call / receiver call
-    // sl/rl - sender locator / receiver locator
-    // sa / ra - sender ADIF country code / receiver ADIF country code
-    // b - band
-    const conn={band:getVal("b",msg), mode:getVal("md",msg)}
-    if (squareIsInHome(getVal("sl",msg))) {
-       conn["HomeCall"]=getVal("sc",msg);
-       conn["ConnectedCall"]=getVal("rc",msg);
+    // message format:
+    // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
+    // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
+	  
+    // first, build conn object for this msg using same keys as PSKR MQTT:
+    const conn={};
+    msg.replaceAll('"','').split(',').forEach(function(v) {
+    let kvp=v.split(":");
+      conn[kvp[0]]=kvp[1];
+    });
+ 
+    // now swap keys to: 
+    // sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
+    // hc:home, call hl:home loc, cc:connected call, cl:connected call loc
+    if(squareIsInHome(conn.sl)){
+      conn["hc"]=conn.sc;
+      conn["hl"]=conn.sl;
+      conn["cc"]=conn.rc;
+      conn["cl"]=conn.rl;
+      if(squareIsInHome(conn.rl)) {conn["dd"]="hh"} else {conn["dd"]="hd"}      
     } else {
-       conn["HomeCall"]=getVal("rc",msg);
-       conn["ConnectedCall"]=getVal("sc",msg);
+      conn["hc"]=conn.rc;
+      conn["hl"]=conn.rl;
+      conn["cc"]=conn.sc;
+      conn["cl"]=conn.sl;
+      conn["dd"]="dh";
     }
-    if ([getVal("sq",msg)] in connections) console.log("SQ is not unique");
-   
-    connections[getVal("sq",msg)]=conn;
-    callSquares[getVal("sc",msg)]= getVal("sl",msg);
-    callSquares[getVal("rc",msg)]= getVal("rl",msg);
-   
+    delete conn["sc"]; delete conn["sl"]; delete conn["sa"];
+    delete conn["rc"]; delete conn["rl"]; delete conn["ra"];
+    delete conn["f"]; delete conn["rp"];
   }
   
    function purgeSpots(){
