@@ -570,11 +570,13 @@ a:visited {color: blue; font-weight:normal;}
            homeCalls[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cc);
          }      
        }
-			for (const call in homeCalls) {console.log(`${call}: ${homeCalls[call].tx}`);}
-
+	//		for (const call in homeCalls) => {if(homeCalls[call].tx) {console.log(`${call}: ${homeCalls[call].tx}`)};}
+         let homeTxCalls=new Array();
+         Object.keys(homeCalls).forEach(key => {if(homeCalls[key].tx){homeTxCalls.push(key)}});
+ 
    //    if (groupHomeCalls){
-   //      tmpHTML="<div class='transmit'>"+Object.entries(homeCalls).filter(key => homeCalls[key].tx==true)+"</div><div>"+RIGHTARROW+"</div><div>";
-  //       tmpHTML+="<span class='intraHome'>"+Array.from(connEntsHome).join(' ')+"</span>";
+         tmpHTML="<div class='transmit'>"+homeTxCalls.toSorted().join(', ')+"</div><div>"+RIGHTARROW+"</div><div>";
+   //      tmpHTML+="<span class='intraHome'>"+reachedEntities.toSorted().join(', ')+"</span>";
   //       tmpHTML+=" <span class='outgoing'>"+Array.from(connEntsOther).join(' ')+"</span>";
   //       tmpHTML+="</div>"
   //     } else {
@@ -588,7 +590,7 @@ a:visited {color: blue; font-weight:normal;}
    //        tmpHTML+="</div>";
    //      });
      //  }
-   //    detailsGrid.innerHTML+=tmpHTML;
+       detailsGrid.innerHTML+=tmpHTML;
       
 
     
