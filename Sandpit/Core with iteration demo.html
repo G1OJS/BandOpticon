@@ -51,6 +51,8 @@
    
     connections[getVal("sq",msg)]=conn;
    
+//    if ([getVal("sq",msg)] in connections) console.log("SQ added successfully");
+   
     callSquares[getVal("sc",msg)]= getVal("sl",msg);
     callSquares[getVal("rc",msg)]= getVal("rl",msg);
 
@@ -59,16 +61,19 @@
   
   
   function listConnections(band){
+  // list the whole object with structure
+//   for (const [id, conn] of Object.entries(connections)) {
+//      console.log(conn);
+//   }
+  // list line by line
    for (const [id, conn] of Object.entries(connections)) {
-    for (const [key, value] of Object.entries(conn)) {
-      console.log(`${key}: ${value}`);
-    }
+      console.log(`Band:${conn['band']} Mode:${conn['mode']} Home Call:${conn['HomeCall']} Connected Call:${conn['ConnectedCall']}`);
    }
   }
   
   function listCallSquares(){
- for (const [key, value] of Object.entries(callSquares)) {
-    console.log(`${key}: ${value}`);
+ for (const [call, square] of Object.entries(callSquares)) {
+    console.log(`${call}: ${square}`);
 }
   //   for (const [call,square] of Object.entries(callSquares)) { console.log({call},{square});  }; 
   }
