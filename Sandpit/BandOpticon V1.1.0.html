@@ -467,14 +467,14 @@ a:visited {color: blue; font-weight:normal;}
   
   function updateBandTile(band){
        
-       nSpotsH2H=0;
-       nSpotsH2DX=0;
-       nSpotsDX2H=0;
-       txCalls=new Set;
-       rxCalls=new Set;
+       let nSpotsH2H=0;
+       let nSpotsH2DX=0;
+       let nSpotsDX2H=0;
+       let nTx=0;
+       let nRx=0
    
          // save the stats from above to the recording string
-       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
+       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+nTx+","+nRx+",";
 
        // update first row of the band tile
        htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+band+");'>"+band+" "+watchedMode+"</a></strong>";
@@ -486,9 +486,9 @@ a:visited {color: blue; font-weight:normal;}
        for (id in connections) {
          let conn=connections[id];
          if (conn.b==band && conn.md==watchedMode) {
-           if(conn.dd=="hh") {nSpotsH2H+=1}
-           if(conn.dd=="hd") {nSpotsH2DX+=1}
-           if(conn.dd=="dh") {nSpotsDX2H+=1}
+           if(conn.dd=="hh") {nSpotsH2H+=1; nTx+=1;}
+           if(conn.dd=="hd") {nSpotsH2DX+=1; nTx+=1;}
+           if(conn.dd=="dh") {nSpotsDX2H+=1; nRx+=1;}
          }
        }
    
@@ -509,12 +509,12 @@ a:visited {color: blue; font-weight:normal;}
          "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
          "<span class='incoming'>"+nSpotsDX2H+"</span>";
        document.getElementById(band+"calls").innerHTML=
-         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+         "<span class='transmit'>Tx Calls "+nTx+"</span><br>"+
+         "<span class='receive'>"+"Rx Calls "+nRx+"</span>";
 
       // set background colour of band tile to grey if no activity
       let parentBox=document.getElementById(band+"calls").parentElement
-      if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
+      if((nTx+nRx)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
   
   }
