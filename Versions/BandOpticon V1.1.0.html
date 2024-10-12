@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.1.0</title>
+<title>BandOpticon V1.0.5</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -550,6 +550,20 @@ a:visited {color: blue; font-weight:normal;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
+    
+       const bConns={};
+       for (id in connections) {
+         let conn=connections[id];
+         if (conn.b==band && conn.md==watchedMode) {
+           bConns[conn.sq]=conn;
+         }
+       }
+    
+    
+    
+    
+    
+    
 
 }	
 
