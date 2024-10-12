@@ -555,6 +555,9 @@ a:visited {color: blue; font-weight:normal;}
     
     
        // this part works but needs to be more readable
+       // Add back highlighting by calling this section (558 to 580) twice -
+       // once without myCall, and once with only myCall
+       // accumulate HTML in both cases and run a search and replace on those strings
        
        // txCalls, rxCalls, txrxCalls = active stations in Home
        // connections - sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
