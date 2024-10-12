@@ -120,6 +120,8 @@ a:visited {color: blue; font-weight:normal;}
   
   const callSquares = {};
   const connections = {};
+  
+  var once=true;
 
   loadConfig();
   setDisplayConfig();
@@ -216,6 +218,9 @@ a:visited {color: blue; font-weight:normal;}
     delete conn["sc"]; delete conn["sl"]; delete conn["sa"];
     delete conn["rc"]; delete conn["rl"]; delete conn["ra"];
     delete conn["f"]; delete conn["rp"];
+    
+    // now add this connection to the connections object using sequence ID as key:
+    connections[conn.sq]=conn;
   }
   
    function purgeSpots(){
@@ -319,16 +324,6 @@ a:visited {color: blue; font-weight:normal;}
     // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
     return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
   }
-  
-  function getVal(key,message){
-    // parse the MQTT message to get the part we want (key)
-    var iVal=message.indexOf('"'+key+'":');
-    var iColon=message.indexOf(':',iVal);
-    var iComma=message.indexOf(",",iColon);
-    var val=message.slice(iColon+1,iComma).replace(/"/g, '');
-    return val;
-  }
-	
 
   function parseSquares(sqsList){
     // returns uppercase squares, expanded if necessary
@@ -489,9 +484,12 @@ a:visited {color: blue; font-weight:normal;}
        document.getElementById(band+"band").innerHTML=htmlTmp+"<br>";
               
        for (id in connections) {
-         if (connections[id].band==band && connections[id].mode==watchedMode) {
-           let dxSq=callSquares[connections[id].ConnectedCall];
-           if (squareIsInHome(dxSq)) {nSpotsH2H+=1} else {nSpotsH2DX+=1}
+         let conn=connections[id];
+         if (once) {console.log(conn); once=false;}
+         if (conn.b==band && conn.md==watchedMode) {
+           if(conn.dd=="hh") {nSpotsH2H+=1}
+           if(conn.dd=="hd") {nSpotsH2DX+=1}
+           if(conn.dd=="dh") {nSpotsDX2H+=1}
          }
        }
    
