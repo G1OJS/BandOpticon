@@ -476,12 +476,12 @@ a:visited {color: blue; font-weight:normal;}
          htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
        }
        document.getElementById(band+"band").innerHTML=htmlTmp+"<br>";
-       
-       for (const [id, conn] of Object.entries(connections)) {
-           if (conn["band"]==band && conn["mode"]==watchedMode) {
-           for (const [id, conn] of Object.entries(conn)) {      
-              console.log(`${key}: ${value}`);
-           }
+              
+       for (id in connections) {
+         if (connections[id].band==band && connections[id].mode==watchedMode) {
+           let dxSq=callSquares[connections[id].ConnectedCall];
+           if (squareIsInHome(dxSq)) {nSpotsH2H+=1} else {nSpotsH2DX+=1}
+         }
        }
    
 
