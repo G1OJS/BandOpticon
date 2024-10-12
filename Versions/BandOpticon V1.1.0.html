@@ -208,16 +208,16 @@ a:visited {color: blue; font-weight:normal;}
     // sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
     // hc:home, call hl:home loc, cc:connected call, cl:connected call loc
     if(squareIsInHome(conn.sl)){
-      conn["hc"]=conn.sc;
-      conn["hl"]=conn.sl;
-      conn["cc"]=conn.rc;
-      conn["cl"]=conn.rl;
+      conn["hc"]=conn.sc.toUpperCase();
+      conn["hl"]=conn.sl.toUpperCase();
+      conn["cc"]=conn.rc.toUpperCase();
+      conn["cl"]=conn.rl.toUpperCase();
       if(squareIsInHome(conn.rl)) {conn["dd"]="hh"} else {conn["dd"]="hd"}      
     } else {
-      conn["hc"]=conn.rc;
-      conn["hl"]=conn.rl;
-      conn["cc"]=conn.sc;
-      conn["cl"]=conn.sl;
+      conn["hc"]=conn.rc.toUpperCase();
+      conn["hl"]=conn.rl.toUpperCase();
+      conn["cc"]=conn.sc.toUpperCase();
+      conn["cl"]=conn.sl.toUpperCase();
       conn["dd"]="dh";
     }
     delete conn["sc"]; delete conn["sl"]; delete conn["sa"];
@@ -553,6 +553,9 @@ a:visited {color: blue; font-weight:normal;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
+    
+       // this part works but needs to be more readable
+       
        // txCalls, rxCalls, txrxCalls = active stations in Home
        // connections - sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
        //               hc:home, call hl:home loc, cc:connected call, cl:connected call loc
@@ -566,7 +569,8 @@ a:visited {color: blue; font-weight:normal;}
          if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
            if(connections[id].dd[0]=="h") {objHomeEntities[connections[id].hc].tx=true} 
            if(connections[id].dd[0]=="d") {objHomeEntities[connections[id].hc].rx=true}
-           objHomeEntities[connections[id].hc].conns[connections[id].cc]=squareIsInHome(connections[id].cl);
+           farEntity=getEntity(connections[id].cc,connections[id].cl);
+           objHomeEntities[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
          }      
        }
  
@@ -583,29 +587,29 @@ function getBandDetailsRowHTML(objHomeEntities,TxRx){
   let farEntitiesHomeAll=new Set;
   let farEntitiesOtherAll=new Set;
   let tmpHTML="";
-  let Arrow=""
+  let Arrow="";
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
-  for (const call in objHomeEntities) {
-     if(((TxRx=="Tx") && objHomeEntities[call].tx)
-     || ((TxRx=="Rx") && objHomeEntities[call].rx) 
-     || ((TxRx=="TxRx") && (objHomeEntities[call].tx && objHomeEntities[call].rx))) {
+  for (const homeCall in objHomeEntities) { // objHomeEntities so named in case we ever generalise homeCall
+     if(((TxRx=="Tx") && objHomeEntities[homeCall].tx)
+     || ((TxRx=="Rx") && objHomeEntities[homeCall].rx) 
+     || ((TxRx=="TxRx") && (objHomeEntities[homeCall].tx && objHomeEntities[homeCall].rx))) {
        let farEntitiesHome=new Set;
        let farEntitiesOther=new Set;
-       for(const conn in objHomeEntities[call].conns) {
-         if(objHomeEntities[call].conns[conn]==true) { // home vs other flag (remote entity)
-           farEntitiesHome.add(conn);
-           farEntitiesHomeAll.add(conn);
+       for(const farEntity in objHomeEntities[homeCall].conns) {
+         if(objHomeEntities[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
+           farEntitiesHome.add(farEntity);
+           farEntitiesHomeAll.add(farEntity);
          } else {
-           farEntitiesOther.add(conn);
-           farEntitiesOtherAll.add(conn);
+           farEntitiesOther.add(farEntity);
+           farEntitiesOtherAll.add(farEntity);
          }          
        }
        if(groupHomeEntities){ 
-         homeCalls.push(call);
+         homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+call+"</div><div>"+Arrow+"</div><div>";   
+         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div>";   
          tmpHTML+="<span class='intraHome'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>";
          tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(farEntitiesOther).toSorted().join(', ')+"</span></div>";
        }
