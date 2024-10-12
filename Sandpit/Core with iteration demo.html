@@ -9,7 +9,7 @@
 <script>
   const squaresArr=["IO90","IO91","IO92"];
 
-  var callSquares = new Set;
+  const callSquares = {};
   var connections = new Set;
 
   mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
@@ -42,8 +42,11 @@
     } else {
       connections.add([getVal("b",msg), getVal("md",msg), getVal("rc",msg), getVal("sc",msg)]);
     }
-    callSquares.add([getVal("sc",msg),getVal("sl",msg)]);
-    callSquares.add([getVal("rc",msg),getVal("rl",msg)]);
+
+    callSquares[getVal("sc",msg)]= getVal("sl",msg);
+    callSquares[getVal("rc",msg)]= getVal("rl",msg);
+
+   
   }
   
   
@@ -52,8 +55,12 @@
   }
   
   function listCallSquares(){
-     callSquares.forEach((v) => { console.log(v)  }); 
+ for (const [key, value] of Object.entries(callSquares)) {
+    console.log(`${key}: ${value}`);
+}
+  //   for (const [call,square] of Object.entries(callSquares)) { console.log({call},{square});  }; 
   }
+ 
   
   function squareIsInHome(sq){
     // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
