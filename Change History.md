@@ -89,6 +89,8 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   V1.1.0:
   - add back highlighting and myCall-only rows. See notes around line 558.
+  - add back details under clock
+  - fix missing style in band tile legend
   - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
   - combine controls and detailsTop grids? Two rows of "header"?
 
