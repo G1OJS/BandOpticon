@@ -194,10 +194,10 @@ a:visited {color: blue; font-weight:normal;}
     const conn={band:getVal("b",msg), mode:getVal("md",msg)}
     if (squareIsInHome(getVal("sl",msg))) {
        conn["HomeCall"]=getVal("sc",msg);
-       conn["ConnectedCall"]=getVal("sl",msg);
+       conn["ConnectedCall"]=getVal("rc",msg);
     } else {
        conn["HomeCall"]=getVal("rc",msg);
-       conn["ConnectedCall"]=getVal("rl",msg);
+       conn["ConnectedCall"]=getVal("sc",msg);
     }
     if ([getVal("sq",msg)] in connections) console.log("SQ is not unique");
    
@@ -476,6 +476,11 @@ a:visited {color: blue; font-weight:normal;}
          htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
        }
        document.getElementById(band+"band").innerHTML=htmlTmp+"<br>";
+       
+       for (const [key, value] of Object.entries(connections)) {
+  console.log(`${key}: ${value}`);
+}
+   
 
        // get the modes specific to this band and write clickable links for BandActivityDetails
 //       let tmp=(new Set()).add(watchedMode); 
