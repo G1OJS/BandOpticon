@@ -93,12 +93,10 @@ a:visited {color: blue; font-weight:normal;}
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
-
   var watchedMode="FT8";
   var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var modesByBandArr=new Array();
   var watchedBand=bandsArr[0];
-
   var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
@@ -106,10 +104,8 @@ a:visited {color: blue; font-weight:normal;}
   var squaresDisplayLevel=4;
   var groupHomeEntities=true;
   let myCall="G1OJS";
-
   var mqttClient=null;	
   var tStart=Date.now(); // software start time
- 
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
@@ -119,10 +115,12 @@ a:visited {color: blue; font-weight:normal;}
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
-  
   const callSquares = {};
   const connections = {};
-  
+  var connectionsAdded=0;
+  var connectionsPurged=0;
+  var messagesReceived=0;
+
   var once=true;
 
   loadConfig();
@@ -201,7 +199,10 @@ a:visited {color: blue; font-weight:normal;}
            let kvp=v.split(":");
            conn[kvp[0]]=kvp[1];
          });
-    
+    messagesReceived+=1;
+
+    if(bandsArr.indexOf(conn.b)<0) {return} // don't process bands we aren't watching
+	  
     // accumulate modes head on each band
     modeSetByBandArr[bandsArr.indexOf(conn.b)].add(conn.md);
  
@@ -227,11 +228,12 @@ a:visited {color: blue; font-weight:normal;}
     
     // now add this connection to the connections object using sequence ID as key:
     connections[conn.sq]=conn;
+    connectionsAdded+=1;
   }
   
    function purgeSpots(){
    // get rid of spots older than purgeMinutes
-
+   // connectionsPurged+=1;
    }
    
 
@@ -286,8 +288,8 @@ a:visited {color: blue; font-weight:normal;}
     
     appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
        +"<br>Running for "+runningmins+" minutes<br>";
-//       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
- //      +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
+       +connections.size+" connections in database: "+connectionsAdded+" added, "+connectionsPurged+" purged<br>"
+       +messagesReceived+" messages received + "<br>";
 
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
     appTop_r.innerHTML=""
