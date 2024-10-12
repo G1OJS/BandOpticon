@@ -478,12 +478,9 @@ a:visited {color: blue; font-weight:normal;}
        let nSpotsH2H=0;
        let nSpotsH2DX=0;
        let nSpotsDX2H=0;
-       let nTx=0;
-       let nRx=0
+       let txCalls=new Set;
+       let rxCalls=new Set;
    
-         // save the stats from above to the recording string
-       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+nTx+","+nRx+",";
-
        // update first row of the band tile
        htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a></strong>";
        if(detailsWanted!="BandTileLegend") {
@@ -494,12 +491,28 @@ a:visited {color: blue; font-weight:normal;}
        for (id in connections) {
          let conn=connections[id];
          if (conn.b==band && conn.md==watchedMode) {
-           if(conn.dd=="hh") {nSpotsH2H+=1; nTx+=1;}
-           if(conn.dd=="hd") {nSpotsH2DX+=1; nTx+=1;}
-           if(conn.dd=="dh") {nSpotsDX2H+=1; nRx+=1;}
+           if(conn.dd=="hh") {nSpotsH2H+=1; txCalls.add(conn.hc);}
+           if(conn.dd=="hd") {nSpotsH2DX+=1; txCalls.add(conn.hc);}
+           if(conn.dd=="dh") {nSpotsDX2H+=1; rxCalls.add(conn.hc);}
          }
        }
-   
+       
+       // save the stats from above to the recording string
+       dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
+       
+       // write the counts for this band's band tile
+       document.getElementById(band+"spots").innerHTML=
+         "Spots "+
+         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
+         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
+         "<span class='incoming'>"+nSpotsDX2H+"</span>";
+       document.getElementById(band+"calls").innerHTML=
+         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
+         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+
+       // set background colour of band tile to grey if no activity
+       let parentBox=document.getElementById(band+"calls").parentElement
+       if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
        // get the modes specific to this band and write clickable links for BandActivityDetails
 //       let tmp=(new Set()).add(watchedMode); 
@@ -510,19 +523,7 @@ a:visited {color: blue; font-weight:normal;}
 //       }
 //       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
 
-       // write the counts for this band's band tile
-       document.getElementById(band+"spots").innerHTML=
-         "Spots "+
-         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
-         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
-         "<span class='incoming'>"+nSpotsDX2H+"</span>";
-       document.getElementById(band+"calls").innerHTML=
-         "<span class='transmit'>Tx Calls "+nTx+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+nRx+"</span>";
 
-      // set background colour of band tile to grey if no activity
-      let parentBox=document.getElementById(band+"calls").parentElement
-      if((nTx+nRx)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
   
   }
@@ -571,16 +572,24 @@ a:visited {color: blue; font-weight:normal;}
          }
        }
        txrxCalls=txCalls.intersection(rxCalls);
+       console.log(Array.from(txCalls));
        
-       tmpHTML="";
-       txCalls.forEach(function (txCall) {
+       if (groupHomeCalls){
+         tmpHTML="<div class='transmit'>"+Array.from(txCalls).join(' ')+"</div><div>"+RIGHTARROW+"</div><div>";
+         tmpHTML+="<span class='intraHome'>"+Array.from(connEntsHome).join(' ')+"</span>";
+         tmpHTML+=" <span class='outgoing'>"+Array.from(connEntsOther).join(' ')+"</span>";
+         tmpHTML+="</div>"
+       } else {
+         tmpHTML="";
+         txCalls.forEach(function (txCall) {
            tmpHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div>";
            for(id in bmConns){
              if(bmConns[id].hc==txCall && connEntsHome.has(bmConns[id].cc)) {tmpHTML+="<span class='intraHome'>"+bmConns[id].cc+" </span>"}
              if(bmConns[id].hc==txCall && connEntsOther.has(bmConns[id].cc)) {tmpHTML+="<span class='outgoing'>"+bmConns[id].cc+" </span>"}
            }
-           tmpHTML+="</span></div>";
-       });
+           tmpHTML+="</div>";
+         });
+       }
        detailsGrid.innerHTML+=tmpHTML;
       
 
