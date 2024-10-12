@@ -1,0 +1,73 @@
+<body>
+  <a href='#' onclick='listConnections("20m")'>List Connections 20m</a>
+  <a href='#' onclick='listCallSquares()'>List call squares</a>
+  
+</body>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<script>
+  const squaresArr=["IO90","IO91","IO92"];
+
+  var callSquares = new Set;
+  var connections = new Set;
+
+  mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
+  mqttClient.onSuccess=subscribe();
+  mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
+  
+  function subscribe(){
+    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    squaresArr.forEach((sq) => {
+      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+    } );
+  }
+  
+  function onMessage(msg){
+    // sq - sequence number f - frequency md - mode rp - report (snr) t - seconds since 1970-01-01
+    // sc/rc - sender call / receiver call
+    // sl/rl - sender locator / receiver locator
+    // sa / ra - sender ADIF country code / receiver ADIF country code
+    // b - band
+    if (squareIsInHome(getVal("sl",msg))){
+      connections.add([getVal("b",msg), getVal("md",msg), getVal("sc",msg), getVal("rc",msg)]);
+    } else {
+      connections.add([getVal("b",msg), getVal("md",msg), getVal("rc",msg), getVal("sc",msg)]);
+    }
+    callSquares.add([getVal("sc",msg),getVal("sl",msg)]);
+    callSquares.add([getVal("rc",msg),getVal("rl",msg)]);
+  }
+  
+  
+  function listConnections(band){
+     connections.forEach((v) => {  if(v[0]==band){console.log(v)}  }); 
+  }
+  
+  function listCallSquares(){
+     callSquares.forEach((v) => { console.log(v)  }); 
+  }
+  
+  function squareIsInHome(sq){
+    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
+  }
+  
+  function getVal(key,message){
+    // parse the MQTT message to get the part we want (key)
+    var iVal=message.indexOf('"'+key+'":');
+    var iColon=message.indexOf(':',iVal);
+    var iComma=message.indexOf(",",iColon);
+    var val=message.slice(iColon+1,iComma).replace(/"/g, '');
+    return val;
+  }
+  
+  
+</script>
