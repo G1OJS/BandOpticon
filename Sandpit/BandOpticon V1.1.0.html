@@ -94,7 +94,7 @@ a:visited {color: blue; font-weight:normal;}
   var squaresList=""; // the human-firendly list of squares to watch
 
   var watchedMode="FT8";
-  var modesArr=new Set(["FT4","FT8","JS8","WSPR","CW"]);
+  var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var modesByBandArr=new Array();
 
   var refresh_mSeconds=1000;
@@ -117,17 +117,21 @@ a:visited {color: blue; font-weight:normal;}
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
+  
+  const callSquares = {};
+  const connections = {};
 
   loadConfig();
   setDisplayConfig();
   updateControls();
 
   // initialise an array of sets to gather modes used on each band
+  var modeSetByBandArr=new Array();
   for (let i=0;i<bandsArr.length;i++){
      modeSetByBandArr.push(new Set);
   }
 
-  setInterval(writeStats, refresh_mSeconds);
+  setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
   connectToFeed();
@@ -160,65 +164,52 @@ a:visited {color: blue; font-weight:normal;}
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribeSquares();
+    mqttClient.onSuccess=subscribe();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
   
-  function subscribeSquares(){
-    
-    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
-    let subs=new Set;
-    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
-    let subsArr=Array.from(subs);
-	  
-    // now do the subscribing
-    for(let i=0;i<subsArr.length;i++){
-      var error=null;
-      var topic='pskr/filter/v2/+/+/+/+/'+subsArr[i]+'/+/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
-      topic='pskr/filter/v2/+/+/+/+/+/'+subsArr[i]+'/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
-    }
+
   
+  function subscribe(){
+    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    squaresArr.forEach((sq) => {
+      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+    } );
   }
-
- function onMessage(message){
-    // if either end of the spot is in home squares, and is in bands we're watching, 
-    // and on the mode we're watching, add this spot
-    // have a look at all modes first though as we want to see what's around
-
-    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
-    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
-      let senderSq=getVal("sl",message).toUpperCase();
-      let receiverSq=getVal("rl",message).toUpperCase();
-      let b=getVal("b",message);
-      let md=getVal("md",message);
-      if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
-        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
-        modeSetByBandArr[bandsArr.indexOf(b)].add(md);
-          let senderCall=getVal("sc",message);
-          let receiverCall=getVal("rc",message);
-          let tSpot=Date.now(); // working with time spot received not time spot generated
-          spotsArr.push([b,tSpot,senderCall,receiverCall,senderSq,receiverSq,md]);
-          spotsAdded+=1;
-          messagesProcessed+=1;
-      }
-      messagesReceived+=1;
-   }
+  
+  function onMessage(msg){
+    // sq - sequence number f - frequency md - mode rp - report (snr) t - seconds since 1970-01-01
+    // sc/rc - sender call / receiver call
+    // sl/rl - sender locator / receiver locator
+    // sa / ra - sender ADIF country code / receiver ADIF country code
+    // b - band
+    const conn={band:getVal("b",msg), mode:getVal("md",msg)}
+    if (squareIsInHome(getVal("sl",msg))) {
+       conn["HomeCall"]=getVal("sc",msg);
+       conn["ConnectedCall"]=getVal("sl",msg);
+    } else {
+       conn["HomeCall"]=getVal("rc",msg);
+       conn["ConnectedCall"]=getVal("rl",msg);
+    }
+    if ([getVal("sq",msg)] in connections) console.log("SQ is not unique");
+   
+    connections[getVal("sq",msg)]=conn;
+    callSquares[getVal("sc",msg)]= getVal("sl",msg);
+    callSquares[getVal("rc",msg)]= getVal("rl",msg);
+   
+  }
   
    function purgeSpots(){
-     // get rid of spots older than purgeMinutes
-    var delArr=new Array();
-    for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-      var tSpot=spotsArr[iSpot][1];
-      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {delArr.push(iSpot)}
-    }
-    for(let iDel=0; iDel <delArr.length;iDel++) {spotsArr.splice(delArr[iDel],1)}
-    spotsPurged+=delArr.length;
+   // get rid of spots older than purgeMinutes
+
    }
    
 
@@ -259,23 +250,23 @@ a:visited {color: blue; font-weight:normal;}
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var modeSelector="";
-    for (let i=0; i<Modes.size;i++){
-      let md=Array.from(Modes)[i]
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;'>"+md+"</a> "
-    }
+  //  var modeSelector="";
+  //  for (let i=0; i<Modes.size;i++){
+  //    let md=Array.from(Modes)[i]
+  //    modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;'>"+md+"</a> "
+  //  }
     
     controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
-       +"<br>Running for "+runningmins+" minutes<br>"
-       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
-       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
+       +"<br>Running for "+runningmins+" minutes<br>";
+//       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
+ //      +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
 
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
     controls_r.innerHTML=""
 	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
         +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
         +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-        +"Mode: "+modeSelector+"<br>"
+ //       +"Mode: "+modeSelector+"<br>"
         +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>";
   }
   
@@ -450,32 +441,25 @@ a:visited {color: blue; font-weight:normal;}
       console.log("Squares list updated to: "+resp);
       saveConfig();
       squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
+      connections = {};
       updateControls();
-      spotsArr=[];
-      spotsAdded=0;
-      spotsPurged=0;
-      writeStats();
+      updateDisplays();
       connectToFeed();
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
   }
 
-/*
-
-   
-
-
- 
-  
-  function writeStats(){
+  function updateDisplays(){
       purgeSpots();
       updateControls();
       setDisplayConfig();
       dataForRecord="Mode="+watchedMode+" ";
-      for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
+ //     for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
   }
-  
+ 
+/*
+ 
   function writeStatsForBand(iBand){
 	  
          // go through all spots, get counts for band tile for this band, build txCalls, rxCalls, entitiesInHome set and entitiesReachedByMe, entitiesSpottedByMe 
