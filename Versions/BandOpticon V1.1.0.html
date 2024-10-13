@@ -682,7 +682,7 @@ function getConnectionsData(specificHomeCall,exclude){
        return objHomeCallData;
 }
 
-function getBandDetailsRowHTML(objHomeCallData,TxRx,callListDivID){
+function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
   let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
@@ -719,15 +719,15 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListDivID){
          homeCalls.push(homeCall);
        } else {
          tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListDivID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
      tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
-     tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-     tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListDivID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+     tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+     tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
      lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
      rhDetailsGridColChars=Math.max(rhDetailsGridColChars,Array.from(localConnectedEntitiesGrouped).join(', ').length+Array.from(nonlocalConnectedEntitiesGrouped).join(', ').length);
    }
