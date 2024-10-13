@@ -578,13 +578,19 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
-       // get home call data for all calls except myCall
-       
+       // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
+       var othersHTML="";
        objHomeCallData=getConnectionsData(myCall,true);
-       // get the HTML to represent the data accumulated above
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       var myCallHTML="";
+       objHomeCallData=getConnectionsData(myCall,false);
+       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
+       
+       detailsGrid.innerHTML+=othersHTML+myCallHTML;
       
 }	
 
