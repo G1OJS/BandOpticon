@@ -11,7 +11,8 @@
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
-      <li>Added row to show calls in home who are both transmitting and receiving, and the entities that any call in that list is both reaching and spotting</li>
+      <li>Added row in band tiles to show number of calls in home who are both transmitting and receiving ('Tx-Rx' calls), and the band details view now shows the entities that any call in that list is both reaching and spotting (which may be none, because a home call qualifies as Tx-Rx if it is spotted by anyone and recieved by anyone).</li>
+      <li>Note that this version purges old connection data based on the age of the spot being generated rather than the time it was received as in V1.0.x - this means that the stats are less 'polluted' by old spots received a long time after they were generated.</li>
     </ol>
   </td>
 </tr>
