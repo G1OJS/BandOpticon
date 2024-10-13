@@ -608,12 +608,12 @@ function highlightCallsList(id1,id2,hlClass){
        const doc1=document.getElementById(id1);
        const doc2=document.getElementById(id2);
        console.log("");
-       console.log("List 1 ori: "+doc1.innerHTML.split(', '));
-       console.log("List 2 ori: "+doc2.innerHTML.split(', '));
-       doc1.innerHTML=doc1.innerHTML.split(', ').map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join(', ');
-       doc2.innerHTML=doc2.innerHTML.split(', ').map(item => HL(item,doc1.innerHTML.indexOf(item)>=0),hlClass).join(', ');
-       console.log("List 1 mod: "+doc1.innerHTML.split(', '));
-       console.log("List 2 mod: "+doc2.innerHTML.split(', '));
+       console.log(doc1.innerHTML.split("\u200C").join("/"));
+       console.log(doc2.innerHTML.split("\u200C").join("/"));
+       doc1.innerHTML=doc1.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && doc2.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
+       doc2.innerHTML=doc2.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && doc1.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
+       console.log(doc1.innerHTML.split("\u200C").join("/"));
+       console.log(doc2.innerHTML.split("\u200C").join("/"));
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -686,15 +686,15 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListDivID){
          homeCalls.push(homeCall);
        } else {
          tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div id='"+callListDivID+"'>";   
-         tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join(', ')+"&zwnj;</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"&zwnj;</span></div>";
+         tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
      tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div id='"+callListDivID+"'>";
-     tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"&zwnj;</span>";
-     tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"&zwnj;</span></div>";
+     tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+     tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
    }
    return tmpHTML;
 }
