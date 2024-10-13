@@ -500,9 +500,27 @@ a:visited {color: blue;}
       dataForRecord="Mode="+watchedMode+", ";
       bandsArr.forEach((band) => updateBandTile(band));
       if(detailsWanted=="BandDetails") {showBandDetails()};
+      resizeGridColumns;
   }
   
-  
+  function resizeGridColumns(){
+    // redistribute grid columns
+    let gridDiv=document.getElementById('detailsGrid');
+    if (groupHomeCalls) {
+      let lhChars=0;
+      let rhChars=0;
+      for (const el of gridDiv.children()){
+        lhChars=Math.max(lhChars,el.innerHTML.length);
+        rhChars=Math.max(lhChars,el.innerHTML.length);
+      }	
+      let centreColumnNominalChars=7;
+      let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
+      gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
+    } else {
+      gridDiv.style.gridTemplateColumns = "min-content min-content auto";
+    }
+  }
+	  
   function updateBandTile(band){
        
        let nSpotsH2H=0;
@@ -598,9 +616,9 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-     //  highlightCallsList("othersTx","myCallTx","HL1");
+       highlightCallsList("othersTx","myCallTx","HL1");
        highlightCallsList("othersRx","myCallRx","HL1");
-      // highlightCallsList("othersTxRx","myCallTxRx","HL1");
+       highlightCallsList("othersTxRx","myCallTxRx","HL1");
       
 }	
 
