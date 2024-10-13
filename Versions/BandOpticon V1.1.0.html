@@ -607,7 +607,7 @@ a:visited {color: blue;}
 function highlightCallsList(id1,id2,hlClass){
        const doc1=document.getElementById(id1);
        const doc2=document.getElementById(id2);
-       console.lof("");
+       console.log("");
        console.log("List 1: "+doc1.innerHTML.split(', '));
        console.log("List 2: "+doc2.innerHTML.split(', '));
        doc1.innerHTML=doc1.innerHTML.split(', ').map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join(', ');
