@@ -580,15 +580,21 @@ a:visited {color: blue;}
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
+       
+       // all except myCall:
        objHomeCallData=getConnectionsData(myCall,true);
        let othersTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
        let othersRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
        let othersTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");
        
+       // just myCall
        objHomeCallData=getConnectionsData(myCall,false);
        let myCallTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
        let myCallRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       let myCallTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
+       let myCallTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");   
+       
+       // do the highlighting
+       othersTxHTML=othersTxHTML.split(',').map(item => HL(item,false)).join(',');
        
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
