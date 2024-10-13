@@ -578,35 +578,46 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
-    
-       // this part works but needs to be more readable
-       // Add back highlighting by calling this section (558 to 580) twice -
-       // once without myCall, and once with only myCall
-       // accumulate HTML in both cases and run a search and replace on those strings
+       // get home call data for all calls except myCall
        
-       // txCalls, rxCalls, txrxCalls = active stations in Home
+       objHomeCallData=getConnectionsData(myCall,true);
+       // get the HTML to represent the data accumulated above
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+      
+}	
+
+function getConnectionsData(specificHomeCall,exclude){
+       // create an object objHomeCalldata[connections[id].hc]= {call, tx, rx,conns:{}}
+       //     - unique home calls transmitting and/or receiving on the watchedMode and watchedBand
+       //     - each unique home call carries boolean tx & rx flags and connections to far entities
+       //     - each far entity = {call or square, am I in home?}
+       // then accumulate the entries from connections:
        // connections - sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
        //               hc:home, call hl:home loc, cc:connected call, cl:connected call loc
-       var objHomeCallData={};
+       
+       // if specificHomeCall, only do this for the specified home call
+       // if exclude, do it for all home calls except the specified home call
+      var objHomeCallData={};
        for (id in connections) {
-         if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
+         if (connections[id].b==watchedBand && connections[id].md==watchedMode 
+           && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
            objHomeCallData[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
          }
        }
        for (id in connections) {
-         if (connections[id].b==watchedBand && connections[id].md==watchedMode) {
+         if (connections[id].b==watchedBand && connections[id].md==watchedMode 
+           && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
            if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].tx=true} 
            if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].rx=true}
            farEntity=getEntity(connections[id].cc,connections[id].cl);
            objHomeCallData[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
          }      
        }
- 
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       detailsGrid.innerHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
-      
-}	
+       
+       return objHomeCallData;
+}
 
 function getBandDetailsRowHTML(objHomeCallData,TxRx){
 	
