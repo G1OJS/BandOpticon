@@ -599,7 +599,10 @@ a:visited {color: blue;}
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
-       
+
+       // initialise variables keeping track of amount of text in LH and RH columns
+       lhDetailsGridColChars=0;rhDetailsGridColChars=0;
+	  
        // all except myCall:
        objHomeCallData=getConnectionsData(myCall,true);
        let othersTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx","othersTx");
