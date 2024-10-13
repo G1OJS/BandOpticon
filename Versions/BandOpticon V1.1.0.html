@@ -579,8 +579,8 @@ a:visited {color: blue;}
           +document.getElementById(watchedBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
+	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HL1")+".</span>"
 	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
           +"</div>";
 		
@@ -591,7 +591,9 @@ a:visited {color: blue;}
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
-          +"<a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+          +"<span class='notesText'>Home calls can be listed as Tx-Rx and yet have no reciprocal spots with a remote entity</span>"
+	  +"<span class='notesText'><br>Choosing coarser definitions of remote entities makes reciprocal spots more likely but not inevitable</span>"
+          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
