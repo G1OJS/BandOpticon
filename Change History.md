@@ -88,8 +88,9 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   V1.1.0:
-  - add back highlighting
+  - highlight myCall rows in yellow by default - let complementary highlighting take over
   - remove blank rows from Band Activity Grid?
+  - add explanation to highlighter code & update variable names
     
   - Add "please explain" buttons and alert boxes e.g. for the following
     -   OK for more relaxed conditions in band tiles count and data recorder - here it just means a home call has spotted anyone and been received by anyone
