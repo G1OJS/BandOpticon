@@ -611,8 +611,11 @@ function highlightCallsList(id1,id2,hlClass){
        let txt1=doc1.innerHTML.split("\u200C");
        let txt2=doc2.innerHTML.split("\u200C");
        for (let i=1;i<4;i+=2){
-         txt1[i]=txt1[i].split(',').map(item => HL(item,doc2.innerHTML.indexOf(item)>0),hlClass).join(',');
-         txt2[i]=txt2[i].split(',').map(item => HL(item,doc1.innerHTML.indexOf(item)>0),hlClass).join(',');
+         console.log("");
+         console.log("list 1: "+txt1[i]);
+         console.log("list 2: "+txt2[i]);
+         txt1[i]=txt1[i].split(',').map(item => HL(item,txt2[i].indexOf(item)>=0),hlClass).join(',');
+         txt2[i]=txt2[i].split(',').map(item => HL(item,txt1[i].indexOf(item)>=0),hlClass).join(',');
        }
        doc1.innerHTML=txt1.join('');
        doc2.innerHTML=txt2.join('');
