@@ -598,17 +598,20 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-   //    highlightCallsList("othersTx","myCallTx","HL1");
+       highlightCallsList("othersTx","myCallTx","HL1");
        highlightCallsList("othersRx","myCallRx","HL1");
-   //    highlightCallsList("othersTxRx","myCallTxRx","HL1");
+       highlightCallsList("othersTxRx","myCallTxRx","HL1");
       
 }	
 
 function highlightCallsList(id1,id2,hlClass){
        const doc1=document.getElementById(id1);
        const doc2=document.getElementById(id2);
-       doc1.innerHTML=doc1.innerHTML.split(',').map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join(',');
-       doc2.innerHTML=doc2.innerHTML.split(',').map(item => HL(item,doc1.innerHTML.indexOf(item)>=0),hlClass).join(',');
+       console.lof("");
+       console.log("List 1: "+doc1.innerHTML.split(', '));
+       console.log("List 2: "+doc2.innerHTML.split(', '));
+       doc1.innerHTML=doc1.innerHTML.split(', ').map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join(', ');
+       doc2.innerHTML=doc2.innerHTML.split(', ').map(item => HL(item,doc1.innerHTML.indexOf(item)>=0),hlClass).join(', ');
 }
 
 function getConnectionsData(specificHomeCall,exclude){
