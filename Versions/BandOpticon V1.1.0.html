@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -506,13 +507,14 @@ a:visited {color: blue;}
   function resizeGridColumns(){
     // redistribute grid columns
     let gridDiv=document.getElementById('detailsGrid');
-    if (groupHomeCalls) {
+    if (groupHomeEntities) {
       let lhChars=0;
       let rhChars=0;
       for (const el of gridDiv.children()){
         lhChars=Math.max(lhChars,el.innerHTML.length);
         rhChars=Math.max(lhChars,el.innerHTML.length);
       }	
+      console.log("Resize "+lhChars+" "+rhChars);
       let centreColumnNominalChars=7;
       let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
@@ -628,12 +630,25 @@ function highlightCallsList(id1,id2,hlClass){
        const doc2a=document.getElementById(id2+"1");
        const doc2b=document.getElementById(id2+"2");
 
-       doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (doc2a.innerHTML+doc2b.innerHTML).indexOf(item)>=0,hlClass)).join("\u200C");
-       doc1b.innerHTML=doc1b.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (doc2a.innerHTML+doc2b.innerHTML).indexOf(item)>=0,hlClass)).join("\u200C");
-  
-       doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (doc1a.innerHTML+doc1b.innerHTML).indexOf(item)>=0,hlClass)).join("\u200C");
-       doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (doc1a.innerHTML+doc1b.innerHTML).indexOf(item)>=0,hlClass)).join("\u200C");
-     
+       let searchWithin="";
+       if(doc2a!=null){searchWithin+=doc2a.innerHTML};
+       if(doc2b!=null){searchWithin+=doc2b.innerHTML};
+       if(doc1a!=null){
+         doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+       }
+       if(doc1b!=null){
+         doc1b.innerHTML=doc1b.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+       }
+       
+       searchWithin="";
+       if(doc1a!=null){searchWithin+=doc1a.innerHTML};
+       if(doc1b!=null){searchWithin+=doc1b.innerHTML};
+       if(doc2a!=null){
+       doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+       }
+       if(doc2b!=null){
+         doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+       }
 
 }
 
