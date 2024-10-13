@@ -118,6 +118,7 @@ a:visited {color: blue;}
   var newWindow=null;
   var dataWriteSeconds=15;
   var connections = {};
+  var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
   var messagesReceived=0;
@@ -587,7 +588,6 @@ a:visited {color: blue;}
        
        var myCallHTML="";
        objHomeCallData=getConnectionsData(myCall,false);
-                             for(const farEntity in objHomeCallData["G1OJS"].conns) {console.log(farEntity);}
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
@@ -597,7 +597,7 @@ a:visited {color: blue;}
 }	
 
 function getConnectionsData(specificHomeCall,exclude){
-       // create an object objHomeCalldata[connections[id].hc]= {call, tx, rx,conns:{}}
+       // create an object objHomeCalldata[connections[id].hc]= {call, isTx, isRx,conns:{}}
        //     - unique home calls transmitting and/or receiving on the watchedMode and watchedBand
        //     - each unique home call carries boolean tx & rx flags and connections to far entities
        //     - each far entity = {call or square, am I in home?}
@@ -611,19 +611,21 @@ function getConnectionsData(specificHomeCall,exclude){
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
-           objHomeCallData[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
+           objHomeCallData[connections[id].hc]={call:connections[id].hc,isTx:false,isRx:false,conns:{}};
          }
        }
+       reciprocals.clear();
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
-           if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].tx=true} 
-           if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].rx=true}
+           if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].isTx=true} 
+           if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].isRx=true}
            farEntity=getEntity(connections[id].cc,connections[id].cl);
            objHomeCallData[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
+           reciprocals.add(connections[id].hc+","+farEntity+","+connections[id].dd[0])
          }      
        }
-
+       
        return objHomeCallData;
 }
 
@@ -638,21 +640,19 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx){
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   for (const homeCall in objHomeCallData) {
-     if(((TxRx=="Tx") && objHomeCallData[homeCall].tx)
-     || ((TxRx=="Rx") && objHomeCallData[homeCall].rx) 
-     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].tx && objHomeCallData[homeCall].rx))) {
+     if(((TxRx=="Tx") && objHomeCallData[homeCall].isTx)
+     || ((TxRx=="Rx") && objHomeCallData[homeCall].isRx) 
+     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].isTx && objHomeCallData[homeCall].isRx))) {
        let localConnectedEntities=new Set;
        let nonlocalConnectedEntities=new Set;
        for(const farEntity in objHomeCallData[homeCall].conns) {
-         if(TxRx) { // if looking for the TxRx connections, only count the connection to this far entity if the connection is reciprocal          
-         // "i am transmitting and receiving, and I have spotted or reached these far entities"
-         // -> "i am transmitting and receiving, and I have spotted *and* reached these far entities"
-         // need to make list of spotted, list of received, and intersect
-         // best done here or in getConnectionsData?
-         
-         
+         let reciprocal=false;
+         if(TxRx){
+           let outlink=homeCall+","+farEntity+",h";
+           let inlink=homeCall+","+farEntity+",d";
+           reciprocal=(reciprocals.has(outlink) && reciprocals.has(inlink));
          }
-         if(!TxRx || (TxRx && true)) {
+         if( TxRx!="TxRx" || (TxRx=="TxRx" && reciprocal) ) {
            if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
              localConnectedEntities.add(farEntity);
              localConnectedEntitiesGrouped.add(farEntity);
