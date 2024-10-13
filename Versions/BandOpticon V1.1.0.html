@@ -580,19 +580,18 @@ a:visited {color: blue;}
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
-       var othersHTML="";
        objHomeCallData=getConnectionsData(myCall,true);
-       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       othersHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       let othersTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       let othersRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       let othersTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");
        
-       var myCallHTML="";
        objHomeCallData=getConnectionsData(myCall,false);
-       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
+       let myCallTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
+       let myCallRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
+       let myCallTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
        
-       detailsGrid.innerHTML+=othersHTML+myCallHTML;
+       detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
+         +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
       
 }	
 
