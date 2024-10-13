@@ -97,6 +97,7 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
+  - is there something odd about highlighting between myCall and others on the Tx-Rx row? No yellow highlightinh? Why?
   - switch to https://www.brailleinstitute.org/freefont/
   - remove the rogue space in RH html appearing if remote entities in home is empty (needs an if statement between the += lines around lines 728 and 736.
   - investigate why V1.1.0 seems slower (at least to Google inspector) than V1.0.4
