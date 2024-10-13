@@ -584,8 +584,10 @@ a:visited {color: blue;}
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       
        var myCallHTML="";
        objHomeCallData=getConnectionsData(myCall,false);
+                             for(const farEntity in objHomeCallData["G1OJS"].conns) {console.log(farEntity);}
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");       
@@ -621,7 +623,7 @@ function getConnectionsData(specificHomeCall,exclude){
            objHomeCallData[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
          }      
        }
-       
+
        return objHomeCallData;
 }
 
@@ -642,13 +644,23 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx){
        let localConnectedEntities=new Set;
        let nonlocalConnectedEntities=new Set;
        for(const farEntity in objHomeCallData[homeCall].conns) {
-         if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
-           localConnectedEntities.add(farEntity);
-           localConnectedEntitiesGrouped.add(farEntity);
-         } else {
-           nonlocalConnectedEntities.add(farEntity);
-           nonlocalConnectedEntitiesGrouped.add(farEntity);
-         }          
+         if(TxRx) { // if looking for the TxRx connections, only count the connection to this far entity if the connection is reciprocal          
+         // "i am transmitting and receiving, and I have spotted or reached these far entities"
+         // -> "i am transmitting and receiving, and I have spotted *and* reached these far entities"
+         // need to make list of spotted, list of received, and intersect
+         // best done here or in getConnectionsData?
+         
+         
+         }
+         if(!TxRx || (TxRx && true)) {
+           if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
+             localConnectedEntities.add(farEntity);
+             localConnectedEntitiesGrouped.add(farEntity);
+           } else {
+             nonlocalConnectedEntities.add(farEntity);
+             nonlocalConnectedEntitiesGrouped.add(farEntity);
+           }
+         }
        }
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
