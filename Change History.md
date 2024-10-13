@@ -101,6 +101,7 @@ To do:
   - remove the rogue space in RH html appearing if remote entities in home is empty (needs an if statement between the += lines around lines 728 and 736.
   - investigate why V1.1.0 seems slower (at least to Google inspector) than V1.0.4
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
+  - add back expanding of main mode list when new modes are spotted? Or leave that to the band tiles?
 
 Code tidying:
   - add explanation to highlighter code & update variable names
