@@ -27,6 +27,7 @@ div {margin: 0px;  padding: 0px;}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
+.hidden {display: none;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
@@ -583,23 +584,40 @@ a:visited {color: blue;}
        
        // all except myCall:
        objHomeCallData=getConnectionsData(myCall,true);
-       let othersTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       let othersRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       let othersTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       let othersTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx","othersTx");
+       let othersRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx","othersRx");
+       let othersTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx","othersTxRx");
        
        // just myCall
        objHomeCallData=getConnectionsData(myCall,false);
-       let myCallTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx");
-       let myCallRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx");
-       let myCallTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx");   
-       
-       // do the highlighting
-       othersTxHTML=othersTxHTML.split(',').map(item => HL(item,false)).join(',');
-       
+       let myCallTxHTML=getBandDetailsRowHTML(objHomeCallData,"Tx","myCallTx");
+       let myCallRxHTML=getBandDetailsRowHTML(objHomeCallData,"Rx","myCallRx");
+       let myCallTxRxHTML=getBandDetailsRowHTML(objHomeCallData,"TxRx","myCallTxRx");   
+      
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
+         
+       // do the highlighting
+       highlightCallsList("othersTx","myCallTx","HL1");
+       highlightCallsList("othersRx","myCallRx","HL1");
+       highlightCallsList("othersTxRx","myCallTxRx","HL1");
       
 }	
+
+function highlightCallsList(id1,id2,hlClass){
+   // this is very clunky but it works
+       const doc1=document.getElementById(id1);
+       const doc2=document.getElementById(id2);
+       let txt1=doc1.innerHTML.split("\u200C");
+       let txt2=doc2.innerHTML.split("\u200C");
+       for (let i=1;i<4;i+=2){
+         txt1[i]=txt1[i].split(',').map(item => HL(item,doc2.innerHTML.indexOf(item)>0),hlClass).join(',');
+         txt2[i]=txt2[i].split(',').map(item => HL(item,doc1.innerHTML.indexOf(item)>0),hlClass).join(',');
+       }
+       doc1.innerHTML=txt1.join('');
+       doc2.innerHTML=txt2.join('');
+
+}
 
 function getConnectionsData(specificHomeCall,exclude){
        // create an object objHomeCalldata[connections[id].hc]= {call, isTx, isRx,conns:{}}
@@ -634,7 +652,7 @@ function getConnectionsData(specificHomeCall,exclude){
        return objHomeCallData;
 }
 
-function getBandDetailsRowHTML(objHomeCallData,TxRx){
+function getBandDetailsRowHTML(objHomeCallData,TxRx,callListDivID){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
   let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
@@ -670,16 +688,16 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div>";   
-         tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
+         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div id='"+callListDivID+"'>";   
+         tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join(', ')+"&zwnj;</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"&zwnj;</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
-     tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div>";
-     tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-     tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
+     tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div id='"+callListDivID+"'>";
+     tmpHTML+="<span class='intraHome'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"&zwnj;</span>";
+     tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"&zwnj;</span></div>";
    }
    return tmpHTML;
 }
