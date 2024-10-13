@@ -100,7 +100,7 @@ a:visited {color: blue;}
   var watchedMode="FT8";
   var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var modesByBandArr=new Array();
-  var watchedBand=bandsArr[0];
+  var detailsBand=bandsArr[0];
   var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
@@ -279,7 +279,7 @@ a:visited {color: blue;}
     if(detailsWanted=="BandTileLegend"){showBandTileLegend()} 
     
     if(detailsWanted=="BandDetails"){
-      watchedBand=band;
+      detailsBand=band;
       showBandDetails()
     } 
     
@@ -574,9 +574,9 @@ a:visited {color: blue;}
   function showBandDetails(){
      
      legend.innerHTML="";
-     detailsTop.innerHTML="<div><strong>"+watchedBand+" "+watchedMode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(watchedBand+"spots").innerHTML+"<br>"+spotsLegend+"<br>"
-          +document.getElementById(watchedBand+"calls").innerHTML+"<br>"
+     detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
+          +"<br>Total "+document.getElementById(detailsBand+"spots").innerHTML+"<br>"+spotsLegend+"<br>"
+          +document.getElementById(detailsBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
@@ -654,7 +654,7 @@ function highlightCallsList(id1,id2,hlClass,hlElseClass){
 
 function getConnectionsData(specificHomeCall,exclude){
        // create an object objHomeCalldata[connections[id].hc]= {call, isTx, isRx,conns:{}}
-       //     - unique home calls transmitting and/or receiving on the watchedMode and watchedBand
+       //     - unique home calls transmitting and/or receiving on the watchedMode and detailsBand
        //     - each unique home call carries boolean tx & rx flags and connections to far entities
        //     - each far entity = {call or square, am I in home?}
        // then accumulate the entries from connections:
@@ -665,14 +665,14 @@ function getConnectionsData(specificHomeCall,exclude){
        // if exclude, do it for all home calls except the specified home call
       var objHomeCallData={};
        for (id in connections) {
-         if (connections[id].b==watchedBand && connections[id].md==watchedMode 
+         if (connections[id].b==detailsBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
            objHomeCallData[connections[id].hc]={call:connections[id].hc,isTx:false,isRx:false,conns:{}};
          }
        }
        reciprocals.clear();
        for (id in connections) {
-         if (connections[id].b==watchedBand && connections[id].md==watchedMode 
+         if (connections[id].b==detailsBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
            if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].isTx=true} 
            if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].isRx=true}
