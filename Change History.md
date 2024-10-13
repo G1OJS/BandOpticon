@@ -62,7 +62,7 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>13-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
@@ -87,18 +87,12 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - Add "please explain" buttons and alert boxes e.g. for the following
-    - choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
-    - stats in band tiles count and data recorder, and list of calls on left of details, just means a home call has spotted anyone and been received by anyone
-
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
   - switch to https://www.brailleinstitute.org/freefont/
 
-
 Code tidying:
   - add explanation to highlighter code & update variable names
-
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
