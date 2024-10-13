@@ -118,6 +118,7 @@ a:visited {color: blue;}
   var newWindow=null;
   var dataWriteSeconds=15;
   var connections = {};
+  var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
   var messagesReceived=0;
@@ -584,6 +585,7 @@ a:visited {color: blue;}
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"Rx");
        othersHTML+=getBandDetailsRowHTML(objHomeCallData,"TxRx");
+       
        var myCallHTML="";
        objHomeCallData=getConnectionsData(myCall,false);
        myCallHTML+=getBandDetailsRowHTML(objHomeCallData,"Tx");
@@ -595,7 +597,7 @@ a:visited {color: blue;}
 }	
 
 function getConnectionsData(specificHomeCall,exclude){
-       // create an object objHomeCalldata[connections[id].hc]= {call, tx, rx,conns:{}}
+       // create an object objHomeCalldata[connections[id].hc]= {call, isTx, isRx,conns:{}}
        //     - unique home calls transmitting and/or receiving on the watchedMode and watchedBand
        //     - each unique home call carries boolean tx & rx flags and connections to far entities
        //     - each far entity = {call or square, am I in home?}
@@ -609,16 +611,18 @@ function getConnectionsData(specificHomeCall,exclude){
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
-           objHomeCallData[connections[id].hc]={call:connections[id].hc,tx:false,rx:false,conns:{}};
+           objHomeCallData[connections[id].hc]={call:connections[id].hc,isTx:false,isRx:false,conns:{}};
          }
        }
+       reciprocals.clear();
        for (id in connections) {
          if (connections[id].b==watchedBand && connections[id].md==watchedMode 
            && ( (exclude && connections[id].hc!=specificHomeCall) || (!exclude && connections[id].hc==specificHomeCall)) ){
-           if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].tx=true} 
-           if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].rx=true}
+           if(connections[id].dd[0]=="h") {objHomeCallData[connections[id].hc].isTx=true} 
+           if(connections[id].dd[0]=="d") {objHomeCallData[connections[id].hc].isRx=true}
            farEntity=getEntity(connections[id].cc,connections[id].cl);
            objHomeCallData[connections[id].hc].conns[farEntity]=squareIsInHome(connections[id].cl);
+           reciprocals.add(connections[id].hc+","+farEntity+","+connections[id].dd[0])
          }      
        }
        
@@ -628,44 +632,53 @@ function getConnectionsData(specificHomeCall,exclude){
 function getBandDetailsRowHTML(objHomeCallData,TxRx){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
-  let farEntitiesHomeAll=new Set;
-  let farEntitiesOtherAll=new Set;
+  let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
+  let nonlocalConnectedEntitiesGrouped=new Set; // nonlocal means the conected entity is not in Home
   let tmpHTML="";
   let Arrow="";
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   for (const homeCall in objHomeCallData) {
-     if(((TxRx=="Tx") && objHomeCallData[homeCall].tx)
-     || ((TxRx=="Rx") && objHomeCallData[homeCall].rx) 
-     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].tx && objHomeCallData[homeCall].rx))) {
-       let farEntitiesHome=new Set;
-       let farEntitiesOther=new Set;
+     if(((TxRx=="Tx") && objHomeCallData[homeCall].isTx)
+     || ((TxRx=="Rx") && objHomeCallData[homeCall].isRx) 
+     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].isTx && objHomeCallData[homeCall].isRx))) {
+       let localConnectedEntities=new Set;
+       let nonlocalConnectedEntities=new Set;
        for(const farEntity in objHomeCallData[homeCall].conns) {
-         if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
-           farEntitiesHome.add(farEntity);
-           farEntitiesHomeAll.add(farEntity);
-         } else {
-           farEntitiesOther.add(farEntity);
-           farEntitiesOtherAll.add(farEntity);
-         }          
+         let reciprocal=false;
+         if(TxRx){
+           let outlink=homeCall+","+farEntity+",h";
+           let inlink=homeCall+","+farEntity+",d";
+           reciprocal=(reciprocals.has(outlink) && reciprocals.has(inlink));
+         }
+         if( TxRx!="TxRx" || (TxRx=="TxRx" && reciprocal) ) {
+           if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
+             localConnectedEntities.add(farEntity);
+             localConnectedEntitiesGrouped.add(farEntity);
+           } else {
+             nonlocalConnectedEntities.add(farEntity);
+             nonlocalConnectedEntitiesGrouped.add(farEntity);
+           }
+         }
        }
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
          tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div>";   
-         tmpHTML+="<span class='intraHome'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(farEntitiesOther).toSorted().join(', ')+"</span></div>";
+         tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
      tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div>";
-     tmpHTML+="<span class='intraHome'>"+Array.from(farEntitiesHomeAll).toSorted().join(', ')+"</span>";
-     tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(farEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
+     tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+     tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
    }
    return tmpHTML;
 }
+
 
 
 </script>
