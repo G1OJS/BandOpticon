@@ -89,12 +89,11 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   V1.1.0:
   - add back highlighting
-  - add condition for home call to qualify as TxRx it has to have spotted and reached at least one remote entity (i.e. two way path to that entity)
-  -   look around line 600 - farEntities should only list against these calls if that condition is met for that remote entity
-
-  Add "please explain" buttons and alert boxes e.g. for the following
-  -   OK for more relaxed conditions in band tiles count and data recorder - here it just means a home call has spotted anyone and been received by anyone
-  - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
+  - remove blank rows from Band Activity Grid?
+    
+  - Add "please explain" buttons and alert boxes e.g. for the following
+    -   OK for more relaxed conditions in band tiles count and data recorder - here it just means a home call has spotted anyone and been received by anyone
+    - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
 
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
