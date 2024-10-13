@@ -87,14 +87,9 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  V1.1.0:
-  - highlight myCall rows in yellow by default - let complementary highlighting take over
-  - remove blank rows from Band Activity Grid?
-  - add explanation to highlighter code & update variable names
-    
   - Add "please explain" buttons and alert boxes e.g. for the following
-    -   OK for more relaxed conditions in band tiles count and data recorder - here it just means a home call has spotted anyone and been received by anyone
-    - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
+    - choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
+    - stats in band tiles count and data recorder, and list of calls on left of details, just means a home call has spotted anyone and been received by anyone
 
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
@@ -102,6 +97,8 @@ To do:
 
 
 Code tidying:
+  - add explanation to highlighter code & update variable names
+
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
