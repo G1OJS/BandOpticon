@@ -95,6 +95,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - bugfix - highlighting is broken when not grouping home calls; need to loop through all calls listed to gather remote entities in aggregate and highlight matches one by one
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
   - is there something odd about highlighting between myCall and others on the Tx-Rx row? No yellow highlightinh? Why?
