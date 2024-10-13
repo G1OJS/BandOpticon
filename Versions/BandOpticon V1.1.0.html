@@ -481,6 +481,9 @@ a:visited {color: blue;}
       saveConfig();
       squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
       connections = {};
+      connectionsAdded=0;
+      connectionsPurged=0;
+      messagesReceived=0;
       updateappTop();
       updateDisplays();
       connectToFeed();
