@@ -94,7 +94,6 @@ To do:
   -   farEntities should only list against these calls if that condition is met for that remote entity
   -   OK for more relaxed conditions in band tiles count and data recorder - here it just means a home call has spotted anyone and been received by anyone
   - add back connection purge
-  - fix missing style in band tile legend
   - need some words somewhere to explain that choosing coarser entities for the far end relaxes the conditions needed to identify a coincident spot&reach event
   - combine controls and detailsTop grids? Two rows of "header"?
 
