@@ -565,7 +565,7 @@ a:visited {color: blue;}
        let otherModes=Array.from(modeSetByBandArr[bandsArr.indexOf(band)].difference(tmp)).toSorted();
        htmlTmp="+ ";
        for (i=0;i<otherModes.length;i++){
-         htmlTmp+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+otherModes[i]+"&quot;; setDisplayConfig(&quot;BandActivityDetails&quot;,"+bandsArr.indexOf(band)+");'>"+otherModes[i]+"</a> ";
+         htmlTmp+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+otherModes[i]+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+otherModes[i]+"</a> ";
        }
        if(otherModes.length>0){ document.getElementById(bandsArr[bandsArr.indexOf(band)]+"modes").innerHTML=htmlTmp;}
 
