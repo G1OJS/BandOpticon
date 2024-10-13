@@ -288,8 +288,8 @@ a:visited {color: blue; font-weight:normal;}
     
     appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
        +"<br>Running for "+runningmins+" minutes<br>"
-       +connections.size+" connections in database: "+connectionsAdded+" added, "+connectionsPurged+" purged<br>"
-       +messagesReceived+" messages received + "<br>";
+       +(connectionsAdded-connectionsPurged)+" connections in database: "+connectionsAdded+" added, "+connectionsPurged+" purged<br>"
+       +messagesReceived+" messages received<br>";
 
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
     appTop_r.innerHTML=""
