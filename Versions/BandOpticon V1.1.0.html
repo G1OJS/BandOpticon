@@ -100,7 +100,7 @@ a:visited {color: blue;}
   var modesByBandArr=new Array();
   var watchedBand=bandsArr[0];
   var refresh_mSeconds=1000;
-  var purgeMinutes=15;
+  var purgeMinutes=1;
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
   var squaresDisplayLevel=4;
@@ -236,6 +236,13 @@ a:visited {color: blue;}
    function purgeSpots(){
    // get rid of spots older than purgeMinutes
    // connectionsPurged+=1;
+     for (id in connections) {
+       let tConn=parseInt(connections[id].t);
+       let connAge=((Date.now()-tConn)/1000)/60
+       if(connAge > purgeMinutes) {
+         delete connections[id];
+       }
+     }
    }
    
 
