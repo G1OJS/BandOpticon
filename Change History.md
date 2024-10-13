@@ -89,7 +89,6 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   V1.1.0:
   - highlight myCall rows in yellow by default - let complementary highlighting take over
-  - check grid auto column sizing?
   - remove blank rows from Band Activity Grid?
   - add explanation to highlighter code & update variable names
     
