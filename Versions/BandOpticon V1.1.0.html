@@ -598,28 +598,17 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-       highlightCallsList("othersTx","myCallTx","HL1");
+   //    highlightCallsList("othersTx","myCallTx","HL1");
        highlightCallsList("othersRx","myCallRx","HL1");
-       highlightCallsList("othersTxRx","myCallTxRx","HL1");
+   //    highlightCallsList("othersTxRx","myCallTxRx","HL1");
       
 }	
 
 function highlightCallsList(id1,id2,hlClass){
-   // this is very clunky but it works
        const doc1=document.getElementById(id1);
        const doc2=document.getElementById(id2);
-       let txt1=doc1.innerHTML.split("\u200C");
-       let txt2=doc2.innerHTML.split("\u200C");
-       for (let i=1;i<4;i+=2){
-         console.log("");
-         console.log("list 1: "+txt1[i]);
-         console.log("list 2: "+txt2[i]);
-         txt1[i]=txt1[i].split(',').map(item => HL(item,txt2[i].indexOf(item)>=0),hlClass).join(',');
-         txt2[i]=txt2[i].split(',').map(item => HL(item,txt1[i].indexOf(item)>=0),hlClass).join(',');
-       }
-       doc1.innerHTML=txt1.join('');
-       doc2.innerHTML=txt2.join('');
-
+       doc1.innerHTML=doc1.innerHTML.split(',').map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join(',');
+       doc2.innerHTML=doc2.innerHTML.split(',').map(item => HL(item,doc1.innerHTML.indexOf(item)>=0),hlClass).join(',');
 }
 
 function getConnectionsData(specificHomeCall,exclude){
