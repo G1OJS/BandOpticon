@@ -124,6 +124,8 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
   var messagesReceived=0;
+  var lhDetailsGridColChars=0;
+  var rhDetailsGridColChars=0;
 
   var once=true;
 
@@ -501,22 +503,16 @@ a:visited {color: blue;}
       dataForRecord="Mode="+watchedMode+", ";
       bandsArr.forEach((band) => updateBandTile(band));
       if(detailsWanted=="BandDetails") {showBandDetails()};
-      resizeGridColumns;
+      resizeGridColumns();
   }
   
   function resizeGridColumns(){
     // redistribute grid columns
     let gridDiv=document.getElementById('detailsGrid');
     if (groupHomeEntities) {
-      let lhChars=0;
-      let rhChars=0;
-      for (const el of gridDiv.children()){
-        lhChars=Math.max(lhChars,el.innerHTML.length);
-        rhChars=Math.max(lhChars,el.innerHTML.length);
-      }	
-      console.log("Resize "+lhChars+" "+rhChars);
+      console.log("Resize "+lhDetailsGridColChars+" "+rhDetailsGridColChars);
       let centreColumnNominalChars=7;
-      let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
+      let p1=Math.round(100*Math.min(Math.max(lhDetailsGridColChars/(lhDetailsGridColChars+rhDetailsGridColChars+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
     } else {
       gridDiv.style.gridTemplateColumns = "min-content min-content auto";
@@ -625,6 +621,7 @@ a:visited {color: blue;}
 }	
 
 function highlightCallsList(id1,id2,hlClass){
+// this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
        const doc1a=document.getElementById(id1+"1");
        const doc1b=document.getElementById(id1+"2");
        const doc2a=document.getElementById(id2+"1");
@@ -644,7 +641,7 @@ function highlightCallsList(id1,id2,hlClass){
        if(doc1a!=null){searchWithin+=doc1a.innerHTML};
        if(doc1b!=null){searchWithin+=doc1b.innerHTML};
        if(doc2a!=null){
-       doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+         doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
        }
        if(doc2b!=null){
          doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
@@ -721,16 +718,18 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListDivID){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div>";   
-         tmpHTML+="<span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
          tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListDivID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
-     tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div>";
-     tmpHTML+="<span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+     tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
+     tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListDivID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
      tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListDivID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+     lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
+     rhDetailsGridColChars=Math.max(rhDetailsGridColChars,Array.from(localConnectedEntitiesGrouped).join(', ').length+Array.from(nonlocalConnectedEntitiesGrouped).join(', ').length);
    }
    return tmpHTML;
 }
