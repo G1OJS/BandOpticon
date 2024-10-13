@@ -628,8 +628,8 @@ function getConnectionsData(specificHomeCall,exclude){
 function getBandDetailsRowHTML(objHomeCallData,TxRx){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
-  let farEntitiesHomeAll=new Set;
-  let farEntitiesOtherAll=new Set;
+  let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
+  let nonlocalConnectedEntitiesGrouped=new Set; // nonlocal means the conected entity is not in Home
   let tmpHTML="";
   let Arrow="";
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
@@ -639,33 +639,34 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx){
      if(((TxRx=="Tx") && objHomeCallData[homeCall].tx)
      || ((TxRx=="Rx") && objHomeCallData[homeCall].rx) 
      || ((TxRx=="TxRx") && (objHomeCallData[homeCall].tx && objHomeCallData[homeCall].rx))) {
-       let farEntitiesHome=new Set;
-       let farEntitiesOther=new Set;
+       let localConnectedEntities=new Set;
+       let nonlocalConnectedEntities=new Set;
        for(const farEntity in objHomeCallData[homeCall].conns) {
          if(objHomeCallData[homeCall].conns[farEntity]==true) { // home vs other flag (remote entity)
-           farEntitiesHome.add(farEntity);
-           farEntitiesHomeAll.add(farEntity);
+           localConnectedEntities.add(farEntity);
+           localConnectedEntitiesGrouped.add(farEntity);
          } else {
-           farEntitiesOther.add(farEntity);
-           farEntitiesOtherAll.add(farEntity);
+           nonlocalConnectedEntities.add(farEntity);
+           nonlocalConnectedEntitiesGrouped.add(farEntity);
          }          
        }
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
          tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div>"+Arrow+"</div><div>";   
-         tmpHTML+="<span class='intraHome'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(farEntitiesOther).toSorted().join(', ')+"</span></div>";
+         tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){      
      tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div>"+Arrow+"</div><div>";
-     tmpHTML+="<span class='intraHome'>"+Array.from(farEntitiesHomeAll).toSorted().join(', ')+"</span>";
-     tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(farEntitiesOtherAll).toSorted().join(', ')+"</span></div>";
+     tmpHTML+="<span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+     tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
    }
    return tmpHTML;
 }
+
 
 
 </script>
