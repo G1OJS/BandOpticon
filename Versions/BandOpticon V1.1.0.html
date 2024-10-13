@@ -608,12 +608,11 @@ function highlightCallsList(id1,id2,hlClass){
        const doc1=document.getElementById(id1);
        const doc2=document.getElementById(id2);
        console.log("");
-       console.log(doc1.innerHTML.split("\u200C").join("/"));
-       console.log(doc2.innerHTML.split("\u200C").join("/"));
-       doc1.innerHTML=doc1.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && doc2.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
-       doc2.innerHTML=doc2.innerHTML.split("\u200C").map(item => HL(item,item!=', ' && doc1.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
-       console.log(doc1.innerHTML.split("\u200C").join("/"));
-       console.log(doc2.innerHTML.split("\u200C").join("/"));
+       console.log(doc1.innerHTML);
+       console.log(doc2.innerHTML);
+       doc1.innerHTML=doc1.innerHTML.split("\u200C").map(item => HL(item,doc2.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
+       doc2.innerHTML=doc2.innerHTML.split("\u200C").map(item => HL(item,doc1.innerHTML.indexOf(item)>=0),hlClass).join("\u200C");
+
 }
 
 function getConnectionsData(specificHomeCall,exclude){
