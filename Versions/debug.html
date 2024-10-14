@@ -335,12 +335,12 @@ a:visited {color: blue;}
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
-        return "<span class='"+hlClass1+"'>"+item+"</span>";
+        return "<span class="+hlClass1+">"+item+"</span>";
     } else {
 	    if(hlClass2==""){
 	      return item;
 	    } else {
-	      return "<span class='"+hlClass2+"'>"+item+"</span>";
+	      return "<span class="+hlClass2+">"+item+"</span>";
 	    }
     }
   }
