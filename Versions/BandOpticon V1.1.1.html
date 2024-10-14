@@ -660,7 +660,7 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
     }
 
     // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
-    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => HL(item,item.indexOf('Highlight')<0,"HighlightNeg"))
+    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => " "+HL(item.trim(),item.indexOf('Highlight')<0,"HighlightNeg"))
     
   }
   
