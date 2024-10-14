@@ -619,13 +619,11 @@ a:visited {color: blue;}
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
-       highlightCallsList("myCallRx","othersRx");  
-         
        // do the highlighting
-  //     highlightCallsList("myCallTx","othersTx","HL1","HL2");
-   //    highlightCallsList("myCallRx","othersRx","HL1","HL2");
-  //     highlightCallsList("myCallTxRx","othersTxRx","HL1","HL2");
-      
+       highlightCallsList("myCallRx","othersRx");
+       highlightCallsList("myCallTx","othersTx"); 
+       highlightCallsList("myCallTxRx","othersTxRx"); 
+         
 }	
 
 
@@ -637,23 +635,22 @@ function debug(){
 
 function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
 
-      const farCalls_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farCalls");  
-      const farCalls_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farCalls");
+  const farCalls_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farCalls");  
+  const farCalls_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farCalls");
       
-      if (farCalls_me[0]!=undefined && farCalls_others[0]!=undefined){
-        let farCalls_meTxt=farCalls_me[0].innerText.split(', ');
-        farCalls_meTxt.forEach(entity => {
-          farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.replace(entity,HL(entity,true));
-        });
-        let farCalls_othersTxt=farCalls_others[0].innerText.split(', ');
-        farCalls_othersTxt.forEach(entity => {
-          farCalls_me[0].innerHTML=farCalls_me[0].innerHTML.replace(entity,HL(entity,true));
-        });
-
-
-      }
-
-
+  if (farCalls_me[0]!=undefined && farCalls_others[0]!=undefined){
+    for (let i=0;i<farCalls_others.length;i++){
+      let farCalls_meTxt=farCalls_me[0].innerText.split(', ');
+      farCalls_meTxt.forEach(entity => {
+        farCalls_others[i].innerHTML=farCalls_others[i].innerHTML.replace(entity,HL(entity,true));
+      });
+      let farCalls_othersTxt=farCalls_others[i].innerText.split(', ');
+      farCalls_othersTxt.forEach(entity => {
+        farCalls_me[0].innerHTML=farCalls_me[0].innerHTML.replace(entity,HL(entity,true));
+      });
+    }
+  }
+  
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -727,13 +724,13 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
        } else {
          tmpHTML+="<div class='"+rowClassPrefix+"_homeCall'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
          tmpHTML+="<div class='"+rowClassPrefix+"_farCalls'><span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+">;"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>"
+       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
        tmpHTML+="<div class='"+rowClassPrefix+"_farCalls'><span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
        tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
        // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
