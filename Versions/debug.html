@@ -628,13 +628,15 @@ a:visited {color: blue;}
 
 
 function debug(){
-  const x=Array.from(document.getElementById("detailsGrid").getElementsByClassName("detail_rh"));
-  x.forEach(a => {console.log(a);});
+  console.clear();
+  const x=Array.from(document.getElementById("detailsGrid").getElementsByClassName("detail_homeCalls"));
+  x.forEach(a => {console.log(a.innerText);});
 }
 
 function highlightCallsList(id1,id2,hlClass,hlElseClass){
 // this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
 // NOTE the hlElseClass is only applied to the second html fragment, id2
+/*
        const doc1a=document.getElementById(id1+"1");
        const doc1b=document.getElementById(id1+"2");
        const doc2a=document.getElementById(id2+"1");
@@ -659,7 +661,7 @@ function highlightCallsList(id1,id2,hlClass,hlElseClass){
        if(doc2b!=null){
          doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass,hlElseClass)).join("\u200C");
        }
-
+*/
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -731,16 +733,16 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+         tmpHTML+="<div class='detail_homeCalls'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='detail_farCalls'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+         tmpHTML+=" <span class='"+TxRx+"' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        }
      }
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
-       tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
+       tmpHTML="<div class='detail_homeCalls'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
+       tmpHTML+="<div class='detail_farCalls'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
        tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
        lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
