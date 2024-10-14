@@ -634,14 +634,21 @@ function debug(){
 }
 
 function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
-// this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
-// NOTE the hlElseClass is only applied to the second html fragment, id2
 
       const farCalls_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farCalls");  
       const farCalls_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farCalls");
       
-      Array.from(farCalls_me).forEach(a => {console.log(a.innerText);});
-      Array.from(farCalls_others).forEach(a => {console.log(a.innerText);});
+      if (farCalls_me[0]!=undefined && farCalls_others[0]!=undefined){
+        let farCalls_meTxt=farCalls_me[0].innerText.trim().split(', ');
+  //      let farCalls_meHTML=farCalls_me[0].innerHTML;
+  //      let farCalls_othersHTML=farCalls_others[0].innerHTML;
+        farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.split("\u200C").map(item => HL(item, farCalls_meTxt.indexOf(item)>=0)).join("\u200C");
+
+
+        
+      }
+ //     Array.from(farCalls_me).forEach(a => {console.log(a.innerText);});
+ //     Array.from(farCalls_others).forEach(a => {console.log(a.innerText);});
       
    //   doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0).join("\u200C");
 
@@ -716,7 +723,7 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+rowClassPrefix+"_homeCall'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_homeCall'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
          tmpHTML+="<div class='"+rowClassPrefix+"_farCalls'><span class='intraHome'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
          tmpHTML+=" <span class='"+TxRx+">&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        }
@@ -724,7 +731,7 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
+       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>"
        tmpHTML+="<div class='"+rowClassPrefix+"_farCalls'><span class='intraHome'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
        tmpHTML+=" <span class='"+TxRx+"_farend'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
        // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
