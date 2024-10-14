@@ -620,40 +620,31 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-  //     highlightCallsList("othersTx","myCallTx","HL1","HL2");
-   //    highlightCallsList("othersRx","myCallRx","HL1","HL2");
-  //     highlightCallsList("othersTxRx","myCallTxRx","HL1","HL2");
+  //     highlightCallsList("myCallTx","othersTx","HL1","HL2");
+   //    highlightCallsList("myCallRx","othersRx","HL1","HL2");
+  //     highlightCallsList("myCallTxRx","othersTxRx","HL1","HL2");
       
 }	
 
 
 function debug(){
-  //const homeCalls=document.getElementById("detailsGrid").getElementsByClassName("detail_homeCalls");
- // const farCalls=document.getElementById("detailsGrid").getElementsByClassName("detail_farCalls");
- // const homeCallsArr=Array.from(homeCalls);
- // const farCallsArr=Array.from(farCalls);
- // for (let i=0;i<homeCallsArr.length;i++){
- //   console.log(homeCallsArr[i].innerText+" "+farCallsArr[i].innerText)
- // }
 
-  highlightCallsList("othersRx","myCallRx","HL1","HL2");
+  highlightCallsList("myCallRx","othersRx");
 
-//  Array.from(homeCalls).forEach(a => {console.log(a.innerText);});
 }
 
-function highlightCallsList(rowClassPrefix1,rowClassPrefix2,hlClass,hlElseClass){
+function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
 // this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
 // NOTE the hlElseClass is only applied to the second html fragment, id2
 
-      const farCalls=document.getElementById("detailsGrid").getElementsByClassName(rowClassPrefix1+"_farCalls");
-      Array.from(farCalls).forEach(a => {console.log(a.innerText);});
+      const farCalls_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farCalls");  
+      const farCalls_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farCalls");
       
-   //   doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
+      Array.from(farCalls_me).forEach(a => {console.log(a.innerText);});
+      Array.from(farCalls_others).forEach(a => {console.log(a.innerText);});
+      
+   //   doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0).join("\u200C");
 
-
-/*
-         doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
-*/
 }
 
 function getConnectionsData(specificHomeCall,exclude){
