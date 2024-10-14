@@ -306,7 +306,7 @@ a:visited {color: blue;}
     var modeSelector="";
     for (let i=0; i<modesArr.length;i++){
       let md=modesArr[i];
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;'>"+md+"</a> "
+      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "
     }
     
     appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
