@@ -619,6 +619,8 @@ a:visited {color: blue;}
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
+       highlightCallsList("myCallRx","othersRx");  
+         
        // do the highlighting
   //     highlightCallsList("myCallTx","othersTx","HL1","HL2");
    //    highlightCallsList("myCallRx","othersRx","HL1","HL2");
@@ -639,23 +641,14 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
       const farCalls_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farCalls");
       
       if (farCalls_me[0]!=undefined && farCalls_others[0]!=undefined){
-        let farCalls_meTxt=farCalls_me[0].innerText.trim().split(', ');
-  //      let farCalls_meHTML=farCalls_me[0].innerHTML;
-  //      let farCalls_othersHTML=farCalls_others[0].innerHTML;
-  console.log(farCalls_others[0].innerHTML=farCalls_others[0].innerHTML);
-  console.log(farCalls_meTxt);
+        let farCalls_meTxt=farCalls_me[0].innerText.split(', ');
         farCalls_meTxt.forEach(Call => {
-          farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.replace(Call,HL(Call,true));
+          farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.replace(Call.trim(),HL(Call,true));
         });
 
-         console.log(farCalls_others[0].innerHTML=farCalls_others[0].innerHTML);
 
-        
       }
- //     Array.from(farCalls_me).forEach(a => {console.log(a.innerText);});
- //     Array.from(farCalls_others).forEach(a => {console.log(a.innerText);});
-      
-   //   doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0).join("\u200C");
+
 
 }
 
