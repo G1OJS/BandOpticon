@@ -124,8 +124,6 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
   var messagesReceived=0;
-  var lhDetailsGridColChars=0;
-  var rhDetailsGridColChars=0;
 
   var once=true;
 
@@ -508,11 +506,23 @@ a:visited {color: blue;}
   }
   
   function resizeGridColumns(){
+  
+    // find the largest counts of characters in the LH and RH columns
+    const farEntities=document.querySelectorAll('[class$="_farEntities"]');
+    const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
+ 
+    let lhCharsCount=0;   
+    let rhCharsCount=0;
+    if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
+      Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
+      Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
+		}
+    
     // redistribute grid columns
     let gridDiv=document.getElementById('detailsGrid');
     if (groupHomeEntities) {
       let centreColumnNominalChars=7;
-      let p1=Math.round(100*Math.min(Math.max(lhDetailsGridColChars/(lhDetailsGridColChars+rhDetailsGridColChars+centreColumnNominalChars),0.1),0.5));
+      let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
     } else {
       gridDiv.style.gridTemplateColumns = "min-content min-content auto";
@@ -722,7 +732,7 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+rowClassPrefix+"_homeCall'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
          tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
          tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
@@ -730,12 +740,9 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+       tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
        tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
        tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
-       // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
-       lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
-       rhDetailsGridColChars=Math.max(rhDetailsGridColChars,Array.from(localConnectedEntitiesGrouped).join(', ').length+Array.from(nonlocalConnectedEntitiesGrouped).join(', ').length);
      }
    }
    return tmpHTML;
