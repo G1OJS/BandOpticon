@@ -37,7 +37,8 @@ div {margin: 0px;  padding: 0px;}
 .Rx_farEnd {color:olive;}
 .TxRx_farEnd {color:blue; font-style:italic;}
 .HighlightPos {background-color:#d1d1e0;}
-.HighlightNeg {background-color:#ffff66;}
+//.HighlightNeg {background-color:#ffff66;}
+.HighlightNeg {text-decoration:underline;}
 .textAnchorButton {color: blue; }
 .textAnchorButton-strong {color: blue; font-weight:bold;}
 a:link {color: blue;}
@@ -629,25 +630,24 @@ a:visited {color: blue;}
        // do the highlighting
        highlightEntitiesList("myCallRx","othersRx");
        highlightEntitiesList("myCallRx","othersTxRx");
-  //     highlightFillInReverse("myCallRx");
+       highlightFillInReverse("myCallRx");
        highlightEntitiesList("myCallTx","othersTx"); 
        highlightEntitiesList("myCallTx","othersTxRx"); 
-  //     highlightFillInReverse("myCallTx");
+       highlightFillInReverse("myCallTx");
        highlightEntitiesList("myCallTxRx","othersTxRx"); 
-  //     highlightFillInReverse("myCallTxRx"); 
-
+       highlightFillInReverse("myCallTxRx");      
          
 }	
 
 function highlightFillInReverse(myCallrowClassPrefix){
-  // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
-  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-  if (farEntities_me[0]!=undefined){
-    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => HL(item, item.indexOf('Highlight')<0,"HighlightNeg"));
-  }
+      // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
+       const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+      if (farEntities_me[0]!=undefined){
+         farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => " "+HL(item, item.indexOf('Highlight')<0,"HighlightNeg")).slice(0,-2);
+      }
 }
 
-	
+
 function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
@@ -669,6 +669,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
       });
     }
   }
+  
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -742,7 +743,7 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
        } else {
          tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
          tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         if(localConnectedEntities.size>0) {tmpHTML+=", "};
+         if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {tmpHTML+=", "};
          tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
@@ -751,7 +752,7 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
      if (homeCalls.length>0){
        tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
        tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-       if(localConnectedEntitiesGrouped.size>0) {tmpHTML+=", "};
+       if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {tmpHTML+=", "};
        tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
      }
    }
