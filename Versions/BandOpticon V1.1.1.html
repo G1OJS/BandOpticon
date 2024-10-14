@@ -501,8 +501,10 @@ a:visited {color: blue;}
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
       bandsArr.forEach((band) => updateBandTile(band));
-      if(detailsWanted=="BandDetails") {showBandDetails()};
-      resizeGridColumns();
+      if(detailsWanted=="BandDetails") {
+        showBandDetails();
+        resizeGridColumns();
+      }
   }
   
   function resizeGridColumns(){
@@ -511,16 +513,15 @@ a:visited {color: blue;}
     const farEntities=document.querySelectorAll('[class$="_farEntities"]');
     const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
  
-    let lhCharsCount=0;   
-    let rhCharsCount=0;
-    if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
-      Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
-      Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
-		}
-    
-    // redistribute grid columns
+     // redistribute grid columns
     let gridDiv=document.getElementById('detailsGrid');
     if (groupHomeEntities) {
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
+      if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
+        Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
+        Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
+		}
       let centreColumnNominalChars=7;
       let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
@@ -609,9 +610,6 @@ a:visited {color: blue;}
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
-
-       // initialise variables keeping track of amount of text in LH and RH columns
-       lhDetailsGridColChars=0;rhDetailsGridColChars=0;
 	  
        // all except myCall:
        objHomeCallData=getConnectionsData(myCall,true);
