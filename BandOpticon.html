@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.1.0</title>
+<title>BandOpticon V1.1.1</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -32,12 +32,13 @@ div {margin: 0px;  padding: 0px;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
-.intraHome {color:blue; }
-.Tx_farend {color:Fuchsia; }
-.Rx_farend {color:olive;}
-.TxRx_farend {color:blue; font-style:italic;}
-.HL1 {background-color:#d1d1e0;}
-.HL2 {background-color:#ffff66;}
+.IntraHome_farEnd {color:blue; }
+.Tx_farEnd {color:Fuchsia; }
+.Rx_farEnd {color:olive;}
+.TxRx_farEnd {color:blue; font-style:italic;}
+.HighlightPos {background-color:#d1d1e0;}
+.HighlightNeg {background-color:#ffff66;}
+//.HighlightNeg {text-decoration:underline;}
 .textAnchorButton {color: blue; }
 .textAnchorButton-strong {color: blue; font-weight:bold;}
 a:link {color: blue;}
@@ -101,7 +102,7 @@ a:visited {color: blue;}
   var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var modesByBandArr=new Array();
   var detailsBand=bandsArr[0];
-  var refresh_mSeconds=1000;
+  var refresh_mSeconds=5000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
@@ -113,9 +114,9 @@ a:visited {color: blue;}
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
-         + "<span class='Tx_farend'> Home "+RIGHTARROW+" DX /</span>"
-         + "<span class='Rx_farend'> DX "+RIGHTARROW+" Home</span>"
+  const spotsLegend="<span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home /</span>"
+         + "<span class='Tx_farEnd'> Home "+RIGHTARROW+" DX /</span>"
+         + "<span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -124,8 +125,6 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
   var messagesReceived=0;
-  var lhDetailsGridColChars=0;
-  var rhDetailsGridColChars=0;
 
   var once=true;
 
@@ -287,7 +286,7 @@ a:visited {color: blue;}
   
   function showBandTileLegend(){
     legend.innerHTML="<div>Band tile legend:"
-      +" <a class='textAnchorButton' href='#' onclick='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
+      +" <a class='textAnchorButton' href='#' ='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
       +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
       +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
@@ -307,7 +306,7 @@ a:visited {color: blue;}
     var modeSelector="";
     for (let i=0; i<modesArr.length;i++){
       let md=modesArr[i];
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;'>"+md+"</a> "
+      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "
     }
     
     appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
@@ -330,17 +329,17 @@ a:visited {color: blue;}
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
   }
 	  
-  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
+  function HL(item,pattern,hlClass1="HighlightPos",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightPos) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightNeg
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
-        return "<span class='"+hlClass1+"'>"+item+"</span>";
+        return "<span class="+hlClass1+">"+item+"</span>";
     } else {
 	    if(hlClass2==""){
 	      return item;
 	    } else {
-	      return "<span class='"+hlClass2+"'>"+item+"</span>";
+	      return "<span class="+hlClass2+">"+item+"</span>";
 	    }
     }
   }
@@ -503,16 +502,29 @@ a:visited {color: blue;}
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
       bandsArr.forEach((band) => updateBandTile(band));
-      if(detailsWanted=="BandDetails") {showBandDetails()};
-      resizeGridColumns();
+      if(detailsWanted=="BandDetails") {
+        showBandDetails();
+        resizeGridColumns();
+      }
   }
   
   function resizeGridColumns(){
-    // redistribute grid columns
+  
+    // find the largest counts of characters in the LH and RH columns
+    const farEntities=document.querySelectorAll('[class$="_farEntities"]');
+    const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
+ 
+     // redistribute grid columns
     let gridDiv=document.getElementById('detailsGrid');
     if (groupHomeEntities) {
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
+      if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
+        Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
+        Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
+		}
       let centreColumnNominalChars=7;
-      let p1=Math.round(100*Math.min(Math.max(lhDetailsGridColChars/(lhDetailsGridColChars+rhDetailsGridColChars+centreColumnNominalChars),0.1),0.5));
+      let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
     } else {
       gridDiv.style.gridTemplateColumns = "min-content min-content auto";
@@ -548,9 +560,9 @@ a:visited {color: blue;}
        
        // write the counts for this band's band tile
        document.getElementById(band+"spots").innerHTML="Spots "
-         +"<span class='intraHome'>"+nSpotsH2H+"</span>/"
-         +"<span class='Tx_farend'>"+nSpotsH2DX+"</span>/"
-         +"<span class='Rx_farend'>"+nSpotsDX2H+"</span>";
+         +"<span class='IntraHome_farEnd'>"+nSpotsH2H+"</span>/"
+         +"<span class='Tx_farEnd'>"+nSpotsH2DX+"</span>/"
+         +"<span class='Rx_farEnd'>"+nSpotsDX2H+"</span>";
        document.getElementById(band+"calls").innerHTML=
          "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"
          +"<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span><br>"
@@ -579,29 +591,26 @@ a:visited {color: blue;}
           +document.getElementById(detailsBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightNeg")+".</span>"
           +"</div>";
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false;'>[List&nbsp;each&nbsp;call]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true;'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
+          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
           +"<span class='notesText'>Home calls can be listed as Tx-Rx and yet have no reciprocal spots with any remote entity</span>"
 	  +"<span class='notesText'><br>Choosing coarser definitions of remote entities makes reciprocal spots more likely but not inevitable</span>"
-          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
+          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
-
-       // initialise variables keeping track of amount of text in LH and RH columns
-       lhDetailsGridColChars=0;rhDetailsGridColChars=0;
 	  
        // all except myCall:
        objHomeCallData=getConnectionsData(myCall,true);
@@ -619,40 +628,61 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-       highlightCallsList("othersTx","myCallTx","HL1","HL2");
-       highlightCallsList("othersRx","myCallRx","HL1","HL2");
-       highlightCallsList("othersTxRx","myCallTxRx","HL1","HL2");
-      
+
+       highlightAll("myCallRx");
+       highlightAll("myCallTx");
+       highlightAll("myCallTxRx"); 	 
+	  
+       highlightEntitiesList("myCallRx","othersRx");
+       highlightEntitiesList("myCallRx","othersTxRx");
+
+       highlightEntitiesList("myCallTx","othersTx"); 
+       highlightEntitiesList("myCallTx","othersTxRx"); 
+
+       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+     
+         
 }	
 
-function highlightCallsList(id1,id2,hlClass,hlElseClass){
-// this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
-// NOTE the hlElseClass is only applied to the second html fragment, id2
-       const doc1a=document.getElementById(id1+"1");
-       const doc1b=document.getElementById(id1+"2");
-       const doc2a=document.getElementById(id2+"1");
-       const doc2b=document.getElementById(id2+"2");
+function highlightAll(myCallrowClassPrefix){
+  // pre-highlight all myCall entries in 'only me' colours HighlightNeg
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  if (farEntities_me[0]!=undefined){
+    // plain text version of far entities to highlight
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities in my list, modifying the innerHTML
+    for (let i=0;i<farEntities_me.length;i++){
+      farEntities_meTxt.forEach(entity => {
+        farEntities_me[i].innerHTML=farEntities_me[i].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
+      });
+    }
+  }
+}
 
-       let searchWithin="";
-       if(doc2a!=null){searchWithin+=doc2a.innerHTML};
-       if(doc2b!=null){searchWithin+=doc2b.innerHTML};
-       if(doc1a!=null){
-         doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
-       }
-       if(doc1b!=null){
-         doc1b.innerHTML=doc1b.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
-       }
-       
-       searchWithin="";
-       if(doc1a!=null){searchWithin+=doc1a.innerHTML};
-       if(doc1b!=null){searchWithin+=doc1b.innerHTML};
-       if(doc2a!=null){
-         doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass,hlElseClass)).join("\u200C");
-       }
-       if(doc2b!=null){
-         doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass,hlElseClass)).join("\u200C");
-       }
 
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
+
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
+      
+  if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
+    // plain text version of far entities to look for in other call's far entities
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+    for (let i=0;i<farEntities_others.length;i++){
+      // highlight the matches in the other call's far entities
+      farEntities_meTxt.forEach(entity => {
+        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+      });
+      // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
+      let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+      farEntities_othersTxt.forEach(entity => {
+	farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class='HighlightNeg'>"+entity+"</span>",entity);
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
+      });
+    }
+  }
+  
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -688,7 +718,7 @@ function getConnectionsData(specificHomeCall,exclude){
        return objHomeCallData;
 }
 
-function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
+function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
   let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
@@ -724,20 +754,19 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+         if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {tmpHTML+=", "};
+         tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
-       tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-       tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
-       // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
-       lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
-       rhDetailsGridColChars=Math.max(rhDetailsGridColChars,Array.from(localConnectedEntitiesGrouped).join(', ').length+Array.from(nonlocalConnectedEntitiesGrouped).join(', ').length);
+       tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+       tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+       if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {tmpHTML+=", "};
+       tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
      }
    }
    return tmpHTML;
