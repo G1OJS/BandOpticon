@@ -10,7 +10,7 @@
   <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.1'>V1.1.1</a></td>
   <td>
     <ol>
-      <li>rewrote highighting code so it works with both grouped and 'list all calls' versions of the details grid</li>
+      <li>Highlighting works with both grouped and 'list all calls' versions of the details grid</li>
     </ol>
   </td>
 </tr>
