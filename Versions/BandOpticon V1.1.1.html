@@ -32,12 +32,12 @@ div {margin: 0px;  padding: 0px;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
-.IntraHome_farend {color:blue; }
-.Tx_farend {color:Fuchsia; }
-.Rx_farend {color:olive;}
-.TxRx_farend {color:blue; font-style:italic;}
-.HL1 {background-color:#d1d1e0;}
-.HL2 {background-color:#ffff66;}
+.IntraHome_farEnd {color:blue; }
+.Tx_farEnd {color:Fuchsia; }
+.Rx_farEnd {color:olive;}
+.TxRx_farEnd {color:blue; font-style:italic;}
+.HighlightPos {background-color:#d1d1e0;}
+.HighlightNeg {background-color:#ffff66;}
 .textAnchorButton {color: blue; }
 .textAnchorButton-strong {color: blue; font-weight:bold;}
 a:link {color: blue;}
@@ -113,9 +113,9 @@ a:visited {color: blue;}
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  const spotsLegend="<span class='IntraHome_farend'> Home "+RIGHTARROW+" Home /</span>"
-         + "<span class='Tx_farend'> Home "+RIGHTARROW+" DX /</span>"
-         + "<span class='Rx_farend'> DX "+RIGHTARROW+" Home</span>"
+  const spotsLegend="<span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home /</span>"
+         + "<span class='Tx_farEnd'> Home "+RIGHTARROW+" DX /</span>"
+         + "<span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -328,9 +328,9 @@ a:visited {color: blue;}
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
   }
 	  
-  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
+  function HL(item,pattern,hlClass1="HighlightPos",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightPos) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightNeg
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
         return "<span class="+hlClass1+">"+item+"</span>";
@@ -559,9 +559,9 @@ a:visited {color: blue;}
        
        // write the counts for this band's band tile
        document.getElementById(band+"spots").innerHTML="Spots "
-         +"<span class='IntraHome_farend'>"+nSpotsH2H+"</span>/"
-         +"<span class='Tx_farend'>"+nSpotsH2DX+"</span>/"
-         +"<span class='Rx_farend'>"+nSpotsDX2H+"</span>";
+         +"<span class='IntraHome_farEnd'>"+nSpotsH2H+"</span>/"
+         +"<span class='Tx_farEnd'>"+nSpotsH2DX+"</span>/"
+         +"<span class='Rx_farEnd'>"+nSpotsDX2H+"</span>";
        document.getElementById(band+"calls").innerHTML=
          "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"
          +"<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span><br>"
@@ -590,9 +590,9 @@ a:visited {color: blue;}
           +document.getElementById(detailsBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightNeg")+".</span>"
           +"</div>";
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
@@ -659,8 +659,8 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
       });
     }
 
-    // highlight in the reverse style HL2 any myCall entries not already highlighted in HL1 for matching entries in other call's far entities
-    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => HL(item,item.indexOf('span')<0,"HL2"))
+    // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
+    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => HL(item,item.indexOf('Highlight')<0,"HighlightNeg"))
     
   }
   
@@ -736,16 +736,16 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
          homeCalls.push(homeCall);
        } else {
          tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farend'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
        tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-       tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farend'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-       tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
+       tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+       tmpHTML+=" <span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
      }
    }
    return tmpHTML;
