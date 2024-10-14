@@ -627,18 +627,28 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-       highlightCallsList("myCallRx","othersRx");
-       highlightCallsList("myCallRx","othersTxRx");
-       
-       highlightCallsList("myCallTx","othersTx"); 
-       highlightCallsList("myCallTx","othersTxRx"); 
-       
-       highlightCallsList("myCallTxRx","othersTxRx"); 
+       highlightEntitiesList("myCallRx","othersRx");
+       highlightEntitiesList("myCallRx","othersTxRx");
+  //     highlightFillInReverse("myCallRx");
+       highlightEntitiesList("myCallTx","othersTx"); 
+       highlightEntitiesList("myCallTx","othersTxRx"); 
+  //     highlightFillInReverse("myCallTx");
+       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+  //     highlightFillInReverse("myCallTxRx"); 
 
          
 }	
 
-function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
+function highlightFillInReverse(myCallrowClassPrefix){
+  // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  if (farEntities_me[0]!=undefined){
+    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => HL(item, item.indexOf('Highlight')<0,"HighlightNeg"));
+  }
+}
+
+	
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
