@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
   <td>
     <ol>
       <li>Highlighting works with both grouped and 'list all calls' versions of the details grid</li>
@@ -16,7 +16,7 @@
 </tr>
 
 <tr>
-  <td>13-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>13-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
@@ -27,7 +27,7 @@
 </tr>
 
 <tr>
-  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.4'>V1.0.4</a></td>
+  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.4'>V1.0.4</a></td>
   <td>
     <ol>
       <li>Updated instructions in squares list edit dialogue</li>
@@ -41,7 +41,7 @@
 </tr>
 
 <tr>
-  <td>10-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.3'>V1.0.3</a></td>
+  <td>10-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.3'>V1.0.3</a></td>
   <td>
     <ol>
       <li>Squares can now be specified using the LLNN:NN method at any level e.g. IO90ju:qr</li>
@@ -52,7 +52,7 @@
 </tr>
 
 <tr>
-  <td>09-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.2'>V1.0.2</a></td>
+  <td>09-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.2'>V1.0.2</a></td>
   <td>
     <ol>
       <li>Updated highlighting, and explanation of highlighting, in the Band Activity Details grid</li>
@@ -62,7 +62,7 @@
 </tr>
 
 <tr>
-  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.1'>V1.0.1</a></td>
+  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.1'>V1.0.1</a></td>
   <td>
     <ol>
       <li>Fixed clock error (12:01:05 displays as 12:1:5) reintroduced when eliminating deprecated substr()</li>
@@ -78,7 +78,7 @@
 </tr>
  
 <tr>
-  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
+  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
  
 
