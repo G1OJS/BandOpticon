@@ -286,7 +286,7 @@ a:visited {color: blue;}
   
   function showBandTileLegend(){
     legend.innerHTML="<div>Band tile legend:"
-      +" <a class='textAnchorButton' href='#' onclick='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
+      +" <a class='textAnchorButton' href='#' ='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
       +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
       +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
@@ -598,17 +598,17 @@ a:visited {color: blue;}
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false;'>[List&nbsp;each&nbsp;call]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true;'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
+          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
           +"<span class='notesText'>Home calls can be listed as Tx-Rx and yet have no reciprocal spots with any remote entity</span>"
 	  +"<span class='notesText'><br>Choosing coarser definitions of remote entities makes reciprocal spots more likely but not inevitable</span>"
-          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>[Entity=&nbsp;callsign]</a></div>";
+          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
 	  
