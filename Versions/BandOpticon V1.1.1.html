@@ -335,12 +335,12 @@ a:visited {color: blue;}
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
-        return "<span class='"+hlClass1+"'>"+item+"</span>";
+        return "<span class="+hlClass1+">"+item+"</span>";
     } else {
 	    if(hlClass2==""){
 	      return item;
 	    } else {
-	      return "<span class='"+hlClass2+"'>"+item+"</span>";
+	      return "<span class="+hlClass2+">"+item+"</span>";
 	    }
     }
   }
@@ -579,6 +579,7 @@ a:visited {color: blue;}
           +document.getElementById(detailsBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
+          +" <a href='#' onclick=debug();><span style='float:right;';>debug</span></a> "
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HL1")+".</span>"
 	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
@@ -619,40 +620,39 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-       highlightCallsList("othersTx","myCallTx","HL1","HL2");
-       highlightCallsList("othersRx","myCallRx","HL1","HL2");
-       highlightCallsList("othersTxRx","myCallTxRx","HL1","HL2");
-      
+       highlightCallsList("myCallRx","othersRx");
+       highlightCallsList("myCallTx","othersTx"); 
+       highlightCallsList("myCallTxRx","othersTxRx"); 
+         
 }	
 
-function highlightCallsList(id1,id2,hlClass,hlElseClass){
-// this is clunky but it works. It's dependent on inserting the &zwnj; character in getBandDetailsRowHTML
-// NOTE the hlElseClass is only applied to the second html fragment, id2
-       const doc1a=document.getElementById(id1+"1");
-       const doc1b=document.getElementById(id1+"2");
-       const doc2a=document.getElementById(id2+"1");
-       const doc2b=document.getElementById(id2+"2");
 
-       let searchWithin="";
-       if(doc2a!=null){searchWithin+=doc2a.innerHTML};
-       if(doc2b!=null){searchWithin+=doc2b.innerHTML};
-       if(doc1a!=null){
-         doc1a.innerHTML=doc1a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
-       }
-       if(doc1b!=null){
-         doc1b.innerHTML=doc1b.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass)).join("\u200C");
-       }
-       
-       searchWithin="";
-       if(doc1a!=null){searchWithin+=doc1a.innerHTML};
-       if(doc1b!=null){searchWithin+=doc1b.innerHTML};
-       if(doc2a!=null){
-         doc2a.innerHTML=doc2a.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass,hlElseClass)).join("\u200C");
-       }
-       if(doc2b!=null){
-         doc2b.innerHTML=doc2b.innerHTML.split("\u200C").map(item => HL(item, (searchWithin).indexOf(item)>=0,hlClass,hlElseClass)).join("\u200C");
-       }
+function debug(){
 
+  highlightCallsList("myCallRx","othersRx");
+
+}
+
+function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
+
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
+      
+  if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
+    for (let i=0;i<farEntities_others.length;i++){
+      let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+      farEntities_meTxt.forEach(entity => {
+        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+      });
+      let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+      farEntities_othersTxt.forEach(entity => {
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
+      });
+    }
+    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => HL(item,item.indexOf('span')<0,"HL2"))
+    
+  }
+  
 }
 
 function getConnectionsData(specificHomeCall,exclude){
@@ -688,7 +688,7 @@ function getConnectionsData(specificHomeCall,exclude){
        return objHomeCallData;
 }
 
-function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
+function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
 	
   let homeCalls=new Array(); // OK because we're going to add unique values
   let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
@@ -724,17 +724,17 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,callListSpanID){
        if(groupHomeEntities){ 
          homeCalls.push(homeCall);
        } else {
-         tmpHTML+="<div class='"+TxRx+"'>"+homeCall+"</div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntities).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_homeCall'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+         tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='intraHome'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+         tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
    if (groupHomeEntities){
      if (homeCalls.length>0){
-       tmpHTML="<div class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</div><div class='detail_c'>"+Arrow+"</div>"
-       tmpHTML+="<div class='detail_rh'><span class='intraHome' id='"+callListSpanID+"1'>&zwnj;"+Array.from(localConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span>";
-       tmpHTML+=" <span class='"+TxRx+"_farend' id='"+callListSpanID+"2'>&zwnj;"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join('&zwnj;, &zwnj;')+"&zwnj;</span></div>";
+       tmpHTML="<div class='"+rowClassPrefix+"_homeCallGroup'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+       tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='intraHome'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+       tmpHTML+=" <span class='"+TxRx+"_farend'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
        // keep track of amount of text in LH and RH columns. Has to be a better way to do this via DOM, but it works.
        lhDetailsGridColChars=Math.max(lhDetailsGridColChars,Array.from(homeCalls).join(', ').length);
        rhDetailsGridColChars=Math.max(rhDetailsGridColChars,Array.from(localConnectedEntitiesGrouped).join(', ').length+Array.from(nonlocalConnectedEntitiesGrouped).join(', ').length);
