@@ -113,8 +113,7 @@ To do:
   - add back expanding of main mode list when new modes are spotted? Or leave that to the band tiles?
 
 Code tidying:
-  - proactively name the grid zones in the grouped view (the only one we need resizing for) and use those names to get info to the resize function
-  - add explanation to highlighter code & update variable names
+  - is there a better way to do the highlighting?
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
