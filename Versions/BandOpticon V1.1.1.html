@@ -579,7 +579,6 @@ a:visited {color: blue;}
           +document.getElementById(detailsBand+"calls").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-          +" <a href='#' onclick=debug();><span style='float:right;';>debug</span></a> "
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HL1")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HL1")+".</span>"
 	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
@@ -626,29 +625,28 @@ a:visited {color: blue;}
          
 }	
 
-
-function debug(){
-
-  highlightCallsList("myCallRx","othersRx");
-
-}
-
 function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
       
   if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
+    // plain text version of far entities to look for in other call's far entities
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
     for (let i=0;i<farEntities_others.length;i++){
-      let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+      // highlight the matches in the other call's far entities
       farEntities_meTxt.forEach(entity => {
         farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
       });
+      // highlight the (same) matches in myCall's far entities
       let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
       farEntities_othersTxt.forEach(entity => {
         farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
       });
     }
+
+    // highlight in the reverse style HL2 any myCall entries not already highlighted in HL1 for matching entries in other call's far entities
     farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => HL(item,item.indexOf('span')<0,"HL2"))
     
   }
