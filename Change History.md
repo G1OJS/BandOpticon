@@ -7,6 +7,15 @@
 </tr>
 
 <tr>
+  <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>
+    <ol>
+      <li>rewrote highighting code so it works with both grouped and 'list all calls' versions of the details grid</li>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>13-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Versions/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
@@ -95,12 +104,9 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - bugfix - highlighting is broken when not grouping home calls; need to loop through all calls listed to gather remote entities in aggregate and highlight matches one by one
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
-  - is there something odd about highlighting between myCall and others on the Tx-Rx row? No yellow highlightinh? Why?
   - switch to https://www.brailleinstitute.org/freefont/
-  - remove the rogue space in RH html appearing if remote entities in home is empty (needs an if statement between the += lines around lines 728 and 736.
   - investigate why V1.1.0 seems slower (at least to Google inspector) than V1.0.4
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   - modes list in each band tile persists even when triggering spot has been purged. Should it? Does it matter?
