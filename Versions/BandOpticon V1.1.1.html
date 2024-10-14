@@ -101,7 +101,7 @@ a:visited {color: blue;}
   var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var modesByBandArr=new Array();
   var detailsBand=bandsArr[0];
-  var refresh_mSeconds=1000;
+  var refresh_mSeconds=5000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
@@ -737,7 +737,8 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
        } else {
          tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
          tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         tmpHTML+=" <span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
+         if(localConnectedEntities.size>0) {tmpHTML+=", "};
+         tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
        }
      }
    }
@@ -745,7 +746,8 @@ function getBandDetailsRowHTML(objHomeCallData,TxRx,rowClassPrefix){
      if (homeCalls.length>0){
        tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
        tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-       tmpHTML+=" <span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
+       if(localConnectedEntitiesGrouped.size>0) {tmpHTML+=", "};
+       tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
      }
    }
    return tmpHTML;
