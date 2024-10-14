@@ -658,12 +658,7 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
         farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
       });
     }
-
-    // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
-    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => " "+HL(item.trim(),item.indexOf('Highlight')<0,"HighlightNeg"))
-    
   }
-  
 }
 
 function getConnectionsData(specificHomeCall,exclude){
