@@ -642,8 +642,13 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
         let farCalls_meTxt=farCalls_me[0].innerText.trim().split(', ');
   //      let farCalls_meHTML=farCalls_me[0].innerHTML;
   //      let farCalls_othersHTML=farCalls_others[0].innerHTML;
-        farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.split("\u200C").map(item => HL(item, farCalls_meTxt.indexOf(item)>=0)).join("\u200C");
+  console.log(farCalls_others[0].innerHTML=farCalls_others[0].innerHTML);
+  console.log(farCalls_meTxt);
+        farCalls_meTxt.forEach(Call => {
+          farCalls_others[0].innerHTML=farCalls_others[0].innerHTML.replace(Call,HL(Call,true));
+        });
 
+         console.log(farCalls_others[0].innerHTML=farCalls_others[0].innerHTML);
 
         
       }
