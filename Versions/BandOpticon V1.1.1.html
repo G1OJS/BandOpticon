@@ -628,8 +628,13 @@ a:visited {color: blue;}
          
        // do the highlighting
        highlightCallsList("myCallRx","othersRx");
+       highlightCallsList("myCallRx","othersTxRx");
+       
        highlightCallsList("myCallTx","othersTx"); 
+       highlightCallsList("myCallTx","othersTxRx"); 
+       
        highlightCallsList("myCallTxRx","othersTxRx"); 
+
          
 }	
 
@@ -655,7 +660,7 @@ function highlightCallsList(myCallrowClassPrefix,othersRowClassPrefix){
     }
 
     // highlight in the reverse style HL2 any myCall entries not already highlighted in HL1 for matching entries in other call's far entities
-    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => HL(item,item.indexOf('span')<0,"HL2"))
+    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(',').map((item) => HL(item,item.indexOf('span')<0,"HL2"))
     
   }
   
