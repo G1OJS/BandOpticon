@@ -628,25 +628,35 @@ a:visited {color: blue;}
          +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
+
+       highlightAll("myCallRx");
+       highlightAll("myCallTx");
+       highlightAll("myCallTxRx"); 	 
+	  
        highlightEntitiesList("myCallRx","othersRx");
        highlightEntitiesList("myCallRx","othersTxRx");
-       highlightFillInReverse("myCallRx");
+
        highlightEntitiesList("myCallTx","othersTx"); 
        highlightEntitiesList("myCallTx","othersTxRx"); 
-       highlightFillInReverse("myCallTx");
+
        highlightEntitiesList("myCallTxRx","othersTxRx"); 
-       highlightFillInReverse("myCallTxRx");      
+     
          
 }	
 
-function highlightFillInReverse(myCallrowClassPrefix){
-      // highlight in the reverse style HighlightNeg any myCall entries not already highlighted in HighlightPos for matching entries in other call's far entities
-       const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-      if (farEntities_me[0]!=undefined){
-	//console.log(farEntities_me[0].innerHTML);
-         // farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.split(', ').map((item) => " "+HL(item, item.indexOf('Highlight')<0,"HighlightNeg"));
-		//console.log(farEntities_me[0].innerHTML);
-      }
+function highlightAll(myCallrowClassPrefix){
+  // pre-highlight all myCall entries in 'only me' colours HighlightNeg
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  if (farEntities_me[0]!=undefined){
+    // plain text version of far entities to highlight
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities in my list, modifying the innerHTML
+    for (let i=0;i<farEntities_me.length;i++){
+      farEntities_meTxt.forEach(entity => {
+        farEntities_me[i].innerHTML=farEntities_me[i].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
+      });
+    }
+  }
 }
 
 
@@ -664,9 +674,10 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
       farEntities_meTxt.forEach(entity => {
         farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
       });
-      // highlight the (same) matches in myCall's far entities
+      // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
       let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
       farEntities_othersTxt.forEach(entity => {
+	farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class='HighlightNeg'>"+entity+"</span>",entity);
         farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
       });
     }
