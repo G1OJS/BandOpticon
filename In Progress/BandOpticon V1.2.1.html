@@ -101,9 +101,10 @@ a:visited {color: blue;}
   var watchedMode="FT8";
   var modesArr=["FT4","FT8","JS8","WSPR","CW"];
   var detailsBand=bandsArr[0];
+  var bandTilesSortKey="Band";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
-  var detailsWanted="Band__title-modeLinkLegend";
+  var detailsWanted="BandTileLegend";
   var entityDisplayType="Square";
   var squaresDisplayLevel=4;
   var groupHomeEntities=true;
@@ -525,16 +526,37 @@ a:visited {color: blue;}
     }
   }
   
+  
+ function setSort(sortKey){
+   bandTilesSortKey=sortKey;
+   console.log("Band tiles sort key set to: "+sortKey);
+   updateDisplays;
+ } 
+  
  function sortBandTiles(){
   
     let criteria=new Array();
     let indexArr=new Array();
+    let sortVal=0;
+    bandTilesSortKey="Band";
     bandsArr.forEach((band,index) => {
-      let H2DX=document.getElementById(band+"__spots").innerText.split("/")[1];
-      criteria.push(parseInt(H2DX)); 
+      switch (bandTilesSortKey) {
+  			case 'Band': sortVal=index;
+        case 'H2H': sortVal=parseInt(document.getElementById(band+"__spots-H2H").innerText);
+        case 'H2DX': sortVal=parseInt(document.getElementById(band+"__spots-H2DX").innerText);
+        case 'DX2H': sortVal=parseInt(document.getElementById(band+"__spots-DX2H").innerText);
+        case 'nTx': sortVal=parseInt(document.getElementById(band+"__calls-Tx").innerText);
+        case 'nRx': sortVal=parseInt(document.getElementById(band+"__calls-Rx").innerText);
+        case 'nTxRx': sortVal=parseInt(document.getElementById(band+"__calls-TxRx").innerText);
+      }
+      criteria.push(sortVal); 
       indexArr.push(index);
+      console.log(document.getElementById(band+"__spots").innerText.split("/"));
+      console.log(document.getElementById(band+"__calls").innerText.split(":"));
     });
     indexArr=indexArr.sort((a, b) => criteria[b]-criteria[a]);
+    console.log(criteria);
+    console.log(indexArr);
     indexArr.forEach((newIndex,index) => {
       let div=document.getElementById("bandTile"+index);
       let outputs=div.querySelectorAll("output");
@@ -572,13 +594,13 @@ a:visited {color: blue;}
        
        // write the counts for this band's band tile
        document.getElementById(band+"__spots").innerHTML="Spots "
-         +"<span class='IntraHome_farEnd'>"+nSpotsH2H+"</span>/"
-         +"<span class='Tx_farEnd'>"+nSpotsH2DX+"</span>/"
-         +"<span class='Rx_farEnd'>"+nSpotsDX2H+"</span>";
+         +"<a href='#' onclick='setSort(&quot;H2H&quot;)'><span class='IntraHome_farEnd' id='"+band+"__spots-H2H'>"+nSpotsH2H+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;H2DX&quot;)'><span class='Tx_farEnd' id='"+band+"__spots-H2DX'>"+nSpotsH2DX+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;DX2H&quot;)'><span class='Rx_farEnd' id='"+band+"__spots-DX2H'>"+nSpotsDX2H+"</span></a>";
        document.getElementById(band+"__calls").innerHTML=
-         "<span class='Tx'>Tx Calls "+txCalls.size+"</span><br>"
-         +"<span class='Rx'>"+"Rx Calls "+rxCalls.size+"</span><br>"
-         +"<span class='TxRx'>"+"TxRx Calls "+txCalls.intersection(rxCalls).size+"</span>";
+         "<span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__calls-Tx'>"+txCalls.size+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__calls-Rx'>"+rxCalls.size+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__calls-TxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
 
        // set background colour of band tile to grey if no activity
        let parentBox=document.getElementById(band+"__calls").parentElement
