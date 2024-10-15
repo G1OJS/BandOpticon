@@ -11,6 +11,7 @@
   <td>
     <ol>
       <li>Band tiles automatically sort into order based on number of connections from home to DX</li>
+      <li>"Other modes" list in each band tile now updated to reflect both purged and arrived connections. Main mode selector accumulates modes over the session (i.e. refresh page to reset everything).</li>
     </ol>
   </td>
 </tr>
