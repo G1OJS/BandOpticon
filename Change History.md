@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.1'>V1.2.1</a></td>
+  <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.1'>V1.2.1</a></td>
   <td>
     <ol>
       <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
