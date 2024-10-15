@@ -151,7 +151,7 @@ a:visited {color: blue;}
     newDiv.innerHTML=""
       +"<output id='"+bandsArr[i]+"__title-modeLink'>"+bandsArr[i]+"</output></a>"
       +"<output id='"+bandsArr[i]+"__spots'></output><br>"
-      +"<output id='"+bandsArr[i]+"__calls'></output><br>"
+      +"<output id='"+bandsArr[i]+"'></output><br>"
       +"<output id='"+bandsArr[i]+"__modes' style='font-size:0.7rem'></output>";
     toAdd.appendChild(newDiv);
   }
@@ -542,17 +542,15 @@ a:visited {color: blue;}
     bandsArr.forEach((band,index) => {
       switch (bandTilesSortKey) {
   			case 'Band': sortVal=index;
-        case 'H2H': sortVal=parseInt(document.getElementById(band+"__spots-H2H").innerText);
-        case 'H2DX': sortVal=parseInt(document.getElementById(band+"__spots-H2DX").innerText);
-        case 'DX2H': sortVal=parseInt(document.getElementById(band+"__spots-DX2H").innerText);
-        case 'nTx': sortVal=parseInt(document.getElementById(band+"__calls-Tx").innerText);
-        case 'nRx': sortVal=parseInt(document.getElementById(band+"__calls-Rx").innerText);
-        case 'nTxRx': sortVal=parseInt(document.getElementById(band+"__calls-TxRx").innerText);
+        case 'nH2H': sortVal=parseInt(document.getElementById(band+"__spots-nH2H").innerText);
+        case 'nH2DX': sortVal=parseInt(document.getElementById(band+"__spots-nH2DX").innerText);
+        case 'nDX2H': sortVal=parseInt(document.getElementById(band+"__spots-nDX2H").innerText);
+        case 'nTx': sortVal=parseInt(document.getElementById(band+"__calls-nTx").innerText);
+        case 'nRx': sortVal=parseInt(document.getElementById(band+"__calls-nRx").innerText);
+        case 'nTxRx': sortVal=parseInt(document.getElementById(band+"__calls-nTxRx").innerText);
       }
       criteria.push(sortVal); 
       indexArr.push(index);
-      console.log(document.getElementById(band+"__spots").innerText.split("/"));
-      console.log(document.getElementById(band+"__calls").innerText.split(":"));
     });
     indexArr=indexArr.sort((a, b) => criteria[b]-criteria[a]);
     console.log(criteria);
@@ -594,13 +592,13 @@ a:visited {color: blue;}
        
        // write the counts for this band's band tile
        document.getElementById(band+"__spots").innerHTML="Spots "
-         +"<a href='#' onclick='setSort(&quot;H2H&quot;)'><span class='IntraHome_farEnd' id='"+band+"__spots-H2H'>"+nSpotsH2H+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;H2DX&quot;)'><span class='Tx_farEnd' id='"+band+"__spots-H2DX'>"+nSpotsH2DX+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;DX2H&quot;)'><span class='Rx_farEnd' id='"+band+"__spots-DX2H'>"+nSpotsDX2H+"</span></a>";
+         +"<a href='#' onclick='setSort(&quot;nH2H&quot;)'><span class='IntraHome_farEnd' id='"+band+"__spots-nH2H'>"+nSpotsH2H+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nH2DX&quot;)'><span class='Tx_farEnd' id='"+band+"__spots-nH2DX'>"+nSpotsH2DX+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDX2H&quot;)'><span class='Rx_farEnd' id='"+band+"__spots-nDX2H'>"+nSpotsDX2H+"</span></a>";
        document.getElementById(band+"__calls").innerHTML=
-         "<span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__calls-Tx'>"+txCalls.size+"</span></a><br>"
-         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__calls-Rx'>"+rxCalls.size+"</span></a><br>"
-         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__calls-TxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
+         "<span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__calls-nTx'>"+txCalls.size+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__calls-nRx'>"+rxCalls.size+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__calls-nTxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
 
        // set background colour of band tile to grey if no activity
        let parentBox=document.getElementById(band+"__calls").parentElement
