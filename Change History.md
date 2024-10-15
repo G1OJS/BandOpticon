@@ -104,6 +104,8 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - add sorting option to band tiles
+  - benchmark against a specific callsign?
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
   - switch to https://www.brailleinstitute.org/freefont/
