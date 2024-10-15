@@ -114,16 +114,13 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - add selector for sorting method
+  - option to edit bands list
   - benchmark against a specific callsign?
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
   - switch to https://www.brailleinstitute.org/freefont/
-  - investigate why V1.1.0 seems slower (at least to Google inspector) than V1.0.4
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
-  - modes list in each band tile persists even when triggering spot has been purged. Should it? Does it matter?
-  - add back expanding of main mode list when new modes are spotted? Or leave that to the band tiles?
-
+  
 Code tidying:
   - is there a better way to do the highlighting?
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
