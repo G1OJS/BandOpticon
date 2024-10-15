@@ -258,8 +258,8 @@ a:visited {color: blue;}
 
     const allowed=["Nothing","BandTileLegend","BandDetails"];
     if(!(typeof newWant==='undefined')) {
-      if(!allowed.includes(detailsWanted)) {
-        console.log("Unknown detail type passed to setDisplayConfig");
+      if(!allowed.includes(newWant)) {
+        console.log("Unknown detail type passed to setDisplayConfig: "+newWant);
       } else {
         detailsWanted=newWant; console.log("New details pane content requested: ",newWant,band);
       }
