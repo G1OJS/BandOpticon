@@ -538,7 +538,7 @@ a:visited {color: blue;}
     let sortArr=new Array();
     bandsArr.forEach((band, index) => {
       let spots=document.getElementById(band+"__spots");
-      let H2DX=spots.innerText.split("/")[1].match(/([0-9]+)/)
+      let H2DX=spots.innerText.split("/")[1];
       if (H2DX!=null) {H2DX=parseInt(H2DX[0])};
       sortArr.push({index,H2DX}); 
     });
