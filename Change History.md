@@ -7,6 +7,15 @@
 </tr>
 
 <tr>
+  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.2.1'>V1.2.1</a></td>
+  <td>
+    <ol>
+      <li>Band tiles automatically sort into order based on number of connections from home to DX</li>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
   <td>
     <ol>
@@ -104,7 +113,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - add sorting option to band tiles
+  - add selector for sorting method
   - benchmark against a specific callsign?
   - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
   - add "show distance and bearing" to RHS
