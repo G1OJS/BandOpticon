@@ -133,12 +133,6 @@ a:visited {color: blue;}
   setDisplayConfig();
   updateappTop();
 
-  // initialise an array of sets to gather modes used on each band
-  var modeSetByBandArr=new Array();
-  for (let i=0;i<bandsArr.length;i++){
-     modeSetByBandArr.push(new Set);
-  }
-
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
@@ -627,7 +621,7 @@ a:visited {color: blue;}
         const op=document.getElementById(bandsArr[bandsArr.indexOf(band)]+"__modes");
         op.innerHTML="";
         Array.from(otherModesOnThisBand).forEach((md) =>{
-          op.innerHTML="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+md+"</a> ";
+          op.innerHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+md+"</a> ";
          });
         if(op.innerHTML.length>0) {op.innerHTML="+ "+op.innerHTML};
   }
