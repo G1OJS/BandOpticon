@@ -499,13 +499,13 @@ a:visited {color: blue;}
   }
 
   function updateDisplays(){
-      console.log("Update Displays");
+ //     console.log("Update Displays");
       purgeSpots();
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
-      console.log("Update Band Tiles");
-      bandsArr.forEach((band) => updateBandTile(band));
       sortBandTiles();
+//      console.log("Update Band Tiles");
+      bandsArr.forEach((band) => updateBandTile(band));
       if(detailsWanted=="BandDetails") {
         showBandDetails();
         resizeGridColumns();
@@ -548,7 +548,7 @@ a:visited {color: blue;}
     let criteria=new Array();
     let indexArr=new Array();
     let sortVal=0;
-    console.log("Sort band tiles");
+//    console.log("Sort band tiles");
 
     bandsArr.forEach((band,index) => {
       switch (bandTilesSortKey) {
