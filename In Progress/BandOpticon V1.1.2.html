@@ -542,7 +542,7 @@ a:visited {color: blue;}
       if (H2DX!=null) {H2DX=parseInt(H2DX[0])};
       sortArr.push({index,H2DX}); 
     });
-    sortArr.sort((a, b) => b.H2DX - a.H2DX);
+    sortArr.sort((a, b) => parseInt(b.H2DX) - parseInt(a.H2DX));
     sortArr.forEach((val,index) => {
       let div=document.getElementById("bandTile__"+index);
       let outputs=div.querySelectorAll("output");
