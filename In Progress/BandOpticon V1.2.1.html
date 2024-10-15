@@ -495,8 +495,8 @@ a:visited {color: blue;}
       purgeSpots();
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
-      sortBandTiles();
       bandsArr.forEach((band) => updateBandTile(band));
+      sortBandTiles();
       if(detailsWanted=="BandDetails") {
         showBandDetails();
         resizeGridColumns();
