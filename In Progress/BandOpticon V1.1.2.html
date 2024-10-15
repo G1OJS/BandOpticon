@@ -300,10 +300,7 @@ a:visited {color: blue;}
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var modeSelector="";
-    for (let i=0; i<modesArr.length;i++){
-      let md=modesArr[i];
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "
-    }
+    modesArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     
     appTop_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
        +"<br>Running for "+runningmins+" minutes<br>"
@@ -588,14 +585,21 @@ a:visited {color: blue;}
        if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
-        let otherModesOnThisBand=new Set();
+        let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
+        let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
         for (id in connections) {
-          if(connections[id].md!=watchedMode {otherModesOnThisBand.add(connections[id].md)})
+          if(connections[id].b==band) {
+            if(connections[id].md!=watchedMode) {otherModesOnThisBand.add(connections[id].md)};
+            globalModes.add(connections[id].md);
+          }
         }
+        modesArr=Array.from(globalModes);
         const op=document.getElementById(bandsArr[bandsArr.indexOf(band)]+"__modes");
+        op.innerHTML="";
         Array.from(otherModesOnThisBand).forEach((md) =>{
-          op.innerHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+md+"</a> ";
+          op.innerHTML="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+md+"</a> ";
          });
+        if(op.innerHTML.length>0) {op.innerHTML="+ "+op.innerHTML};
   }
  
   function showBandDetails(){
