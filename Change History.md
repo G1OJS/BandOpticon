@@ -116,8 +116,7 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   - option to edit bands list
   - benchmark against a specific callsign?
-  - add call-square as an entity option? Which level square? All? Independently select call+square and the square level?
-  - add "show distance and bearing" to RHS
+  - miniature map grid in each row? Larger single map with colour-coded squares?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   
