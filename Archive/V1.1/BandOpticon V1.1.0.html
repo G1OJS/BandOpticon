@@ -137,11 +137,11 @@ a:visited {color: blue;}
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
-  connectToFeed();
- // connectToTestData();
+ // connectToFeed();
+  connectToTestData();
   
   function connectToTestData(){
-    onMessage("{&quot;sq&quot;:50538789678,&quot;f&quot;:7074242,&quot;md&quot;:&quot;FT8&quot;,&quot;rp&quot;:-16,&quot;t&quot;:1729115715,&quot;sc&quot;:&quot;GE3TXA&quot;,&quot;sl&quot;:&quot;JO01IR&quot;,&quot;rc&quot;:&quot;UA3245SWL&quot;,&quot;rl&quot;:&quot;KO85nt&quot;,&quot;sa&quot;:223,&quot;ra&quot;:54,&quot;b&quot;:&quot;40m&quot;}")
+    onMessage("'sq':50538789678,'f':7074242,'md':'FT8','rp':-16,'t':1729115715,'sc':'GE3TXA','sl':'JO01IR','rc':'UA3245SWL','rl':'KO85nt','sa':223,'ra':54,'b':'40m'")
   
   }
   
@@ -241,7 +241,7 @@ a:visited {color: blue;}
       conn["connectedLoc"]=conn.sl.toUpperCase();
       conn["homeType"]="rx";
     }
-    if(squareIsInHome(conn.cl.toUpperCase())) {
+    if(squareIsInHome(conn.connectedLoc.toUpperCase())) {
       conn["connectedDomain"]="home"
     } else {
       conn["connectedDomain"]="dx"
