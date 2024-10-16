@@ -502,6 +502,13 @@ a:visited {color: blue;}
         showBandDetails();
         resizeGridColumns();
       }
+      showBandsHeard();
+  }
+
+  function showBandsHeard(){
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    console.log(Array.from(bandsHeard).toSorted()).
   }
   
   function resizeGridColumns(){
