@@ -567,7 +567,7 @@ a:visited {color: blue;}
           let rxCalls=new Set;
           for (id in connections) {
             if (connections[id].b==band && connections[id].md==watchedMode) {
-              if(connections[id].dd[0]=="H"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
+              if(connections[id].dd[0]=="h"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
             }
           }
           if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
@@ -578,7 +578,7 @@ a:visited {color: blue;}
     });
     console.log(criteria);
     console.log(indexArr);
-    indexArr..sort(function(a,b){if(criteria[a]>criteria[b]){return 1} else {return -1}});
+    indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
     console.log(indexArr);
     
     return indexArr;
