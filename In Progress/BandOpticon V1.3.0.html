@@ -160,7 +160,7 @@ a:visited {color: blue;}
       newDiv.id="bandTileDiv_"+index;
       bandTileDivs.appendChild(newDiv);
     });
-    let nfillerDivs=5-(bandsArr.length) %5;
+    let nfillerDivs=4-(bandsArr.length-1) %5;
     for (let i=0;i<nfillerDivs;i++){
       var newDiv = document.createElement('div');  
       bandTileDivs.appendChild(newDiv);
@@ -556,11 +556,12 @@ a:visited {color: blue;}
      // get band tiles order
     let criteria=new Array();
     let indexArr=new Array();
-    console.log(bandTilesSortKey.slice(1).toLowerCase());
     bandsArr.forEach((band,index) => {
       indexArr.push(index);
   		if(bandTilesSortKey=='BandName') {
-        criteria.push(band);
+        let bTmp=band.slice(0,-1);
+        if(bTmp.slice(-1)=="c") {wavelengthMetres=parseInt(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseInt(bTmp)}
+        criteria.push(wavelengthMetres);
       } else {
         let nCount=0; 
         if (bandTilesSortKey.search("H")>=0){ 
@@ -584,10 +585,8 @@ a:visited {color: blue;}
         }
       }
     });
-    console.log(criteria);
-    console.log(indexArr);
+
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
-    console.log(indexArr);
     
     return indexArr;
   }
