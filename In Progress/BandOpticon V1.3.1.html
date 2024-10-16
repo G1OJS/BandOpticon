@@ -285,7 +285,7 @@ a:visited {color: blue;}
     
     if(detailsWanted=="BandDetails"){
       detailsBand=band;
-      showBandDetails()
+      updateDisplays();
     } 
     
   }
@@ -656,8 +656,7 @@ a:visited {color: blue;}
        if((txCalls.size+rxCalls.size)>0){bandTileDocEl.className='active'}
       
        if(detailsWanted=="BandDetails" && band==detailsBand) {
-        console.log(txCalls.size);
-        showBandDetails(txCalls,rxCalls,txRxCalls);
+         showBandDetails(txCalls,rxCalls,txRxCalls);
        }
       
       
@@ -694,17 +693,19 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
 	  
        // all except myCall:
-               console.log(txCalls.size);
        let othersTxHTML=getBandDetailsRowHTML(txCalls,"Tx","othersTx");
        let othersRxHTML=getBandDetailsRowHTML(rxCalls,"Rx","othersRx");
        let othersTxRxHTML=getBandDetailsRowHTML(txRxCalls,"TxRx","othersTxRx");
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
        
        // just myCall
-   //    let myCallTxHTML=getBandDetailsRowHTML("Tx","myCallTx");
-   //    let myCallRxHTML=getBandDetailsRowHTML("Rx","myCallRx");
-   //    let myCallTxRxHTML=getBandDetailsRowHTML("TxRx","myCallTxRx");   
-   //    detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
+       let justMyCall=new Set(myCall);
+       console.log(justMyCall);
+       console.log(rxCalls.intersection(justMyCall));
+       let myCallTxHTML=getBandDetailsRowHTML(txCalls.intersection(justMyCall),"Tx","myCallTx");
+       let myCallRxHTML=getBandDetailsRowHTML(rxCalls.intersection(justMyCall),"Rx","myCallRx");
+       let myCallTxRxHTML=getBandDetailsRowHTML(txRxCalls.intersection(justMyCall),"TxRx","myCallTxRx");   
+       detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
 
@@ -726,36 +727,47 @@ a:visited {color: blue;}
 
 function getBandDetailsRowHTML(homeCalls,TxRx,rowClassPrefix){
 	
+  if(homeCalls.size==0) {return ""};
+  
   let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
   let nonlocalConnectedEntitiesGrouped=new Set; // nonlocal means the conected entity is not in Home
-  let tmpHTML="";
+  let rowHTML="";
   let Arrow="";
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   
-  console.log(homeCalls.size);
-  
-  let localConnectedEntities=new Set;
-  let nonlocalConnectedEntities=new Set;
-  Array.from(homeCalls).forEach((homeCall) => {
+  let homeCallsArr=Array.from(homeCalls)
+  homeCallsArr.forEach((homeCall) => {
+    let localConnectedEntities=new Set;
+    let nonlocalConnectedEntities=new Set;
     for (id in connections) {
       if (connections[id].hc==homeCall && connections[id].b==detailsBand && connections[id].md==watchedMode ) {
         let farEntity=getEntity(connections[id].cc,connections[id].cl);
-        if(squareIsInHome(connections[id].cl)) {localConnectedEntities.add(farEntity)} else {nonlocalConnectedEntities.add(farEntity)}
+        if(squareIsInHome(connections[id].cl)) {
+          localConnectedEntities.add(farEntity);
+          localConnectedEntitiesGrouped.add(farEntity);
+        } else {
+          nonlocalConnectedEntities.add(farEntity);
+          nonlocalConnectedEntitiesGrouped.add(farEntity);
+        }
       }
+    }
+    if (!groupHomeEntities){
+      rowHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+      rowHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+      if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {rowHTML+=", "};
+      rowHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
     }
   });
   if (groupHomeEntities){
-    if (homeCalls.length>0){
-      tmpHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCalls.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-      tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-      if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {tmpHTML+=", "};
-      tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
-     }
-   }
+    rowHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+    rowHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+    if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {rowHTML+=", "};
+    rowHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
+  }
    
-   return tmpHTML;
+  return rowHTML;
 }
 
 /*
