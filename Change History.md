@@ -10,8 +10,7 @@
   <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/In %Progress/BandOpticon%20V1.3.0'>V1.3.0</a></td>
   <td>
     <ol>
-      <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
-      <li>"Other modes" list in each band tile now updated to reflect both purged and arrived connections. Main mode selector accumulates modes over the session (i.e. refresh page to reset everything).</li>
+      <li></li>
     </ol>
   </td>
 </tr>
