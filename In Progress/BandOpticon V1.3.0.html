@@ -555,13 +555,13 @@ a:visited {color: blue;}
         criteria.push(band);
       } else {
         let nCount=0; 
-        if (bandTilesSortKey.search("H")>0){ 
+        if (bandTilesSortKey.search("H")>=0){ 
           for (id in connections) {
             if (connections[id].b==band && connections[id].md==watchedMode) {
-              if(connections[id].dd==bandTilesSortKey.substring(6,-1)) {nCount+=1}
+              if(connections[id].dd==bandTilesSortKey.substring(6,-1).toLowerCase) {nCount+=1}
             }
-            criteria.push(nCount); 
           }
+          criteria.push(nCount); 
         } else {
           let txCalls=new Set;
           let rxCalls=new Set;
