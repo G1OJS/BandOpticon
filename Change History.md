@@ -7,49 +7,14 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td>V1.3.1</td>
-  <td>
-    <ol>
-      <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>16-10-2024</td><td>V1.3.0</td>
-  <td>
-    <ol>
-      <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>15-10-2024</td><td>V1.2.1</td>
-  <td>
-    <ol>
-      <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
-      <li>"Other modes" list in each band tile now updated to reflect both purged and arrived connections. Main mode selector accumulates modes over the session (i.e. refresh page to reset everything).</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>14-10-2024</td><td>V1.1.1</td>
-  <td>
-    <ol>
-      <li>Highlighting works with both grouped and 'list all calls' versions of the details grid</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>13-10-2024</td><td>V1.1.0</td>
+  <td>in progress</td><td>V1.1.0</td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
       <li>Added row in band tiles to show number of calls in home who are both transmitting and receiving ('Tx-Rx' calls), and the band details view now shows the entities that any call in that list is both reaching and spotting (which may be none, because a home call qualifies as Tx-Rx if it is spotted by anyone and recieved by anyone).</li>
       <li>Note that this version purges old connection data based on the age of the spot being generated rather than the time it was received as in V1.0.x - this means that the stats are less 'polluted' by old spots received a long time after they were generated.</li>
+      <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
+      <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
     </ol>
   </td>
 </tr>
