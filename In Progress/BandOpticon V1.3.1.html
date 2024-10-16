@@ -137,7 +137,13 @@ a:visited {color: blue;}
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
-  connectToFeed();
+//  connectToFeed();
+  connectToTestData();
+  
+  function connectToTestData(){
+    onMessage('"sq":50537990629,"f":7075859,"md":"FT8","rp":-10,"t":1729113120,"sc":"M0RDW","sl":"IO82WX","rc":"G1OJS","rl":"IO90ju","sa":223,"ra":224,"b":"40m"')
+  
+  }
   
 
   // ***********************************
@@ -210,6 +216,7 @@ a:visited {color: blue;}
     // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
     // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
 	  
+    
     // first, build conn object for this msg using same keys as PSKR MQTT:
     const conn={};
     msg.slice(1, -1).replaceAll('"','').split(',')
@@ -218,6 +225,7 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
     messagesReceived+=1;
+    
 
  //   if(bandsArr.indexOf(conn.b)<0) {return} // don't process bands we aren't watching
 	  
