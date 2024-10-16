@@ -544,10 +544,9 @@ a:visited {color: blue;}
    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
-    
-  function updateBandTiles(){
-  
-    // get band tiles order
+ 
+  function getBandTileOrder(){
+     // get band tiles order
     let criteria=new Array();
     let indexArr=new Array();
     bandsArr.forEach((band,index) => {
@@ -578,17 +577,24 @@ a:visited {color: blue;}
       }
     });
     console.log(criteria);
-    indexArr=indexArr.sort((a, b) => {
-      if(bandTilesSortKey=='BandName') {return criteria[a]-criteria[b]} else {return criteria[b]-criteria[a]}});
+ //   indexArr=indexArr.sort((a, b) => {
+ //     if(bandTilesSortKey=='BandName') {return criteria[a]-criteria[b]} else {return criteria[b]-criteria[a]}});
+ 
     console.log(indexArr);
+    indexArr.sort(function(a, b){return criteria[a]-criteria[b]});
+    console.log(indexArr);
+    
+    return indexArr;
+  }
+    
+    
+  function updateBandTiles(){
+ 
+    let indexArr=getBandTileOrder();
     
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
-       let nSpotsH2H=0;
-       let nSpotsH2DX=0;
-       let nSpotsDX2H=0;
-       let txCalls=new Set;
-       let rxCalls=new Set;
+ 
    
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
    
@@ -597,7 +603,12 @@ a:visited {color: blue;}
          htmlTmp+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
        }
        bandTileDocEl.innerHTML=htmlTmp+"<br>";
-             
+       
+       let nSpotsH2H=0;
+       let nSpotsH2DX=0;
+       let nSpotsDX2H=0;
+       let txCalls=new Set;
+       let rxCalls=new Set;
        for (id in connections) {
          let conn=connections[id];
          if (conn.b==band && conn.md==watchedMode) {
