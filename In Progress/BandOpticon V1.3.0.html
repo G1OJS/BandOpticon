@@ -25,6 +25,7 @@ div {margin: 0px;  padding: 0px;}
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
+#bandsGrid > div.active	{background-color:white}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
@@ -628,9 +629,8 @@ a:visited {color: blue;}
          +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+rxCalls.size+"</span></a><br>"
          +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
 
-       // set background colour of band tile to grey if no activity
-       let parentBox=bandTileDocEl.parentElement
-       if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
+       // change class of band tile to active if there is activity
+       if((txCalls.size+rxCalls.size)==0){bandTileDocEl.class='bandTile-active'}
 
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
         let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
