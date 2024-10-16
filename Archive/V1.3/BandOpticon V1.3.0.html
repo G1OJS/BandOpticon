@@ -560,7 +560,7 @@ a:visited {color: blue;}
       indexArr.push(index);
   		if(bandTilesSortKey=='BandName') {
         let bTmp=band.slice(0,-1);
-        if(bTmp.slice(-1)=="c") {wavelengthMetres=parseInt(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseInt(bTmp)}
+        if(bTmp.slice(-1)=="c") {wavelengthMetres=parseFloat(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseFloat(bTmp)}
         criteria.push(wavelengthMetres);
       } else {
         let nCount=0; 
