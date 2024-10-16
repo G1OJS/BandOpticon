@@ -137,11 +137,11 @@ a:visited {color: blue;}
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
-//  connectToFeed();
-  connectToTestData();
+  connectToFeed();
+ // connectToTestData();
   
   function connectToTestData(){
-    onMessage('"sq":50537990629,"f":7075859,"md":"FT8","rp":-10,"t":1729113120,"sc":"M0RDW","sl":"IO82WX","rc":"G1OJS","rl":"IO90ju","sa":223,"ra":224,"b":"40m"')
+    onMessage("{&quot;sq&quot;:50538789678,&quot;f&quot;:7074242,&quot;md&quot;:&quot;FT8&quot;,&quot;rp&quot;:-16,&quot;t&quot;:1729115715,&quot;sc&quot;:&quot;GE3TXA&quot;,&quot;sl&quot;:&quot;JO01IR&quot;,&quot;rc&quot;:&quot;UA3245SWL&quot;,&quot;rl&quot;:&quot;KO85nt&quot;,&quot;sa&quot;:223,&quot;ra&quot;:54,&quot;b&quot;:&quot;40m&quot;}")
   
   }
   
@@ -212,11 +212,10 @@ a:visited {color: blue;}
   }
   
   function onMessage(msg){
+  console.log(msg)
     // message format:
     // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
     // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
-	  
-    
     // first, build conn object for this msg using same keys as PSKR MQTT:
     const conn={};
     msg.slice(1, -1).replaceAll('"','').split(',')
@@ -225,29 +224,29 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
     messagesReceived+=1;
-    
-
- //   if(bandsArr.indexOf(conn.b)<0) {return} // don't process bands we aren't watching
 	  
     // now swap keys to: 
-    // sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
-    // hc:home, call hl:home loc, cc:connected call, cl:connected call loc
-    // ht:home type (tx or rx)
+    // sq:sequence, t:time, b:band, md:mode plus
+    // homeCall, homeLoc, connectedCall, connectedLoc, homeType (tx/rx), connectedDomain (home/dx)
     if(squareIsInHome(conn.sl)){
-      conn["hc"]=conn.sc.toUpperCase();
-      conn["hl"]=conn.sl.toUpperCase();
-      conn["cc"]=conn.rc.toUpperCase();
-      conn["cl"]=conn.rl.toUpperCase();
-      conn["ht"]="tx";
-      if(squareIsInHome(conn.rl)) {conn["dd"]="hh"} else {conn["dd"]="hd"}      
+      conn["homeCall"]=conn.sc.toUpperCase();
+      conn["homeLoc"]=conn.sl.toUpperCase();
+      conn["connectedCall"]=conn.rc.toUpperCase();
+      conn["connectedLoc"]=conn.rl.toUpperCase();
+      conn["homeType"]="tx";     
     } else {
-      conn["hc"]=conn.rc.toUpperCase();
-      conn["hl"]=conn.rl.toUpperCase();
-      conn["cc"]=conn.sc.toUpperCase();
-      conn["cl"]=conn.sl.toUpperCase();
-      conn["dd"]="dh";
-      conn["ht"]="rx";
+      conn["homeCall"]=conn.rc.toUpperCase();
+      conn["homeLoc"]=conn.rl.toUpperCase();
+      conn["connectedCall"]=conn.sc.toUpperCase();
+      conn["connectedLoc"]=conn.sl.toUpperCase();
+      conn["homeType"]="rx";
     }
+    if(squareIsInHome(conn.cl.toUpperCase())) {
+      conn["connectedDomain"]="home"
+    } else {
+      conn["connectedDomain"]="dx"
+    }
+
     delete conn["sc"]; delete conn["sl"]; delete conn["sa"];
     delete conn["rc"]; delete conn["rl"]; delete conn["ra"];
     delete conn["f"]; delete conn["rp"];
@@ -570,6 +569,7 @@ a:visited {color: blue;}
         criteria.push(wavelengthMetres);
       } else {
         let nCount=0; 
+        console.log(bandTilesSortKey);
         if (bandTilesSortKey.search("H")>=0){ 
           for (id in connections) {
             if (connections[id].b==band && connections[id].md==watchedMode) {
@@ -604,8 +604,7 @@ a:visited {color: blue;}
     
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
- 
-   
+
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
    
        let htmlTmp=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
@@ -621,10 +620,20 @@ a:visited {color: blue;}
        let rxCalls=new Set;
        for (id in connections) {
          if (connections[id].b==band && connections[id].md==watchedMode) {
-           if(connections[id].dd=="hh") {nSpotsHH+=1}
-           if(connections[id].dd=="hd") {nSpotsHD+=1}
-           if(connections[id].dd=="dh") {nSpotsDH+=1}
-           if(connections[id].ht=="tx") {txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)};
+           if(connections[id].homeType=="tx") {
+             txCalls.add(connections[id].homeCall)
+           } else {
+             rxCalls.add(connections[id].homeCall)
+           }
+           if(connections[id].connectedDomain=="home") {
+             nSpotsHH+=1;  
+           } else {
+             if(connections[id].homeType=="tx") {
+               nSpotsHD+=1;
+             } else {
+               nSpotsDH+=1;
+             }
+           }
          }
        }
        let txRxCalls=txCalls.intersection(rxCalls)
@@ -749,9 +758,9 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
     let localConnectedEntities=new Set;
     let nonlocalConnectedEntities=new Set;
     for (id in connections) {
-      if (connections[id].hc==homeCall && connections[id].b==detailsBand && connections[id].md==watchedMode ) {
-        let farEntity=getEntity(connections[id].cc,connections[id].cl);
-        if(squareIsInHome(connections[id].cl)) {
+      if (connections[id].homeCall==homeCall && connections[id].b==detailsBand && connections[id].md==watchedMode ) {
+        let farEntity=getEntity(connections[id].connectedCall,connections[id].connectedLoc);
+        if(squareIsInHome(connections[id].connectedLoc)) {
           localConnectedEntities.add(farEntity);
           localConnectedEntitiesGrouped.add(farEntity);
         } else {
