@@ -156,8 +156,8 @@ a:visited {color: blue;}
       newDiv.id="bandTile"+i;
       newDiv.innerHTML=""
         +"<output id='"+bandsArr[i]+"__title-modeLink'>"+bandsArr[i]+"</output></a>"
-        +"<output id='"+bandsArr[i]+"__spots'></output><br>"
-        +"<output id='"+bandsArr[i]+"__calls'></output><br>"
+        +"<output id='"+bandsArr[i]+"__stats'></output><br>"
+        +"<output id='"+bandsArr[i]+"__stats'></output><br>"
         +"<output id='"+bandsArr[i]+"__modes' style='font-size:0.7rem'></output>";
       toAdd.appendChild(newDiv);
     }
@@ -551,21 +551,14 @@ a:visited {color: blue;}
   
     let criteria=new Array();
     let indexArr=new Array();
-    let sortVal=0;
-//    console.log("Sort band tiles");
-
     bandsArr.forEach((band,index) => {
-      switch (bandTilesSortKey) {
-  			case 'BandName': sortVal=-index; break;
-        case 'nH2H': sortVal=parseInt(document.getElementById(band+"__spots-nH2H").innerText); break;
-        case 'nH2DX': sortVal=parseInt(document.getElementById(band+"__spots-nH2DX").innerText); break;
-        case 'nDX2H': sortVal=parseInt(document.getElementById(band+"__spots-nDX2H").innerText); break;
-        case 'nTx': sortVal=parseInt(document.getElementById(band+"__calls-nTx").innerText); break;
-        case 'nRx': sortVal=parseInt(document.getElementById(band+"__calls-nRx").innerText); break;
-        case 'nTxRx': sortVal=parseInt(document.getElementById(band+"__calls-nTxRx").innerText); break;
-      }
-      criteria.push(sortVal); 
       indexArr.push(index);
+  		if(bandTilesSortKey=='BandName') {
+        criteria.push(-index);
+      } else {
+        docEl=document.getElementById(band+"__stats-"+bandTileSortKey);
+        if(docEl!=null) {criteria.push(parseInt(docEl.innerText))} else {criteria.push(0)}
+      } 
     });
     indexArr=indexArr.sort((a, b) => criteria[b]-criteria[a]);
     indexArr.forEach((newIndex,index) => {
@@ -605,17 +598,17 @@ a:visited {color: blue;}
        dataForRecord+=band+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+","+txCalls.intersection(rxCalls).size+",";
        
        // write the counts for this band's band tile
-       document.getElementById(band+"__spots").innerHTML="Spots "
-         +"<a href='#' onclick='setSort(&quot;nH2H&quot;)'><span class='IntraHome_farEnd' id='"+band+"__spots-nH2H'>"+nSpotsH2H+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nH2DX&quot;)'><span class='Tx_farEnd' id='"+band+"__spots-nH2DX'>"+nSpotsH2DX+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nDX2H&quot;)'><span class='Rx_farEnd' id='"+band+"__spots-nDX2H'>"+nSpotsDX2H+"</span></a>";
-       document.getElementById(band+"__calls").innerHTML=
-         "<span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__calls-nTx'>"+txCalls.size+"</span></a><br>"
-         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__calls-nRx'>"+rxCalls.size+"</span></a><br>"
-         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__calls-nTxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
+       document.getElementById(band+"__stats").innerHTML="Spots "
+         +"<a href='#' onclick='setSort(&quot;nH2H&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nH2H'>"+nSpotsH2H+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nH2DX&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nH2DX'>"+nSpotsH2DX+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDX2H&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDX2H'>"+nSpotsDX2H+"</span></a>";
+       document.getElementById(band+"__stats").innerHTML=
+         "<span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+txCalls.size+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+rxCalls.size+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+txCalls.intersection(rxCalls).size+"</span></a>";
 
        // set background colour of band tile to grey if no activity
-       let parentBox=document.getElementById(band+"__calls").parentElement
+       let parentBox=document.getElementById(band+"__stats").parentElement
        if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
 
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
@@ -640,8 +633,8 @@ a:visited {color: blue;}
      
      legend.innerHTML="";
      detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
-          +document.getElementById(detailsBand+"__calls").innerHTML+"<br>"
+          +"<br>Total "+document.getElementById(detailsBand+"__stats").innerHTML+"<br>"+spotsLegend+"<br>"
+          +document.getElementById(detailsBand+"__stats").innerHTML+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
