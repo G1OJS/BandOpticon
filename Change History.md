@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.3.0'>V1.3.0</a></td>
+  <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.3.0'>V1.3.0.html</a></td>
   <td>
     <ol>
       <li></li>
