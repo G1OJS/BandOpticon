@@ -556,7 +556,7 @@ a:visited {color: blue;}
   		if(bandTilesSortKey=='BandName') {
         criteria.push(-index);
       } else {
-        docEl=document.getElementById(band+"__stats-"+bandTileSortKey);
+        docEl=document.getElementById(band+"__stats-"+bandTilesSortKey);
         if(docEl!=null) {criteria.push(parseInt(docEl.innerText))} else {criteria.push(0)}
       } 
     });
