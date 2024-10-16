@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.3.1'>V1.3.1</a></td>
+  <td>in progress</td><td>V1.3.1</td>
   <td>
     <ol>
       <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
@@ -16,7 +16,7 @@
 </tr>
 
 <tr>
-  <td>16-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.3.0</a></td>
+  <td>16-10-2024</td><td>V1.3.0</td>
   <td>
     <ol>
       <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
@@ -25,7 +25,7 @@
 </tr>
 
 <tr>
-  <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.1'>V1.2.1</a></td>
+  <td>15-10-2024</td><td>V1.2.1</td>
   <td>
     <ol>
       <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
@@ -35,7 +35,7 @@
 </tr>
 
 <tr>
-  <td>14-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>14-10-2024</td><td>V1.1.1</td>
   <td>
     <ol>
       <li>Highlighting works with both grouped and 'list all calls' versions of the details grid</li>
@@ -44,7 +44,7 @@
 </tr>
 
 <tr>
-  <td>13-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>13-10-2024</td><td>V1.1.0</td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
