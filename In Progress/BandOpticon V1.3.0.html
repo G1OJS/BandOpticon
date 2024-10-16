@@ -577,11 +577,8 @@ a:visited {color: blue;}
       }
     });
     console.log(criteria);
- //   indexArr=indexArr.sort((a, b) => {
- //     if(bandTilesSortKey=='BandName') {return criteria[a]-criteria[b]} else {return criteria[b]-criteria[a]}});
- 
     console.log(indexArr);
-    indexArr.sort(function(a, b){return criteria[a]-criteria[b]});
+    indexArr..sort(function(a,b){if(criteria[a]>criteria[b]){return 1} else {return -1}});
     console.log(indexArr);
     
     return indexArr;
