@@ -137,8 +137,8 @@ a:visited {color: blue;}
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
- // connectToFeed();
-  connectToTestData();
+  connectToFeed();
+ // connectToTestData();
   
   function connectToTestData(){
     onMessage("'sq':50538789678,'f':7074242,'md':'FT8','rp':-16,'t':1729115715,'sc':'GE3TXA','sl':'JO01IR','rc':'UA3245SWL','rl':'KO85nt','sa':223,'ra':54,'b':'40m'")
@@ -228,7 +228,8 @@ a:visited {color: blue;}
     // now swap keys to: 
     // sq:sequence, t:time, b:band, md:mode plus
     // homeCall, homeLoc, connectedCall, connectedLoc, homeType (tx/rx), connectedDomain (home/dx)
-    if(squareIsInHome(conn.sl)){
+   console.log(conn.sl);
+   if(squareIsInHome(conn.sl)){
       conn["homeCall"]=conn.sc.toUpperCase();
       conn["homeLoc"]=conn.sl.toUpperCase();
       conn["connectedCall"]=conn.rc.toUpperCase();
