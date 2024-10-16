@@ -7,10 +7,10 @@
 </tr>
 
 <tr>
-  <td>15-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.3.0'>V1.3.0</a></td>
+  <td>16-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/In%20Progress/BandOpticon%20V1.3.0'>V1.3.0</a></td>
   <td>
     <ol>
-      <li></li>
+      <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
     </ol>
   </td>
 </tr>
