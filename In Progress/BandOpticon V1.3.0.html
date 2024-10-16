@@ -136,28 +136,29 @@ a:visited {color: blue;}
   setInterval(writeData, 1000*dataWriteSeconds);
 
   connectToFeed();
+  
 
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
 
-  function writeBandTilesHTML(){
+  function writeBandTilesDivs(){
+  
     // Write the <div>s for each band summary tile in the bandsGrid area
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
-    var element = document.getElementById("bandsGrid"); 
-    while (element.firstChild) { 
-      element.firstChild.remove(); 
-    }
-    var toAdd = document.createDocumentFragment();
-    for(let i=0; i < bandsArr.length; i++){
+    
+    var bandsGridDocEl = document.getElementById("bandsGrid"); 
+    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
+    
+    var bandTileDivs = document.createDocumentFragment();
+    bandsArr.forEach((band,index) => {
       var newDiv = document.createElement('div');  
-      newDiv.id="bandTile"+i;
-      newDiv.innerHTML="<span id='"+bandsArr[i]+"__title-modeLink'>"+bandsArr[i]+"</span>"
-      toAdd.appendChild(newDiv);
-    }
-    document.getElementById('bandsGrid').appendChild(toAdd);
+      newDiv.id="bandTileDiv_"+index;
+      bandTileDivs.appendChild(newDiv);
+    });
+    bandsGridDocEl.appendChild(bandTileDivs);
   }
 
 
@@ -502,10 +503,9 @@ a:visited {color: blue;}
   function updateDisplays(){
       purgeSpots();
       updateappTop();
-      writeBandTilesHTML();
       dataForRecord="Mode="+watchedMode+", ";
-      sortBandTiles();
-      bandsArr.forEach((band) => updateBandTile(band));
+      writeBandTilesDivs();
+      updateBandTiles();
       if(detailsWanted=="BandDetails") {
         showBandDetails();
         resizeGridColumns();
@@ -544,9 +544,10 @@ a:visited {color: blue;}
    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
+    
+  function updateBandTiles(){
   
- function sortBandTiles(){
-  
+    // get band tiles order
     let criteria=new Array();
     let indexArr=new Array();
     bandsArr.forEach((band,index) => {
@@ -554,34 +555,43 @@ a:visited {color: blue;}
   		if(bandTilesSortKey=='BandName') {
         criteria.push(band);
       } else {
-        docEl=document.getElementById(band+"__stats-"+bandTilesSortKey);
-        console.log(band+"__stats-"+bandTilesSortKey);
-        criteria.push(parseInt(docEl.innerText));
-      } 
+        let nCount=0; 
+        if (bandTilesSortKey.search("H")>0){ 
+          for (id in connections) {
+            if (connections[id].b==band && connections[id].md==watchedMode) {
+              if(connections[id].dd==bandTilesSortKey.substring(6,-1)) {nCount+=1}
+            }
+            criteria.push(nCount); 
+          }
+        } else {
+          let txCalls=new Set;
+          let rxCalls=new Set;
+          for (id in connections) {
+            if (connections[id].b==band && connections[id].md==watchedMode) {
+              if(connections[id].dd[0]=="H"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
+            }
+          }
+          if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
+          if(bandTilesSortKey=="nRx"){criteria.push(rxCalls.size)}
+          if(bandTilesSortKey=="nTxRx"){criteria.push(txCalls.intersection(rxCalls).size)}
+        }
+      }
     });
     console.log(criteria);
-    indexArr=indexArr.sort((a, b) => criteria[b]-criteria[a]);
+    indexArr=indexArr.sort((a, b) => {
+      if(bandTilesSortKey=='BandName') {return criteria[a]-criteria[b]} else {return criteria[b]-criteria[a]}});
     console.log(indexArr);
-    indexArr.forEach((newIndex,index) => {
-      let div=document.getElementById("bandTile"+index);
-      let outputs=div.querySelectorAll("output");
-      outputs.forEach((op) => {op.id=bandsArr[newIndex]+"__"+(op.id).split("__")[1]});
-     });
-  }
-  
-	  
-  function updateBandTile(band){
-       
+    
+    indexArr.forEach((bandIndex,index) =>{
+       band=bandsArr[bandIndex];
        let nSpotsH2H=0;
        let nSpotsH2DX=0;
        let nSpotsDX2H=0;
        let txCalls=new Set;
        let rxCalls=new Set;
    
-       let bandTileDocEl=document.getElementById(band+"__title-modeLink");
+       let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
    
-   //    console.log("Update Band Tile "+band);
-       // update first row of the band tile
        let htmlTmp=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
        if(detailsWanted!="BandTileLegend") {
          htmlTmp+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
@@ -629,7 +639,9 @@ a:visited {color: blue;}
          });
         if(modesHTML.length>0) {modesHTML="<br>+ "+modesHTML};
         bandTileDocEl.innerHTML+=modesHTML;
-        
+      
+     });
+      
   }
  
   function showBandDetails(){
