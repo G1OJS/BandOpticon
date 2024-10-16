@@ -93,7 +93,7 @@ a:visited {color: blue;}
 
  // initialisation and functions to load and save configuration
  
-  const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
+  var bandsArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
@@ -136,23 +136,34 @@ a:visited {color: blue;}
 
   connectToFeed();
 
-  // Write the <div>s for each band summary tile in the bandsGrid area
-  var toAdd = document.createDocumentFragment();
-  for(let i=0; i < bandsArr.length; i++){
-    var newDiv = document.createElement('div');  
-    newDiv.id="bandTile"+i;
-    newDiv.innerHTML=""
-      +"<output id='"+bandsArr[i]+"__title-modeLink'>"+bandsArr[i]+"</output></a>"
-      +"<output id='"+bandsArr[i]+"__spots'></output><br>"
-      +"<output id='"+bandsArr[i]+"__calls'></output><br>"
-      +"<output id='"+bandsArr[i]+"__modes' style='font-size:0.7rem'></output>";
-    toAdd.appendChild(newDiv);
-  }
-  document.getElementById('bandsGrid').appendChild(toAdd);
-
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
+
+  function writeBandTilesHTML(){
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandsArr=Array.from(bandsHeard);
+    var element = document.getElementById("bandsGrid"); 
+    while (element.firstChild) { 
+      element.firstChild.remove(); 
+    }
+   
+  // Write the <div>s for each band summary tile in the bandsGrid area
+    var toAdd = document.createDocumentFragment();
+    for(let i=0; i < bandsArr.length; i++){
+      var newDiv = document.createElement('div');  
+      newDiv.id="bandTile"+i;
+      newDiv.innerHTML=""
+        +"<output id='"+bandsArr[i]+"__title-modeLink'>"+bandsArr[i]+"</output></a>"
+        +"<output id='"+bandsArr[i]+"__spots'></output><br>"
+        +"<output id='"+bandsArr[i]+"__calls'></output><br>"
+        +"<output id='"+bandsArr[i]+"__modes' style='font-size:0.7rem'></output>";
+      toAdd.appendChild(newDiv);
+    }
+    document.getElementById('bandsGrid').appendChild(toAdd);
+  }
+
 
   // ++++++ MQTT functions +++++++++++++
   
@@ -167,8 +178,6 @@ a:visited {color: blue;}
     mqttClient.onSuccess=subscribe();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
-  
-
   
   function subscribe(){
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
@@ -206,7 +215,7 @@ a:visited {color: blue;}
          });
     messagesReceived+=1;
 
-    if(bandsArr.indexOf(conn.b)<0) {return} // don't process bands we aren't watching
+ //   if(bandsArr.indexOf(conn.b)<0) {return} // don't process bands we aren't watching
 	  
     // now swap keys to: 
     // sq:sequence, t:time, b:band, md:mode, dd:direction = hh,hd or dh
@@ -494,6 +503,7 @@ a:visited {color: blue;}
  //     console.log("Update Displays");
       purgeSpots();
       updateappTop();
+      writeBandTilesHTML();
       dataForRecord="Mode="+watchedMode+", ";
       sortBandTiles();
 //      console.log("Update Band Tiles");
@@ -502,14 +512,9 @@ a:visited {color: blue;}
         showBandDetails();
         resizeGridColumns();
       }
-      showBandsHeard();
   }
 
-  function showBandsHeard(){
-    var bandsHeard=new Set();
-    for (id in connections) {bandsHeard.add(connections[id].b)}
-    console.log(Array.from(bandsHeard).toSorted()).
-  }
+ 
   
   function resizeGridColumns(){
   
