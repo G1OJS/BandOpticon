@@ -656,8 +656,9 @@ a:visited {color: blue;}
        if((txCalls.size+rxCalls.size)>0){bandTileDocEl.className='active'}
       
        if(detailsWanted=="BandDetails" && band==detailsBand) {
+        console.log(txCalls.size);
         showBandDetails(txCalls,rxCalls,txRxCalls);
-      }
+       }
       
       
      });
@@ -693,17 +694,17 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
 	  
        // all except myCall:
+               console.log(txCalls.size);
        let othersTxHTML=getBandDetailsRowHTML(txCalls,"Tx","othersTx");
        let othersRxHTML=getBandDetailsRowHTML(rxCalls,"Rx","othersRx");
        let othersTxRxHTML=getBandDetailsRowHTML(txRxCalls,"TxRx","othersTxRx");
+       detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
        
        // just myCall
    //    let myCallTxHTML=getBandDetailsRowHTML("Tx","myCallTx");
    //    let myCallRxHTML=getBandDetailsRowHTML("Rx","myCallRx");
    //    let myCallTxRxHTML=getBandDetailsRowHTML("TxRx","myCallTxRx");   
-      
-       detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
-         +myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
+   //    detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
 
@@ -732,6 +733,8 @@ function getBandDetailsRowHTML(homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
+  
+  console.log(homeCalls.size);
   
   let localConnectedEntities=new Set;
   let nonlocalConnectedEntities=new Set;
