@@ -132,7 +132,6 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - option to edit bands list
   - benchmark against a specific callsign?
   - miniature map grid in each row? Larger single map with colour-coded squares?
   - switch to https://www.brailleinstitute.org/freefont/
@@ -140,6 +139,7 @@ To do:
   
 Code tidying:
   - is there a better way to do the highlighting?
+  - is there a better way to count for statistics?
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
