@@ -692,18 +692,18 @@ a:visited {color: blue;}
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
 	  
-        let justMyCall=new Set().add(myCall);
+        let setMyCall=new Set().add(myCall);
            
        // all except myCall:
-       let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(justMyCall),"Tx","othersTx");
-       let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(justMyCall),"Rx","othersRx");
-       let othersTxRxHTML=getBandDetailsGridHTML(txRxCalls.difference(justMyCall),"TxRx","othersTxRx");
+       let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
+       let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
+       let othersTxRxHTML=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
        
        // just myCall
-       let myCallTxHTML=getBandDetailsGridHTML(txCalls.intersection(justMyCall),"Tx","myCallTx");
-       let myCallRxHTML=getBandDetailsGridHTML(rxCalls.intersection(justMyCall),"Rx","myCallRx");
-       let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(justMyCall),"TxRx","myCallTxRx");   
+       let myCallTxHTML=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
+       let myCallRxHTML=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
