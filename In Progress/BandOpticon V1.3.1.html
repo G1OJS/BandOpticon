@@ -699,9 +699,7 @@ a:visited {color: blue;}
        detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
        
        // just myCall
-       let justMyCall=new Set(myCall);
-       console.log(justMyCall);
-       console.log(rxCalls.intersection(justMyCall));
+       let justMyCall=new Set().add(myCall);
        let myCallTxHTML=getBandDetailsRowHTML(txCalls.intersection(justMyCall),"Tx","myCallTx");
        let myCallRxHTML=getBandDetailsRowHTML(rxCalls.intersection(justMyCall),"Rx","myCallRx");
        let myCallTxRxHTML=getBandDetailsRowHTML(txRxCalls.intersection(justMyCall),"TxRx","myCallTxRx");   
