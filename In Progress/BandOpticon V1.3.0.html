@@ -30,6 +30,7 @@ div {margin: 0px;  padding: 0px;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
 .hidden {display: none;}
+.extraModes {fons-size:0.7rem;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
@@ -159,6 +160,11 @@ a:visited {color: blue;}
       newDiv.id="bandTileDiv_"+index;
       bandTileDivs.appendChild(newDiv);
     });
+    let nfillerDivs=5-(bandsArr.length) %5;
+    for (let i=0;i<nfillerDivs;i++){
+      var newDiv = document.createElement('div');  
+      bandTileDivs.appendChild(newDiv);
+    }
     bandsGridDocEl.appendChild(bandTileDivs);
   }
 
@@ -645,11 +651,11 @@ a:visited {color: blue;}
         Array.from(otherModesOnThisBand).forEach((md) =>{
           modesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+md+"</a> ";
          });
-        if(modesHTML.length>0) {modesHTML="<br>+ "+modesHTML};
+        if(modesHTML.length>0) {modesHTML="<br><span class='extraModes'>+ "+modesHTML+"</span>"};
         bandTileDocEl.innerHTML+=modesHTML;
         
        // change class of band tile to active if there is activity
-       if((txCalls.size+rxCalls.size)>0){bandTileDocEl.class='active'}
+       if((txCalls.size+rxCalls.size)>0){bandTileDocEl.className='active'}
       
      });
       
