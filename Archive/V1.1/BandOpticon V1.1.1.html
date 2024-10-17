@@ -26,6 +26,7 @@ div {margin: 0px;  padding: 0px;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
 #bandsGrid > div.active	{background-color:white}
+#pleaseWait {text-align: center; font-size: 3rem; background-color:grey}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
@@ -60,6 +61,9 @@ a:visited {color: blue;}
    <div id="details_group">
      <div id="detailsTop"></div>
      <div id="detailsGrid"></div>
+   </div>
+   <div id="pleaseWait">
+    Please Wait for the Band Tiles to Load
    </div>
    <div id="bandsGrid"></div>
 </div>
@@ -145,35 +149,9 @@ a:visited {color: blue;}
   
   }
   
-
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
-
-  function writeBandTilesDivs(){
-  
-    // Write the <div>s for each band summary tile in the bandsGrid area
-    var bandsHeard=new Set();
-    for (id in connections) {bandsHeard.add(connections[id].b)}
-    bandsArr=Array.from(bandsHeard);
-
-    var bandsGridDocEl = document.getElementById("bandsGrid"); 
-    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
-    
-    var bandTileDivs = document.createDocumentFragment();
-    bandsArr.forEach((band,index) => {
-      var newDiv = document.createElement('div');  
-      newDiv.id="bandTileDiv_"+index;
-      bandTileDivs.appendChild(newDiv);
-    });
-    let nfillerDivs=4-(bandsArr.length-1) %5;
-    for (let i=0;i<nfillerDivs;i++){
-      var newDiv = document.createElement('div');  
-      bandTileDivs.appendChild(newDiv);
-    }
-    bandsGridDocEl.appendChild(bandTileDivs);
-  }
-
 
   // ++++++ MQTT functions +++++++++++++
   
@@ -281,12 +259,10 @@ a:visited {color: blue;}
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
       +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
       +"<span class='textAnchorButton'>+ Other modes in use on this band</span>"
-      +"</div>"
-;
+      +"</div>";
 
       detailsGrid.innerHTML="";
       detailsTop.innerHTML="";
-  
   }
 
   // function to write HTML to the appTop box
@@ -491,10 +467,10 @@ a:visited {color: blue;}
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
       writeBandTilesDivs();
+      document.getElementById('pleaseWait').innerHTML="";
       updateBandTiles();
   }
 
-  
   function resizeGridColumns(){
   
     // find the largest counts of characters in the LH and RH columns
@@ -509,7 +485,7 @@ a:visited {color: blue;}
       if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
         Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
         Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
-		}
+		  }
       let centreColumnNominalChars=7;
       let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
@@ -525,6 +501,31 @@ a:visited {color: blue;}
    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
+ 
+ function writeBandTilesDivs(){
+  
+    // Write the <div>s for each band summary tile in the bandsGrid area
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandsArr=Array.from(bandsHeard);
+
+    var bandsGridDocEl = document.getElementById("bandsGrid"); 
+    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
+    
+    var bandTileDivs = document.createDocumentFragment();
+    bandsArr.forEach((band,index) => {
+      var newDiv = document.createElement('div');  
+      newDiv.id="bandTileDiv_"+index;
+      bandTileDivs.appendChild(newDiv);
+    });
+    let nfillerDivs=4-(bandsArr.length-1) %5;
+    for (let i=0;i<nfillerDivs;i++){
+      var newDiv = document.createElement('div');  
+      bandTileDivs.appendChild(newDiv);
+    }
+    bandsGridDocEl.appendChild(bandTileDivs);
+  }
+
  
     
   function updateBandTiles(){
@@ -593,7 +594,7 @@ a:visited {color: blue;}
        if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
        if((bandsData[bandIndex][3]+bandsData[bandIndex][4])>0){bandTileDocEl.className='active'}
-       if (band==detailsBand){
+       if (detailsWanted=="BandDetails" && band==detailsBand){
          detailsTop.innerHTML="<div><strong>"+band+" "+watchedMode+" Band Activity Details</strong>"
            +"<br>Total "+document.getElementById(band+"__spots").innerHTML+"<br>"+spotsLegend+"<br></div><div>";
        }
