@@ -743,8 +743,8 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix,hlClass
       });
       // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
       let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
-      farEntities_othersTxt.forEach(entity => {
-	    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class=\&quot;HighlightNeg\&quot;>"+entity+"</span>",entity);
+      farEntities_othersTxt.forEach(entity => {      
+      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('<span class="HighlightNeg">'+entity+'</span>',entity);
       farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,hlClass));
       });
     }
