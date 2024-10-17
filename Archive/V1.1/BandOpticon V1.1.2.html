@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.1.1</title>
+<title>BandOpticon V1.1.2</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -716,7 +716,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
     if(otherRowClassPrefix==""){ // no class in second argument means "prehighlight" (Neg) my call entities
       farEntities_meTxt.forEach(entity => {      
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightNeg");
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
       });
     } else {
       // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
