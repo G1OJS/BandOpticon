@@ -643,9 +643,14 @@ a:visited {color: blue;}
        highlightAll("myCallRx");
        highlightAll("myCallTx");
        highlightAll("myCallTxRx"); 	 
-       highlightEntitiesList("myCallRx","othersRx");
-       highlightEntitiesList("myCallTx","othersTx");  
-       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+   //    highlightEntitiesList("myCallRx","myCallRx","HL2");
+   //    highlightEntitiesList("myCallTx","myCallTx","HL2");  
+   //    highlightEntitiesList("myCallTxRx","myCallTxRx","HL2"); 
+   
+   
+       highlightEntitiesList("myCallRx","othersRx","HL1");
+       highlightEntitiesList("myCallTx","othersTx","HL1");  
+       highlightEntitiesList("myCallTxRx","othersTxRx","HL1"); 
      
        resizeGridColumns();
 }	
@@ -722,7 +727,7 @@ function highlightAll(myCallrowClassPrefix){
 }
 
 
-function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix,hlClass){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
@@ -734,13 +739,13 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
     for (let i=0;i<farEntities_others.length;i++){
       // highlight the matches in the other call's far entities
       farEntities_meTxt.forEach(entity => {
-        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true,hlClass));
       });
       // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
       let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
       farEntities_othersTxt.forEach(entity => {
-	farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class='HighlightNeg'>"+entity+"</span>",entity);
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
+	    farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class=\&quot;HighlightNeg\&quot;>"+entity+"</span>",entity);
+      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,hlClass));
       });
     }
   }
