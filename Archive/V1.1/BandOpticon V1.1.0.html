@@ -225,35 +225,15 @@ a:visited {color: blue;}
          });
     messagesReceived+=1;
 	  
-    // now swap keys to: 
-    // sq:sequence, t:time, b:band, md:mode plus
-    // homeCall, homeLoc, connectedCall, connectedLoc, homeType (tx/rx), connectedDomain (home/dx)
-   if(squareIsInHome(conn.sl)){
-      conn["homeCall"]=conn.sc.toUpperCase();
-      conn["homeLoc"]=conn.sl.toUpperCase();
-      conn["connectedCall"]=conn.rc.toUpperCase();
-      conn["connectedLoc"]=conn.rl.toUpperCase();
-      conn["homeType"]="tx";     
-    } else {
-      conn["homeCall"]=conn.rc.toUpperCase();
-      conn["homeLoc"]=conn.rl.toUpperCase();
-      conn["connectedCall"]=conn.sc.toUpperCase();
-      conn["connectedLoc"]=conn.sl.toUpperCase();
-      conn["homeType"]="rx";
-    }
-    if(squareIsInHome(conn.connectedLoc.toUpperCase())) {
-      conn["connectedDomain"]="home"
-    } else {
-      conn["connectedDomain"]="dx"
-    }
-
-    delete conn["sc"]; delete conn["sl"]; delete conn["sa"];
-    delete conn["rc"]; delete conn["rl"]; delete conn["ra"];
-    delete conn["f"]; delete conn["rp"];
+    // add sender and receiver domain (home/dx)
+    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
+    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
     
     // now add this connection to the connections object using sequence ID as key:
-    connections[conn.sq]=conn;
-    connectionsAdded+=1;
+    if(conn.rd=="home" || conn.sd=="home") {
+      connections[conn.sq]=conn
+      connectionsAdded+=1;
+    }
   }
   
    function purgeSpots(){
@@ -571,8 +551,11 @@ a:visited {color: blue;}
         console.log(bandTilesSortKey);
         if (bandTilesSortKey.search("H")>=0){ 
           for (id in connections) {
-            if (connections[id].b==band && connections[id].md==watchedMode) {
-              if(connections[id].dd==bandTilesSortKey.slice(1).toLowerCase()) {nCount+=1}
+            let c=connections[id];
+            if (c.b==band && c.md==watchedMode) {
+              if(bandTilesSortKey=="HH" && (c.sd=="home") && (c.rd=="home")) {nCount+=1}
+              if(bandTilesSortKey=="HD" && (c.sd=="home") && (c.rd=="dx")) {nCount+=1}
+              if(bandTilesSortKey=="DH" && (c.sd=="dx") && (c.rd=="home")) {nCount+=1}
             }
           }
           criteria.push(nCount); 
@@ -580,8 +563,9 @@ a:visited {color: blue;}
           let txCalls=new Set;
           let rxCalls=new Set;
           for (id in connections) {
-            if (connections[id].b==band && connections[id].md==watchedMode) {
-              if(connections[id].ht=="tx"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
+            let c=connections[id];
+            if (c.b==band && c.md==watchedMode) {
+              if(c.ht=="tx"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
             }
           }
           if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
@@ -618,20 +602,13 @@ a:visited {color: blue;}
        let txCalls=new Set;
        let rxCalls=new Set;
        for (id in connections) {
-         if (connections[id].b==band && connections[id].md==watchedMode) {
-         
-           if(connections[id].homeType=="tx") {
-             txCalls.add(connections[id].homeCall)
-             if(connections[id].connectedDomain=="home") {rxCalls.add(connections[id].connectedCall)} 
-           } else {
-             rxCalls.add(connections[id].homeCall)
-             if(connections[id].connectedDomain=="home") {txCalls.add(connections[id].connectedCall)} 
-           }
-           
-           if(connections[id].connectedDomain=="home") {nSpotsHH+=1}
-           if(connections[id].connectedDomain=="dx") {
-             if(connections[id].homeType=="tx") {nSpotsHD+=1;} else {nSpotsDH+=1;}
-           }
+         let c=connections[id];
+         if (c.b==band && c.md==watchedMode) {
+           if(c.sd=="home") {txCalls.add(c.sc)}
+           if(c.rd=="home") {rxCalls.add(c.rc)}
+           if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
+           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
+           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
          }
        }
        let txRxCalls=txCalls.intersection(rxCalls)
@@ -648,15 +625,14 @@ a:visited {color: blue;}
          +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+rxCalls.size+"</span></a><br>"
          +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+txRxCalls.size+"</span></a>";
 
-
-
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
         let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
         let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
         for (id in connections) {
-          if(connections[id].b==band) {
-            if(connections[id].md!=watchedMode) {otherModesOnThisBand.add(connections[id].md)};
-            globalModes.add(connections[id].md);
+          let c=connections[id];
+          if(c.b==band) {
+            if(c.md!=watchedMode) {otherModesOnThisBand.add(c.md)};
+            globalModes.add(c.md);
           }
         }
         modesArr=Array.from(globalModes);
@@ -734,10 +710,8 @@ a:visited {color: blue;}
 	  
        highlightEntitiesList("myCallRx","othersRx");
        highlightEntitiesList("myCallRx","othersTxRx");
-
        highlightEntitiesList("myCallTx","othersTx"); 
        highlightEntitiesList("myCallTx","othersTxRx"); 
-
        highlightEntitiesList("myCallTxRx","othersTxRx"); 
      
        resizeGridColumns();
@@ -756,15 +730,16 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   
-  let homeCallsArr=Array.from(homeCalls)
+  let homeCallsArr=Array.from(homeCalls);
   homeCallsArr.forEach((homeCall) => {
     let localConnectedEntities=new Set;
     let nonlocalConnectedEntities=new Set;
     for (id in connections) {
-      if (connections[id].b==detailsBand && connections[id].md==watchedMode) {
-        if (connections[id].homeCall==homeCall) {
-          let farEntity=getEntity(connections[id].connectedCall,connections[id].connectedLoc);
-          if(squareIsInHome(connections[id].connectedLoc)) {
+      let c=connections[id];
+      if (c.b==detailsBand && c.md==watchedMode) {
+        if (TxRx=="Tx" && c.sc==homeCall) {
+          let farEntity=getEntity(c.rc,c.rl);
+          if(c.rd=="home"){
             localConnectedEntities.add(farEntity);
             localConnectedEntitiesGrouped.add(farEntity);
           } else {
@@ -772,14 +747,17 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
             nonlocalConnectedEntitiesGrouped.add(farEntity);
           }
         }
-        // also look for home-home connections where the specified home call is listed as the far entity in the connections list
-        if (connections[id].connectedCall==homeCall) {
-          let farEntity=getEntity(connections[id].homeCall,connections[id].homeLoc);
-          if(squareIsInHome(connections[id].connectedLoc)) {
+        if (TxRx=="Rx" && c.rc==homeCall) {
+          let farEntity=getEntity(c.sc,c.sl);
+          if(c.sd=="home"){
             localConnectedEntities.add(farEntity);
             localConnectedEntitiesGrouped.add(farEntity);
-          } 
+          } else {
+            nonlocalConnectedEntities.add(farEntity);
+            nonlocalConnectedEntitiesGrouped.add(farEntity);
+          }
         }
+        
       }
     }
     if (!groupHomeEntities){
