@@ -540,8 +540,11 @@ a:visited {color: blue;}
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
+      let bandModes=new Set;
+
       for (id in connections) {
         let c=connections[id];
+        if (c.b==band) {bandModes.add(c.md);}
         if (c.b==band && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
@@ -551,11 +554,15 @@ a:visited {color: blue;}
         }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      bandsData.push([band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size]);
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes.difference(new Set(watchedMode)))]
+      bandsData.push(bandData);    
+      dataForRecord+=bandData; // save the stats from above to the recording string
+      modesArr=Array.from(bandModes.union(new Set(modesArr)));
+      // if we hit the detailsBand, call showBandDetails
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls);}
-    });
 
-  
+    });
+    
     // get the band tile sort order
     bandsArr.forEach((band,index) => {
       indexArr.push(index);
@@ -572,16 +579,13 @@ a:visited {color: blue;}
     // populate the band tile HTML in the sorted order
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
-
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
-   
        let htmlTmp=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
        if(detailsWanted!="BandTileLegend") {
          htmlTmp+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
-       }
+       }   
        bandTileDocEl.innerHTML=htmlTmp+"<br>";       
-       // save the stats from above to the recording string
-       dataForRecord+=band+bandsData[bandIndex];
+
        
        // write the counts for this band's band tile
        bandTileDocEl.innerHTML+="<span id='"+band+"__spots'>Spots "
@@ -591,6 +595,12 @@ a:visited {color: blue;}
          +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsData[bandIndex][4]+"</span></a><br>"
          +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsData[bandIndex][5]+"</span></a><br>"
          +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsData[bandIndex][6]+"</span></a>";
+       
+       let extraModesHTML=""; 
+       bandsData[bandIndex][7].forEach((md) =>{
+         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
+       });
+       if(extraModesHTML.length>0){bandTileDocEl.innterHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
         
        // change class of band tile to active if there is activity
        if((bandsData[bandIndex][3]+bandsData[bandIndex][4])>0){bandTileDocEl.className='active'}
@@ -599,26 +609,6 @@ a:visited {color: blue;}
          detailsTop.innerHTML="<div><strong>"+band+" "+watchedMode+" Band Activity Details</strong>"
            +"<br>Total "+document.getElementById(band+"__spots").innerHTML+"<br>"+spotsLegend+"<br></div><div>";
        }
-         
-       // move this into the counting loop at the top?
-       // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
-        let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
-        let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
-        for (id in connections) {
-          let c=connections[id];
-          if(c.b==band) {
-            if(c.md!=watchedMode) {otherModesOnThisBand.add(c.md)};
-            globalModes.add(c.md);
-          }
-        }
-        modesArr=Array.from(globalModes);
-        let modesHTML="";
-        Array.from(otherModesOnThisBand).forEach((md) =>{
-          modesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
-         });
-        if(modesHTML.length>0) {modesHTML="<br><span class='extraModes'>+ "+modesHTML+"</span>"};
-        bandTileDocEl.innerHTML+=modesHTML;
-
        
      });
   }
