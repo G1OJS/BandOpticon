@@ -739,7 +739,7 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
       for (id in connections) {
         let c=connections[id];
         if (c.b==detailsBand && c.md==watchedMode && c.rc==homeCall && far.has(c.sc)) {
-          let farEntity=getEntityHTML(c.sd,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");
+          let farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");
           farEntities.add(farEntity);
           farEntitiesGrouped.add(farEntity);
         }
