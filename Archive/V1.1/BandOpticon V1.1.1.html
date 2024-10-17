@@ -555,7 +555,7 @@ a:visited {color: blue;}
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandExtraModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes);
+      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
