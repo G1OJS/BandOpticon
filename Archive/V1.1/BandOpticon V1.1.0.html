@@ -548,14 +548,13 @@ a:visited {color: blue;}
         criteria.push(wavelengthMetres);
       } else {
         let nCount=0; 
-        console.log(bandTilesSortKey);
         if (bandTilesSortKey.search("H")>=0){ 
           for (id in connections) {
             let c=connections[id];
             if (c.b==band && c.md==watchedMode) {
-              if(bandTilesSortKey=="HH" && (c.sd=="home") && (c.rd=="home")) {nCount+=1}
-              if(bandTilesSortKey=="HD" && (c.sd=="home") && (c.rd=="dx")) {nCount+=1}
-              if(bandTilesSortKey=="DH" && (c.sd=="dx") && (c.rd=="home")) {nCount+=1}
+              if(bandTilesSortKey=="nHH" && (c.sd=="home") && (c.rd=="home")) {nCount+=1}
+              if(bandTilesSortKey=="nHD" && (c.sd=="home") && (c.rd=="dx")) {nCount+=1}
+              if(bandTilesSortKey=="nDH" && (c.sd=="dx") && (c.rd=="home")) {nCount+=1}
             }
           }
           criteria.push(nCount); 
@@ -565,7 +564,8 @@ a:visited {color: blue;}
           for (id in connections) {
             let c=connections[id];
             if (c.b==band && c.md==watchedMode) {
-              if(c.ht=="tx"){txCalls.add(connections[id].hc)} else {rxCalls.add(connections[id].hc)}
+              if(c.sd=="home"){txCalls.add(c.sc)}
+              if(c.rd=="home"){rxCalls.add(c.rc)}
             }
           }
           if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
@@ -574,7 +574,7 @@ a:visited {color: blue;}
         }
       }
     });
-
+    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
     
     return indexArr;
