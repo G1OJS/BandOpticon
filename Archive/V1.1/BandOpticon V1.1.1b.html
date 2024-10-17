@@ -675,14 +675,17 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
     let farEntities=new Set;
     for (id in connections) {
       let c=connections[id];
+      let farEntity="";
       if (c.b==detailsBand && c.md==watchedMode) {
-        if (TxRx=="Tx" && c.sc==homeCall) {let farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
-        if (TxRx=="Rx" && c.rc==homeCall) {let farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
+        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
         if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
-                                           let farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+                                           farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
       }
-      farEntities.add(farEntity);
-      farEntitiesGrouped.add(farEntity);
+      if(farEntity!=""){
+        farEntityfarEntities.add(farEntity);
+        farEntitiesGrouped.add(farEntity);
+      }
     }
     if (!groupHomeEntities){gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"
         +Array.from(farEntities).toSorted().join(', ')+"</div>";}
