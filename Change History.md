@@ -91,6 +91,7 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - trigger band details refresh if changing myCall
+  - look at startup - make faster / cleaner / add reassurance
   - make the test message injector work!
   - benchmark against a specific callsign?
   - miniature map grid in each row? Larger single map with colour-coded squares?
