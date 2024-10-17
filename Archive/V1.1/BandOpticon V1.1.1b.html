@@ -639,15 +639,11 @@ a:visited {color: blue;}
        let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
-       // do the highlighting
-       highlightAll("myCallRx");
-       highlightAll("myCallTx");
-       highlightAll("myCallTxRx"); 	 
-   //    highlightEntitiesList("myCallRx","myCallRx","HighlightNeg");
-   //    highlightEntitiesList("myCallTx","myCallTx","HighlightNeg");  
-   //    highlightEntitiesList("myCallTxRx","myCallTxRx","HighlightNeg"); 
-   
-   
+       // "prehighlight" all myCall far entities with Neg highlightinh	 
+       highlightEntitiesList("myCallRx","");
+       highlightEntitiesList("myCallTx","");  
+       highlightEntitiesList("myCallTxRx",""); 
+       // do the highlighting 	
        highlightEntitiesList("myCallRx","othersRx","HighlightPos");
        highlightEntitiesList("myCallTx","othersTx","HighlightPos");  
        highlightEntitiesList("myCallTxRx","othersTxRx","HighlightPos"); 
@@ -710,23 +706,6 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
     if(entityDisplayType=="CallSquare"){return "<span class='"+clss+"'>"+call+"-"+square.substring(0,squaresDisplayLevel)+"</span>";} 
   }
 
-
-function highlightAll(myCallrowClassPrefix){
-  // pre-highlight all myCall entries in 'only me' colours HighlightNeg
-  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-  if (farEntities_me[0]!=undefined){
-    // plain text version of far entities to highlight
-    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    // loop through the farEntities in my list, modifying the innerHTML
-    for (let i=0;i<farEntities_me.length;i++){
-      farEntities_meTxt.forEach(entity => {
-        farEntities_me[i].innerHTML=farEntities_me[i].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
-      });
-    }
-  }
-}
-
-
 function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
@@ -735,17 +714,23 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
   if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
     // plain text version of far entities to look for in other call's far entities
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
-    for (let i=0;i<farEntities_others.length;i++){
-      // highlight the matches in the other call's far entities
-      farEntities_meTxt.forEach(entity => {
-        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+    if(otherRowClassPrefix==""){ // no class in second argument means "prehighlight" (Neg) my call entities
+      farEntities_meTxt.forEach(entity => {      
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightNeg");
       });
-      // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
-      let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
-      farEntities_othersTxt.forEach(entity => {      
-      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('Neg">'+entity,'Pos">'+entity);
-      });
+    } else {
+      // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+      for (let i=0;i<farEntities_others.length;i++){
+        // highlight the matches in the other call's far entities
+        farEntities_meTxt.forEach(entity => {
+          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+        });
+        // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (Neg) to highlighting (pos)
+        let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+        farEntities_othersTxt.forEach(entity => {      
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('Neg">'+entity,'Pos">'+entity);
+        });
+      }
     }
   }
 }
