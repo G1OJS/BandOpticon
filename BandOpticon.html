@@ -1,43 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.0.4</title>
+<title>BandOpticon V1.1.0</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-	
+
 <style>
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
-#controls {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
-#controls > div {background-color: white; margin: 2px;  padding: 5px;}
+#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
+#appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#appTop > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop {display: grid; grid-template-columns: 1fr 100px; grid-template-rows: auto;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; }
+#detailsTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-color:grey; border-width:1px; }
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
+#bandsGrid > div.active	{background-color:white}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
-.transmit {color:red;}
-.receive {color:green; }
-.twoWay {color:blue; font-style:italic;}
-.twoWay-other {color:grey; font-style:italic;}
-.intraHome {color:blue; }
-.outgoing {color:Fuchsia; }
-.incoming {color:olive;}
-.HL1 {background-color:#d1d1e0;}
-.HL2 {background-color:#ffff66;}
-a:link {color: blue; font-weight:normal;}
-a:visited {color: blue; font-weight:normal;}
+.hidden {display: none;}
+.extraModes {font-size:0.7rem;}
+.Tx {color:red;}
+.Rx {color:green; }
+.TxRx {color:blue; font-style:italic;}
+.IntraHome_farEnd {color:blue; }
+.Tx_farEnd {color:Fuchsia; }
+.Rx_farEnd {color:olive;}
+.TxRx_farEnd {color:blue; font-style:italic;}
+.HighlightPos {background-color:#d1d1e0;}
+.HighlightNeg {background-color:#ffff66;}
+//.HighlightNeg {text-decoration:underline;}
+.textAnchorButton {color: blue; }
+.textAnchorButton-strong {color: blue; font-weight:bold;}
+a:link {color: blue;}
+a:visited {color: blue;}
 </style>
 </head>
 <body>
@@ -45,9 +52,9 @@ a:visited {color: blue; font-weight:normal;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
  
 <div id="app_group">
-   <div id="controls">
-      <div id="controls_l"></div>
-      <div id="controls_r"></div>
+   <div id="appTop">
+      <div id="appTop_l"></div>
+      <div id="appTop_r"></div>
    </div>
    <div id="legend"></div>
    <div id="details_group">
@@ -89,71 +96,88 @@ a:visited {color: blue; font-weight:normal;}
 
  // initialisation and functions to load and save configuration
  
-  const bandsArr=["160m","80m","60m","40m","30m","20m","17m","15m","12m","10m","6m","4m","2m","70cm","23cm"];
-  let refresh_mSeconds=1000;
-  var mqttClient=null;
-  let purgeMinutes=15;
-  let detailsWanted="BandTileLegend";
-  let iDetailsBandIndex=0;
-  let tStart=Date.now(); // software start time
-  var squaresList="";
+  var bandsArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
-  var entityDisplayType="Square";
+  var squaresList=""; // the human-firendly list of squares to watch
+  var watchedMode="FT8";
+  var modesArr=["FT4","FT8","JS8","WSPR","CW"];
+  var detailsBand=bandsArr[0];
+  var bandTilesSortKey="BandName";
+  var refresh_mSeconds=5000;
+  var purgeMinutes=15;
+  var detailsWanted="BandTileLegend";
+  var entityDisplayType="Call";
   var squaresDisplayLevel=4;
-  var groupHomeCalls=true;
+  var groupHomeEntities=true;
   let myCall="G1OJS";
-  var Mode="FT8"; // better as myMode mainMode?
-  var Modes=new Set(["FT4","FT8","JS8","WSPR","CW"]); // OK as capital plural to indicate set?
-  var modeSetByBandArr=new Array();
-  var spotsArr=[];
-  var spotsAdded=0;
-  var spotsPurged=0;
-  var messagesReceived=0;
-  var messagesProcessed=0;
+  var mqttClient=null;	
+  var tStart=Date.now(); // software start time
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  const spotsLegend="<span class='intraHome'> Home "+RIGHTARROW+" Home /</span>"
-         + "<span class='outgoing'> Home "+RIGHTARROW+" DX /</span>"
-         + "<span class='incoming'> DX "+RIGHTARROW+" Home</span>"
+  const spotsLegend="<span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home /</span>"
+         + "<span class='Tx_farEnd'> Home "+RIGHTARROW+" DX /</span>"
+         + "<span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
+  var connections = {};
+  var reciprocals=new Set;
+  var connectionsAdded=0;
+  var connectionsPurged=0;
+
+  var once=true;
 
   loadConfig();
-  updateDetails();
-  updateControls();
+  setDisplayConfig();
+  updateappTop();
 
-  // initialise an array of sets to gather modes used on each band
-  for (let i=0;i<bandsArr.length;i++){
-     modeSetByBandArr.push(new Set);
-  }
-
-  setInterval(writeStats, refresh_mSeconds);
+  setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
 
   connectToFeed();
-
-  // Write the <div>s for each band summary tile in the bandsGrid area
-  var toAdd = document.createDocumentFragment();
-  for(let i=0; i < bandsArr.length; i++){
-    var newDiv = document.createElement('div');
-    newDiv.id = bandsArr[i];     
-    newDiv.innerHTML=""
-      +"<output id='"+bandsArr[i]+"band'>"+bandsArr[i]+"</output></a>"
-      +"<output id='"+bandsArr[i]+"spots'></output><br>"
-      +"<output id='"+bandsArr[i]+"calls'></output><br>"
-      +"<output id='"+bandsArr[i]+"modes' style='font-size:0.7rem'></output>";
-    toAdd.appendChild(newDiv);
+//  connectToTestData();
+  
+  function connectToTestData(){
+//    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":1729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
+    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":1729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":40m');
+  
   }
-  document.getElementById('bandsGrid').appendChild(toAdd);
+  
 
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
-	
-  function connectToFeed(){
+
+  function writeBandTilesDivs(){
+  
+    // Write the <div>s for each band summary tile in the bandsGrid area
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandsArr=Array.from(bandsHeard);
+
+    var bandsGridDocEl = document.getElementById("bandsGrid"); 
+    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
+    
+    var bandTileDivs = document.createDocumentFragment();
+    bandsArr.forEach((band,index) => {
+      var newDiv = document.createElement('div');  
+      newDiv.id="bandTileDiv_"+index;
+      bandTileDivs.appendChild(newDiv);
+    });
+    let nfillerDivs=4-(bandsArr.length-1) %5;
+    for (let i=0;i<nfillerDivs;i++){
+      var newDiv = document.createElement('div');  
+      bandTileDivs.appendChild(newDiv);
+    }
+    bandsGridDocEl.appendChild(bandTileDivs);
+  }
+
+
+  // ++++++ MQTT functions +++++++++++++
+  
+   function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. 
     // Should also alert the user that this will happen and give chance not to edit the squares.
@@ -161,30 +185,177 @@ a:visited {color: blue; font-weight:normal;}
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribeSquares();
+    mqttClient.onSuccess=subscribe();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
   
-  function subscribeSquares(){
+  function subscribe(){
+    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     
     // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
     let subs=new Set;
     for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
     let subsArr=Array.from(subs);
-	  
-    // now do the subscribing
-    for(let i=0;i<subsArr.length;i++){
-      var error=null;
-      var topic='pskr/filter/v2/+/+/+/+/'+subsArr[i]+'/+/+/#';
+    
+    // now subscribe to the level 4 squares
+    subsArr.forEach((sq) => {
+      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-      topic='pskr/filter/v2/+/+/+/+/+/'+subsArr[i]+'/+/#';
+      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-    }
+    } );
+  }
   
+  function onMessage(msg){
+    // message format:
+    // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
+    // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
+    // first, build conn object for this msg using same keys as PSKR MQTT:
+    const conn={};
+    msg.slice(1, -1).replaceAll('"','').split(',')
+         .forEach(function(v) {
+           let kvp=v.split(":");
+           conn[kvp[0]]=kvp[1];
+         });
+	  
+    // add sender and receiver domain (home/dx)
+    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
+    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
+    
+    // now add this connection to the connections object using sequence ID as key:
+    if(conn.rd=="home" || conn.sd=="home") {
+      connections[conn.sq]=conn
+      connectionsAdded+=1;
+    }
+  }
+  
+   function purgeSpots(){
+   // get rid of spots older than purgeMinutes
+   // connectionsPurged+=1;
+     for (id in connections) {
+       let tConn=parseInt(connections[id].t);
+       let connAge=((Date.now()/1000-tConn))/60
+       if(connAge > purgeMinutes) {
+         delete connections[id];
+         connectionsPurged+=1;
+       }
+     }
+   }
+
+  function setDisplayConfig(newWant,band){
+
+    const allowed=["Nothing","BandTileLegend","BandDetails"];
+    if(!(typeof newWant==='undefined')) {
+      if(!allowed.includes(newWant)) {
+        console.log("Unknown detail type passed to setDisplayConfig: "+newWant);
+      } else {
+        detailsWanted=newWant; console.log("New details pane content requested: ",newWant,band);
+      }
+    }
+    
+    if(detailsWanted=="Nothing") {
+      legend.innerHTML="";
+      detailsGrid.innerHTML="";
+      detailsTop.innerHTML="";
+    }
+    
+    if(detailsWanted=="BandTileLegend"){showBandTileLegend()} 
+    
+    if(detailsWanted=="BandDetails"){
+      detailsBand=band;
+      updateDisplays();
+    } 
+    
+  }
+  
+  function showBandTileLegend(){
+    legend.innerHTML="<div>Band tile legend:"
+      +" <a class='textAnchorButton' href='#' onclick='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
+      +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
+      +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
+      +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
+      +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
+      +"<span class='textAnchorButton'>+ Other modes in use on this band</span>"
+      +"</div>"
+;
+
+      detailsGrid.innerHTML="";
+      detailsTop.innerHTML="";
+  
+  }
+
+  // function to write HTML to the appTop box
+  function updateappTop(){
+    var now = new Date;
+    var utc_timestamp=get_utc_timestamp(now);
+    var runningmins=Math.trunc(((now-tStart)/1000) / 60);
+    var modeSelector="";
+    modesArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
+    
+    appTop_l.innerHTML="<div><span id='clock'>"+utc_timestamp+"</span>"
+       +"<br><span class='notesText'>Running for "+runningmins+" minutes</span>"
+       +"<br><span class='notesText'>"+(connectionsAdded-connectionsPurged)+" connections in database: "
+       +"<br><span class='notesText'>"+connectionsAdded+" added, "+connectionsPurged+" purged<br></span>";
+
+    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+    appTop_r.innerHTML=""
+	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
+        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
+        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
+        +"Mode: "+modeSelector+"<br>"
+        +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>"
+        +"Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>"
+        +"<br><span>Click any underlined number to sort band tiles on that number</span>";
+        
+        let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
+        bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
+        document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
+        if(bandTilesSortKey!="BandName") {appTop_r.innerHTML+=" or <a href='#' onclick='setSort(&quot;BandName&quot;)'>reset to Band Name</a>"}
+  }
+  
+  function getEntity(call,square){
+    if(entityDisplayType=="Call"){return call;}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
+  }
+	  
+  function HL(item,pattern,hlClass1="HighlightPos",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightPos) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightNeg
+  if (item==", ") {return item} // don't highlight comma-spaces
+  if(item==pattern || pattern==true){
+        return "<span class="+hlClass1+">"+item+"</span>";
+    } else {
+	    if(hlClass2==""){
+	      return item;
+	    } else {
+	      return "<span class="+hlClass2+">"+item+"</span>";
+	    }
+    }
+  }
+  
+  function validSquaresListEntry(locator){
+    // if a valid level 4,6,8 or 10 square, return the level else return 0
+    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
+    if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
+    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
+    return 0;
+  }
+
+  function squareIsInHome(sq){
+    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
   }
 
   function parseSquares(sqsList){
@@ -220,9 +391,9 @@ a:visited {color: blue; font-weight:normal;}
 
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
-      htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
+    let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
     +"'Home' = "+squaresList
-    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home)]</strong><BR> ";
+    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)]</strong><BR> ";
   	  newWindow.document.write(htmlTmp);
   }
   
@@ -267,70 +438,15 @@ a:visited {color: blue; font-weight:normal;}
     }
   }
 
-  // function to write HTML to the details grid
-  function updateDetails(newWant,iDB){
-    if(!(typeof newWant==='undefined')) {
-      detailsWanted=newWant;console.log("New details pane content requested: ",newWant,iDB);
-      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
-    }
-    if(!(typeof iDB==='undefined')) {
-      iDetailsBandIndex=iDB;console.log("New details pane content requested: ",newWant,iDB);
-      // user clicked on "details" in a band tile whilst legend or 'nothing' showing
-      // user might not think to set the content type, so default it to calls and squares
-      if(detailsWanted=="Layout" || detailsWanted=="Nothing" ){detailsWanted="BandActivityDetails"}
-      console.log("details vars are: ",detailsWanted,iDetailsBandIndex);
-    }
-    
-    if(detailsWanted=="BandTileLegend"){
-      legend.innerHTML="<div>Band tile legend:"
-         +" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
-         +"<br><strong>Band & Mode</strong> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"+
-         "<span class='transmit'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"+
-         "<span class='receive'>Rx Calls: number of unique calls in 'Home' receiving anyone</span></div>";
-      detailsGrid.innerHTML="";
-      detailsTop.innerHTML="";
-    } 
-    
-    if(detailsWanted=="Nothing") {
-      legend.innerHTML="";
-      detailsGrid.innerHTML="";
-      detailsTop.innerHTML="";
-    }
-  }
-   
-  // function to write HTML to the Controls box
-  function updateControls(){
-    var now = new Date;
-    var utc_timestamp=get_utc_timestamp(now);
-    var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var modeSelector="";
-    for (let i=0; i<Modes.size;i++){
-      let md=Array.from(Modes)[i]
-      modeSelector+=" <a class='textAnchorButton' href='#' onclick='Mode=&quot;"+md+"&quot;'>"+md+"</a> "
-    }
-    
-    controls_l.innerHTML="<div><strong>"+utc_timestamp+"</strong>"
-       +"<br>Running for "+runningmins+" minutes<br>"
-       +spotsArr.length+" spots in database: "+spotsAdded+" added, "+spotsPurged+" purged<br>"
-       +messagesReceived+" messages received, "+messagesProcessed+" processed <br>";
-
-    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-    controls_r.innerHTML=""
-	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
-        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>"
-        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>"
-        +"Mode: "+modeSelector+"<br>"
-        +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>";
-  }
-
-  // needs validation code
+ 
+    // needs validation code
   function editMyCall(){
     var resp=prompt("Enter your callsign",myCall);
     if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
-    updateControls();
-    updateDetails();
+    updateappTop();
+    setDisplayConfig();
   }
   
   function editPurgeMins(){
@@ -340,7 +456,7 @@ a:visited {color: blue; font-weight:normal;}
       if(parseInt(resp)>0 && parseInt(resp)<60){
           purgeMinutes=parseInt(resp);
           localStorage.setItem('purgeMinutes',purgeMinutes);
-          updateControls();
+          updateappTop();
           return
       } else {alert("Please enter a number between 1 and 59")}
     } else  {alert("Please enter a number between 1 and 59")}
@@ -364,333 +480,353 @@ a:visited {color: blue; font-weight:normal;}
       console.log("Squares list updated to: "+resp);
       saveConfig();
       squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
-      updateControls();
-      spotsArr=[];
-      spotsAdded=0;
-      spotsPurged=0;
-      writeStats();
+      connections = {};
+      connectionsAdded=0;
+      connectionsPurged=0;
+      updateappTop();
+      updateDisplays();
       connectToFeed();
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
   }
-  
-  function onMessage(message){
-    // if either end of the spot is in home squares, and is in bands we're watching, 
-    // and on the mode we're watching, add this spot
-    // have a look at all modes first though as we want to see what's around
 
-    // message format example is {"sq": 30142870791,"f": 21074653,"md": "FT8","rp": -5,"t": 1662407712,"sc": "SP2EWQ","sl": "JO93fn42","rc": "CU3AT","rl": "HM68jp36","sa": 269,"ra": 149,"b": "15m"}
-    // squares are 4 to 10 level and seem always to be returned in uppercase but we make sure here:
-      let senderSq=getVal("sl",message).toUpperCase();
-      let receiverSq=getVal("rl",message).toUpperCase();
-      let b=getVal("b",message);
-      let md=getVal("md",message);
-      if(bandsArr.includes(b) && (squareIsInHome(senderSq) || squareIsInHome(receiverSq))){
-        Modes.add(md) // keeping track of all modes being used on all bands where at least one station is in Home
-        modeSetByBandArr[bandsArr.indexOf(b)].add(md);
-          let senderCall=getVal("sc",message);
-          let receiverCall=getVal("rc",message);
-          let tSpot=Date.now(); // working with time spot received not time spot generated
-          spotsArr.push([b,tSpot,senderCall,receiverCall,senderSq,receiverSq,md]);
-          spotsAdded+=1;
-          messagesProcessed+=1;
-      }
-      messagesReceived+=1;
-   }
-  
-  function purgeSpots(){
-     // get rid of spots older than purgeMinutes
-    var delArr=new Array();
-    for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-      var tSpot=spotsArr[iSpot][1];
-      if(((Date.now()-tSpot)/1000)/60 > purgeMinutes) {delArr.push(iSpot)}
-    }
-    for(let iDel=0; iDel <delArr.length;iDel++) {spotsArr.splice(delArr[iDel],1)}
-    spotsPurged+=delArr.length;
-  }
-  
-  function writeStats(){
+  function updateDisplays(){
       purgeSpots();
-      updateControls();
-      updateDetails();
-      dataForRecord="Mode="+Mode+" ";
-      for (let iBand=0; iBand<bandsArr.length; iBand++) {writeStatsForBand(iBand)};
+      updateappTop();
+      dataForRecord="Mode="+watchedMode+", ";
+      writeBandTilesDivs();
+      updateBandTiles();
+  }
+
+  
+  function resizeGridColumns(){
+  
+    // find the largest counts of characters in the LH and RH columns
+    const farEntities=document.querySelectorAll('[class$="_farEntities"]');
+    const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
+ 
+     // redistribute grid columns
+    let gridDiv=document.getElementById('detailsGrid');
+    if (groupHomeEntities) {
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
+      if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
+        Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
+        Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
+		}
+      let centreColumnNominalChars=7;
+      let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
+      gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
+    } else {
+      gridDiv.style.gridTemplateColumns = "min-content min-content auto";
+    }
   }
   
-  function writeStatsForBand(iBand){
-     
-       var txCalls=new Set;  // active transmitters in Home
-       var rxCalls=new Set;  // active receivers in Home
-       var nSpotsH2H=0;
-       var nSpotsH2DX=0;
-       var nSpotsDX2H=0;
-       var entitiesReachedByMe=new Set;
-       var entitiesSpottedByMe=new Set;
-       var entitiesInHome=new Set;
-       var senderEntity="";
-       var receiverEntity="";
-       var htmlTmp="";
-	  
-       // go through all spots, get counts for band tile for this band, build entitiesInHome set and entitiesReachedByMe, entitiesSpottedByMe 
-       for (let iSpot=0; iSpot < spotsArr.length; iSpot++) {
-         //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
-         var spot=spotsArr[iSpot];
-         if(spot[0]==bandsArr[iBand] && spot[6]==Mode){
-	   let senderEntity=constructEntity(spot[2],spot[4]);
-	   let receiverEntity=constructEntity(spot[3],spot[5]);
-           if(squareIsInHome(spot[4])) {
-             txCalls.add(spot[2])
-             if(squareIsInHome(spot[5])){nSpotsH2H+=1} else {nSpotsH2DX+=1}
-             entitiesInHome.add(senderEntity);
-           }
-           if(squareIsInHome(spot[5])) {
-             rxCalls.add(spot[3]);
-             nSpotsDX2H+=1;
-             entitiesInHome.add(receiverEntity);
-           }
-           if(spot[2]==myCall){entitiesReachedByMe.add(receiverEntity)} 
-           if(spot[3]==myCall){entitiesSpottedByMe.add(senderEntity)} 
+  
+ function setSort(sortKey){
+   console.log("Set sort key: "+sortKey);
+   bandTilesSortKey=sortKey;
+   document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
+   updateDisplays();
+ } 
+ 
+  function getBandTileOrder(){
+     // get band tiles order
+ 
+    let criteria=new Array();
+    let indexArr=new Array();
+    bandsArr.forEach((band,index) => {
+      indexArr.push(index);
+  		if(bandTilesSortKey=='BandName') {
+        let bTmp=band.slice(0,-1);
+        if(bTmp.slice(-1)=="c") {wavelengthMetres=parseFloat(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseFloat(bTmp)}
+        criteria.push(wavelengthMetres);
+      } else {
+        let nCount=0; 
+        if (bandTilesSortKey.search("H")>=0){ 
+          for (id in connections) {
+            let c=connections[id];
+            if (c.b==band && c.md==watchedMode) {
+              if(bandTilesSortKey=="nHH" && (c.sd=="home") && (c.rd=="home")) {nCount+=1}
+              if(bandTilesSortKey=="nHD" && (c.sd=="home") && (c.rd=="dx")) {nCount+=1}
+              if(bandTilesSortKey=="nDH" && (c.sd=="dx") && (c.rd=="home")) {nCount+=1}
+            }
+          }
+          criteria.push(nCount); 
+        } else {
+          let txCalls=new Set;
+          let rxCalls=new Set;
+          for (id in connections) {
+            let c=connections[id];
+            if (c.b==band && c.md==watchedMode) {
+              if(c.sd=="home"){txCalls.add(c.sc)}
+              if(c.rd=="home"){rxCalls.add(c.rc)}
+            }
+          }
+          if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
+          if(bandTilesSortKey=="nRx"){criteria.push(rxCalls.size)}
+          if(bandTilesSortKey=="nTxRx"){criteria.push(txCalls.intersection(rxCalls).size)}
+        }
+      }
+    });
+    
+    indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
+    
+    return indexArr;
+  }
+    
+    
+  function updateBandTiles(){
+ 
+    let indexArr=getBandTileOrder();
+    
+    indexArr.forEach((bandIndex,index) =>{
+       band=bandsArr[bandIndex];
+
+       let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
+   
+       let htmlTmp=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
+       if(detailsWanted!="BandTileLegend") {
+         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
+       }
+       bandTileDocEl.innerHTML=htmlTmp+"<br>";
+       
+       let nSpotsHH=0;
+       let nSpotsHD=0;
+       let nSpotsDH=0;
+       let txCalls=new Set;
+       let rxCalls=new Set;
+       for (id in connections) {
+         let c=connections[id];
+         if (c.b==band && c.md==watchedMode) {
+           if(c.sd=="home") {txCalls.add(c.sc)}
+           if(c.rd=="home") {rxCalls.add(c.rc)}
+           if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
+           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
+           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
          }
        }
-
+       let txRxCalls=txCalls.intersection(rxCalls)
+       
        // save the stats from above to the recording string
-       dataForRecord+=bandsArr[iBand]+","+nSpotsH2H+","+nSpotsH2DX+","+nSpotsDX2H+","+txCalls.size+","+rxCalls.size+",";
-
-       // update first row of the band tile
-       htmlTmp=" <strong><a class='textAnchorButton' href='#' onclick='updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+bandsArr[iBand]+" "+Mode+"</a></strong>";
-       if(detailsWanted!="BandTileLegend") {
-         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=updateDetails(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
-       }
-       document.getElementById(bandsArr[iBand]+"band").innerHTML=htmlTmp+"<br>";
-
-       // get the modes specific to this band and write clickable links for BandActivityDetails
-       let tmp=(new Set()).add(Mode); 
-       let otherModes=Array.from(modeSetByBandArr[iBand].difference(tmp)).toSorted();
-       htmlTmp="+ ";
-       for (i=0;i<otherModes.length;i++){
-         htmlTmp+="<a class='textAnchorButton' href='#' onclick='Mode=&quot;"+otherModes[i]+"&quot;; updateDetails(&quot;BandActivityDetails&quot;,"+iBand+");'>"+otherModes[i]+"</a> ";
-       }
-       if(otherModes.length>0){ document.getElementById(bandsArr[iBand]+"modes").innerHTML=htmlTmp;}
-
+       dataForRecord+=band+","+nSpotsHH+","+nSpotsHD+","+nSpotsDH+","+txCalls.size+","+rxCalls.size+","+txCalls.intersection(rxCalls).size+",";
+       
        // write the counts for this band's band tile
-       document.getElementById(bandsArr[iBand]+"spots").innerHTML=
-         "Spots "+
-         "<span class='intraHome'>"+nSpotsH2H+"</span>/"+
-         "<span class='outgoing'>"+nSpotsH2DX+"</span>/"+
-         "<span class='incoming'>"+nSpotsDX2H+"</span>";
-       document.getElementById(bandsArr[iBand]+"calls").innerHTML=
-         "<span class='transmit'>Tx Calls "+txCalls.size+"</span><br>"+
-         "<span class='receive'>"+"Rx Calls "+rxCalls.size+"</span>";
+       bandTileDocEl.innerHTML+="<span id='"+band+"__spots'>Spots "
+         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+nSpotsHH+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+nSpotsHD+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+nSpotsDH+"</span></a></span>"
+         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+txCalls.size+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+rxCalls.size+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+txRxCalls.size+"</span></a>";
 
-      // set background colour of band tile to grey if no activity
-      let parentBox=document.getElementById(bandsArr[iBand]+"calls").parentElement
-      if((txCalls.size+rxCalls.size)==0){parentBox.style.background="#e6e6ff"} else {parentBox.style.background="white"}
-
-      // big block of script to fill in the Band Activity Details if wanted
-      if(iBand==iDetailsBandIndex && detailsWanted=="BandActivityDetails"){
-        legend.innerHTML="";
-
-        detailsTop.innerHTML="<div><strong>"+bandsArr[iDetailsBandIndex]+" "+Mode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(bandsArr[iDetailsBandIndex]+"spots").innerHTML+spotsLegend+"<br>"
-          +document.getElementById(bandsArr[iDetailsBandIndex]+"calls").innerHTML+"<br>"
-          +"<span class='notesText'>Entities reached both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and others in home are "+HL("highlighted",true,"HL1")+".</span>"
-	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HL2")+".</span>"
+       // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
+        let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
+        let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
+        for (id in connections) {
+          let c=connections[id];
+          if(c.b==band) {
+            if(c.md!=watchedMode) {otherModesOnThisBand.add(c.md)};
+            globalModes.add(c.md);
+          }
+        }
+        modesArr=Array.from(globalModes);
+        let modesHTML="";
+        Array.from(otherModesOnThisBand).forEach((md) =>{
+          modesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
+         });
+        if(modesHTML.length>0) {modesHTML="<br><span class='extraModes'>+ "+modesHTML+"</span>"};
+        bandTileDocEl.innerHTML+=modesHTML;
+        
+       // change class of band tile to active if there is activity
+       if((txCalls.size+rxCalls.size)>0){bandTileDocEl.className='active'}
+      
+       if(detailsWanted=="BandDetails" && band==detailsBand) {
+         showBandDetails(txCalls,rxCalls,txRxCalls);
+       }
+      
+      
+     });
+      
+  }
+ 
+  function showBandDetails(txCalls, rxCalls, txRxCalls){
+     
+     legend.innerHTML="";
+     detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
+          +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
           +"</div><div>"
-      +" <a href='#' onclick=updateDetails(&quot;Nothing&quot;);><span style='float:right;';>close</span></a>"
-    +"</div>";
+          +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
+	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
+	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightNeg")+".</span>"
+          +"</div>";
 		
         detailsGrid.innerHTML="<div class='titleRow'>"
-          +"<strong>Home <span class='transmit'>Tx Calls</span> and <span class='receive'>Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeCalls=false;'>List&nbsp;each&nbsp;call</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeCalls=true;'>Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx</a>"
+          +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
+          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
           +"</div><div></div>"
-          +"<div class='titleRow'><strong>Entities spotting Home Tx Calls / spotted by Home RX Calls</strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;'>Show&nbsp;callsigns</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2;'>Show&nbsp;level&nbsp;2&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4;'>Show&nbsp;level&nbsp;4&nbsp;squares</a>"
-         +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6;'>Show&nbsp;level&nbsp;6&nbsp;squares</a></div>";
+          +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
+	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
+          +"<span class='notesText'>Home calls are listed as Tx-Rx if they are heard by anyone & are hearing anyone"
+      	  +"<span class='notesText'><br>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
+          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
+    
+       // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
+       let setMyCall=new Set().add(myCall);
+           
+       // all except myCall:
+       let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
+       let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
+       let othersTxRxHTML=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       detailsGrid.innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
+       
+       // just myCall
+       let myCallTxHTML=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
+       let myCallRxHTML=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
+         
+       // do the highlighting
+       highlightAll("myCallRx");
+       highlightAll("myCallTx");
+       highlightAll("myCallTxRx"); 	 
+       highlightEntitiesList("myCallRx","othersRx");
+       highlightEntitiesList("myCallRx","othersTxRx");
+       highlightEntitiesList("myCallTx","othersTx"); 
+       highlightEntitiesList("myCallTx","othersTxRx"); 
+       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+     
+       resizeGridColumns();
+}	
 
-	// go through active transmitters in Home and list the entities they're reaching
-        var txCallsArr=Array.from(txCalls).toSorted();
-        var entitiesReachedInHome=new Set;
-        var entitiesReachedInOther=new Set;
-        //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
-        for (let iCall=0;iCall<txCallsArr.length;iCall++){
-          var txCall=txCallsArr[iCall];
-	  var entitiesReachedInHomeByThisCall=new Set;
-          var entitiesReachedInOtherByThisCall=new Set;
-          if(txCall!=myCall){
-            for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
-	      var spot=spotsArr[iSpot];
-              if(spot[0]==bandsArr[iBand] && spot[2]==txCall && spot[6]==Mode){
-                let reachedEntity=constructEntity(spot[3],spot[5]);
-                if(squareIsInHome(spot[5])){
-		  entitiesReachedInHomeByThisCall.add(reachedEntity);
-		  entitiesReachedInHome.add(reachedEntity);
-		} else {
-		  entitiesReachedInOtherByThisCall.add(reachedEntity);
-		  entitiesReachedInOther.add(reachedEntity);
-		} 
-              }
-            }
-          }
-          if(!groupHomeCalls  && txCall!=myCall){  // we do myCall separately at the bottom
-            detailsGrid.innerHTML+="<div class='transmit'>"+txCall+"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
-              +Array.from(entitiesReachedInHomeByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span> <span class='outgoing'> "
-              +Array.from(entitiesReachedInOtherByThisCall).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-              +"</span><div>";
-          }
-        }
-        if(groupHomeCalls){ 
-          detailsGrid.innerHTML+="<div class='transmit' id='transmitterGroup'>"
-          +Array.from(txCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
-          +"</div><div>"+RIGHTARROW+"</div><div><span class='intraHome'>"
-          +Array.from(entitiesReachedInHome).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-          +"</span> <span class='outgoing'> "
-          +Array.from(entitiesReachedInOther).toSorted().map(item => HL(item,entitiesReachedByMe.has(item))).join(', ')
-          +"</span><div>";
-        }
-        
-        // go through active receivers in Home and list the entities they're spotting
-        var rxCallsArr=Array.from(rxCalls).toSorted();
-        var entitiesSpottedInHome=new Set;
-        var entitiesSpottedInOther=new Set;
-        //spots array 0=band,1=tSpot,2=senderCall,3=receiverCall,4=senderSq,5=receiverSq,6=mode
-        for (let iCall=0;iCall<rxCallsArr.length;iCall++){
-          var rxCall=rxCallsArr[iCall];
-	  var entitiesSpottedInHomeByThisCall=new Set;
-          var entitiesSpottedInOtherByThisCall=new Set;
-          if(rxCall!=myCall){
-	    for(let iSpot=0;iSpot<spotsArr.length;iSpot++){
-	      var spot=spotsArr[iSpot];
-              if(spot[0]==bandsArr[iBand] && spot[3]==rxCall && spot[6]==Mode){  
-                let spottedEntity=constructEntity(spot[2],spot[4]);
-                if(squareIsInHome(spot[4])){
-		  entitiesSpottedInHomeByThisCall.add(spottedEntity);
-		  entitiesSpottedInHome.add(spottedEntity);
-		} else {
-		  entitiesSpottedInOtherByThisCall.add(spottedEntity);
-		  entitiesSpottedInOther.add(spottedEntity);  
-		} 
-              }
-            }
-          }
-          if(!groupHomeCalls && rxCall!=myCall){ // we do myCall separately at the bottom
-            detailsGrid.innerHTML+="<div class='receive'>"+rxCall+"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
-            +Array.from(entitiesSpottedInHomeByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
-            +"</span> <span class='incoming'>"
-            +Array.from(entitiesSpottedInOtherByThisCall).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
-            +"</span><div>";
-          }
-        }
-        if(groupHomeCalls){
-          detailsGrid.innerHTML+="<div class='receive' id='receiverGroup'>"
-	  +Array.from(rxCalls.difference((new Set()).add(myCall))).toSorted().join(', ')
-          +"</div><div>"+LEFTARROW+"</div><div><span class='intraHome'>"
-          +Array.from(entitiesSpottedInHome).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
-          +"</span> <span class='incoming'>"
-          +Array.from(entitiesSpottedInOther).toSorted().map(item => HL(item,entitiesSpottedByMe.has(item))).join(', ')
-          +"</span><div>";
-        }
 
-        // redistribute grid columns
-        let gridDiv=document.getElementById('detailsGrid');	  
-        if (groupHomeCalls) {
-	  let lhChars=Math.max(document.getElementById('transmitterGroup').innerHTML.length,document.getElementById('receiverGroup').innerHTML.length);
-          let rhChars=Math.max(Array.from(entitiesReachedInHome).join(", ").length + Array.from(entitiesReachedInOther).join(", ").length,
-			       Array.from(entitiesSpottedInHome).join(", ").length + Array.from(entitiesSpottedInOther).join(", ").length);
-	  let centreColumnNominalChars=7;
-	  let p1=Math.round(100*Math.min(Math.max(lhChars/(lhChars+rhChars+centreColumnNominalChars),0.1),0.5));
-	  gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
-	} else {
-	  gridDiv.style.gridTemplateColumns = "min-content min-content auto";
-	}
-
-	// add two rows for entities reached and spotted by myCall
-        if(entitiesReachedByMe.size>0){
-            let reachedInHomeArr=Array.from(entitiesReachedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInHome.has(item),"HL1","HL2"));
-            let reachedInOtherArr=Array.from(entitiesReachedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesReachedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div>"
-            +"<div>"+RIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+reachedInHomeArr.join(', ')+"</span>"
-            +"<span class='outgoing'> "+reachedInOtherArr.join(', ')+"</span></div>";
-        } else {
-	  detailsGrid.innerHTML+="<div class='transmit'>"+myCall+" reaching</div><div>"+RIGHTARROW+"</div><div></div>";
-	}
-        if(entitiesSpottedByMe.size>0){
-            let spottedInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInHome.has(item),"HL1","HL2"));
-            let spottedInOtherArr=Array.from(entitiesSpottedByMe.difference(entitiesInHome)).toSorted().map(item => HL(item,entitiesSpottedInOther.has(item),"HL1","HL2"));
-          detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div>"
-            +"<div>"+LEFTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='intraHome'> "+spottedInHomeArr.join(', ')+"</span>"
-            +"<span class='incoming'> "+spottedInOtherArr.join(', ')+"</span></div>";
-        } else {
-	  detailsGrid.innerHTML+="<div class='receive'>"+myCall+" spotting</div><div>"+LEFTARROW+"</div><div></div>";
-	}
-	if(entitiesReachedByMe.size>0 && entitiesSpottedByMe.size>0 ){
-            let twoWayInHomeArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).intersection(entitiesInHome)).toSorted();
-            let twoWayInOtherArr=Array.from(entitiesSpottedByMe.intersection(entitiesReachedByMe).difference(entitiesInHome)).toSorted();
-          detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div>"
-            +"<div>"+LEFTRIGHTARROW+"</div><div><span class='intraHome'></span>"
-            +"<span class='twoWay'> "+twoWayInHomeArr.join(', ')+"</span>"
-            +"<span class='twoWay-other'> "+twoWayInOtherArr.join(', ')+"</span></div>";
-        } else {
-	  detailsGrid.innerHTML+="<div class='twoWay'>"+myCall+" reaching and spotting</div><div>"+LEFTRIGHTARROW+"</div><div></div>";
-	}
+function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
+	
+  if(homeCalls.size==0) {return ""};
+  
+  let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
+  let nonlocalConnectedEntitiesGrouped=new Set; // nonlocal means the conected entity is not in Home
+  let gridHTML="";
+  let Arrow="";
+  if (TxRx=="Tx"){Arrow=RIGHTARROW}
+  if (TxRx=="Rx"){Arrow=LEFTARROW}
+  if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
+  
+  let homeCallsArr=Array.from(homeCalls).toSorted();
+  homeCallsArr.forEach((homeCall) => {
+    let localConnectedEntities=new Set;
+    let nonlocalConnectedEntities=new Set;
+    for (id in connections) {
+      let c=connections[id];
+      if (c.b==detailsBand && c.md==watchedMode) {
+        if (TxRx=="Tx" && c.sc==homeCall) {
+          let farEntity=getEntity(c.rc,c.rl);
+          if(c.rd=="home"){
+            localConnectedEntities.add(farEntity);
+            localConnectedEntitiesGrouped.add(farEntity);
+          } else {
+            nonlocalConnectedEntities.add(farEntity);
+            nonlocalConnectedEntitiesGrouped.add(farEntity);
+          }
+        }
+        if (TxRx=="Rx" && c.rc==homeCall) {
+          let farEntity=getEntity(c.sc,c.sl);
+          if(c.sd=="home"){
+            localConnectedEntities.add(farEntity);
+            localConnectedEntitiesGrouped.add(farEntity);
+          } else {
+            nonlocalConnectedEntities.add(farEntity);
+            nonlocalConnectedEntitiesGrouped.add(farEntity);
+          }
+        }
       }
+    }
+    if (TxRx=="TxRx"){
+      let far=new Set(); // home call has reached
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
+      }
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==detailsBand && c.md==watchedMode && c.rc==homeCall && far.has(c.sc)) {
+          let farEntity=getEntity(c.sc,c.sl);
+          if(c.sd=="home"){
+            localConnectedEntities.add(farEntity);
+            localConnectedEntitiesGrouped.add(farEntity);
+          } else {
+            nonlocalConnectedEntities.add(farEntity);
+            nonlocalConnectedEntitiesGrouped.add(farEntity);
+          }
+        }
+      }
+    }
+    if (!groupHomeEntities){
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+      gridHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
+      if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {gridHTML+=", "};
+      gridHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
+    }
+  });
+  if (groupHomeEntities){
+    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
+    if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {gridHTML+=", "};
+    gridHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
   }
+   
+  return gridHTML;
+}
 
-  function constructEntity(call,square){
-    if(entityDisplayType=="Call"){return call;}
-    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
-    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
+
+function highlightAll(myCallrowClassPrefix){
+  // pre-highlight all myCall entries in 'only me' colours HighlightNeg
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  if (farEntities_me[0]!=undefined){
+    // plain text version of far entities to highlight
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities in my list, modifying the innerHTML
+    for (let i=0;i<farEntities_me.length;i++){
+      farEntities_meTxt.forEach(entity => {
+        farEntities_me[i].innerHTML=farEntities_me[i].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
+      });
+    }
   }
-	  
+}
 
-  function HL(item,pattern,hlClass1="HL1",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HL1) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HL2
-  if(item==pattern || pattern==true){
-        return "<span class='"+hlClass1+"'>"+item+"</span>";
-    } else {
-	    if(hlClass2==""){
-	      return item;
-	    } else {
-	      return "<span class='"+hlClass2+"'>"+item+"</span>";
-	    }
+
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
+
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
+      
+  if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
+    // plain text version of far entities to look for in other call's far entities
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+    for (let i=0;i<farEntities_others.length;i++){
+      // highlight the matches in the other call's far entities
+      farEntities_meTxt.forEach(entity => {
+        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+      });
+      // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
+      let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+      farEntities_othersTxt.forEach(entity => {
+	farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class='HighlightNeg'>"+entity+"</span>",entity);
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
+      });
     }
   }
   
-  function validSquaresListEntry(locator){
-    // if a valid level 4,6,8 or 10 square, return the level else return 0
-    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
-    if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
-    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
-    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
-    return 0;
-  }
+}
 
-  function squareIsInHome(sq){
-    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
-    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
-  }
-  
-  function getVal(key,message){
-    // parse the MQTT message to get the part we want (key)
-    var iVal=message.indexOf('"'+key+'":');
-    var iColon=message.indexOf(':',iVal);
-    var iComma=message.indexOf(",",iColon);
-    var val=message.slice(iColon+1,iComma).replace(/"/g, '');
-    return val;
-  }
+
 
 </script>
 	
