@@ -532,7 +532,8 @@ a:visited {color: blue;}
     let criteria=new Array();
     let indexArr=new Array();
     let bandsData=new Array();
-    
+    // get the band stats for each band. if detailsBand, call showBandDetails 
+    // redo the counting - must be a way to do it in fewer lines
     bandsArr.forEach((band,index) => {
       let nSpotsHH=0;
       let nSpotsHD=0;
@@ -554,6 +555,7 @@ a:visited {color: blue;}
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls);}
     });
   
+    // get the band tile sort order
     bandsArr.forEach((band,index) => {
       indexArr.push(index);
   		if(bandTilesSortKey=='BandName') {
@@ -565,6 +567,7 @@ a:visited {color: blue;}
     });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
+    // populate the band tile HTML in the sorted order
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
 
@@ -587,6 +590,7 @@ a:visited {color: blue;}
          +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsData[index][4]+"</span></a><br>"
          +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsData[index][5]+"</span></a>";
 
+       // move this into the counting loop at the top?
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
         let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
         let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
@@ -611,11 +615,11 @@ a:visited {color: blue;}
   }
  
   function showBandDetails(txCalls, rxCalls, txRxCalls){
-     console.log(txCalls);
      
      legend.innerHTML="";
      detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
+     //  this hasn't been written yet - put this line in the calling function?
+     //     +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
           +"</div><div>"
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
