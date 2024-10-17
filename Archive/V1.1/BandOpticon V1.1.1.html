@@ -539,10 +539,10 @@ a:visited {color: blue;}
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
-      let bandModes=new Set;
+      let bandExtraModes=new Set;
       for (id in connections) {
         let c=connections[id];
-        if (c.b==band) {bandModes.add(c.md);}
+        if (c.b==band && c.md!=watchedMode) {bandExtraModes.add(c.md);}
         if (c.b==band && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
@@ -552,10 +552,10 @@ a:visited {color: blue;}
         }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes.difference(new Set(watchedMode)))];
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandExtraModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes);
+      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes);
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
