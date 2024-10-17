@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
@@ -73,13 +73,6 @@
 <tr>
   <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
- 
-
-
-
-
-
-
 
 </table>  
 
@@ -103,6 +96,7 @@ To do:
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   
 Code tidying:
+  - simplify the code in getBandDetailsGridHTML (at least move the local/nonlocal if statements to a function for readability
   - is there a better way to do the highlighting?
   - is there a better way to count for statistics?
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
