@@ -711,7 +711,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
       
-  if (farEntities_me[0]!=undefined && (farEntities_others[0]!=undefined || (othersRowClassPrefix==""))){
+  if (farEntities_me[0]!=undefined && ((farEntities_others[0]!=undefined) || (othersRowClassPrefix==""))){
     // plain text version of far entities to look for in other call's far entities
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
     if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (Neg) my call entities
