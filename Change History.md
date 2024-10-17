@@ -90,6 +90,8 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - trigger band details refresh if changing myCall
+  - make the test message injector work!
   - benchmark against a specific callsign?
   - miniature map grid in each row? Larger single map with colour-coded squares?
   - switch to https://www.brailleinstitute.org/freefont/
