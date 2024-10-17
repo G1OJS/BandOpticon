@@ -714,7 +714,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
   if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
     // plain text version of far entities to look for in other call's far entities
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    if(otherRowClassPrefix==""){ // no class in second argument means "prehighlight" (Neg) my call entities
+    if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (Neg) my call entities
       farEntities_meTxt.forEach(entity => {      
         farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
       });
