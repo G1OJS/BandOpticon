@@ -674,21 +674,15 @@ a:visited {color: blue;}
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
-          +"<span class='notesText'>Home calls can be listed as Tx-Rx and yet have no reciprocal spots with any remote entity</span>"
-	  +"<span class='notesText'><br>Choosing coarser definitions of remote entities makes reciprocal spots more likely but not inevitable</span>"
+          +"<span class='notesText'>Home calls are listed as Tx-Rx if they are heard by anyone & are hearing anyone"
+      	  +"<span class='notesText'><br>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
           +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
-	  
-        console.log(Array.from(txCalls));
-        console.log(Array.from(rxCalls));
-        console.log(Array.from(txRxCalls));
-
-
-        let setMyCall=new Set().add(myCall);
+       let setMyCall=new Set().add(myCall);
            
        // all except myCall:
        let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
@@ -703,11 +697,9 @@ a:visited {color: blue;}
        detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // do the highlighting
-
        highlightAll("myCallRx");
        highlightAll("myCallTx");
        highlightAll("myCallTxRx"); 	 
-	  
        highlightEntitiesList("myCallRx","othersRx");
        highlightEntitiesList("myCallRx","othersTxRx");
        highlightEntitiesList("myCallTx","othersTx"); 
@@ -757,7 +749,26 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
             nonlocalConnectedEntitiesGrouped.add(farEntity);
           }
         }
-        
+      }
+    }
+    if (TxRx=="TxRx"){
+      let far=new Set(); // home call has reached
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
+      }
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==detailsBand && c.md==watchedMode && c.rc==homeCall && far.has(c.sc)) {
+          let farEntity=getEntity(c.sc,c.sl);
+          if(c.sd=="home"){
+            localConnectedEntities.add(farEntity);
+            localConnectedEntitiesGrouped.add(farEntity);
+          } else {
+            nonlocalConnectedEntities.add(farEntity);
+            nonlocalConnectedEntitiesGrouped.add(farEntity);
+          }
+        }
       }
     }
     if (!groupHomeEntities){
@@ -776,28 +787,6 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
    
   return gridHTML;
 }
-
-/*
-for (const homeCall in objHomeCallData) {
-     if(((TxRx=="Tx") && objHomeCallData[homeCall].isTx)
-     || ((TxRx=="Rx") && objHomeCallData[homeCall].isRx) 
-     || ((TxRx=="TxRx") && (objHomeCallData[homeCall].isTx && objHomeCallData[homeCall].isRx))) {
-       let localConnectedEntities=new Set;
-       let nonlocalConnectedEntities=new Set;
-   
-    
-       if(groupHomeEntities){ 
-         homeCalls.push(homeCall);
-       } else {
-         tmpHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-         tmpHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-         if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {tmpHTML+=", "};
-         tmpHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
-       }
-     }
-   }
- 
-   */
 
 
 function highlightAll(myCallrowClassPrefix){
