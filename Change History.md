@@ -5,6 +5,15 @@
 <tr>
   <th>Date&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th><th>Version</th><th>Changes</th>
 </tr>
+  
+<tr>
+  <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.2'>V1.1.2</a></td>
+  <td>
+    <ol>
+      <li>Intenal code changes - Improved efficiency of highlighting code</li>
+    </ol>
+  </td>
+</tr>
 
 <tr>
   <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
