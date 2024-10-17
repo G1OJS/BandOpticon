@@ -7,6 +7,16 @@
 </tr>
 
 <tr>
+  <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>
+    <ol>
+      <li>Update some text and formatting</li>
+      <li>Intenal code changes - combine and optimise functions, add comments.</li>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
