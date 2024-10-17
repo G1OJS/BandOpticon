@@ -1,7 +1,6 @@
 <!--
   extra modes
   sort out whether array or not & what dimensions
-  why is it not adding into tile HTML?
   if keeping it in data record string (& check either way) need an extra comma
 -->
 
@@ -598,8 +597,7 @@ a:visited {color: blue;}
        extraModesArr.forEach((md) =>{
          extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
        });
-       console.log(extraModesHTML);
-       if(extraModesHTML.length>0){bandTileDocEl.innterHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
+       if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
        if((bandsData[bandIndex][3]+bandsData[bandIndex][4])>0){bandTileDocEl.className='active'}
        if (band==detailsBand){
