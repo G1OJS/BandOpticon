@@ -722,7 +722,7 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   
-  let homeCallsArr=Array.from(homeCalls);
+  let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach((homeCall) => {
     let localConnectedEntities=new Set;
     let nonlocalConnectedEntities=new Set;
