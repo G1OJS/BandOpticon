@@ -554,6 +554,7 @@ a:visited {color: blue;}
       bandsData.push([band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size]);
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls);}
     });
+
   
     // get the band tile sort order
     bandsArr.forEach((band,index) => {
@@ -562,8 +563,9 @@ a:visited {color: blue;}
         let bTmp=band.slice(0,-1);
         if(bTmp.slice(-1)=="c") {wavelengthMetres=parseFloat(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseFloat(bTmp)}
         criteria.push(wavelengthMetres);
+      } else {
+        criteria.push(bandsData[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey)]);
       }
-      criteria.push(bandsData[index][["nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey)]);
     });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
@@ -579,17 +581,25 @@ a:visited {color: blue;}
        }
        bandTileDocEl.innerHTML=htmlTmp+"<br>";       
        // save the stats from above to the recording string
-       dataForRecord+=band+bandsData[index];
+       dataForRecord+=band+bandsData[bandIndex];
        
        // write the counts for this band's band tile
        bandTileDocEl.innerHTML+="<span id='"+band+"__spots'>Spots "
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsData[index][0]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsData[index][1]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+bandsData[index][2]+"</span></a></span>"
-         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsData[index][3]+"</span></a><br>"
-         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsData[index][4]+"</span></a><br>"
-         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsData[index][5]+"</span></a>";
-
+         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsData[bandIndex][1]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsData[bandIndex][2]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+bandsData[bandIndex][3]+"</span></a></span>"
+         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsData[bandIndex][4]+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsData[bandIndex][5]+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsData[bandIndex][6]+"</span></a>";
+        
+       // change class of band tile to active if there is activity
+       if((bandsData[bandIndex][3]+bandsData[bandIndex][4])>0){bandTileDocEl.className='active'}
+       
+       if (band==detailsBand){
+         detailsTop.innerHTML="<div><strong>"+band+" "+watchedMode+" Band Activity Details</strong>"
+           +"<br>Total "+document.getElementById(band+"__spots").innerHTML+"<br>"+spotsLegend+"<br></div><div>";
+       }
+         
        // move this into the counting loop at the top?
        // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
         let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
@@ -608,20 +618,16 @@ a:visited {color: blue;}
          });
         if(modesHTML.length>0) {modesHTML="<br><span class='extraModes'>+ "+modesHTML+"</span>"};
         bandTileDocEl.innerHTML+=modesHTML;
-        
-       // change class of band tile to active if there is activity
-       if((bandsData[index][3]+bandsData[index][4])>0){bandTileDocEl.className='active'}
+
+       
      });
   }
  
   function showBandDetails(txCalls, rxCalls, txRxCalls){
      
      legend.innerHTML="";
-     detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
-     //  this hasn't been written yet - put this line in the calling function?
-     //     +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
-          +"</div><div>"
-          +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
+     detailsTop.innerHTML=
+          " <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
 	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
 	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightNeg")+".</span>"
