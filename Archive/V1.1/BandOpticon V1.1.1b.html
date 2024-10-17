@@ -727,7 +727,7 @@ function highlightAll(myCallrowClassPrefix){
 }
 
 
-function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix,hlClass){
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
@@ -739,13 +739,12 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix,hlClass
     for (let i=0;i<farEntities_others.length;i++){
       // highlight the matches in the other call's far entities
       farEntities_meTxt.forEach(entity => {
-        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true,hlClass));
+        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
       });
       // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
       let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
       farEntities_othersTxt.forEach(entity => {      
-      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('<span class="HighlightNeg">'+entity+'</span>',entity);
-      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,hlClass));
+      farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('Neg">'+entity,'Pos">'+entity);
       });
     }
   }
