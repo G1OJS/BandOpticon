@@ -661,7 +661,6 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
-  let Arrow=[["Tx","Rx","TxRx"].indexOf(TxRx)
   
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach((homeCall) => {
