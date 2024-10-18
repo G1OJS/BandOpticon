@@ -129,7 +129,6 @@ a:visited {color: blue;}
   var connectionsPurged=0;
 
   loadConfig();
-  setDisplayConfig();
   updateDisplays();
 
   setInterval(updateDisplays, refresh_mSeconds);
@@ -223,36 +222,15 @@ a:visited {color: blue;}
      }
    }
 
-  function setDisplayConfig(newWant,band){
-			// get rid of this function?
-
-    const allowed=["Nothing","BandTileLegend","BandDetails"];
-    if(!(typeof newWant==='undefined')) {
-      if(!allowed.includes(newWant)) {
-        console.log("Unknown detail type passed to setDisplayConfig: "+newWant);
-      } else {
-        detailsWanted=newWant; console.log("New details pane content requested: ",newWant,band);
-      }
-    }
-    
-    if(detailsWanted=="Nothing") {
-      legend.innerHTML="";
-      detailsGrid.innerHTML="";
-      detailsTop.innerHTML="";
-    }
-    
-    if(detailsWanted=="BandTileLegend"){showBandTileLegend()} 
-    
-    if(detailsWanted=="BandDetails"){
-      detailsBand=band;
-      updateDisplays();
-    } 
-    
+  function showNothing(){
+    document.getElementById("legend").innerHTML="";
+    document.getElementById("detailsGrid").innerHTML="";
+    document.getElementById("detailsTop").innerHTML="";
   }
   
   function showBandTileLegend(){
-    legend.innerHTML="<div>Band tile legend:"
-      +" <a class='textAnchorButton' href='#' onclick='setDisplayConfig(&quot;Nothing&quot;)'><span style='float:right;';>close</span></a>"
+    document.getElementById("legend").innerHTML="<div>Band tile legend:"
+      +" <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a>"
       +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
       +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
@@ -260,8 +238,8 @@ a:visited {color: blue;}
       +"<span class='textAnchorButton'>+ Other modes in use on this band</span>"
       +"</div>";
 
-      detailsGrid.innerHTML="";
-      detailsTop.innerHTML="";
+    document.getElementById("detailsGrid").innerHTML="";
+    document.getElementById("detailsTop").innerHTML="";
   }
 
   // function to write HTML to the appTop box
@@ -564,8 +542,8 @@ a:visited {color: blue;}
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
-       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
-       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";}        
+       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='showBandDetails(&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
+       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showLegend();><span style='float:right;';>legend</span></a>";}        
        bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
          +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
          +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
@@ -576,7 +554,7 @@ a:visited {color: blue;}
        let extraModesHTML="";
        let extraModesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
        extraModesThisBandArr.forEach((md) =>{
-         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
+         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; showBandDetails(&quot;"+band+"&quot;);'>"+md+"</a> ";
        });
        if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
@@ -593,7 +571,7 @@ a:visited {color: blue;}
          +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
          +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"+spotsLegend+"</div><div>"
-         +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
+         +" <a href='#' onclick='showLegend();'><span style='float:right;';>close</span></a>"
 	        +"<br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
 	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
