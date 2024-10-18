@@ -100,6 +100,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - do something better with width of title row in details grid (stop wrap, but allow narrow first column when not grouping calls)
   - redsign screen layout (colours / borders etc)
   - trigger band details refresh if changing myCall
   - look at startup - make faster / cleaner / add reassurance
