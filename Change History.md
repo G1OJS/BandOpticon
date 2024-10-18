@@ -109,17 +109,16 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - redsign screen layout (colours / borders etc)
   - trigger band details refresh if changing myCall
   - look at startup - make faster / cleaner / add reassurance
-  - make the test message injector work!
   - benchmark against a specific callsign?
   - miniature map grid in each row? Larger single map with colour-coded squares?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   
 Code tidying:
-  - simplify the code in getBandDetailsGridHTML (at least move the local/nonlocal if statements to a function for readability
-  - is there a better way to do the highlighting?
+  - make the test message injector work
   - is there a better way to count for statistics?
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
