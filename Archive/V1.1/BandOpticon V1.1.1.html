@@ -38,8 +38,8 @@ div {margin: 0px;  padding: 0px;}
 .Tx_farEnd {color:Fuchsia; }
 .Rx_farEnd {color:olive;}
 .TxRx_farEnd {color:blue; font-style:italic;}
-.HighLightMatch {background-color:#d1d1e0;} 
-.HighLightExclusive {background-color:#ffff0054;} 
+.HighlightMatch {background-color:#d1d1e0;} 
+.HighlightExclusive {background-color:#ffff00;} 
 .textAnchorButton {color: blue; }
 .textAnchorButton-strong {color: blue; font-weight:bold;}
 a:link {color: blue;}
@@ -288,9 +288,9 @@ a:visited {color: blue;}
   }
   
 	  
-  function HL(item,pattern,hlClass1="HighLightMatch",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HighLightMatch) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighLightExclusive
+  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
         return "<span class="+hlClass1+">"+item+"</span>";
@@ -588,9 +588,9 @@ a:visited {color: blue;}
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
          +"<span class='Rx_farEnd'>"+bandData[3]+"</span><br>"+spotsLegend+"<br></div><div>"
          +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	        +"<span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighLightMatch")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighLightMatch")+".</span>"
-	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighLightExclusive")+".</span>"
+	        +"<span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
           +"</div>";
 		
      detailsGrid.innerHTML="<div class='titleRow'>"
@@ -699,7 +699,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
     if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
       farEntities_meTxt.forEach(entity => {      
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighLightExclusive"));
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightExclusive"));
       });
     } else {
       // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
@@ -711,7 +711,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
         // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
         let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
         farEntities_othersTxt.forEach(entity => {      
-          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('Exclusive">'+entity,'Match">'+entity);
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
         });
       }
     }
