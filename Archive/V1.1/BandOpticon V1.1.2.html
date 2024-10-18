@@ -612,7 +612,7 @@ a:visited {color: blue;}
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
-       if(benchmarkCall!=""){txCalls=new Set(benchmarkCall,myCall); rxCalls=txCalls;txRxCalls=txCalls}
+       if(benchmarkCall!=""){txCalls=setMyCall.union(new Set().add(benchmarkCall)); rxCalls=txCalls;txRxCalls=txCalls}
 	  
        // all except myCall:
        let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
