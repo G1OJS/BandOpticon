@@ -12,8 +12,8 @@ div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 #app_group {margin:2px;padding:0px; background-color:blue;}
-#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
-#appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; padding-bottom:2px;  padding-top:2px; background-color:lightblue; font-size:2rem;}
+#appTop {display: grid; grid-template-columns: max-content auto; grid-template-rows: auto;}
 #appTop > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
@@ -276,8 +276,8 @@ a:visited {color: blue;}
     modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     
     appTop_l.innerHTML="<div>"
-       +"<span id='clock'>"+utc_timestamp.split(" ")[1]+utc_timestamp.split(" ")[2]
-       +"<br><span class='normalText'>"+utc_timestamp.split(" ")[0]"+</span></span>"
+       +"<span id='clock'>"+utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2]
+       +"<br><span class='normalText'>"+utc_timestamp.split(" ")[0]+"</span></span>"
        +"<br><span class='notesText'>Running for "+runningmins+" minutes</span>"
        +"<br><span class='notesText'>"+(connectionsAdded-connectionsPurged)+" connections in database: "
        +"<br><span class='notesText'>"+connectionsAdded+" added, "+connectionsPurged+" purged<br></span>";
