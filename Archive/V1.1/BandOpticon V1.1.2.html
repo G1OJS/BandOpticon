@@ -275,7 +275,9 @@ a:visited {color: blue;}
     var modeSelector="";
     modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     
-    appTop_l.innerHTML="<div><span id='clock'>"+utc_timestamp+"</span>"
+    appTop_l.innerHTML="<div>"
+       +"<span id='clock'>"+utc_timestamp.split(" ")[1]+utc_timestamp.split(" ")[2]
+       +"<br><span class='normalText'>"+utc_timestamp.split(" ")[0]"+</span></span>"
        +"<br><span class='notesText'>Running for "+runningmins+" minutes</span>"
        +"<br><span class='notesText'>"+(connectionsAdded-connectionsPurged)+" connections in database: "
        +"<br><span class='notesText'>"+connectionsAdded+" added, "+connectionsPurged+" purged<br></span>";
