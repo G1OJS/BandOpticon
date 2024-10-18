@@ -100,6 +100,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - progress V1.1.2 - make legend/nothing/details persist
   - benchmark against a specific callsign? - useful for checking rx with an audio feed from a websdr
   - do something better with width of title row in details grid (stop wrap, but allow narrow first column when not grouping calls)
   - redsign screen layout (colours / borders etc)
