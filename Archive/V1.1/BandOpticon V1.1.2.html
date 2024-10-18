@@ -599,6 +599,7 @@ a:visited {color: blue;}
 	  +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
           +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; benchmarkCall=\&quot;G1OJS.HACKGREEN\&quot;; updateDisplays();'>[Single&nbsp;other&nbsp;call]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
@@ -610,7 +611,8 @@ a:visited {color: blue;}
     
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
-           
+       if(benchmarkCall!=""){txCalls=new Set().add(benchmarkCall); rxCalls=txCalls;txRxCalls=txCalls}
+	  
        // all except myCall:
        let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
        let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
