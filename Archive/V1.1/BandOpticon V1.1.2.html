@@ -19,8 +19,8 @@ div {margin: 0px;  padding: 0px;}
 #details_group {margin:2px;padding:0px; background-color:blue;}
 #detailsTitle {display: grid; grid-template-columns: auto; grid-template-rows: auto;}
 #detailsTitle > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
-#detailsTop {display: grid; grid-template-columns: max-content auto; grid-template-rows: auto;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; border-right:solid; border-color:grey; border-width:1px; }
+#detailsTop {display: grid; grid-template-columns: max-content min-content auto; grid-template-rows: auto;}
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-top:7px;  padding-bottom:3px; font-size: 1rem; border-right:solid; border-color:grey; border-width:1px; }
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
@@ -604,10 +604,11 @@ a:visited {color: blue;}
           +"<div><span class='columnHeadingText'>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></span>"
 	        +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
           +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
-         +"</div><div>"  
-
-               +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a></div>"
+         +"<div>"
+         +LEFTARROW+"<br>"+RIGHTARROW+"<br>"+LEFTRIGHTARROW
+         +"</div>"  
+         +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
       	  +"<span class='notesText'>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
           +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
