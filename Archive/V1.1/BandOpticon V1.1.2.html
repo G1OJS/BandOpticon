@@ -196,6 +196,9 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
 	  
+			 conn.sl=(conn.sl).toUpperCase();
+				conn.rl=(conn.rl).toUpperCase();
+			
     // add sender and receiver domain (home/dx)
     if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
     if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
