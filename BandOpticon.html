@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.1.0</title>
+<title>BandOpticon V1.1.1</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-
+ 
 <style>
 :root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; }
 div {margin: 0px;  padding: 0px;}
@@ -24,8 +24,8 @@ div {margin: 0px;  padding: 0px;}
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
-#bandsGrid > div.active	{background-color:white}
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
+#bandsGrid > div.active	{background-color:white;}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
@@ -38,9 +38,8 @@ div {margin: 0px;  padding: 0px;}
 .Tx_farEnd {color:Fuchsia; }
 .Rx_farEnd {color:olive;}
 .TxRx_farEnd {color:blue; font-style:italic;}
-.HighlightPos {background-color:#d1d1e0;}
-.HighlightNeg {background-color:#ffff66;}
-//.HighlightNeg {text-decoration:underline;}
+.HighlightMatch {background-color:#d1d1e0;} 
+.HighlightExclusive {background-color:#ffff00;} 
 .textAnchorButton {color: blue; }
 .textAnchorButton-strong {color: blue; font-weight:bold;}
 a:link {color: blue;}
@@ -101,10 +100,10 @@ a:visited {color: blue;}
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
   var watchedMode="FT8";
-  var modesArr=["FT4","FT8","JS8","WSPR","CW"];
+  var modesAcrossAllBandsArr=["FT4","FT8","JS8","WSPR","CW"];
   var detailsBand=bandsArr[0];
   var bandTilesSortKey="BandName";
-  var refresh_mSeconds=5000;
+  var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Call";
@@ -127,11 +126,9 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
 
-  var once=true;
-
   loadConfig();
   setDisplayConfig();
-  updateappTop();
+  updateDisplays();
 
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
@@ -145,35 +142,9 @@ a:visited {color: blue;}
   
   }
   
-
   // ***********************************
   // * End of main: Functions below    *
   // ***********************************
-
-  function writeBandTilesDivs(){
-  
-    // Write the <div>s for each band summary tile in the bandsGrid area
-    var bandsHeard=new Set();
-    for (id in connections) {bandsHeard.add(connections[id].b)}
-    bandsArr=Array.from(bandsHeard);
-
-    var bandsGridDocEl = document.getElementById("bandsGrid"); 
-    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
-    
-    var bandTileDivs = document.createDocumentFragment();
-    bandsArr.forEach((band,index) => {
-      var newDiv = document.createElement('div');  
-      newDiv.id="bandTileDiv_"+index;
-      bandTileDivs.appendChild(newDiv);
-    });
-    let nfillerDivs=4-(bandsArr.length-1) %5;
-    for (let i=0;i<nfillerDivs;i++){
-      var newDiv = document.createElement('div');  
-      bandTileDivs.appendChild(newDiv);
-    }
-    bandsGridDocEl.appendChild(bandTileDivs);
-  }
-
 
   // ++++++ MQTT functions +++++++++++++
   
@@ -281,12 +252,10 @@ a:visited {color: blue;}
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
       +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
       +"<span class='textAnchorButton'>+ Other modes in use on this band</span>"
-      +"</div>"
-;
+      +"</div>";
 
       detailsGrid.innerHTML="";
       detailsTop.innerHTML="";
-  
   }
 
   // function to write HTML to the appTop box
@@ -295,7 +264,7 @@ a:visited {color: blue;}
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var modeSelector="";
-    modesArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
+    modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     
     appTop_l.innerHTML="<div><span id='clock'>"+utc_timestamp+"</span>"
        +"<br><span class='notesText'>Running for "+runningmins+" minutes</span>"
@@ -318,15 +287,10 @@ a:visited {color: blue;}
         if(bandTilesSortKey!="BandName") {appTop_r.innerHTML+=" or <a href='#' onclick='setSort(&quot;BandName&quot;)'>reset to Band Name</a>"}
   }
   
-  function getEntity(call,square){
-    if(entityDisplayType=="Call"){return call;}
-    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel);}
-    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel);} 
-  }
 	  
-  function HL(item,pattern,hlClass1="HighlightPos",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HighlightPos) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightNeg
+  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
         return "<span class="+hlClass1+">"+item+"</span>";
@@ -399,7 +363,7 @@ a:visited {color: blue;}
   
   function writeData(){
     if(newWindow==null){return}
-    var data_html="<br>"+get_utc_timestamp()+","+dataForRecord.slice(0,-1);
+    var data_html="<br>"+get_utc_timestamp()+", "+dataForRecord.slice(0,-2);
     newWindow.document.write(data_html);
   }
 	
@@ -437,7 +401,6 @@ a:visited {color: blue;}
       saveConfig();
     }
   }
-
  
     // needs validation code
   function editMyCall(){
@@ -445,8 +408,7 @@ a:visited {color: blue;}
     if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
-    updateappTop();
-    setDisplayConfig();
+    updateDisplays();
   }
   
   function editPurgeMins(){
@@ -483,7 +445,6 @@ a:visited {color: blue;}
       connections = {};
       connectionsAdded=0;
       connectionsPurged=0;
-      updateappTop();
       updateDisplays();
       connectToFeed();
     } else {
@@ -495,11 +456,9 @@ a:visited {color: blue;}
       purgeSpots();
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
-      writeBandTilesDivs();
       updateBandTiles();
   }
 
-  
   function resizeGridColumns(){
   
     // find the largest counts of characters in the LH and RH columns
@@ -514,7 +473,7 @@ a:visited {color: blue;}
       if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
         Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
         Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
-		}
+		  }
       let centreColumnNominalChars=7;
       let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
@@ -523,156 +482,127 @@ a:visited {color: blue;}
     }
   }
   
-  
  function setSort(sortKey){
    console.log("Set sort key: "+sortKey);
    bandTilesSortKey=sortKey;
    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
- 
-  function getBandTileOrder(){
-     // get band tiles order
- 
+    
+  function updateBandTiles(){
+    
+    // Write the <div>s for each band summary tile in the bandsGrid area
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandsArr=Array.from(bandsHeard);
+    var bandsGridDocEl = document.getElementById("bandsGrid"); 
+    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
+    var bandTileDivs = document.createDocumentFragment();
+    bandsArr.forEach((band,index) => {
+      var newDiv = document.createElement('div');  
+      newDiv.id="bandTileDiv_"+index;
+      bandTileDivs.appendChild(newDiv);
+    });
+    let nfillerDivs=4-(bandsArr.length-1) %5;
+    for (let i=0;i<nfillerDivs;i++){
+      var newDiv = document.createElement('div');  
+      if(connectionsAdded==0){newDiv.innerHTML="... loading"}
+      bandTileDivs.appendChild(newDiv);
+    }
+    bandsGridDocEl.appendChild(bandTileDivs);
+    
+    // get the band stats for each band. if detailsBand, call showBandDetails 
+    // can this be done more compactly?
+    let bandsDataArr=new Array();
+    bandsArr.forEach((band,index) => {
+      let nSpotsHH=0;
+      let nSpotsHD=0;
+      let nSpotsDH=0;
+      let txCalls=new Set;
+      let rxCalls=new Set;
+      let bandExtraModes=new Set;
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==band && c.md!=watchedMode) {bandExtraModes.add(c.md);}
+        if (c.b==band && c.md==watchedMode) {
+          if(c.sd=="home") {txCalls.add(c.sc)}
+          if(c.rd=="home") {rxCalls.add(c.rc)}
+          if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
+          if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
+          if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+        }
+      }
+      let txRxCalls=txCalls.intersection(rxCalls);
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandExtraModes)];
+      bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
+      dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
+      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
+      if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
+    });
+    
+    // get the band tile sort order
     let criteria=new Array();
     let indexArr=new Array();
     bandsArr.forEach((band,index) => {
       indexArr.push(index);
-  		if(bandTilesSortKey=='BandName') {
-        let bTmp=band.slice(0,-1);
-        if(bTmp.slice(-1)=="c") {wavelengthMetres=parseFloat(bTmp.slice(0,-1)/100)} else {wavelengthMetres=parseFloat(bTmp)}
-        criteria.push(wavelengthMetres);
+      if (bandTilesSortKey=="BandName") {
+        const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
+        criteria.push(metres(band));
       } else {
-        let nCount=0; 
-        if (bandTilesSortKey.search("H")>=0){ 
-          for (id in connections) {
-            let c=connections[id];
-            if (c.b==band && c.md==watchedMode) {
-              if(bandTilesSortKey=="nHH" && (c.sd=="home") && (c.rd=="home")) {nCount+=1}
-              if(bandTilesSortKey=="nHD" && (c.sd=="home") && (c.rd=="dx")) {nCount+=1}
-              if(bandTilesSortKey=="nDH" && (c.sd=="dx") && (c.rd=="home")) {nCount+=1}
-            }
-          }
-          criteria.push(nCount); 
-        } else {
-          let txCalls=new Set;
-          let rxCalls=new Set;
-          for (id in connections) {
-            let c=connections[id];
-            if (c.b==band && c.md==watchedMode) {
-              if(c.sd=="home"){txCalls.add(c.sc)}
-              if(c.rd=="home"){rxCalls.add(c.rc)}
-            }
-          }
-          if(bandTilesSortKey=="nTx"){criteria.push(txCalls.size)}
-          if(bandTilesSortKey=="nRx"){criteria.push(rxCalls.size)}
-          if(bandTilesSortKey=="nTxRx"){criteria.push(txCalls.intersection(rxCalls).size)}
-        }
+        criteria.push(bandsDataArr[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey)]);
       }
-    });
-    
+    });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
-    
-    return indexArr;
-  }
-    
-    
-  function updateBandTiles(){
- 
-    let indexArr=getBandTileOrder();
-    
+
+    // populate the band tile HTML in the sorted order
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
-
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
-   
-       let htmlTmp=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
-       if(detailsWanted!="BandTileLegend") {
-         htmlTmp+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";
-       }
-       bandTileDocEl.innerHTML=htmlTmp+"<br>";
-       
-       let nSpotsHH=0;
-       let nSpotsHD=0;
-       let nSpotsDH=0;
-       let txCalls=new Set;
-       let rxCalls=new Set;
-       for (id in connections) {
-         let c=connections[id];
-         if (c.b==band && c.md==watchedMode) {
-           if(c.sd=="home") {txCalls.add(c.sc)}
-           if(c.rd=="home") {rxCalls.add(c.rc)}
-           if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
-           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
-           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
-         }
-       }
-       let txRxCalls=txCalls.intersection(rxCalls)
-       
-       // save the stats from above to the recording string
-       dataForRecord+=band+","+nSpotsHH+","+nSpotsHD+","+nSpotsDH+","+txCalls.size+","+rxCalls.size+","+txCalls.intersection(rxCalls).size+",";
-       
-       // write the counts for this band's band tile
-       bandTileDocEl.innerHTML+="<span id='"+band+"__spots'>Spots "
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+nSpotsHH+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+nSpotsHD+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+nSpotsDH+"</span></a></span>"
-         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+txCalls.size+"</span></a><br>"
-         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+rxCalls.size+"</span></a><br>"
-         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+txRxCalls.size+"</span></a>";
-
-       // find the other modes are we hearing on this band and write clickable links for BandActivityDetails
-        let otherModesOnThisBand=new Set(); // will rise and fall in size as connections arrive and are purged
-        let globalModes=new Set(modesArr); // modesArr will accumulate over the script run time
-        for (id in connections) {
-          let c=connections[id];
-          if(c.b==band) {
-            if(c.md!=watchedMode) {otherModesOnThisBand.add(c.md)};
-            globalModes.add(c.md);
-          }
-        }
-        modesArr=Array.from(globalModes);
-        let modesHTML="";
-        Array.from(otherModesOnThisBand).forEach((md) =>{
-          modesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
-         });
-        if(modesHTML.length>0) {modesHTML="<br><span class='extraModes'>+ "+modesHTML+"</span>"};
-        bandTileDocEl.innerHTML+=modesHTML;
-        
+       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;);'>"+band+" "+watchedMode+"</a>";
+       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>legend</span></a>";}        
+       bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
+         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
+         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a><br>"
+         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a><br>"
+         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
+       let extraModesHTML="";
+       let extraModesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
+       extraModesThisBandArr.forEach((md) =>{
+         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; setDisplayConfig(&quot;BandDetails&quot;,&quot;"+band+"&quot;); updateDisplays();'>"+md+"</a> ";
+       });
+       if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
-       if((txCalls.size+rxCalls.size)>0){bandTileDocEl.className='active'}
-      
-       if(detailsWanted=="BandDetails" && band==detailsBand) {
-         showBandDetails(txCalls,rxCalls,txRxCalls);
-       }
-      
-      
-     });
-      
+       if((bandsDataArr[bandIndex][3]+bandsDataArr[bandIndex][4])>0){bandTileDocEl.className='active'}
+     }); 
   }
  
-  function showBandDetails(txCalls, rxCalls, txRxCalls){
+  function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
      
      legend.innerHTML="";
+     
      detailsTop.innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Band Activity Details</strong>"
-          +"<br>Total "+document.getElementById(detailsBand+"__spots").innerHTML+"<br>"+spotsLegend+"<br>"
-          +"</div><div>"
-          +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	  +"<span class='notesText'><br>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightPos")+".</span>"
-	  +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightNeg")+".</span>"
+         +"<br>Spots "
+         +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
+         +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
+         +"<span class='Rx_farEnd'>"+bandData[3]+"</span><br>"+spotsLegend+"<br></div><div>"
+         +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
+	        +"<span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
           +"</div>";
 		
-        detailsGrid.innerHTML="<div class='titleRow'>"
+     detailsGrid.innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
-          +" <br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
+	  +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
+          +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
           +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
-          +"<span class='notesText'>Home calls are listed as Tx-Rx if they are heard by anyone & are hearing anyone"
-      	  +"<span class='notesText'><br>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
-          +"<br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+      	  +"<span class='notesText'>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
+          +"<br><br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
@@ -692,14 +622,13 @@ a:visited {color: blue;}
        let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        detailsGrid.innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
-       // do the highlighting
-       highlightAll("myCallRx");
-       highlightAll("myCallTx");
-       highlightAll("myCallTxRx"); 	 
+       // "prehighlight" all myCall far entities with Neg highlightinh	 
+       highlightEntitiesList("myCallRx","");
+       highlightEntitiesList("myCallTx","");  
+       highlightEntitiesList("myCallTxRx",""); 
+       // do the highlighting 	
        highlightEntitiesList("myCallRx","othersRx");
-       highlightEntitiesList("myCallRx","othersTxRx");
-       highlightEntitiesList("myCallTx","othersTx"); 
-       highlightEntitiesList("myCallTx","othersTxRx"); 
+       highlightEntitiesList("myCallTx","othersTx");  
        highlightEntitiesList("myCallTxRx","othersTxRx"); 
      
        resizeGridColumns();
@@ -710,8 +639,7 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
 	
   if(homeCalls.size==0) {return ""};
   
-  let localConnectedEntitiesGrouped=new Set;  // local means the connected entity is also in Home
-  let nonlocalConnectedEntitiesGrouped=new Set; // nonlocal means the conected entity is not in Home
+  let farEntitiesGrouped=new Set;
   let gridHTML="";
   let Arrow="";
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
@@ -720,114 +648,76 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach((homeCall) => {
-    let localConnectedEntities=new Set;
-    let nonlocalConnectedEntities=new Set;
+     if (!groupHomeEntities){
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+    }
+    let far=new Set(); // home call has reached
     for (id in connections) {
       let c=connections[id];
+      if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
+    }
+    let farEntities=new Set;
+    for (id in connections) {
+      let c=connections[id];
+      let farEntity="";
       if (c.b==detailsBand && c.md==watchedMode) {
-        if (TxRx=="Tx" && c.sc==homeCall) {
-          let farEntity=getEntity(c.rc,c.rl);
-          if(c.rd=="home"){
-            localConnectedEntities.add(farEntity);
-            localConnectedEntitiesGrouped.add(farEntity);
-          } else {
-            nonlocalConnectedEntities.add(farEntity);
-            nonlocalConnectedEntitiesGrouped.add(farEntity);
-          }
-        }
-        if (TxRx=="Rx" && c.rc==homeCall) {
-          let farEntity=getEntity(c.sc,c.sl);
-          if(c.sd=="home"){
-            localConnectedEntities.add(farEntity);
-            localConnectedEntitiesGrouped.add(farEntity);
-          } else {
-            nonlocalConnectedEntities.add(farEntity);
-            nonlocalConnectedEntitiesGrouped.add(farEntity);
-          }
-        }
+        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
+        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+        if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
+                                           farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+      }
+      if(farEntity!=""){
+        farEntities.add(farEntity);
+        farEntitiesGrouped.add(farEntity);
       }
     }
-    if (TxRx=="TxRx"){
-      let far=new Set(); // home call has reached
-      for (id in connections) {
-        let c=connections[id];
-        if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
-      }
-      for (id in connections) {
-        let c=connections[id];
-        if (c.b==detailsBand && c.md==watchedMode && c.rc==homeCall && far.has(c.sc)) {
-          let farEntity=getEntity(c.sc,c.sl);
-          if(c.sd=="home"){
-            localConnectedEntities.add(farEntity);
-            localConnectedEntitiesGrouped.add(farEntity);
-          } else {
-            nonlocalConnectedEntities.add(farEntity);
-            nonlocalConnectedEntitiesGrouped.add(farEntity);
-          }
-        }
-      }
-    }
-    if (!groupHomeEntities){
-      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-      gridHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntities).toSorted().join(', ')+"</span>";
-      if(localConnectedEntities.size>0 && nonlocalConnectedEntities.size>0) {gridHTML+=", "};
-      gridHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntities).toSorted().join(', ')+"</span></div>";
-    }
+    if (!groupHomeEntities){gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"
+        +Array.from(farEntities).toSorted().join(', ')+"</div>";}
   });
   if (groupHomeEntities){
     gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'><span class='IntraHome_farEnd'>"+Array.from(localConnectedEntitiesGrouped).toSorted().join(', ')+"</span>";
-    if(localConnectedEntitiesGrouped.size>0 && nonlocalConnectedEntitiesGrouped.size>0) {gridHTML+=", "};
-    gridHTML+="<span class='"+TxRx+"_farEnd'>"+Array.from(nonlocalConnectedEntitiesGrouped).toSorted().join(', ')+"</span></div>";
+    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"+Array.from(farEntitiesGrouped).toSorted().join(', ')+"</div>";
   }
-   
   return gridHTML;
 }
 
-
-function highlightAll(myCallrowClassPrefix){
-  // pre-highlight all myCall entries in 'only me' colours HighlightNeg
-  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-  if (farEntities_me[0]!=undefined){
-    // plain text version of far entities to highlight
-    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    // loop through the farEntities in my list, modifying the innerHTML
-    for (let i=0;i<farEntities_me.length;i++){
-      farEntities_meTxt.forEach(entity => {
-        farEntities_me[i].innerHTML=farEntities_me[i].innerHTML.replace(entity,HL(entity,true,"HighlightNeg"));
-      });
-    }
+  function getEntityHTML(call,square,domain,homeClass,otherClass){
+    let clss="";
+    if(domain=="home") {clss=homeClass} else {clss=otherClass}
+    if(entityDisplayType=="Call"){return "<span class='"+clss+"'>"+call+"</span>";}
+    if(entityDisplayType=="Square"){return "<span class='"+clss+"'>"+square.substring(0,squaresDisplayLevel)+"</span>";}
+    if(entityDisplayType=="CallSquare"){return "<span class='"+clss+"'>"+call+"-"+square.substring(0,squaresDisplayLevel)+"</span>";} 
   }
-}
-
 
 function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
 
   const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
   const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
       
-  if (farEntities_me[0]!=undefined && farEntities_others[0]!=undefined){
+  if (farEntities_me[0]!=undefined && ((farEntities_others[0]!=undefined) || (othersRowClassPrefix==""))){
     // plain text version of far entities to look for in other call's far entities
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
-    for (let i=0;i<farEntities_others.length;i++){
-      // highlight the matches in the other call's far entities
-      farEntities_meTxt.forEach(entity => {
-        farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+    if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
+      farEntities_meTxt.forEach(entity => {      
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightExclusive"));
       });
-      // highlight the (same) matches in myCall's far entities, first reversing out the pre-highlighting
-      let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
-      farEntities_othersTxt.forEach(entity => {
-	farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace("<span class='HighlightNeg'>"+entity+"</span>",entity);
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true));
-      });
+    } else {
+      // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+      for (let i=0;i<farEntities_others.length;i++){
+        // highlight the matches in the other call's far entities
+        farEntities_meTxt.forEach(entity => {
+          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+        });
+        // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
+        let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+        farEntities_othersTxt.forEach(entity => {      
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
+        });
+      }
     }
   }
-  
 }
-
-
-
+	
 </script>
 	
 </body>
