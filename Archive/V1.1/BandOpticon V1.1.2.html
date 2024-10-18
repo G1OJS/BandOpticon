@@ -711,7 +711,7 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
         // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
         let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
         farEntities_othersTxt.forEach(entity => {      
-          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('Exclusive">'+entity,'Match">'+entity);
         });
       }
     }
