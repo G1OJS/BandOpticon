@@ -540,8 +540,8 @@ a:visited {color: blue;}
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
-       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand="+band+"; detailsWanted='BandDetails'; updateDisplays()'>"+band+" "+watchedMode+"</a>";
-       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showLegend();><span style='float:right;';>legend</span></a>";}        
+       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand=\&quot;"+band+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; updateDisplays();'>"+band+" "+watchedMode+"</a>";
+       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}        
        bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
          +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
          +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
@@ -569,7 +569,7 @@ a:visited {color: blue;}
          +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
          +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"+spotsLegend+"</div><div>"
-         +" <a href='#' onclick='showLegend();'><span style='float:right;';>close</span></a>"
+         +" <a href='#' onclick='showBandTileLegend();'><span style='float:right;';>close</span></a>"
 	        +"<br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
 	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
