@@ -24,9 +24,8 @@ div {margin: 0px;  padding: 0px;}
 		    margin-bottom:0px; padding-left: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; }
-#bandsGrid > div.active	{background-color:white}
-#pleaseWait {text-align: center; font-size: 3rem; background-color:grey}
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
+#bandsGrid > div.active	{background-color:white;}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
@@ -60,9 +59,6 @@ a:visited {color: blue;}
    <div id="details_group">
      <div id="detailsTop"></div>
      <div id="detailsGrid"></div>
-   </div>
-   <div id="pleaseWait">
-    Please Wait for the Band Tiles to Load
    </div>
    <div id="bandsGrid"></div>
 </div>
@@ -130,11 +126,8 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
 
-  var once=true;
-
   loadConfig();
-  setDisplayConfig();
-  updateappTop();
+  updateDisplays();
 
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(writeData, 1000*dataWriteSeconds);
@@ -414,8 +407,7 @@ a:visited {color: blue;}
     if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
-    updateappTop();
-    setDisplayConfig();
+    updateappDisplays();
   }
   
   function editPurgeMins(){
@@ -452,7 +444,6 @@ a:visited {color: blue;}
       connections = {};
       connectionsAdded=0;
       connectionsPurged=0;
-      updateappTop();
       updateDisplays();
       connectToFeed();
     } else {
@@ -464,8 +455,6 @@ a:visited {color: blue;}
       purgeSpots();
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
-      writeBandTilesDivs();
-      document.getElementById('pleaseWait').innerHTML="";
       updateBandTiles();
   }
 
@@ -498,17 +487,15 @@ a:visited {color: blue;}
    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
- 
- function writeBandTilesDivs(){
-  
+    
+  function updateBandTiles(){
+    
     // Write the <div>s for each band summary tile in the bandsGrid area
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
-
     var bandsGridDocEl = document.getElementById("bandsGrid"); 
     while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
-    
     var bandTileDivs = document.createDocumentFragment();
     bandsArr.forEach((band,index) => {
       var newDiv = document.createElement('div');  
@@ -521,17 +508,10 @@ a:visited {color: blue;}
       bandTileDivs.appendChild(newDiv);
     }
     bandsGridDocEl.appendChild(bandTileDivs);
-  }
-
- 
     
-  function updateBandTiles(){
-  
-    let criteria=new Array();
-    let indexArr=new Array();
-    let bandsDataArr=new Array();
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
+    let bandsDataArr=new Array();
     bandsArr.forEach((band,index) => {
       let nSpotsHH=0;
       let nSpotsHD=0;
@@ -559,6 +539,8 @@ a:visited {color: blue;}
     });
     
     // get the band tile sort order
+    let criteria=new Array();
+    let indexArr=new Array();
     bandsArr.forEach((band,index) => {
       indexArr.push(index);
       if (bandTilesSortKey=="BandName") {
