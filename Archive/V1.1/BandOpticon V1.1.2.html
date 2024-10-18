@@ -103,7 +103,7 @@ a:visited {color: blue;}
   var modesAcrossAllBandsArr=["FT4","FT8","JS8","WSPR","CW"];
   var detailsBand=bandsArr[0];
   var bandTilesSortKey="BandName";
-  var refresh_mSeconds=5000;
+  var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="BandTileLegend";
   var entityDisplayType="Call";
@@ -506,6 +506,7 @@ a:visited {color: blue;}
     let nfillerDivs=4-(bandsArr.length-1) %5;
     for (let i=0;i<nfillerDivs;i++){
       var newDiv = document.createElement('div');  
+      if(connectionsAdded==0){newDiv.innerHTML="... loading"}
       bandTileDivs.appendChild(newDiv);
     }
     bandsGridDocEl.appendChild(bandTileDivs);
