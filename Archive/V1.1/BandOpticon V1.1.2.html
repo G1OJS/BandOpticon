@@ -17,7 +17,7 @@ div {margin: 0px;  padding: 0px;}
 #appTop > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTitle {display: grid; grid-template-columns: max-content auto; grid-template-rows: auto;}
+#detailsTitle {display: grid; grid-template-columns: auto; grid-template-rows: auto;}
 #detailsTitle > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1rem; }
 #detailsTop {display: grid; grid-template-columns: max-content auto; grid-template-rows: auto;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:10px; font-size: 1rem; border-right:solid; border-color:grey; border-width:1px; }
@@ -63,6 +63,7 @@ a:visited {color: blue;}
    <div id="legend"></div>
    <div id="details_group">
      <div id="detailsTitle"></div>
+     <div id="detailsInfo"></div>
      <div id="detailsTop"></div>
      <div id="detailsGrid"></div>
    </div>
@@ -591,15 +592,13 @@ a:visited {color: blue;}
      let detailsTitle=document.getElementById("detailsTitle"); 
      detailsTitle.innerHTML=""
           +"<div><span class='groupTitleText'>"+detailsBand+" "+watchedMode+" Band Activity Details</span>"
-          +"<span class='normalText'>"
-          +"<br>Spots <span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
-          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
-          +"<span class='Rx_farEnd'>"+bandData[3]+"</span><br>"+spotsLegend
-          +"</span></div><div>"   
           +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
-	        +"<span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")
-          +"<br>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")
-	        +"<br>Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
+          +"<br>Spots Home->Home: "+bandData[1]+", "
+          +"Home->DX: "+bandData[2]+", "
+          +"DX->Home: "+bandData[3]+"."  
+	        +"<br><br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")
+          +" Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")
+	        +" Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
     
      detailsTop.innerHTML=""
           +"<div><span class='columnHeadingText'>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></span>"
