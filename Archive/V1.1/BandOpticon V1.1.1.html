@@ -115,9 +115,9 @@ a:visited {color: blue;}
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  const spotsLegend="<span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home /</span>"
-         + "<span class='Tx_farEnd'> Home "+RIGHTARROW+" DX /</span>"
-         + "<span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
+  const spotsLegend="<br><span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home </span>"
+         + "<br><span class='Tx_farEnd'> Home "+RIGHTARROW+" DX</span>"
+         + "<br><span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -586,7 +586,7 @@ a:visited {color: blue;}
          +"<br>Spots "
          +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
-         +"<span class='Rx_farEnd'>"+bandData[3]+"</span><br>"+spotsLegend+"<br></div><div>"
+         +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"+spotsLegend+"</div><div>"
          +" <a href='#' onclick=setDisplayConfig(&quot;BandTileLegend&quot;);><span style='float:right;';>close</span></a>"
 	        +"<span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
