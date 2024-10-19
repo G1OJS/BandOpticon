@@ -70,8 +70,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - add minmax to legend box so it doesnt extend beyond viewport
-  - split hyperlinks into second title row to prevent wordwrap
+  - on details grid, split hyperlinks into second title row to prevent wordwrap
   - look at grid resize when well short of wordwrap both sides (currently defaults to wide columns both sides)
   - redsign screen layout (colours / borders etc)
   - QRZ link for displayed callsigns?
