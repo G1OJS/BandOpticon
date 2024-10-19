@@ -424,6 +424,7 @@ a:visited {color: blue;}
       let centreColumnNominalChars=7;
       let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
+      console.log("Resize grid ",lhCharsCount,":",rhCharsCount);
     } else {
       gridDiv.style.gridTemplateColumns = "min-content min-content auto";
     }
@@ -561,7 +562,7 @@ a:visited {color: blue;}
          +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
          +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"
-	 +"<br><span class='IntraHome_farEnd'>Home"+RIGHTARROW+"Home</span> / <span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span> / <span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span>"
+	 +"<br><span class='IntraHome_farEnd'>Home"+RIGHTARROW+"Home</span><br><span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span><br><span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span>"
 	 +"</div><div>"
          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a>"
 	        +"<br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
