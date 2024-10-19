@@ -70,18 +70,16 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - progress V1.1.2 - make legend/nothing/details persist
-  - benchmark against a specific callsign? - useful for checking rx with an audio feed from a websdr
-  - do something better with width of title row in details grid (stop wrap, but allow narrow first column when not grouping calls)
+  - split hyperlinks into second title row to prevent wordwrap
   - redsign screen layout (colours / borders etc)
-  - add exclusive highlighting for all calls when not grouping??
-  - miniature map grid in each row? Larger single map with colour-coded squares?
+  - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   
 Code tidying:
   - make the test message injector work
   - is there a better way to count for statistics?
+  - move variables out of global
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
      - IMMUTABLE = const
      - Capital_plurals = Set
