@@ -7,17 +7,17 @@
 </tr>
 
 <tr>
-  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>19-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.0'>V1.2.0</a></td>
   <td>
     <ol>
-      <li>Update some text and formatting</li>
-      <li>Intenal code changes - combine and optimise functions including highlighting code, add comments.</li>
+      <li>"List all calls" view can now be filtered to single other call for benchmarking against myCall</li>
+      <li>Intenal code changes - cleaned up changes to and preservation of display state.</li>
     </ol>
   </td>
 </tr>
 
 <tr>
-  <td>17-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
@@ -25,6 +25,8 @@
       <li>Note that this version purges old connection data based on the age of the spot being generated rather than the time it was received as in V1.0.x - this means that the stats are less 'polluted' by old spots received a long time after they were generated.</li>
       <li>Band tiles can optionally be sorted based on any of the numbers displayed in them</li>
       <li>Bands watched are updated automatically based on band activity (no longer limited to a predefined list of bands).</li>
+      <li>Update some text and formatting</li>
+      <li>Intenal code changes - combine and optimise functions including highlighting code, add comments.</li>
     </ol>
   </td>
 </tr>
