@@ -78,6 +78,7 @@ To do:
   
 Code tidying:
   - make the test message injector work
+  - revise the active/inactive classing so able to add an active/inactive key to the band tile legend
   - is there a better way to count for statistics?
   - move variables out of global
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
