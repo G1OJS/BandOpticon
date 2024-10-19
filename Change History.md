@@ -1,5 +1,5 @@
 
-# Changes 
+# Previous versions
 
 <table>
 <tr>
@@ -37,49 +37,17 @@
       <li>Added dynamic sizing to Band Activity Details grid</li>
       <li>Revised wording of higlighting explanation in Band Activity Details</li>
       <li>Added third row for 'my Call': remote entities I'm both reaching and spotting (to highlight potential QSOs)</li>
-      <li>Internal code change - (call,square) to entity conversion taken into function in prep for allowing more options for entity type</li>
-      <li>Internal code change - changes to variable names for better consistency and readability</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>10-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.3'>V1.0.3</a></td>
-  <td>
-    <ol>
       <li>Squares can now be specified using the LLNN:NN method at any level e.g. IO90ju:qr</li>
       <li>Fixed error in V1.0.0 to V1.0.2 inclusive which prevented level 6,8 and 10 squares in the squares list resulting in a subscription to the server</li>
-      <li>Internal code change - moved validation of squares input including nn:mm to the function with regexps rather than checking for ':' before the call</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>09-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.2'>V1.0.2</a></td>
-  <td>
-    <ol>
       <li>Updated highlighting, and explanation of highlighting, in the Band Activity Details grid</li>
-      <li>Internal code change - simplified method of gathering entities spotted / reached by myCall & others / myCall only</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.1'>V1.0.1</a></td>
-  <td>
-    <ol>
       <li>Fixed clock error (12:01:05 displays as 12:1:5) reintroduced when eliminating deprecated substr()</li>
-      <li>Changed text in details pane from
-        "Entities common to [myCall] and all calls including [myCall] are highlighted"
-        to "Entities spotting / being spotted by [myCall] are highlighted when also spotted by other calls in Home"</li>
-      <li>Internal code change - rename Squares to squaresArr</li>
-      <li>Internal code change - removed redundant code from configuration loader introduced due to error in localstorage tag name for squares (now fixed)</li>
       <li>Removed duplicate copy of [myCall] appearing in main table when not grouping calls into Tx and Rx lists</li>
+      <li>Internal code changes</li>
       <li>Added link to this change history</li>
     </ol>
-  </td>
+   </td>
 </tr>
- 
+
 <tr>
   <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
