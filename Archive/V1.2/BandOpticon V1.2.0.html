@@ -18,9 +18,9 @@ div {margin: 0px;  padding: 0px;}
 
 #details_group {margin:2px;padding:0px; background-color:blue;}
 
-#legendGrid {display: grid; grid-template-columns: 1fr; grid-template-rows: auto; font-size: 1rem;}
-#legendGrid > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
-#legendGrid > div > div {display:inline-block; min-height:65px; background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; font-size: 1rem; border:solid; border-color:grey; border-width:1px; width:fit-content; vertical-align:middle;}
+#legendGrid {display: grid; background-color: white; grid-template-columns: 1fr; grid-template-rows: auto; font-size: 1rem;}
+#legendGrid > div {display: grid; background-color: white; margin: 0px;  padding: 5px; grid-template-columns: auto auto; grid-template-rows: auto;  font-size: 1rem;  }
+#legendGrid > div > div {background-color: white; margin: 1px;  padding: 5px; font-size: 1rem; border:solid; border-color:grey; border-width:1px; }
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
