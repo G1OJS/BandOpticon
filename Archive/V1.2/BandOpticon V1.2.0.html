@@ -15,17 +15,22 @@ div {margin: 0px;  padding: 0px;}
 #clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 #appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
 #appTop > div {background-color: white; margin: 2px;  padding: 5px;}
-#legend > div {background-color: white; margin: 2px;  padding: 5px;  }
+
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop {display: grid; grid-template-columns: minmax(25%,max-content) auto; grid-template-rows: auto; font-size: 1rem;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
-#detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
-		    margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
+
+#legendGrid {display: grid; grid-template-columns: 1fr; grid-template-rows: auto; font-size: 1rem;}
+#legendGrid > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px;}
+#legend  {display:inline-block; min-height:100px; background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; font-size: 1rem; border:solid; border-color:grey; border-width:1px; width:fit-content;}
+
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
 #bandsGrid > div.active	{background-color:white;}
+
+#detailsTop {display: grid; grid-template-columns: minmax(25%,max-content) auto; grid-template-rows: auto; font-size: 1rem;}
+#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
+#detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+#detailsGrid > div.titleRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold;}
 #creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
@@ -55,8 +60,8 @@ a:visited {color: blue;}
       <div id="appTop_l"></div>
       <div id="appTop_r"></div>
    </div>
-   <div id="legend"></div>
    <div id="details_group">
+     <div id="legendGrid"></div>
      <div id="detailsTop"></div>
      <div id="detailsGrid"></div>
    </div>
@@ -228,15 +233,16 @@ a:visited {color: blue;}
   
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
-    document.getElementById("legend").innerHTML="<div><strong>Band tile legend:</strong>"
+    document.getElementById("legendGrid").innerHTML="<div><strong>Band tile legend:</strong>"
       +" <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a><br><br>"
-      +"<div style='margin-left:20px; padding:5px; border-color:blue; border-style:solid; border-width:1px; width:max-content;'><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br>Spots: number of spots</strong><span class='IntraHome_farEnd'> Home"+RIGHTARROW+"Home </span> / <span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span> / <span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span><br>"
-      +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
-      +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
-      +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
-      +"<span class='extraModes'><span class='textAnchorButton'>+ OTHER MODES in use on this band</span></span>"
-      +"<br><br><span class='notesText'> Silver background indicates that the band is not active on the current mode</span></div>"
-      +"<br>";
+      +"<div id='legend' style='background-color:white;''><span class='textAnchorButton-strong'>Band & Mode</span></strong> (click for detailed stats)<br>Spots: <span class='notesText'>number of spots<span class='IntraHome_farEnd'> Home"+RIGHTARROW+"Home </span> / <span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span> / <span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span></span><br>"
+      +"<span class='Tx'>Tx Calls: <span class='notesText'>number of unique calls in 'Home' received by anyone</span></span><br>"
+      +"<span class='Rx'>Rx Calls: <span class='notesText'>number of unique calls in 'Home' receiving anyone</span></span><br>"
+      +"<span class='TxRx'>TxRx Calls: <span class='notesText'>number of unique calls in 'Home' receiving anyone and being received by anyone</span></span><br>"
+      +"<span class='extraModes'><span class='textAnchorButton'>+ OTHER MODES <span class='notesText'>in use on this band</span></span></span><br>" 
+      +"</div>"
+      +"<div id='legend'><span class='textAnchorButton-strong'>Band & Mode</span></strong> (click for detailed stats)<br><br><span class='notesText'> Silver background indicates that the band is not active on the current mode</span>"
+      +"<br></div></div>";
 
     document.getElementById("detailsGrid").innerHTML="";
     document.getElementById("detailsTop").innerHTML="";
