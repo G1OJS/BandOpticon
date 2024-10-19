@@ -439,17 +439,19 @@ a:visited {color: blue;}
  } 
     
   function updateDisplays(){
+    // this can be improved by a) removing the static HTML and using <output> tags and b) moving small updates (e.g. edits) out to calling functions
+	  
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
     var modeSelector="";
+
+    // update the top banner  
     modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
-    
     document.getElementById("appTop_l").innerHTML="<div><span id='clock'>"+utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2]+"</span>"
        +"<br><span class='notesText'>Running for "+runningmins+" minutes</span>"
        +"<br><span class='notesText'>"+(connectionsAdded-connectionsPurged)+" connections in database: "
        +"<br><span class='notesText'>"+connectionsAdded+" added, "+connectionsPurged+" purged<br></span>";
-
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
     document.getElementById("appTop_r").innerHTML=""
 	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
@@ -459,11 +461,10 @@ a:visited {color: blue;}
         +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList(); updateDisplays();'>edit</a> (clears all data)</p>"
         +"Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>"
         +"<br><span>Click any underlined number to sort band tiles on that number</span>";
-        
-        let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
-        bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
-        document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
-        if(bandTilesSortKey!="BandName") {document.getElementById("appTop_r").innerHTML+=" or <a href='#' onclick='setSort(&quot;BandName&quot;); updateDisplays();'>reset to Band Name</a>"}
+    let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
+    bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
+    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
+    if(bandTilesSortKey!="BandName") {document.getElementById("appTop_r").innerHTML+=" or <a href='#' onclick='setSort(&quot;BandName&quot;); updateDisplays();'>reset to Band Name</a>"}
 
     // Write the <div>s for each band summary tile in the bandsGrid area
     var bandsHeard=new Set();
