@@ -583,9 +583,8 @@ a:visited {color: blue;}
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
 	  +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
-          +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; benchmarkCall=\&quot;G1OJS.HACKGREEN\&quot;; updateDisplays();'>[Single&nbsp;other&nbsp;call]</a>"
+          +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; benchmarkCall=""; updateDisplays();'>[List&nbsp;each&nbsp;call]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; benchmarkCall=""; updateDisplays();'>[Group&nbsp;into&nbsp;Tx&nbsp;and&nbsp;Rx]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
@@ -638,9 +637,9 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach((homeCall) => {
      if (!groupHomeEntities){
-      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>"
-	      +"<a href='#' onclick='groupHomeEntities=false; benchmarkCall=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"
-	      +"</div><div class='detail_c'>"+Arrow+"</div>";
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
+      if(benchmarkCall==""){gridHTML+="<a href='#' onclick='groupHomeEntities=false; benchmarkCall=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
+      gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
     for (id in connections) {
