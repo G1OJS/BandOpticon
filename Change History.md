@@ -17,7 +17,7 @@
 </tr>
 
 <tr>
-  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.0'>V1.1.0</a></td>
+  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
