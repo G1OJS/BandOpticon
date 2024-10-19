@@ -223,12 +223,14 @@ a:visited {color: blue;}
    }
 
   function showNothing(){
+    detailsWanted="Nothing";
     document.getElementById("legend").innerHTML="";
     document.getElementById("detailsGrid").innerHTML="";
     document.getElementById("detailsTop").innerHTML="";
   }
   
   function showBandTileLegend(){
+    detailsWanted="BandTileLegend";
     document.getElementById("legend").innerHTML="<div>Band tile legend:"
       +" <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a>"
       +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
@@ -439,6 +441,7 @@ a:visited {color: blue;}
       updateappTop();
       dataForRecord="Mode="+watchedMode+", ";
       updateBandTiles();
+      
   }
 
   function resizeGridColumns(){
@@ -561,7 +564,9 @@ a:visited {color: blue;}
   }
  
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
-     
+
+     detailsWanted="BandDetails":
+	  
      document.getElementById("legend").innerHTML="";
      
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
