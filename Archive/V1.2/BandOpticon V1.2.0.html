@@ -116,9 +116,6 @@ a:visited {color: blue;}
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  const spotsLegend="<br><span class='IntraHome_farEnd'> Home "+RIGHTARROW+" Home </span>"
-         + "<br><span class='Tx_farEnd'> Home "+RIGHTARROW+" DX</span>"
-         + "<br><span class='Rx_farEnd'> DX "+RIGHTARROW+" Home</span>"
   var dataForRecord="";
   var newWindow=null;
   var dataWriteSeconds=15;
@@ -238,7 +235,8 @@ a:visited {color: blue;}
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
       +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
       +"<span class='extraModes'><span class='textAnchorButton'>+ OTHER MODES in use on this band</span></span>"
-      +"</div><br></div>";
+      +"</div><br><span class='notesText'> Grey background indicates that the band is not active on the current mode</span>
+	    <br></div>";
 
     document.getElementById("detailsGrid").innerHTML="";
     document.getElementById("detailsTop").innerHTML="";
@@ -558,12 +556,13 @@ a:visited {color: blue;}
      detailsWanted="BandDetails";
 	  
      document.getElementById("legend").innerHTML="";
-     
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
          +"<br>Spots "
-         +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
+         +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>"
          +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
-         +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"+spotsLegend+"</div><div>"
+         +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"+
+	 +"<br><span class='IntraHome_farEnd'>Home"+RIGHTARROW+"Home</span> / <span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span> / <span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span>"
+	 +"</div><div>"
          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a>"
 	        +"<br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
           +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
