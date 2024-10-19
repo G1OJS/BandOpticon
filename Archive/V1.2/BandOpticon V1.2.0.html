@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +19,7 @@ div {margin: 0px;  padding: 0px;}
 #appTop > div {background-color: white; margin: 2px;  padding: 5px;}
 #legend > div {background-color: white; margin: 2px;  padding: 5px;  }
 #details_group {margin:2px;padding:0px; background-color:blue;}
-#detailsTop {display: grid; grid-template-columns: minmax(25%,max-content) auto; grid-template-rows: auto;}
+#detailsTop {display: grid; grid-template-columns: minmax(25%,max-content) auto; grid-template-rows: auto; font-size: 1rem;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; padding-bottom:15px; font-size: 1rem; border-right:solid; border-color:grey; border-width:1px; }
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; border-top:solid; border-width:1px; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; 
@@ -231,14 +232,14 @@ a:visited {color: blue;}
   
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
-    document.getElementById("legend").innerHTML="<div>Band tile legend:"
-      +" <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a>"
-      +"<br><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br><strong>Spots</strong>: number of spots "+spotsLegend+"<br>"
+    document.getElementById("legend").innerHTML="<div><strong>Band tile legend:</strong>"
+      +" <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a><br><br>"
+      +"<div style='margin-left:20px; padding:5px; border-color:blue; border-style:solid; border-width:1px; width:max-content;'><span class='textAnchorButton-strong'>Band & Mode</span> (click for detailed stats)<br>Spots: number of spots</strong><span class='IntraHome_farEnd'> Home"+RIGHTARROW+"Home </span> / <span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span> / <span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span><br>"
       +"<span class='Tx'>Tx Calls: number of unique calls in 'Home' received by anyone</span><br>"
       +"<span class='Rx'>Rx Calls: number of unique calls in 'Home' receiving anyone</span><br>"
       +"<span class='TxRx'>TxRx Calls: number of unique calls in 'Home' receiving anyone and being received by anyone</span><br>"
-      +"<span class='textAnchorButton'>+ Other modes in use on this band</span>"
-      +"</div>";
+      +"<span class='extraModes'><span class='textAnchorButton'>+ OTHER MODES in use on this band</span></span>"
+      +"</div><br></div>";
 
     document.getElementById("detailsGrid").innerHTML="";
     document.getElementById("detailsTop").innerHTML="";
