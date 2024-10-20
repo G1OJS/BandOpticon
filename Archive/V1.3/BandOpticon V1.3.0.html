@@ -44,7 +44,7 @@ div {margin: 0px;  padding: 0px;}
 .IntraHome_farEnd {color:blue; }
 .Tx_farEnd {color:Fuchsia; }
 .Rx_farEnd {color:olive;}
-.TxRx_farEnd {color:blue; font-style:italic;}
+.TxRx_farEnd {font-style:italic;}
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 .textAnchorButton {color: blue; }
@@ -610,17 +610,13 @@ a:visited {color: blue;}
   	 }
        }
        // all except myCall:
-       let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
-       let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
-       let othersTxRxHTML=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
-       document.getElementById("detailsGrid").innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
-       
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall
-       let myCallTxHTML=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
-       let myCallRxHTML=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
-       document.getElementById("detailsGrid").innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
-         
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        // "prehighlight" all myCall far entities with Neg highlightinh	 
        highlightEntitiesList("myCallRx","");
        highlightEntitiesList("myCallTx","");  
