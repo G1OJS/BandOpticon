@@ -601,8 +601,9 @@ a:visited {color: blue;}
 	   txCalls.clear();
            for (id in connections) {
              let c=connections[id];
-             if (c.b==detailsBand && c.md==watchedMode && c.rc==myCall) {txCalls.add(c.sc)}
+             if (c.b==detailsBand && c.md==watchedMode && c.sc==myCall) {txCalls.add(c.rc)}
            }
+	   txCalls.add(myCall);
 	   rxCalls=txCalls; txRxCalls=txCalls;
 	 } else {
 	   txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls;txRxCalls=txCalls;
