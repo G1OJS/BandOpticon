@@ -593,14 +593,21 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
-    
+
+       // get copy of connections for just this band and mode
+	  let cons={};
+	  for (id in connections) {
+             let c=connections[id];
+             if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+           }
+
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        if(listFilter!=""){
 	 if(listFilter=="HearingMe"){
 	   txCalls.clear();
-           for (id in connections) {
-             let c=connections[id];
+           for (id in cons) {
+             let c=cons[id];
              if (c.b==detailsBand && c.md==watchedMode && c.sc==myCall) {txCalls.add(c.rc)}
            }
 	   txCalls.add(myCall);
@@ -610,27 +617,27 @@ a:visited {color: blue;}
   	 }
        }
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        // "prehighlight" all myCall far entities with Neg highlightinh	 
-  //     highlightEntitiesList("myCallRx","");
-  //     highlightEntitiesList("myCallTx","");  
-  //     highlightEntitiesList("myCallTxRx",""); 
+       highlightEntitiesList("myCallRx","");
+       highlightEntitiesList("myCallTx","");  
+       highlightEntitiesList("myCallTxRx",""); 
        // do the highlighting 	
-  //     highlightEntitiesList("myCallRx","othersRx");
-  //     highlightEntitiesList("myCallTx","othersTx");  
-  //     highlightEntitiesList("myCallTxRx","othersTxRx"); 
+       highlightEntitiesList("myCallRx","othersRx");
+       highlightEntitiesList("myCallTx","othersTx");  
+       highlightEntitiesList("myCallTxRx","othersTxRx"); 
      
        resizeGridColumns();
 }	
 
 
-function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
+function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 	
   if(homeCalls.size==0) {return ""};
   
@@ -649,13 +656,13 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
-    for (id in connections) {
-      let c=connections[id];
+    for (id in cons) {
+      let c=cons[id];
       if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
     }
     let farEntities=new Set;
-    for (id in connections) {
-      let c=connections[id];
+    for (id in cons) {
+      let c=cons[id];
       let farEntity="";
       if (c.b==detailsBand && c.md==watchedMode) {
         if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntity(c.rc,c.rl,c.rd)}
