@@ -659,18 +659,16 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let far=new Set(); // home call has reached
     for (id in cons) {
       let c=cons[id];
-      if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
+      if (c.sc==homeCall) {far.add(c.rc)}
     }
     let farEntities=new Set;
     for (id in cons) {
       let c=cons[id];
       let farEntity="";
-      if (c.b==detailsBand && c.md==watchedMode) {
-        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntity(c.rc,c.rl,c.rd)}
-        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntity(c.sc,c.sl,c.sd);}
-        if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
+      if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntity(c.rc,c.rl,c.rd)}
+      if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntity(c.sc,c.sl,c.sd);}
+      if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
                                            farEntity=getEntity(c.sc,c.sl,c.sd);}
-      }
       if(farEntity!=""){
         farEntities.add(farEntity);
         farEntitiesGrouped.add(farEntity);
