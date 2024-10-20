@@ -218,7 +218,7 @@ a:visited {color: blue;}
    function purgeSpots(){
    // get rid of spots older than purgeMinutes
    // connectionsPurged+=1;
-     if((connectionsAdded-connectionsPurged)>20000){purgeMinutes=Math.trunc(((now-tStart)/1000) / 60)}
+     if((connectionsAdded-connectionsPurged)>20000){let now = new Date; purgeMinutes=Math.min(purgeMinutes,Math.trunc(((now-tStart)/1000) / 60));}
      for (id in connections) {
        let tConn=parseInt(connections[id].t);
        let connAge=((Date.now()/1000-tConn))/60
