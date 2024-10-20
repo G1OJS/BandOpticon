@@ -661,7 +661,6 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
       if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
                                            farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
-      }
       if(farEntity!=""){
         farEntities.add(farEntity);
         farEntitiesGrouped.add(farEntity);
