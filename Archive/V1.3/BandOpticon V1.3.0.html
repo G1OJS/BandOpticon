@@ -41,6 +41,8 @@ div {margin: 0px;  padding: 0px;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
+.HomeEntity {color:blue; }
+.DxEntity {color:Fuchsia; }
 .IntraHome_farEnd {color:blue; }
 .Tx_farEnd {color:Fuchsia; }
 .Rx_farEnd {color:olive;}
@@ -230,7 +232,7 @@ a:visited {color: blue;}
    function purgeSpots(){
    // get rid of spots older than purgeMinutes
    // connectionsPurged+=1;
-     if((connectionsAdded-connectionsPurged)>20000){
+     if((connectionsAdded-connectionsPurged)>40000){
        let now = new Date; 
        purgeMinutes=Math.min(purgeMinutes,Math.trunc(((now-tStart)/1000) / 60));
        document.getElementById("purgeMinutes").value=purgeMinutes;
@@ -599,7 +601,7 @@ a:visited {color: blue;}
 	  +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
           +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls]</a>"
           +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;HearingMe\&quot;; updateDisplays();'>[List&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;(Tx,Rx,TxRx)]</a>"
+          +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;(Tx,Rx,TxRx)]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
@@ -689,15 +691,22 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       }
     }
     if (!groupHomeEntities){
-        let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) =>c.slice(0:1)=="h").map((c) => c.slice(1));
-        let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) =>c.slice(0:1)=="d").map((c) => c.slice(1));
-        gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"
-        +Array.from(farEntities).toSorted().join(', ')+"</div>";
+        let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+        let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+        gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
+        +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>, "        
+        +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
+        +"</div>";
     }
   });
   if (groupHomeEntities){
     gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"+Array.from(farEntitiesGrouped).toSorted().join(', ')+"</div>";
+    let farEntitiesHome=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+    let farEntitiesDX=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
+    +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>, "        
+    +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
+    +"</div>";
   }
   return gridHTML;
 }
