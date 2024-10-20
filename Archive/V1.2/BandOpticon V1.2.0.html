@@ -597,17 +597,24 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        if(benchmarkCall!=""){txCalls=setMyCall.union(new Set().add(benchmarkCall)); rxCalls=txCalls;txRxCalls=txCalls}
+
+       // get copy of connections for just this band and mode
+       let cons={};
+       for (id in connections) {
+	 let c=connections[id];
+         if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+       }
 	  
        // all except myCall:
-       let othersTxHTML=getBandDetailsGridHTML(txCalls.difference(setMyCall),"Tx","othersTx");
-       let othersRxHTML=getBandDetailsGridHTML(rxCalls.difference(setMyCall),"Rx","othersRx");
-       let othersTxRxHTML=getBandDetailsGridHTML(txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       let othersTxHTML=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       let othersRxHTML=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       let othersTxRxHTML=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        document.getElementById("detailsGrid").innerHTML+=othersTxHTML+othersRxHTML+othersTxRxHTML
        
        // just myCall
-       let myCallTxHTML=getBandDetailsGridHTML(txCalls.intersection(setMyCall),"Tx","myCallTx");
-       let myCallRxHTML=getBandDetailsGridHTML(rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       let myCallTxRxHTML=getBandDetailsGridHTML(txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       let myCallTxHTML=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       let myCallRxHTML=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       let myCallTxRxHTML=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        document.getElementById("detailsGrid").innerHTML+=myCallTxHTML+myCallRxHTML+myCallTxRxHTML;
          
        // "prehighlight" all myCall far entities with Neg highlightinh	 
@@ -623,7 +630,7 @@ a:visited {color: blue;}
 }	
 
 
-function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
+function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 	
   if(homeCalls.size==0) {return ""};
   
@@ -642,18 +649,17 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
-    for (id in connections) {
-      let c=connections[id];
-      if (c.b==detailsBand && c.md==watchedMode && c.sc==homeCall) {far.add(c.rc)}
+    for (id in cons) {
+      let c=cons[id];
+      if (c.sc==homeCall) {far.add(c.rc)}
     }
     let farEntities=new Set;
-    for (id in connections) {
-      let c=connections[id];
+    for (id in cons) {
+      let c=cons[id];
       let farEntity="";
-      if (c.b==detailsBand && c.md==watchedMode) {
-        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
-        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
-        if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
+      if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
+      if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+      if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
                                            farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
       }
       if(farEntity!=""){
