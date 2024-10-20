@@ -62,8 +62,17 @@ a:visited {color: blue;}
    <div id="appTop">
       <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
 	<br><span class='notesText'><output id='connectionsIn'></output> connections in database: 
-  <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>
-      <div id="appTop_r"></div>
+        <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
+      <div id="appTop_r">
+        <span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>
+	My call = <output id='myCall'></output> <a class='textAnchorButton' href='#' onclick='editMyCall(); updateDisplays();'>edit</a><br>
+	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins(); updateDisplays();'>edit</a><br>
+	Mode: <span id='modeSelector'></span>
+	<p class='hanging20' id='squaresListDisplay'><a class='textAnchorButton' href='#' onclick='editSquaresList(); updateDisplays();'>edit</a> (clears all data)</p>
+	Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>
+	<br><span>Click any underlined number to sort band tiles on that number</span>
+	<a href='#' onclick='setSort(&quot;BandName&quot;); updateDisplays();'>reset to Band Name</a>
+      </div>
    </div>
    <div id="details_group">
      <div id="legendContainer"></div>
@@ -347,6 +356,8 @@ a:visited {color: blue;}
   function loadConfig(){
     if(localStorage.getItem('squaresList')){
       squaresList=JSON.parse(localStorage.getItem('squaresList'));
+      let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+      document.getElementById("squaresListDisplay").value=squaresListDisplay;  // move this
     } else {
       squaresList=defaultSquaresList;
       console.log("No local config data found for squares list: defaults applied.");
@@ -414,6 +425,8 @@ a:visited {color: blue;}
       connectionsPurged=0;
       connectToFeed();
       updateDisplays();
+      let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+      document.getElementById("squaresListDisplay").value=squaresListDisplay; 
     } else {
       alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
     }
@@ -451,29 +464,20 @@ a:visited {color: blue;}
  } 
     
   function updateDisplays(){
-    // this can be improved by a) removing the static HTML and using <output> tags and b) moving small updates (e.g. edits) out to calling functions
 	  
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-    var modeSelector="";
 
     // update the top banner  
-    modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     document.getElementById("clock").value=utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
     document.getElementById("connectionsAdded").value=connectionsAdded;
     document.getElementById("connectionsPurged").value=connectionsPurged;
-    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-    document.getElementById("appTop_r").innerHTML=""
-	+"<span style='float:right;'><a class='textAnchorButton' href='#' onclick='startRecording();'>record</a></span>"
-        +"My call = "+myCall+" <a class='textAnchorButton' href='#' onclick='editMyCall(); updateDisplays();'>edit</a><br>"
-        +" Spots purged if older than "+purgeMinutes+" mins <a class='textAnchorButton' href='#' onclick='editPurgeMins(); updateDisplays();'>edit</a><br>"
-        +"Mode: "+modeSelector+"<br>"
-        +"<p class='hanging20'>Home = "+squaresListDisplay+" <a class='textAnchorButton' href='#' onclick='editSquaresList(); updateDisplays();'>edit</a> (clears all data)</p>"
-        +"Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>"
-        +"<br><span>Click any underlined number to sort band tiles on that number</span>";
+    let modeSelector="";
+    modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
+    document.getElementById("modeSelector").innerHTML=modeSelector;
     let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
     bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
     document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
