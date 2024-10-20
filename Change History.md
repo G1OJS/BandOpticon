@@ -7,6 +7,14 @@
 </tr>
 
 <tr>
+  <td>Testing</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.2.0</a></td>
+  <td>
+    <ol>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>19-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.0'>V1.2.0</a></td>
   <td>
     <ol>
