@@ -689,6 +689,10 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       }
     }
     if (!groupHomeEntities){
+					
+					// do this part differently - split the domain into a aeparate array so that after sorting we can find the 
+     // index at which entries swap from home to dx
+
         let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
         let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
         gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
