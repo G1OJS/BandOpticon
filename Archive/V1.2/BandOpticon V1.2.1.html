@@ -619,8 +619,8 @@ a:visited {color: blue;}
 
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
-       if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls;txRxCalls=txCalls;}
-       }
+       if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
+
        // all except myCall:
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
