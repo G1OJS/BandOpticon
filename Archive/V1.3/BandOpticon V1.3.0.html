@@ -357,7 +357,7 @@ a:visited {color: blue;}
     if(localStorage.getItem('squaresList')){
       squaresList=JSON.parse(localStorage.getItem('squaresList'));
       let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-      document.getElementById("squaresListDisplay").value=squaresListDisplay;  // move this
+      document.getElementById("squaresListDisplay").innerHTML=squaresListDisplay; 
     } else {
       squaresList=defaultSquaresList;
       console.log("No local config data found for squares list: defaults applied.");
