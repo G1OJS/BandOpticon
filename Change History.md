@@ -87,6 +87,18 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - think about use cases 
+    - is all info needed all the time?
+   awareness
+    - band and mode activity
+    
+   antenna testing 
+    - benchmarks
+   
+   qso helper 
+    - "who is hearing me and who is hearing them?"
+  
+
   - on details grid, split hyperlinks into second title row to prevent wordwrap
   - look at grid resize when well short of wordwrap both sides (currently defaults to wide columns both sides)
   - redsign screen layout (colours / borders etc)
