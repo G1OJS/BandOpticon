@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>Testing</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.2.0</a></td>
+  <td>Testing</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.3.0</a></td>
   <td>
     <ol>
     </ol>
