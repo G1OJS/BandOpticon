@@ -690,22 +690,25 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     }
     if (!groupHomeEntities){			
         let farEntities=Array.from(farEntities).toSorted();
-        gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-        +"<span class='HomeEntity'>"+farEntities.filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1)).join(', ')+"</span>"       
-        +" <span class='DxEntity'>"+farEntities.filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1)).join(', ')+"</span>"
-        +"</div>";
+        let iCut=farEntities.findIndex(element => element.indexOf("d")==0);
+        gridHTML+=getHTMLfromEntitySet(farEntities,rowClassPrefix);
     }
   });
   if (groupHomeEntities){
-    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-    let farEntities=Array.from(farEntitiesGrouped).toSorted();
-    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-        gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-        +"<span class='HomeEntity'>"+farEntities.filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1)).join(', ')+"</span>"       
-        +" <span class='DxEntity'>"+farEntities.filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1)).join(', ')+"</span>"
-    +"</div>";
+    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>"+getHTMLfromEntitySet(farEntitiesGrouped,rowClassPrefix);
   }
   return gridHTML;
+}
+
+function getHTMLfromEntitySet(entitySet,rowClassPrefix){
+    let farEntities=Array.from(entitySet).toSorted();
+    let iCut=farEntities.findIndex(element => element.slice(0,1)=="h");
+//    console.log(iCut,farEntities);
+    let HTML="<div class='"+rowClassPrefix+"_farEntities'>";
+    if(iCut>0) {HTML+="<span class='HomeEntity'>"+farEntities.slice(iCut).map((c) => c.slice(1)).join(', ')+"</span>"+", "}
+    HTML+=" <span class='DxEntity'>"+farEntities.slice(0,iCut).map((c) => c.slice(1)).join(', ')+"</span>"
+    +"</div>";
+    return HTML;
 }
 
   function getEntity(call,square,domain){
