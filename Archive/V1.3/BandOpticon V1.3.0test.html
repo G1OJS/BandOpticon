@@ -689,8 +689,6 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       }
     }
     if (!groupHomeEntities){			
-        let farEntities=Array.from(farEntities).toSorted();
-        let iCut=farEntities.findIndex(element => element.indexOf("d")==0);
         gridHTML+=getHTMLfromEntitySet(farEntities,rowClassPrefix);
     }
   });
