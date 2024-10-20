@@ -521,10 +521,8 @@ a:visited {color: blue;}
       let txCalls=new Set;
       let rxCalls=new Set;
       let bandExtraModes=new Set;
-      let bmCons={};
       for (id in connections) {
         let c=connections[id];
-        bmCons[c.sq]=c;
         if (c.b==band && c.md!=watchedMode) {bandExtraModes.add(c.md);}
         if (c.b==band && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
@@ -539,7 +537,7 @@ a:visited {color: blue;}
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord="Mode="+watchedMode+", ";bandData.slice(0,7)+", "; // save the stats from above to the recording string
       modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
-      if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(bmCons,txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
+      if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
     // get the band tile sort order
@@ -580,7 +578,7 @@ a:visited {color: blue;}
      }); 
   }
  
-  function showBandDetails(bmCons,txCalls, rxCalls, txRxCalls,bandData){
+  function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
      detailsWanted="BandDetails";
 	  
@@ -612,18 +610,25 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
 
+       // get copy of connections for just this band and mode
+	  let cons={};
+	  for (id in connections) {
+             let c=connections[id];
+             if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+           }
+
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
 
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(bmCons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
        // "prehighlight" all myCall far entities with Neg highlightinh	 
        highlightEntitiesList("myCallRx","");
        highlightEntitiesList("myCallTx","");  
@@ -656,10 +661,10 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
-    for (id in cons) {
-      let c=cons[id];
-      if (c.sc==homeCall) {far.add(c.rc)}
-    }
+//    for (id in cons) {
+//      let c=cons[id];
+//      if (c.sc==homeCall) {far.add(c.rc)}
+//    }
     let farEntities=new Set;
     for (id in cons) {
       let c=cons[id];
