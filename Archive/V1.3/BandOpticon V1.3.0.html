@@ -658,10 +658,10 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
       let c=connections[id];
       let farEntity="";
       if (c.b==detailsBand && c.md==watchedMode) {
-        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntityHTML(c.rc,c.rl,c.rd,"IntraHome_farEnd",TxRx+"_farEnd");}
-        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=getEntity(c.rc,c.rl,c.rd)}
+        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=getEntity(c.sc,c.sl,c.sd);}
         if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
-                                           farEntity=getEntityHTML(c.sc,c.sl,c.sd,"IntraHome_farEnd",TxRx+"_farEnd");}
+                                           farEntity=getEntity(c.sc,c.sl,c.sd);}
       }
       if(farEntity!=""){
         farEntities.add(farEntity);
@@ -678,12 +678,10 @@ function getBandDetailsGridHTML(homeCalls,TxRx,rowClassPrefix){
   return gridHTML;
 }
 
-  function getEntityHTML(call,square,domain,homeClass,otherClass){
-    let clss="";
-    if(domain=="home") {clss=homeClass} else {clss=otherClass}
-    if(entityDisplayType=="Call"){return "<span class='"+clss+"'>"+call+"</span>";}
-    if(entityDisplayType=="Square"){return "<span class='"+clss+"'>"+square.substring(0,squaresDisplayLevel)+"</span>";}
-    if(entityDisplayType=="CallSquare"){return "<span class='"+clss+"'>"+call+"-"+square.substring(0,squaresDisplayLevel)+"</span>";} 
+  function getEntity(call,square){
+    if(entityDisplayType=="Call"){return call}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel)}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
   }
 
 function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
