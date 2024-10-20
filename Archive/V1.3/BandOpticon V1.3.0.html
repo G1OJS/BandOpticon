@@ -694,7 +694,8 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
         let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
         let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
         gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-        +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>, "        
+        +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
+        +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", ":"")       
         +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
         +"</div>";
     }
@@ -704,7 +705,8 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let farEntitiesHome=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
     let farEntitiesDX=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
     gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-    +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>, "        
+    +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
+    +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", ":"")       
     +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
     +"</div>";
   }
