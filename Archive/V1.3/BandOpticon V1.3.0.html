@@ -596,11 +596,11 @@ a:visited {color: blue;}
     document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"
     +"Show: "	  
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;connectedToMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-        +"<br>Format: "
-    +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
-    +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;connectedToMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
+          +"<br>Format: "
+          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
+          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
           +"</div><div class='optionsRow'></div><div class='optionsRow'>Show:"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
@@ -632,7 +632,8 @@ a:visited {color: blue;}
 	   let callsFilter=new Set();
 	   callsFilter.add(myCall);
 	   callsFilter.add(listFilter);
-	   txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+//	   txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+           txCalls=callsFilter; rxCalls=callsFilter; txRxCalls=callsFilter;
 	   document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
           }
        } else {
