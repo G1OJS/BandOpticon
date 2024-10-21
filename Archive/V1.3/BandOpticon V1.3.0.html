@@ -701,23 +701,23 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       }
     }
     if (!groupHomeEntities){
-        let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
-        let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+        let farEntitiesHomeArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+        let farEntitiesDxArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
         gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-        +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
-        +((farEntitiesHome.size>0 && farEntitiesDX.size>0) ? ", ":"")       
-        +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
+        +"<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"  
+        +((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
+        +"<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"
         +"</div>";
     }
   });
   if (groupHomeEntities){
     gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
-    let farEntitiesHome=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
-    let farEntitiesDX=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+    let farEntitiesHomeArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+    let farEntitiesDxArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
     gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
-    +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
-    +((farEntitiesHome.size>0 && farEntitiesDX.size>0) ? ", ":"")       
-    +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
+    +"<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"  
+    +((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
+    +"<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"
     +"</div>";
   }
   return gridHTML;
