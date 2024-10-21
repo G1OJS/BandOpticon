@@ -597,7 +597,7 @@ a:visited {color: blue;}
     +"Show: "	  
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;hearingMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
+//	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;hearingMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
           +"<br>Format: "
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
@@ -620,20 +620,20 @@ a:visited {color: blue;}
            if(listFilter=="hearingMe"){
 	     txCalls.clear();rxCalls.clear();txRxCalls.clear();
 	     for (id in cons){
-	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); rxCalls.add(cons[id].sc);}
+	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); rxCalls.add(myCall)}
 	     }
-	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> hearing "+myCall;
+	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span> Calls</span> hearing "+myCall;
            } else if(listFilter=='txRxOnly') {
 	     txCalls.clear();rxCalls.clear();
 	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
 	   } else {
 	   // filter specific callsign plus myCall
-	   let callsFilter=new Set();
-	   callsFilter.add(myCall);
-	   callsFilter.add(listFilter);
-//	   txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
-           txCalls=callsFilter; rxCalls=callsFilter; txRxCalls=callsFilter;
-	   document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
+	     let callsFilter=new Set();
+	     callsFilter.add(myCall);
+	     callsFilter.add(listFilter);
+//	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+             txCalls=callsFilter; rxCalls=callsFilter; txRxCalls=callsFilter;
+	     document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
           }
        } else {
 	 document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> and <span class='TxRx'>TxRx&nbspCalls</span>";
