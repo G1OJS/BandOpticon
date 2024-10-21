@@ -32,7 +32,13 @@ div {margin: 0px;  padding: 0px;}
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
    <div id="details_group">
-     <div id="screen"></div>
+     <div id="screen">
+       Total subscriptions: <output id="nSubscriptions"></output>
+       <br>Calls reached: <output id="nCallsReached"></output>
+       <br>Transmitting calls reached: <output id="nTxReached"></output>
+       <br>Transmitting calls reached heard in IO90: <output id="nTxReachedHome"></output>
+       
+     </div>
    </div>
 
 <div id="creditsGrid">
@@ -81,7 +87,10 @@ div {margin: 0px;  padding: 0px;}
     //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
      console.log("Subscribe to "+topic);
      mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
+        console.error('subscription failed to '+topic, error)
+     } else {
+        document.getElementById("nSubscriptions").value+=1; 
+     });
   }
 
   // process MQTT messages
@@ -105,16 +114,26 @@ div {margin: 0px;  padding: 0px;}
       let topic="pskr/filter/v2/+/+/"+conn.rc+"/#";
       subscribe(topic);
     }
-
-  //  console.log(Array.from(remObj));
-
+    if(conn.sc in remObj){
+      remObj[conn.sc].add(conn.rl);
+    }
+    
   }
   
   function showData(){
-  
-    console.log(remObj);
-  
-  
+    document.getElementById("nCallsReached").value=0;
+    document.getElementById("nTxReached").value=0;
+    document.getElementById("nTxReachedHome").value=0;
+    for(cl in remObj) {
+      document.getElementById("nCallsReached").value+=1;
+      if(remObj[cl].size>0){
+        document.getElementById("nTxReached").value+=1;
+        let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,5));
+        if(sqsArr.includes("IO90")) {
+          document.getElementById("nTxReachedHome").value+=1;
+        }
+      }
+    }  
   }
   
   
