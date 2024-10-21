@@ -622,6 +622,7 @@ a:visited {color: blue;}
 	 for (id in cons){
 	   if(cons[id].sc==myCall){txCalls.add(cons[id].rc)}
 	 }
+	 txCalls=txCalls.add(myCall);
 	 rxCalls=txCalls; txRxCalls=txCalls;
        } else {
 	 // filter specific callsign plus myCall
