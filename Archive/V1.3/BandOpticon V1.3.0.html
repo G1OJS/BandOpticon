@@ -679,20 +679,13 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let farEntities=new Set;
     for (id in cons) {
       let c=cons[id];
-      let farEntity="";
-      if (c.sc==homeCall && TxRx=="Tx") {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
-      if (c.rc==homeCall && TxRx=="Rx") {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
-      if (far.has(c.sc) && c.rc==homeCall && TxRx=="TxRx") {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
-      if(farEntity!=""){
-        farEntities.add(farEntity);
-        farEntitiesGrouped.add(farEntity);
-      }
+      if (c.sc==homeCall && TxRx=="Tx") {farEntities.add(((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl))}
+      if (c.rc==homeCall && TxRx=="Rx") {farEntities.add(((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl))}
+      if (c.rc==homeCall && far.has(c.sc) && TxRx=="TxRx") {farEntities.add(((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl))}
+      if(groupHomeEntities){farEntitiesGrouped=farEntitiesGrouped.union(farEntities)}
+    }
     }
     if (!groupHomeEntities){
-					
-					// do this part differently - split the domain into a aeparate array so that after sorting we can find the 
-     // index at which entries swap from home to dx
-
         let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
         let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
         gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
