@@ -701,14 +701,13 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       }
     }
     if (!groupHomeEntities){
-        let farEntitiesHomeArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
-        let farEntitiesDxArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
-        gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>";
-        gridHTML+=(farEntitiesHomeArr.length>0) ? ("<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"):"";  
-        gridHTML+=((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
-        gridHTML+=(farEntitiesDxArr.length>0) ? ("<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"):""; 
-	}
-        gridHTML+="</div>";
+      let farEntitiesHomeArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+      let farEntitiesDxArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+      gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>";
+      gridHTML+=(farEntitiesHomeArr.length>0) ? ("<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"):"";  
+      gridHTML+=((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
+      gridHTML+=(farEntitiesDxArr.length>0) ? ("<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"):""; 
+      gridHTML+="</div>";
     }
   });
   if (groupHomeEntities){
@@ -720,8 +719,6 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     gridHTML+=((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
     gridHTML+=(farEntitiesDxArr.length>0) ? ("<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"):""; 
     gridHTML+="</div>";
-
-
   }
   return gridHTML;
 }
