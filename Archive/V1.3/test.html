@@ -120,11 +120,11 @@ div {margin: 0px;  padding: 0px;}
 
     if(conn.sc=="G1OJS"){
       console.log(conn.rc);
-  //    remObj[conn.sq]["rx"]=conn.rc;
-      let topic="'pskr/filter/v2/+/+/"+conn.rc+"/#'";
+   //   remObj[conn.sq]["rx"]=conn.rc;
+      let topic="pskr/filter/v2/+/+/"+conn.rc+"/#";
       subscribe(topic);
     }
-//    console.log(Array.from(remObj));
+  //  console.log(Array.from(remObj));
 
   }
   
