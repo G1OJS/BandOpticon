@@ -597,7 +597,7 @@ a:visited {color: blue;}
     +"Show: "	  
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;connectedToMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;hearingMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
           +"<br>Format: "
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
@@ -617,13 +617,12 @@ a:visited {color: blue;}
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
        if(listFilter!=""){
-           if(listFilter=="connectedToMe"){
+           if(listFilter=="hearingMe"){
 	     txCalls.clear();rxCalls.clear();txRxCalls.clear();
 	     for (id in cons){
-	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); txCalls.add(myCall);}
-	       if(cons[id].rc==myCall){rxCalls.add(cons[id].sc); rxCalls.add(myCall);}
+	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); rxCalls.add(cons[id].sc);}
 	     }
-	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> hearing/heard by "+myCall;
+	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> hearing "+myCall;
            } else if(listFilter=='txRxOnly') {
 	     txCalls.clear();rxCalls.clear();
 	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
@@ -706,7 +705,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
         let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
         gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
         +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
-        +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", ":"")       
+        +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", "")       
         +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
         +"</div>";
     }
@@ -717,7 +716,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let farEntitiesDX=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
     gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>" 
     +"<span class='HomeEntity'>"+Array.from(farEntitiesHome).toSorted().join(', ')+"</span>"  
-    +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", ":"")       
+    +((farEntitiesHome.length>0 && farEntitiesDX.length>0) ? ", "")       
     +"<span class='DxEntity'>"+Array.from(farEntitiesDX).toSorted().join(', ')+"</span>"
     +"</div>";
   }
