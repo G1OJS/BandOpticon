@@ -89,7 +89,7 @@ div {margin: 0px;  padding: 0px;}
      mqttClient.subscribe(topic, (error) => {if (error) {
         console.error('subscription failed to '+topic, error)
      } else {
-        document.getElementById("nSubscriptions").value+=1; 
+        incCounter("nSubscriptions"); 
      }});
   }
 
@@ -125,17 +125,22 @@ div {margin: 0px;  padding: 0px;}
     document.getElementById("nTxReached").value=0;
     document.getElementById("nTxReachedHome").value=0;
     for(cl in remObj) {
-      document.getElementById("nCallsReached").value+=1;
+      incCounter("nCallsReached");
       if(remObj[cl].size>0){
-        document.getElementById("nTxReached").value+=1;
+        incCounter("nTxReached");
         let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,5));
         if(sqsArr.includes("IO90")) {
-          document.getElementById("nTxReachedHome").value+=1;
+          incCounter("nTxReachedHome");
         }
       }
     }  
   }
   
+  function incCounter(id){
+    let el=document.getElementById(id);    
+    let n=parseInt(el.value);
+    el.value=n+1;
+  }
   
 	
 </script>
