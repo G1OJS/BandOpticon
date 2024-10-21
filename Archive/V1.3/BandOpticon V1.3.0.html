@@ -593,33 +593,45 @@ a:visited {color: blue;}
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
 	  +"<br><span class='notesText'>Tx-Rx = call heard by any & hearing any</span>"
-          +" <br><br><a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;(Tx,Rx,TxRx)]</a>"
           +"</div><div></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong><br>"
       	  +"<span class='notesText'>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
-          +"<br><br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+
+     document.getElementById("detailsGrid").innerHTML+="<div class='titleRow'>"	  
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;(Tx,Rx,TxRx)]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;HearingMe\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls hearing me]</a>"
+          +"</div><div></div>"
+	  +"<br><br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
 	  
        // get copy of connections for just this band and mode
-	  let cons={};
-	  for (id in connections) {
-             let c=connections[id];
-             if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
-           }
+       let cons={};
+       for (id in connections) {
+         let c=connections[id];
+         if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+      }
 
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
-       if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
-
+       if(listFilter=="HearingMe"){
+	 let calls=new Set();
+	 for (c in cons){
+	   if(c.sc==myCall){calls.add(c.rc)}
+	 }
+	 txCalls=calls;rxCalls=calls; txRxCalls=calls;
+       } else {
+	 // filter specific callsign plus myCall
+         if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
+       }
        // all except myCall:
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
-       // just myCall
+       // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
