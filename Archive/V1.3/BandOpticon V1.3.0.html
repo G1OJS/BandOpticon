@@ -620,8 +620,8 @@ a:visited {color: blue;}
            if(listFilter=="connectedToMe"){
 	     txCalls.clear();rxCalls.clear();txRxCalls.clear();
 	     for (id in cons){
-	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); txCalls.add(myCall);}
-	       if(cons[id].rc==myCall){rxCalls.add(cons[id].sc); rxCalls.add(myCall);}
+	       if(cons[id].sc==myCall){rxCalls.add(cons[id].rc); txCalls.add(myCall);}
+	       if(cons[id].rc==myCall){txCalls.add(cons[id].sc); rxCalls.add(myCall);}
 	     }
 	     document.getElementById("homeDomain").value="Global";
            } else if(callsFilter='txRxOnly') {
