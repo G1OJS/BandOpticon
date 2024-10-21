@@ -618,13 +618,12 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        if(listFilter=="connectedToMe"){
-	 txCalls.clear();
+	 let calls=new Set();
 	 for (id in cons){
-	   if(cons[id].sc==myCall){txCalls.add(cons[id].rc)}
-	   if(cons[id].rc==myCall){txCalls.add(cons[id].sc)}
+	   if(cons[id].sc==myCall){calls.add(cons[id].rc)}
+	   if(cons[id].rc==myCall){calls.add(cons[id].sc)}
 	 }
-	 txCalls=txCalls.add(myCall);
-	 rxCalls=txCalls; txRxCalls=txCalls;
+	 txCalls=txCalls.intersect(calls); rxCalls=rxCalls.intersect(calls); txRxCalls=txRxCalls.intersect(calls);
        } else {
 	 // filter specific callsign plus myCall
          if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
