@@ -644,6 +644,7 @@ a:visited {color: blue;}
 	  	       console.log("2 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
 	  	       console.log("3 ",Date.now()-updateStart); updateStart=Date.now();
+	             console.log("");
        // just myCall
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
@@ -676,11 +677,6 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach( (homeCall) => {
-    if (!groupHomeEntities){
-      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
-      if(listFilter==""){gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
-      gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
-    }
     let far=new Set(); // home call has reached
     if(TxRx=="TxRx"){	  
       for (id in cons) {if (cons[id].sc==homeCall) {far.add(cons[id].rc)}}
@@ -688,17 +684,16 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let farEntities=new Set;
     for (id in cons) {
       let c=cons[id];
-      let farEntity="";
-      if (c.sc==homeCall && TxRx=="Tx") {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
-      if (c.rc==homeCall && TxRx=="Rx") {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl)}
-      if (far.has(c.sc) && c.rc==homeCall && TxRx=="TxRx") {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl)}
-      if(farEntity!=""){
-        farEntities.add(farEntity);
-        farEntitiesGrouped.add(farEntity);
-      }
+      if (c.sc==homeCall && TxRx=="Tx") {farEntities.add(((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl))}
+      if (c.rc==homeCall && TxRx=="Rx") {farEntities.add(((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl))}
+      if (far.has(c.sc) && c.rc==homeCall && TxRx=="TxRx") {farEntities.add(((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl))}
+      if(groupHomeEntities){farEntitiesGrouped=farEntitiesGrouped.union(farEntities)}
     }
-    if (!groupHomeEntities){			
-        gridHTML+=getHTMLfromEntitySet(farEntities,rowClassPrefix);
+    if (!groupHomeEntities){
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
+      if(listFilter==""){gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
+      gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
+      gridHTML+=getHTMLfromEntitySet(farEntities,rowClassPrefix);
     }
   });
   if (groupHomeEntities){
