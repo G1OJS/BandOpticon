@@ -230,13 +230,7 @@ a:visited {color: blue;}
   }
   
    function purgeSpots(){
-   // get rid of spots older than purgeMinutes
-   // connectionsPurged+=1;
-     if((connectionsAdded-connectionsPurged)>25000){
-       let now = new Date; 
-       purgeMinutes=Math.min(purgeMinutes,Math.trunc(((now-tStart)/1000) / 60));
-       document.getElementById("purgeMinutes").value=purgeMinutes;
-     }     
+   // get rid of spots older than purgeMinutes  
      for (id in connections) {
        let tConn=parseInt(connections[id].t);
        let connAge=((Date.now()/1000-tConn))/60
@@ -609,7 +603,7 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
-
+	  
        // get copy of connections for just this band and mode
 	  let cons={};
 	  for (id in connections) {
