@@ -639,12 +639,8 @@ a:visited {color: blue;}
 	updateStart=Date.now();
        let HTMLtmp="";
        HTMLtmp+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-	       console.log("1 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-	  	       console.log("2 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
-	  	       console.log("3 ",Date.now()-updateStart); updateStart=Date.now();
-	             console.log("");
        // just myCall
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
