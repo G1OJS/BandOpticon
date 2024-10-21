@@ -1,6 +1,4 @@
-
-<!DOCTYPE html>
-<html lang="en">
+<doctype html lang="en">
 <head>
 <title>BandOpticon V1.3.0</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
@@ -32,7 +30,7 @@ a:visited {color: blue;}
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
-<div id="screen">
+<div id="screen">test
 </div>
 
 
@@ -40,68 +38,3 @@ a:visited {color: blue;}
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
 <!-- BandOpticon script -->
-<script>
-
-  connectToFeed();
- // connectToTestData();
-  
-  // ***********************************
-  // * End of main: Functions below    *
-  // ***********************************
-
-  function connectToTestData(){
-    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
-    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":"40m"');
-  }
-
-  // connect to MQTT feed  
-   function connectToFeed(){
-  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. 
-    // Should also alert the user that this will happen and give chance not to edit the squares.
-    // if already connected, disconnect (happens if user edits squares list)
-    try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
-    // now connect and subscribe on success
-    mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribe();
-    mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
-  }
-
-  // subscribe to needed squares
-  function subscribe(){
-  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
-    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    
-    var topic='pskr/filter/v2/+/+/G1OJS/#';
-    document.GetElementById("screen").innerHTML="Subscribe to "+topic+"<br>";
-    mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
-      
-  }
-
-  // process MQTT messages
-  function onMessage(msg){
-    // message format:
-    // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
-    // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
-    // first, build conn object for this msg using same keys as PSKR MQTT:
-    const conn={};
-    msg.slice(1, -1).replaceAll('"','').split(',')
-         .forEach(function(v) {
-           let kvp=v.split(":");
-           conn[kvp[0]]=kvp[1];
-         });
-	  
-    conn.sl=(conn.sl).toUpperCase();
-    conn.rl=(conn.rl).toUpperCase();
-    
-    
-    document.GetElementById("screen").innerHTML+=msg;
-    console.log(msg);
-  }
-
-	
-</script>
-	
-</body>
-</html>
