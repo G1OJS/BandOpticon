@@ -515,7 +515,6 @@ a:visited {color: blue;}
     
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
-        console.log("start getting band data ",Date.now()-updateStart); updateStart=Date.now();
     let bandsDataArr=new Array();
     bandsArr.forEach((band,index) => {
       let nSpotsHH=0;
@@ -541,8 +540,6 @@ a:visited {color: blue;}
       dataForRecord="Mode="+watchedMode+", ";bandData.slice(0,7)+", "; // save the stats from above to the recording string
       modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
-
-             console.log("Done ",band,Date.now()-updateStart); updateStart=Date.now();
     });
     
     // get the band tile sort order
@@ -586,7 +583,6 @@ a:visited {color: blue;}
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
      detailsWanted="BandDetails";
-	       console.log("start band details "); updateStart=Date.now();
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
          +"<br>Spots "
@@ -639,7 +635,8 @@ a:visited {color: blue;}
   	 }
        }
        // all except myCall:
-	       console.log("start getting HTML ",Date.now()-updateStart); updateStart=Date.now();
+
+	updateStart=Date.now();
        let HTMLtmp="";
        HTMLtmp+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
 	       console.log("1 ",Date.now()-updateStart); updateStart=Date.now();
@@ -649,11 +646,8 @@ a:visited {color: blue;}
 	  	       console.log("3 ",Date.now()-updateStart); updateStart=Date.now();
        // just myCall
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-	  	       console.log("4 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-	  	       console.log("5 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");  
-	  	       console.log("6 ",Date.now()-updateStart); updateStart=Date.now();
        document.getElementById("detailsGrid").innerHTML+=HTMLtmp;
        
        // "prehighlight" all myCall far entities with Neg highlightinh	 
