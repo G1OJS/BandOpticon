@@ -35,8 +35,8 @@ div {margin: 0px;  padding: 0px;}
      <div id="screen">
        Total subscriptions: <output id="nSubscriptions">0</output>
        <br>Calls reached: <output id="nCallsReached">0</output>
-       <br>Transmitting calls reached: <output id="nTxReached">0</output>
-       <br>Transmitting calls reached heard in IO90: <output id="nTxReachedHome">0</output>
+       <br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
+       <br>Transmitting calls reached heard in IO90: <output id="nTxHeardInHomeReached">0</output>: <output id="TxHeardInHomeReached"></output>
        
      </div>
    </div>
@@ -89,7 +89,7 @@ div {margin: 0px;  padding: 0px;}
      mqttClient.subscribe(topic, (error) => {if (error) {
         console.error('subscription failed to '+topic, error)
      } else {
-        incCounter("nSubscriptions"); 
+        incCounterField("nSubscriptions"); 
      }});
   }
 
@@ -123,23 +123,32 @@ div {margin: 0px;  padding: 0px;}
   function showData(){
     document.getElementById("nCallsReached").value=0;
     document.getElementById("nTxReached").value=0;
-    document.getElementById("nTxReachedHome").value=0;
+    document.getElementById("TxReached").value="";
+    document.getElementById("nTxHeardInHomeReached").value=0;
+    document.getElementById("TxHeardInHomeReached").value="";
     for(cl in remObj) {
-      incCounter("nCallsReached");
+      incCounterField("nCallsReached");
       if(remObj[cl].size>0){
-        incCounter("nTxReached");
+        incCounterField("nTxReached");
+        appendTextField("TxReached",cl); 
         let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,5));
         if(sqsArr.includes("IO90")) {
-          incCounter("nTxReachedHome");
+          incCounterField("nTxHeardInHomeReached");
+          appendTextField("TxHeardInHomeReached",cl); 
         }
       }
     }  
   }
   
-  function incCounter(id){
+  function incCounterField(id){
     let el=document.getElementById(id);    
     let n=parseInt(el.value);
     el.value=n+1;
+  }
+  
+  function appendTextField(id,txt){
+    let el=document.getElementById(id);    
+    el.value+=", "+txt;
   }
   
 	
