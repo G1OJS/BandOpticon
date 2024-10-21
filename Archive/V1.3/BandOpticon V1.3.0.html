@@ -613,17 +613,16 @@ a:visited {color: blue;}
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
        if(listFilter!=""){
-	   let callsFilter=new Set();
+	   txCalls.clear();rxCalls.clear();txRxCalls.clear();
            if(listFilter=="connectedToMe"){
 	     for (id in cons){
-	       if(cons[id].sc==myCall){callsFilter.add(cons[id].rc)}
-	       if(cons[id].rc==myCall){callsFilter.add(cons[id].sc)}
+	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); txCalls.add(myCall);}
+	       if(cons[id].rc==myCall){rxCalls.add(cons[id].sc); rxCalls.add(myCall);}
 	     }
-	     callsFilter.add(myCall);
-	     txCalls=callsFilter;rxCalls=callsFilter;txRxCalls=callsFilter;
 	     document.getElementById("homeDomain").value="Global";
            } else {
 	   // filter specific callsign plus myCall
+	   let callsFilter=new Set();
 	   callsFilter.add(myCall);
 	   callsFilter.add(listFilter);
 	   txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
