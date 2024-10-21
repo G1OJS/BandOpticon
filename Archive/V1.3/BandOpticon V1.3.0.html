@@ -577,13 +577,9 @@ a:visited {color: blue;}
 	  
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
-     //    +"<br>Spots "
-     //    +"<span class='IntraHome_farEnd'>"+bandData[1]+"</span>/"
-     //    +"<span class='Tx_farEnd'>"+bandData[2]+"</span>/"
-     //    +"<span class='Rx_farEnd'>"+bandData[3]+"</span>"
-     //	 +"<br><span class='IntraHome_farEnd'>Home"+RIGHTARROW+"Home</span><br><span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span><br><span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span>"
-     //	 +"</div><div>"
-         +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a></div>";
+          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a></div>"
+	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+          +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>";
 		
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
@@ -591,8 +587,6 @@ a:visited {color: blue;}
           +"</div><div class='titleRow'></div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>Tx-Rx Call</span></strong>"
-	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
-          +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
       	  +"<br><span class='notesText'>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
 	  +"</div>"
 
