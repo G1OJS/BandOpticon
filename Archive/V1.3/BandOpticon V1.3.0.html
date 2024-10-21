@@ -30,7 +30,7 @@ div {margin: 0px;  padding: 0px;}
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
-#detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold; border-top:none;}
+#detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
@@ -54,7 +54,7 @@ div {margin: 0px;  padding: 0px;}
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
 a:visited {color: blue;}
-.textAnchorButton {color: blue; font-size:1rem;}
+.textAnchorButton {color: blue;}
 .textAnchorButton-strong {color: blue; font-weight:bold; font-size:1rem;}
 
 </style>
@@ -593,16 +593,16 @@ a:visited {color: blue;}
       	  +"<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both hears and reaches the same remote callsign</span>"
 	  +"</div>"
 
-    document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"	  
-          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;home&nbsp;calls&nbsp;(grouped)]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;home&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;connectedToMe\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;global&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;home&nbsp;TxRx&nbsp;calls]</a>"
-          +"</div><div class='optionsRow'></div>"
-	  +"<div class='optionsRow'><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
+    document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>List: "	  
+          +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;call&nbsp;groups]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;connectedToMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
+          +"</div><div class='optionsRow'></div><div class='optionsRow'>Show:"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
+          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a></div>";
 	  
        // get copy of connections for just this band and mode
        let cons={};
