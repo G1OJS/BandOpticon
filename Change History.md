@@ -18,7 +18,7 @@
   <td>20-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.1'>V1.2.1</a></td>
   <td>
     <ol>
-      <li>Efficiency improvements necessary for when database has large number of connections</li>
+      <li>Efficiency improvements necessary for when band details are shown with a large number of home callsigns</li>
     </ol>
   </td>
 </tr>
