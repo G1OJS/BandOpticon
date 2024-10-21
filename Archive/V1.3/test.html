@@ -18,7 +18,7 @@ div {margin: 0px;  padding: 0px;}
 #clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 
 #details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
-#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white;}
+#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white; height:400px;}
 
 #creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -66,8 +66,7 @@ div {margin: 0px;  padding: 0px;}
 <!-- BandOpticon script -->
 <script>
 
- // initialisation and functions to load and save configuration
- 
+ var remObj={};
 
   connectToFeed();
  // connectToTestData();
@@ -90,16 +89,14 @@ div {margin: 0px;  padding: 0px;}
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribe();
+    mqttClient.onSuccess=subscribe('pskr/filter/v2/+/+/G1OJS/#');
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
 
   // subscribe to needed squares
-  function subscribe(){
+  function subscribe(topic){
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
     //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    
-     var topic='pskr/filter/v2/+/+/G1OJS/#';
      console.log("Subscribe to "+topic);
      mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
@@ -121,7 +118,14 @@ div {margin: 0px;  padding: 0px;}
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
 
-    console.log(msg);
+    if(conn.sc=="G1OJS"){
+      console.log(conn.rc);
+  //    remObj[conn.sq]["rx"]=conn.rc;
+      let topic="'pskr/filter/v2/+/+/"+conn.rc+"/#'";
+      subscribe(topic);
+    }
+//    console.log(Array.from(remObj));
+
   }
   
 	
