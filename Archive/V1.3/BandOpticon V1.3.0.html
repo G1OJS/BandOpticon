@@ -577,9 +577,9 @@ a:visited {color: blue;}
 	  
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
-          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a></div>"
+          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a>"
 	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
-          +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>";
+          +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
 		
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
           +"<strong>Home <span class='Tx'>Tx Calls</span>, <span class='Rx'>Rx Calls</span> and <span class='TxRx'>Tx-Rx Calls</span></strong>"
