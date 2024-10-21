@@ -515,6 +515,7 @@ a:visited {color: blue;}
     
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
+        console.log("start getting band data ",Date.now()-updateStart); updateStart=Date.now();
     let bandsDataArr=new Array();
     bandsArr.forEach((band,index) => {
       let nSpotsHH=0;
@@ -540,6 +541,8 @@ a:visited {color: blue;}
       dataForRecord="Mode="+watchedMode+", ";bandData.slice(0,7)+", "; // save the stats from above to the recording string
       modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
+
+             console.log("Done ",band,Date.now()-updateStart); updateStart=Date.now();
     });
     
     // get the band tile sort order
@@ -557,7 +560,6 @@ a:visited {color: blue;}
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
     // populate the band tile HTML in the sorted order
-    console.log("start band tile HTML ",Date.now()-updateStart); updateStart=Date.now();
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
@@ -578,7 +580,6 @@ a:visited {color: blue;}
        if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
        if((bandsDataArr[bandIndex][3]+bandsDataArr[bandIndex][4])>0){bandTileDocEl.className='active'}
-       console.log("Done ",band,Date.now()-updateStart); updateStart=Date.now();
      }); 
   }
  
