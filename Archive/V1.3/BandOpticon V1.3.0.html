@@ -599,12 +599,12 @@ a:visited {color: blue;}
       	  +"<span class='notesText'>Far end spots for Tx-Rx calls appear only if a home call both hears and reaches the same remote callsign</span>"
 	  +"</div>"
 
-     document.getElementById("detailsGrid").innerHTML+="<div class='titleRow'>"	  
+    document.getElementById("detailsGrid").innerHTML+="<div class='titleRow'>"	  
           +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;(Tx,Rx,TxRx)]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;HearingMe\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls hearing me]</a>"
           +"</div><div></div>"
-	  +"<br><br><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
+	  +"<div class='titleRow'><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[Entity=&nbsp;level&nbsp;6&nbsp;square]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Entity=&nbsp;callsign]</a></div>";
