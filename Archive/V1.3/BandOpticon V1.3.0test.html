@@ -586,7 +586,7 @@ a:visited {color: blue;}
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
      detailsWanted="BandDetails";
-	  
+	       console.log("start band details "); updateStart=Date.now();
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
          +"<br>Spots "
@@ -639,14 +639,21 @@ a:visited {color: blue;}
   	 }
        }
        // all except myCall:
+	       console.log("start getting HTML ",Date.now()-updateStart); updateStart=Date.now();
        let HTMLtmp="";
        HTMLtmp+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+	       console.log("1 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+	  	       console.log("2 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+	  	       console.log("3 ",Date.now()-updateStart); updateStart=Date.now();
        // just myCall
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+	  	       console.log("4 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+	  	       console.log("5 ",Date.now()-updateStart); updateStart=Date.now();
        HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");  
+	  	       console.log("6 ",Date.now()-updateStart); updateStart=Date.now();
        document.getElementById("detailsGrid").innerHTML+=HTMLtmp;
        
        // "prehighlight" all myCall far entities with Neg highlightinh	 
