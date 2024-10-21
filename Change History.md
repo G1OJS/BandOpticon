@@ -10,7 +10,10 @@
   <td>Testing</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.3.0</a></td>
   <td>
     <ol>
-      <li>Added filter for "only calls spotting and/or spotted by me" in the band details grid</li>
+      <li>Added more options to the band details grid:
+        <li>Home calls, Home TxRx Calls, Global calls hearing or heard by me</li>
+        <Li>Format as group (by Tx, Rx, TxRx category) or list as a separate option</Li>
+      </li>
       <li>Grid resize now also works nicely when nearly empty</li>
     </ol>
   </td>
