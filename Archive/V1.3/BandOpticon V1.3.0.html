@@ -11,22 +11,19 @@
 div {margin: 0px;  padding: 0px;}
 #title {text-align: center; font-size: 5rem;}
 #subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
+
 #app_group {margin:0px;padding:2px; background-color:blue;}
-#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 #appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
 #appTop > div {background-color: white; margin: 1px;  margin-bottom:1px; padding: 5px;}
+#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 
 #details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
 
 #legendContainer { background-color: white;  width:100%;}
-#legendContainer > div {display: grid; background-color: white; margin: 0px;  padding:2px; padding-left: 5px; padding-right: 5px; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto; }
+#legendContainer > div {display: grid; background-color: white; margin: 0px;  padding:2px; padding-left: 5px; padding-right: 5px; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto; font-size:1.5rem}
 #legendContainer > div > div {display:inline-block; background-color: rgb(230, 230, 255); margin-bottom:5px; margin-right: 2px; padding: 5px; font-size: 1rem; border:solid; border-color:blue; border-width:2px; width:fit-content;}
 #legendContainer > div > div.noborder {border:none; margin: 0px;  padding: 0px;}
 #legendContainer > div > div.active {background-color: white;}
-
-#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
-#bandsGrid > div.active	{background-color:white;}
 
 #detailsTop {display: grid; grid-template-columns: auto; grid-template-rows: auto; font-size: 1rem;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1.5rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
@@ -34,11 +31,16 @@ div {margin: 0px;  padding: 0px;}
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 #detailsGrid > div.titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
 #detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:bold; border-top:none;}
-#creditsGrid {color:black; font-size: 0.7rem; display: grid; grid-template-columns: auto auto auto;}
+
+#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
+#bandsGrid > div.active	{background-color:white;}
+
+#creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
-.notesText {color:grey; font-weight:normal; font-size: 0.8rem;}
+.notesText {color:grey; font-weight:normal; font-size: 0.8em;}
 .hidden {display: none;}
-.extraModes {font-size:0.7rem;}
+.extraModes {font-size:0.7em;}
 .Tx {color:red;}
 .Rx {color:green; }
 .TxRx {color:blue; font-style:italic;}
