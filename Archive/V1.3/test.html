@@ -69,25 +69,14 @@ a:visited {color: blue;}
 
   // subscribe to needed squares
   function subscribe(){
-    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
     //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     
-    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
-    let subs=new Set;
-    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
-    let subsArr=Array.from(subs);
-    
-    // now subscribe to the level 4 squares
-    subsArr.forEach((sq) => {
-      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
+    var topic='pskr/filter/v2/+/+/G1OJS/+/+/+/+/#';
+    console.log("Subscribe to "+topic);
+    mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
-    } );
+      
   }
 
   // process MQTT messages
@@ -105,16 +94,8 @@ a:visited {color: blue;}
 	  
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
-			
-    // add sender and receiver domain (home/dx)
-    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
-    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
     
-    // now add this connection to the connections object using sequence ID as key:
-    if(conn.rd=="home" || conn.sd=="home") {
-      connections[conn.sq]=conn
-      connectionsAdded+=1;
-    }
+    document.GetElementById("screen").innerHTML+=msg;
   }
   
 
