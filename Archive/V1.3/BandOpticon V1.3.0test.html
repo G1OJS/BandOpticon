@@ -634,13 +634,16 @@ a:visited {color: blue;}
   	 }
        }
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       let HTMLtmp="";
+       HTMLtmp+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       HTMLtmp+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       HTMLtmp+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       HTMLtmp.innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");  
+       document.getElementById("detailsGrid").innerHTML+=HTMLtmp;
+       
        // "prehighlight" all myCall far entities with Neg highlightinh	 
        highlightEntitiesList("myCallRx","");
        highlightEntitiesList("myCallTx","");  
