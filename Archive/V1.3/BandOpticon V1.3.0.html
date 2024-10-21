@@ -601,7 +601,7 @@ a:visited {color: blue;}
     document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"	  
           +" <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; listFilter=\&quot;\&quot;; updateDisplays();'>[Group&nbsp;all&nbsp;calls&nbsp;]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;HearingMe\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls hearing me]</a>"
+	  +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; listFilter=\&quot;HearingMe\&quot;; updateDisplays();'>[List&nbsp;all&nbsp;calls&nbsp;hearing&nbsp;or&nbsp;heard&nbsp;by&nbsp;me]</a>"
           +"</div><div class='optionsRow'></div>"
 	  +"<div class='optionsRow'><a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[Entity=&nbsp;level&nbsp;2&nbsp;square]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[Entity=&nbsp;level&nbsp;4&nbsp;square]</a>"
@@ -664,7 +664,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
-      if(listFilter==""){gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
+      gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
