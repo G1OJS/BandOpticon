@@ -623,7 +623,7 @@ a:visited {color: blue;}
 	   if(cons[id].sc==myCall){calls.add(cons[id].rc)}
 	   if(cons[id].rc==myCall){calls.add(cons[id].sc)}
 	 }
-	 txCalls=txCalls.intersect(calls); rxCalls=rxCalls.intersect(calls); txRxCalls=txRxCalls.intersect(calls);
+	 txCalls=txCalls.intersection(calls); rxCalls=rxCalls.intersection(calls); txRxCalls=txRxCalls.intersection(calls);
        } else {
 	 // filter specific callsign plus myCall
          if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
