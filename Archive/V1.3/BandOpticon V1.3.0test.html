@@ -477,6 +477,8 @@ a:visited {color: blue;}
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
 
+    var updateStart=Date.now(); // update start time
+	  
     // update the top banner  
     document.getElementById("clock").value=utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
@@ -555,6 +557,7 @@ a:visited {color: blue;}
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
     // populate the band tile HTML in the sorted order
+    console.log("start band tile HTML ",Date.now()-updateStart); updateStart=Date.now();
     indexArr.forEach((bandIndex,index) =>{
        band=bandsArr[bandIndex];
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
@@ -575,6 +578,7 @@ a:visited {color: blue;}
        if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
        // change class of band tile to active if there is activity
        if((bandsDataArr[bandIndex][3]+bandsDataArr[bandIndex][4])>0){bandTileDocEl.className='active'}
+       console.log("Done ",band,Date.now()-updateStart); updateStart=Date.now();
      }); 
   }
  
