@@ -92,6 +92,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - think about the use case "For the calls hearing me (globally), who is hearing them? (or at least "is anyone hearing them?") This might need another seperate app because we can't throw away connections Dx-Dx at the onMessage stage
   - redsign screen layout (colours / borders etc)
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
