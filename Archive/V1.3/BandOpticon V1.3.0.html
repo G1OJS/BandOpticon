@@ -585,7 +585,7 @@ a:visited {color: blue;}
           +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
 		
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
-          +"<strong><output id='homeDomain'>Home</output> <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> and <span class='TxRx'>TxRx&nbspCalls</span></strong>"
+          +"<strong><span id='lhEntitiesTitle'></span></strong>"
 	  +"<br><span class='notesText'>TxRx = call heard by any & hearing any</span>"
           +"</div><div class='titleRow'>"+LEFTRIGHTARROW+"</div>"
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
@@ -623,16 +623,20 @@ a:visited {color: blue;}
 	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); txCalls.add(myCall);}
 	       if(cons[id].rc==myCall){rxCalls.add(cons[id].sc); rxCalls.add(myCall);}
 	     }
-	     document.getElementById("homeDomain").value="Global";
-           } else if(callsFilter='txRxOnly') {
+	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> hearing/heard by "+myCall;
+           } else if(listFilter='txRxOnly') {
 	     txCalls.clear();rxCalls.clear();
+	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
 	   } else {
 	   // filter specific callsign plus myCall
 	   let callsFilter=new Set();
 	   callsFilter.add(myCall);
 	   callsFilter.add(listFilter);
 	   txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+	   document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
           }
+       } else {
+	 document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> and <span class='TxRx'>TxRx&nbspCalls</span>";
        }
 	  
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
