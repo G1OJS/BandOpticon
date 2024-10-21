@@ -584,8 +584,7 @@ a:visited {color: blue;}
 	 +"<br><span class='IntraHome_farEnd'>Home"+RIGHTARROW+"Home</span><br><span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span><br><span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span>"
 	 +"</div><div>"
          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a>"
-	        +"<br><span class='notesText'>Entities reached both by "+myCall+" and home Tx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
-          +"<br><span class='notesText'>Entities spotted both by "+myCall+" and home Rx calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
+	        +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
 	        +"<br><span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span>"
           +"</div>";
 		
@@ -615,19 +614,25 @@ a:visited {color: blue;}
          if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
       }
 
+       // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
+       if(listFilter!=""){
+	   let callsFilter=new Set();
+           if(listFilter=="connectedToMe"){
+	     for (id in cons){
+	       if(cons[id].sc==myCall){callsFilter.add(cons[id].rc)}
+	       if(cons[id].rc==myCall){callsFilter.add(cons[id].sc)}
+	     }
+	     callsFilter.add(myCall);
+           } else {
+	   // filter specific callsign plus myCall
+	   callsFilter.add(myCall);
+	   callsFilter.add(listFilter);
+         }
+	 txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+       }
+	  
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
-       if(listFilter=="connectedToMe"){
-	 let calls=new Set();
-	 for (id in cons){
-	   if(cons[id].sc==myCall){calls.add(cons[id].rc)}
-	   if(cons[id].rc==myCall){calls.add(cons[id].sc)}
-	 }
-	 txCalls=txCalls.intersection(calls); rxCalls=rxCalls.intersection(calls); txRxCalls=txRxCalls.intersection(calls);
-       } else {
-	 // filter specific callsign plus myCall
-         if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
-       }
        // all except myCall:
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
