@@ -620,9 +620,9 @@ a:visited {color: blue;}
        if(listFilter=="HearingMe"){
 	 txCalls.clear();
 	 for (id in cons){
-	   if(cons[id].sc==myCall){calls.add(cons[id].rc)}
+	   if(cons[id].sc==myCall){txCalls.add(cons[id].rc)}
 	 }
-	 txCalls=calls;rxCalls=calls; txRxCalls=calls;
+	 rxCalls=txCalls; txRxCalls=txCalls;
        } else {
 	 // filter specific callsign plus myCall
          if(listFilter!=""){txCalls=setMyCall.union(new Set().add(listFilter)); rxCalls=txCalls; txRxCalls=txCalls;}
