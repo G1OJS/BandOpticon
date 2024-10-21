@@ -684,7 +684,6 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
       if (c.rc==homeCall && far.has(c.sc) && TxRx=="TxRx") {farEntities.add(((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl))}
       if(groupHomeEntities){farEntitiesGrouped=farEntitiesGrouped.union(farEntities)}
     }
-    }
     if (!groupHomeEntities){
         let farEntitiesHome=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
         let farEntitiesDX=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
