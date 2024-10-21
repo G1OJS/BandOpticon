@@ -645,7 +645,7 @@ a:visited {color: blue;}
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
-       // "prehighlight" all myCall far entities with Neg highlightinh	 
+       // "prehighlight" all myCall far entities with Neg highlighting	 
        highlightEntitiesList("myCallRx","");
        highlightEntitiesList("myCallTx","");  
        highlightEntitiesList("myCallTxRx",""); 
@@ -735,19 +735,19 @@ function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
     let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
     if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
       farEntities_meTxt.forEach(entity => {      
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace(entity,HL(entity,true,"HighlightExclusive"));
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll(entity,HL(entity,true,"HighlightExclusive"));
       });
     } else {
       // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
       for (let i=0;i<farEntities_others.length;i++){
         // highlight the matches in the other call's far entities
         farEntities_meTxt.forEach(entity => {
-          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replace(entity,HL(entity,true));
+          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replaceAll(entity,HL(entity,true));
         });
         // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
         let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
         farEntities_othersTxt.forEach(entity => {      
-          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replace('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
         });
       }
     }
