@@ -254,7 +254,7 @@ a:visited {color: blue;}
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
     document.getElementById("legendContainer").innerHTML="<div><strong>Band tile legend:</strong>"
-      +" <span></span> <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a>"
+      +" <span></span> <span style='float:right;';><a class='textAnchorButton' href='#' onclick='showNothing()'>close</a></span>"
       +" </div><div><div style='background-color:white;''><span class='textAnchorButton-strong'>Band & Mode</span></strong><span class='notesText'> (click for detailed stats)</span><br>Spots: <span class='notesText'>number of spots<span class='IntraHome_farEnd'> Home"+RIGHTARROW+"Home </span>/<span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span>/<span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span></span><br>"
       +"<span class='Tx'>Tx Calls: <span class='notesText'>number of unique calls in 'Home' received by anyone</span></span><br>"
       +"<span class='Rx'>Rx Calls: <span class='notesText'>number of unique calls in 'Home' receiving anyone</span></span><br>"
@@ -579,7 +579,7 @@ a:visited {color: blue;}
 	  
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
-          +" <a href='#' onclick='showNothing();'><span style='float:right;';>close</span></a>"
+          +" <span style='float:right;'><a class='textAnchorButton' href='#' onclick='showNothing();'>close</a></span>"
 	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
           +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
 		
