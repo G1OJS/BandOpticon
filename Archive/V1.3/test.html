@@ -18,6 +18,7 @@ div {margin: 0px;  padding: 0px;}
 #clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 
 #details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
+#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white;}
 
 #creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -98,22 +99,10 @@ div {margin: 0px;  padding: 0px;}
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
     //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     
-    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
-    let subs=new Set;
-    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
-    let subsArr=Array.from(subs);
-    
-    // now subscribe to the level 4 squares
-    subsArr.forEach((sq) => {
-      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
+     var topic='pskr/filter/v2/+/+/G1OJS/#';
+     console.log("Subscribe to "+topic);
+     mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
-      console.log("Subscribe to "+topic);
-      mqttClient.subscribe(topic, (error) => {if (error) {
-              console.error('subscription failed to '+topic, error)}});
-    } );
   }
 
   // process MQTT messages
@@ -131,16 +120,8 @@ div {margin: 0px;  padding: 0px;}
 	  
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
-			
-    // add sender and receiver domain (home/dx)
-    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
-    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
-    
-    // now add this connection to the connections object using sequence ID as key:
-    if(conn.rd=="home" || conn.sd=="home") {
-      connections[conn.sq]=conn
-      connectionsAdded+=1;
-    }
+
+    console.log(msg);
   }
   
 	
