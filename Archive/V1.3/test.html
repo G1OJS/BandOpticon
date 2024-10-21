@@ -676,23 +676,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
-      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
-      gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"
-      gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
-    }
-    let far=new Set(); // home call has reached
-    if(TxRx=="TxRx"){
-      for (id in cons) {
-        let c=cons[id];
-        if (c.sc==homeCall) {far.add(c.rc)}
-      }
-    }
-    let farEntities=new Set();
-    for (id in cons) {
-      let c=cons[id];
-      let farEntity="";
-      if (TxRx=="Tx" && c.sc==homeCall) {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
-      if (TxRx=="Rx" && c.rc==homeCall) {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+
 	
 </script>
 	
