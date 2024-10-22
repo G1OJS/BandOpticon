@@ -61,7 +61,7 @@ div {margin: 0px;  padding: 0px;}
   function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribe();
+    mqttClient.onSuccess=subscribe_topics();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
 
@@ -76,8 +76,6 @@ div {margin: 0px;  padding: 0px;}
      console.log("Subscribe to "+topic);
      mqttClient.subscribe(topic, (error) => {if (error) {
         console.error('subscription failed to '+topic, error)
-     } else {
-        incCounterField("nSubscriptions"); 
      }});
   }
 
