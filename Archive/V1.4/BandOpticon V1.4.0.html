@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,8 +33,8 @@ div {margin: 0px;  padding: 0px;}
 #detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
-#bandsGrid > div.active	{background-color:white;}
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 0px; padding: 5px; margin-left:1px; margin-right:1px; }
+#bandsGrid > div.active	{background-color:white;  margin: 1px; }
 
 #creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -86,9 +85,13 @@ a:visited {color: blue;}
      <div id="detailsTop"></div>
      <div id="detailsGrid"></div>
    </div>
-   <div id="bandsGrid"></div>
+   <div id="bandsGrid"><div id="bandTileDiv_0"></div>
+	<div id="bandTileDiv_1"></div><div id="bandTileDiv_2"></div><div id="bandTileDiv_3"></div><div id="bandTileDiv_4"></div><div id="bandTileDiv_5"></div>
+	<div id="bandTileDiv_6"></div><div id="bandTileDiv_7"></div><div id="bandTileDiv_8"></div><div id="bandTileDiv_9"></div><div id="bandTileDiv_10"></div>
+	<div id="bandTileDiv_11"></div><div id="bandTileDiv_12"></div><div id="bandTileDiv_13"></div><div id="bandTileDiv_14"></div><div id="bandTileDiv_15"></div>
+	<div id="bandTileDiv_16"></div><div id="bandTileDiv_17"></div><div id="bandTileDiv_18"></div><div id="bandTileDiv_19"></div>
+   </div>
 </div>
-
 <div id="creditsGrid">
     <div>
         Javascript & HTML developed by Alan Robinson:<br>
@@ -493,22 +496,8 @@ a:visited {color: blue;}
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
-    var bandsGridDocEl = document.getElementById("bandsGrid"); 
-    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
-    var bandTileDivs = document.createDocumentFragment();
-    bandsArr.forEach((band,index) => {
-      var newDiv = document.createElement('div');  
-      newDiv.id="bandTileDiv_"+index;
-      bandTileDivs.appendChild(newDiv);
-    });
-    let nfillerDivs=4-(bandsArr.length-1) %5;
-    for (let i=0;i<nfillerDivs;i++){
-      var newDiv = document.createElement('div');  
-      if(connectionsAdded==0){newDiv.innerHTML="... loading"}
-      bandTileDivs.appendChild(newDiv);
-    }
-    bandsGridDocEl.appendChild(bandTileDivs);
-    
+ 
+	  
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let bandsDataArr=new Array();
