@@ -38,11 +38,12 @@ div {margin: 0px;  padding: 0px;}
        Total messages: <output id="nMessages">0</output>
        <br><br>
        Total subscriptions: <output id="nSubscriptions">0</output>
-       <br><br><br>Calls heard in my L4 square: <output id="nCallsHeardInHome">0</output>
-       <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
-       <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
-       <br><br><br>Transmitting calls reached heard in my L4 square: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
-       <br><br><br>Transmitting calls reached heard by me: <output id="nTxReachedHeardByMe">0</output>: <output id="TxReachedHeardByMe"></output>
+       <br><br>Calls heard in my L4 square: <output id="nCallsHeardInHome">0</output>
+       <br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
+       <br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
+       <br><br>Transmitting calls reached heard in my L4 square: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
+       <br><br>Transmitting calls reached heard in my L4 square: spots <output id="nTxReachedHeardInHomeSpots">0</output>: <output id="TxReachedHeardInHomeSpots"></output>
+       <br><br>Transmitting calls reached heard by me: <output id="nTxReachedHeardByMe">0</output>: <output id="TxReachedHeardByMe"></output>
        
      </div>
    </div>
@@ -177,6 +178,7 @@ div {margin: 0px;  padding: 0px;}
     document.getElementById("TxReachedHeardInHome").value="";
     document.getElementById("nTxReachedHeardByMe").value=0;
     document.getElementById("TxReachedHeardByMe").value="";
+    let tpcsHeardInHome=new Set();
     for(primaryCall in ObjPrimaryCalls) {
       incCounterField("nCallsReached");
       appendTextField("CallsReached",primaryCall); 
@@ -186,11 +188,16 @@ div {margin: 0px;  padding: 0px;}
         appendTextField("TxReached",primaryCall); 
         let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]);
         for (const tpcReceiver of tpcReceiversArr){
+          tpcsHeardInHome.add(transmittingPrimaryCall);
+        }
+        setCounterField("nTxReachedHeardInHome",tpcsHeardInHome.size);
+        appendTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome);
+        for (const tpcReceiver of tpcReceiversArr){
           let tpcReceiverCall=tpcReceiver[0];
           let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
           if(tpcReceiverL4Sq==myL4Square) {
-            incCounterField("nTxReachedHeardInHome");
-            appendTextField("TxReachedHeardInHome",transmittingPrimaryCall+": "+tpcReceiverCall); 
+            incCounterField("nTxReachedHeardInHomeSpots");
+            appendTextField("TxReachedHeardInHomeSpots",transmittingPrimaryCall+": "+tpcReceiverCall); 
               if(tpcReceiverCall==myCall){
                 incCounterField("nTxReachedHeardByMe");
                 appendTextField("TxReachedHeardByMe",transmittingPrimaryCall); 
@@ -205,6 +212,11 @@ div {margin: 0px;  padding: 0px;}
     let el=document.getElementById(id);    
     let n=parseInt(el.value);
     el.value=n+1;
+  }
+  
+  function setCounterField(id,val){
+    let el=document.getElementById(id);    
+    el.value=val;
   }
   
   function appendTextField(id,txt){
