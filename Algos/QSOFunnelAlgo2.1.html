@@ -24,27 +24,22 @@ div {margin: 0px;  padding: 0px;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 0.8rem;}
 .hidden {display: none;}
-
-
+	
 </style>
 </head>
 <body>
-
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
-   <div id="details_group">
-     <div id="screen">
-       Total messages: <output id="nMessages">0</output>
-       <br><br>Calls received in home: <output id="receivedCallsHome">0</output>
-       <br><br>Primary Calls: <output id="primaryCalls"></output>
-       <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
-       <br><br>My reciprocals: <output id="myReciprocals"></output>
-     </div>
-   </div>
-
-<div id="creditsGrid">
-
+<div id="details_group">
+  <div id="screen">
+    Total messages: <output id="nMessages">0</output>
+    <br><br>Calls received in home: <output id="receivedCallsHome">0</output>
+    <br><br>Primary Calls: <output id="primaryCalls"></output>
+    <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
+    <br><br>My reciprocals: <output id="myReciprocals"></output>
+  </div>
 </div>
+<div id="creditsGrid"></div>
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -52,20 +47,19 @@ div {margin: 0px;  padding: 0px;}
 <!-- BandOpticon script -->
 <script>
 
- const myCall="G1OJS";
- const myL4Square="IO90";
- const band="20m";
- var primaryCalls=new Set();
- var receivedCallsHome=new Set();
- var receivedCallsMe=new Set();
+  const myCall="G1OJS";
+  const myL4Square="IO90";
+  const band="20m";
+  var primaryCalls=new Set();
+  var receivedCallsHome=new Set();
+  var receivedCallsMe=new Set();
 
   setInterval(analyseData,1000);
   connectToFeed();
   
   // connect to MQTT feed  
-   function connectToFeed(){
+  function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    // connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
     mqttClient.onSuccess=subscribe();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
