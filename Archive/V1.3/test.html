@@ -124,6 +124,7 @@ div {margin: 0px;  padding: 0px;}
   
   function showData(){
     document.getElementById("nCallsReached").value=0;
+    document.getElementById("CallsReached").value="";
     document.getElementById("nTxReached").value=0;
     document.getElementById("TxReached").value="";
     document.getElementById("nTxHeardInHomeReached").value=0;
@@ -152,6 +153,11 @@ div {margin: 0px;  padding: 0px;}
   function appendTextField(id,txt){
     let el=document.getElementById(id);    
     el.value+=", "+txt;
+  }
+
+  function clearTextField(id){
+    let el=document.getElementById(id);    
+    el.value="";
   }
   
 	
