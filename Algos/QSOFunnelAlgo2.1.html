@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>QSOFunnel A2.1</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+ 
+<style>
+:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; color:#4e4e4e;}
+div {margin: 0px;  padding: 0px;}
+#title {text-align: center; font-size: 5rem;}
+#subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
+
+#app_group {margin:0px;padding:2px; background-color:blue;}
+#appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#appTop > div {background-color: white; margin: 1px;  margin-bottom:1px; padding: 5px;}
+#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
+
+#details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
+#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white;}
+
+#creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
+.hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
+.notesText {font-weight:normal; font-size: 0.8rem;}
+.hidden {display: none;}
+
+
+</style>
+</head>
+<body>
+<div id="title">BandOpticon</div>
+<div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
+   <div id="details_group">
+     <div id="screen">
+       Total messages: <output id="nMessages">0</output>
+       <br><br>Total subscriptions: <output id="nSubscriptions">0</output>
+       <br><br>Calls received in home: <output id="potentialPrimaryCalls"></output>
+       <br><br>Primary Calls: <output id="primaryCalls"></output>
+       <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
+       <br><br>TPCs heard in home: <output id="tpcsHeardInHome"></output>
+       <br><br>TPC spots in home: <output id="tpcSpotsInHome"></output>
+       <br><br>My reciprocals: <output id="myReciprocals"></output>
+     </div>
+   </div>
+
+<div id="creditsGrid">
+
+</div>
+
+<!--Get the library for MQTT functions -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<!-- BandOpticon script -->
+<script>
+
+ const myCall="G1OJS";
+ const myL4Square="IO90";
+ const band="20m";
+ const ObjPrimaryCalls={};
+ const ObjPotentialTransmittingPrimaryCalls={};
+
+  setInterval(analyseData,1000);
+  connectToFeed();
+  
+  
+ // connectToTestData();
+  
+  // ***********************************
+  // * End of main: Functions below    *
+  // ***********************************
+
+  function connectToTestData(){
+    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
+    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":"40m"');
+  }
+
+  // connect to MQTT feed  
+   function connectToFeed(){
+  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    // connect and subscribe on success
+    mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
+    mqttClient.onSuccess=subscribe_initial();
+    mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
+  }
+
+  function subscribe_initial(){
+    subscribe('pskr/filter/v2/'+band+'/+/'+myCall+'/#');
+    subscribe('pskr/filter/v2/'+band+'/+/+/+/+/'+myL4Square+'/#');
+  }
+
+  // subscribe to needed squares
+  function subscribe(topic){
+    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+     console.log("Subscribe to "+topic);
+     mqttClient.subscribe(topic, (error) => {if (error) {
+        console.error('subscription failed to '+topic, error)
+     } else {
+        incCounterField("nSubscriptions"); 
+     }});
+  }
+
+  // process MQTT messages
+  function onMessage(msg){
+    // message format:
+    // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
+    // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
+    // first, build conn object for this msg using same keys as PSKR MQTT:
+    const conn={};
+    msg.slice(1, -1).replaceAll('"','').split(',')
+         .forEach(function(v) {
+           let kvp=v.split(":");
+           conn[kvp[0]]=kvp[1];
+         });
+	  
+    conn.sl=(conn.sl).toUpperCase();
+    conn.rl=(conn.rl).toUpperCase();
+    
+//    console.log(conn.sc,conn.sl,conn.rc,conn.rl)
+
+    incCounterField("nMessages");
+
+    //if I'm the sender call, then the receiver call is a 'primary call'
+    //so subscribe to that primary call as a transmitter to log its future receivers.
+    //Check if the primary call has already been received in Home and, if so, it must be
+    //a transmitting primary call so add its past receivers to ObjPrimaryCalls.
+    //If it hasn't already been heard, just make an empty set to hold its future receivers
+    if(conn.sc==myCall){ 
+      let primaryCall=conn.rc
+      // add a set to hold a list of calls receiving this primary call,
+      // and add a subscription to get that data
+      let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
+      subscribe(topic);
+      if(primaryCall in ObjPotentialTransmittingPrimaryCalls){
+        let transmittingPrimaryCall=primaryCall;
+        ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
+        ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall]=null;
+      } else {
+        ObjPrimaryCalls[primaryCall]=new Set(); 
+      }
+    }
+   
+    // if the sender call is in ObjPrimaryCalls, it's a primary transmitting call so 
+    // add its list of receiver calls and squares
+    if(conn.sc in ObjPrimaryCalls){
+      let transmittingPrimaryCall=conn.sc;
+      let transmittingPrimaryCallReceiver=[conn.rc,conn.rl];
+      ObjPrimaryCalls[transmittingPrimaryCall].add(transmittingPrimaryCallReceiver);
+    } 
+   
+    // if the receiver call is in Home, add the sender to ObjPotentialTransmittingPrimaryCalls
+    // with a set to hold its receiver calls and locations
+    // incase it appears later as a Primary Call via the logic above.
+    // Then (or if it's already in ObjPotentialTransmittingPrimaryCalls), 
+    // add this receiver info to its receivers list
+    let receiverL4Sq=(conn.rl).slice(0,4);
+    if(receiverL4Sq==myL4Square){
+      incCounterField("potentialPrimaryCalls");
+      let potentialTransmittingPrimaryCall=conn.sc;
+      let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
+      if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
+        ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
+	      ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add("historic");
+      }
+     ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
+    }
+  }
+  
+  function analyseData(){
+    let primaryCalls=new Set();
+    let transmittingPrimaryCalls=new Set();
+    let tpcsHeardInHome=new Set();
+    for(primaryCall in ObjPrimaryCalls) {
+      primaryCalls.add(primaryCall);
+      if(ObjPrimaryCalls[primaryCall].size>0){
+        let transmittingPrimaryCall=primaryCall;
+        transmittingPrimaryCalls.add(primaryCall); 
+        let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]);
+        for (const tpcReceiver of tpcReceiversArr){
+          tpcsHeardInHome.add(transmittingPrimaryCall);
+        }
+        for (const tpcReceiver of tpcReceiversArr){
+          let tpcReceiverCall=tpcReceiver[0];
+          let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
+          if(tpcReceiverL4Sq==myL4Square) {
+	    tpcsSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
+              if(tpcReceiverCall==myCall){
+                myReciprocals.add(transmittingPrimaryCall);
+              }
+          }
+        }
+      }
+    }  
+    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "); 	  
+    setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", "); 
+    setTextField("tpcsHeardInHome",Array.from(tpcsHeardInHome).toSorted().join(", ");
+    setTextField("tpcSpotsInHome",Array.from(tpcSpotsInHome).toSorted().join(", ");
+    setTextField("myReciprocals",Array.from(myReciprocals).toSorted().join(", ");
+  }
+  
+  function incCounterField(id){
+    let el=document.getElementById(id);    
+    let n=parseInt(el.value);
+    el.value=n+1;
+  }
+  
+  function setCounterField(id,val){
+    let el=document.getElementById(id);    
+    el.value=val;
+  }
+  
+  function appendTextField(id,txt){
+    let el=document.getElementById(id);    
+    el.value+=((el.value=="") ? "":", ")+txt;
+  }
+
+  function setTextField(id,val){
+    let el=document.getElementById(id);    
+    el.value=val;
+  }
+  
+	
+</script>
+	
+</body>
+</html>
