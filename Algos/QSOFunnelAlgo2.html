@@ -38,9 +38,10 @@ div {margin: 0px;  padding: 0px;}
        Total messages: <output id="nMessages">0</output>
        <br><br>
        Total subscriptions: <output id="nSubscriptions">0</output>
+       <br><br><br>Calls heard in my L4 square: <output id="nCallsHeardInHome">0</output>
        <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
        <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
-       <br><br><br>Transmitting calls reached heard in IO90: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
+       <br><br><br>Transmitting calls reached heard in my L4 square: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
        <br><br><br>Transmitting calls reached heard by me: <output id="nTxReachedHeardByMe">0</output>: <output id="TxReachedHeardByMe"></output>
        
      </div>
@@ -59,7 +60,7 @@ div {margin: 0px;  padding: 0px;}
  const myCall="G1OJS";
  const myL4Square="IO90";
  var ObjPrimaryCalls={};
- var ObjPotentialPrimaryCalls={};
+ var ObjPotentialTransmittingPrimaryCalls={};
 
   setInterval(analyseData,1000);
   connectToFeed();
@@ -79,8 +80,7 @@ div {margin: 0px;  padding: 0px;}
   // connect to MQTT feed  
    function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
-    // now connect and subscribe on success
+    // connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
     mqttClient.onSuccess=subscribe_initial();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
@@ -88,7 +88,7 @@ div {margin: 0px;  padding: 0px;}
 
   function subscribe_initial(){
     subscribe('pskr/filter/v2/+/+/'+myCall+'/#');
-    subscribe('pskr/filter/v2/+/+/+/+/'+myL4Square+'/#');
+    subscribe('pskr/filter/v2/+/+/+/+/+/'+myL4Square+'/#');
   }
 
   // subscribe to needed squares
@@ -118,6 +118,8 @@ div {margin: 0px;  padding: 0px;}
 	  
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
+    
+    console.log(conn.sc,conn.sl,conn.rc,conn.rl)
 
     incCounterField("nMessages");
     
@@ -130,16 +132,15 @@ div {margin: 0px;  padding: 0px;}
       let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
       subscribe(topic);
     }
-    // if the sender call is in ObjPotentialPrimaryCalls, it's already been received in Home
-    // so (given it's a sender call) it must be a transmittingPrimaryCall, 
+    // if the sender call is in potentialTransmittingPrimaryCalls, it's already been received in Home
+    // so, given it's now appeared as a sender call, it must be a transmittingPrimaryCall, 
     // and we can move it and its receiver list into ObjPrimaryCalls
-    // we can delete it from ObjPotentialPrimaryCalls because the work of that obj is done
+    // we can delete it from ObjPotentialTransmittingPrimaryCalls because the work of that obj is done
     // for this call
-    if(conn.sc in ObjPotentialPrimaryCalls){
+    if(conn.sc in ObjPotentialTransmittingPrimaryCalls){
       let transmittingPrimaryCall=conn.sc;
-      let transmittingPrimaryCallReceiver=[conn.rc,conn.rl];
-      ObjPrimaryCalls[transmittingPrimaryCall].add(transmittingPrimaryCallReceiver);
-  //    ObjPotentialPrimaryCalls[transmittingPrimaryCall].delete();
+      ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
+  //    ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall].delete();
     }
     
     // if the sender call is in ObjPrimaryCalls, it's a primary call so now we know
@@ -150,13 +151,20 @@ div {margin: 0px;  padding: 0px;}
       ObjPrimaryCalls[transmittingPrimaryCall].add(transmittingPrimaryCallReceiver);
     } 
     
-    // if the receiver call is in Home, add this to ObjPotentialPrimaryCalls
+    // if the receiver call is in Home, add the sender to ObjPotentialTransmittingPrimaryCalls
     // with a set to hold its receiver calls and locations
-    // incase it appears later as a Primary Call via the logic immediately above
+    // incase it appears later as a Primary Call via the logic immediately above.
+    // Then (or if it's already in ObjPotentialTransmittingPrimaryCalls), 
+    // add this receiver info to its receivers list
     let receiverL4Sq=(conn.rl).slice(0,4);
     if(ReceiverL4Sq==myL4Square){
-      let potentialPrimaryCall=conn.rc;
-      ObjPotentialPrimaryCalls[potentialPrimaryCall]=new Set();
+      incCounterField("nCallsHeardInHome");
+      let potentialTransmittingPrimaryCall=conn.sc;
+      let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
+      if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
+        ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
+      }
+      ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
     }
   }
   
