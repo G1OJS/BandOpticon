@@ -138,7 +138,7 @@ div {margin: 0px;  padding: 0px;}
       if(conn.rc in ObjPotentialTransmittingPrimaryCalls){
         let transmittingPrimaryCall=conn.rc;
         ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
-  //    ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall].delete();
+        ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall]=null;
       } else {
         ObjPrimaryCalls[primaryCall]=new Set(); 
       }
@@ -161,7 +161,7 @@ div {margin: 0px;  padding: 0px;}
     if(receiverL4Sq==myL4Square){
       incCounterField("nCallsHeardInHome");
       let potentialTransmittingPrimaryCall=conn.sc;
-      let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
+      let potentialTransmittingPrimaryCallReceiver=["!"+conn.rc,conn.rl];
       if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
         ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
       }
@@ -191,7 +191,8 @@ div {margin: 0px;  padding: 0px;}
           tpcsHeardInHome.add(transmittingPrimaryCall);
         }
         setCounterField("nTxReachedHeardInHome",tpcsHeardInHome.size);
-        setTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome));
+        clearTextField("TxReachedHeardInHome");
+        appendTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome));
         for (const tpcReceiver of tpcReceiversArr){
           let tpcReceiverCall=tpcReceiver[0];
           let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
