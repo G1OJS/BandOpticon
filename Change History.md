@@ -10,10 +10,7 @@
   <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.4.0'>V1.4.0</a></td>
   <td>
     <ol>
-      <li>In progress
-
-      </li>
-      <li>Grid resize now also works nicely when nearly empty</li>
+      <li>In progress</li>
     </ol>
   </td>
 </tr>
