@@ -36,9 +36,9 @@ div {margin: 0px;  padding: 0px;}
        Simple counters not checking for anyone working several bands at once.<br><br>
        Reload the page to reset data.<br>
        Total subscriptions: <output id="nSubscriptions">0</output>
-       <br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
-       <br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
-       <br>Transmitting calls reached heard in IO90: <output id="nTxHeardInHomeReached">0</output>: <output id="TxHeardInHomeReached"></output>
+       <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
+       <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
+       <br><br><br>Transmitting calls reached heard in IO90: <output id="nTxHeardInHomeReached">0</output>: <output id="TxHeardInHomeReached"></output>
        
      </div>
    </div>
@@ -135,7 +135,7 @@ div {margin: 0px;  padding: 0px;}
       if(remObj[cl].size>0){
         incCounterField("nTxReached");
         appendTextField("TxReached",cl); 
-        let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,5));
+        let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,4));
         if(sqsArr.includes("IO90")) {
           incCounterField("nTxHeardInHomeReached");
           appendTextField("TxHeardInHomeReached",cl); 
