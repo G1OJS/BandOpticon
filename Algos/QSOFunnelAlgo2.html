@@ -119,10 +119,10 @@ div {margin: 0px;  padding: 0px;}
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
     
-    console.log(conn.sc,conn.sl,conn.rc,conn.rl)
+//    console.log(conn.sc,conn.sl,conn.rc,conn.rl)
 
     incCounterField("nMessages");
-    
+
     //if I'm the sender call, record the call reached by me as it's a 'primary call'
     if(conn.sc==myCall){ 
       let primaryCall=conn.rc
@@ -132,6 +132,7 @@ div {margin: 0px;  padding: 0px;}
       let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
       subscribe(topic);
     }
+
     // if the sender call is in potentialTransmittingPrimaryCalls, it's already been received in Home
     // so, given it's now appeared as a sender call, it must be a transmittingPrimaryCall, 
     // and we can move it and its receiver list into ObjPrimaryCalls
@@ -142,7 +143,7 @@ div {margin: 0px;  padding: 0px;}
       ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
   //    ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall].delete();
     }
-    
+   
     // if the sender call is in ObjPrimaryCalls, it's a primary call so now we know
     // it's a transmitting primary call and we can add its list of receiver calls and squares
     if(conn.sc in ObjPrimaryCalls){
@@ -150,21 +151,21 @@ div {margin: 0px;  padding: 0px;}
       let transmittingPrimaryCallReceiver=[conn.rc,conn.rl];
       ObjPrimaryCalls[transmittingPrimaryCall].add(transmittingPrimaryCallReceiver);
     } 
-    
+   
     // if the receiver call is in Home, add the sender to ObjPotentialTransmittingPrimaryCalls
     // with a set to hold its receiver calls and locations
     // incase it appears later as a Primary Call via the logic immediately above.
     // Then (or if it's already in ObjPotentialTransmittingPrimaryCalls), 
     // add this receiver info to its receivers list
     let receiverL4Sq=(conn.rl).slice(0,4);
-    if(ReceiverL4Sq==myL4Square){
+    if(receiverL4Sq==myL4Square){
       incCounterField("nCallsHeardInHome");
       let potentialTransmittingPrimaryCall=conn.sc;
       let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
       if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
         ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
       }
-      ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
+     ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
     }
   }
   
