@@ -29,6 +29,7 @@ div {margin: 0px;  padding: 0px;}
 </style>
 </head>
 <body>
+
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
    <div id="details_group">
@@ -39,7 +40,7 @@ div {margin: 0px;  padding: 0px;}
        <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
        <br><br>My reciprocals: <output id="myReciprocals"></output>
      </div>
-   </div<
+   </div>
 
 <div id="creditsGrid">
 
@@ -97,7 +98,7 @@ div {margin: 0px;  padding: 0px;}
     } else { // any other call being heard by anyone
       if(!receivedCallsHome.has(conn.sc)){ receivedCallsHome.add(conn.sc) }
       if(conn.rc==myCall) {// any other call being heard by me
-	if(!receivedCallsMe.has(conn.sc)){ receivedCallsMe.add(conn.sc) } 
+	      if(!receivedCallsMe.has(conn.sc)){ receivedCallsMe.add(conn.sc) } 
       }
     }
   
