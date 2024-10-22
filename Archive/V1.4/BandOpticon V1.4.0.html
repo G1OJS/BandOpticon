@@ -652,6 +652,8 @@ a:visited {color: blue;}
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
+	highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
+	highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
        highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
        highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
        highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
@@ -738,7 +740,7 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
     for (let i=0;i<entities2.length;i++){
       // highlight the matches in the other call's far entities
       entities1Txt.forEach(entity => {
-        entities2.innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
+        entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
      });     
     }
   }
