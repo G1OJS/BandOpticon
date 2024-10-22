@@ -66,7 +66,7 @@ div {margin: 0px;  padding: 0px;}
   }
 
   function subscribe_topics(){
-    subscribe('pskr/filter/v2/'+band+'/+/'+myCall+'/#');
+//    subscribe('pskr/filter/v2/'+band+'/+/'+myCall+'/#');
     subscribe('pskr/filter/v2/'+band+'/+/+/+/+/'+myL4Square+'/#');
   }
 	
@@ -107,9 +107,8 @@ div {margin: 0px;  padding: 0px;}
   }
   
   function analyseData(){
-    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "));	  
     setTextField("receivedCallsHome",Array.from(receivedCallsHome).toSorted().join(", ")); 
-
+    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "));
     // note that primary calls might be transmitting & heard globally, but do we care if they aren't being heard locally?
     let transmittingPrimaryCalls=primaryCalls.intersection(receivedCallsHome);
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
@@ -117,6 +116,36 @@ div {margin: 0px;  padding: 0px;}
     setTextField("myReciprocals",Array.from(myReciprocals).toSorted().join(", "));
   }
 
+function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
+
+  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
+  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
+      
+  if (farEntities_me[0]!=undefined && ((farEntities_others[0]!=undefined) || (othersRowClassPrefix==""))){
+    // plain text version of far entities to look for in other call's far entities
+    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
+    if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
+      farEntities_meTxt.forEach(entity => {      
+        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll(entity,HL(entity,true,"HighlightExclusive"));
+      });
+    } else {
+      // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+      for (let i=0;i<farEntities_others.length;i++){
+        // highlight the matches in the other call's far entities
+        farEntities_meTxt.forEach(entity => {
+          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replaceAll(entity,HL(entity,true));
+        });
+        // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
+        let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
+        farEntities_othersTxt.forEach(entity => {      
+          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
+        });
+      }
+    }
+  }
+}
+
+	
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
     // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
