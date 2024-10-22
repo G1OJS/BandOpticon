@@ -606,9 +606,9 @@ a:visited {color: blue;}
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>"
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>"
-	  +"<br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Tx to Tx, Rx to Rx</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Tx to Rx</a>"
-//	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Exclusive&quot;; updateDisplays();'>myCall Tx/Rx/TxRx to others not</a>"
+	  +"<br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Other direction</a>"
+//	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Exclusive&quot;; updateDisplays();'>myCall Exclusive</a>"
 	  +"</div>";
 	  
        // get copy of connections for just this band and mode
@@ -649,13 +649,13 @@ a:visited {color: blue;}
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
-       if(highlightType="Common"){
+       if(highlightType=="Common"){
          highlightEntitiesList("myCallTx_farEntities","othersTx_farEntities");
          highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
-         highlightEntitiesList("othersTxRx_farEntities","othersTxRx_farEntities");
+         highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        }
 
-       if(highlightType="Reverse"){
+       if(highlightType=="Reverse"){
 	 highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
 	 highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
          highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
