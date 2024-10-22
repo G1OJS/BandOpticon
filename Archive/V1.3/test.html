@@ -40,7 +40,7 @@ div {margin: 0px;  padding: 0px;}
        Total subscriptions: <output id="nSubscriptions">0</output>
        <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
        <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
-       <br><br><br>Transmitting calls reached heard in IO90: <output id="nTxHeardInHomeReached">0</output>: <output id="TxHeardInHomeReached"></output>
+       <br><br><br>Transmitting calls reached heard in IO90: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
        
      </div>
    </div>
@@ -55,6 +55,7 @@ div {margin: 0px;  padding: 0px;}
 <!-- BandOpticon script -->
 <script>
 
+ const myCall="G1OJS";
  var remObj={};
 
   setInterval(showData,1000);
@@ -81,7 +82,7 @@ div {margin: 0px;  padding: 0px;}
     try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
     // now connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribe('pskr/filter/v2/+/+/G1OJS/#');
+    mqttClient.onSuccess=subscribe('pskr/filter/v2/+/+/'+myCall+'/#');
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
 
@@ -115,13 +116,13 @@ div {margin: 0px;  padding: 0px;}
 
     incCounterField("nMessages");
     
-    if(conn.sc=="G1OJS"){
+    if(conn.sc==myCall){
       remObj[conn.rc]=new Set();
       let topic="pskr/filter/v2/+/+/"+conn.rc+"/#";
       subscribe(topic);
     }
     if(conn.sc in remObj){
-      remObj[conn.sc].add(conn.rl);
+      remObj[conn.sc].add([conn.rc,conn.rl]);
     }
     
   }
@@ -131,19 +132,23 @@ div {margin: 0px;  padding: 0px;}
     document.getElementById("CallsReached").value="";
     document.getElementById("nTxReached").value=0;
     document.getElementById("TxReached").value="";
-    document.getElementById("nTxHeardInHomeReached").value=0;
-    document.getElementById("TxHeardInHomeReached").value="";
+    document.getElementById("nTxReachedHeardInHome").value=0;
+    document.getElementById("TxReachedHeardInHome").value="";
     for(cl in remObj) {
       incCounterField("nCallsReached");
       appendTextField("CallsReached",cl); 
       if(remObj[cl].size>0){
         incCounterField("nTxReached");
         appendTextField("TxReached",cl); 
-        let sqsArr=Array.from(remObj[cl]).map((el) => el.slice(0,4));
-        if(sqsArr.includes("IO90")) {
-          incCounterField("nTxHeardInHomeReached");
-          appendTextField("TxHeardInHomeReached",cl); 
+        let secRxArr=Array.from(remObj[cl]);
+        for (const secRx of secRxArr){
+          let sq=secRx[1].slice(0,4);
+          if(sq=="IO90") {
+            incCounterField("nTxReachedHeardInHome");
+            appendTextField("TxReachedHeardInHome",cl+": "+secRx[0]); 
+          }
         }
+        
       }
     }  
   }
