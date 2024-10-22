@@ -592,7 +592,7 @@ a:visited {color: blue;}
           +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
 	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>TxRx&nbspCall</span></strong>"
       	  +"<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both hears and reaches the same remote callsign</span>"
-      	  +"<br><span class='notesText'>Highlighting: "+((highlightType==&quot;Common&quot;) ? "Common":"Reverse")+"</span>"
+      	  +"<br><span class='notesText'>Highlighting: "+((highlightType=="Common") ? "Common":"Reverse")+"</span>"
 	  +"</div>"
 
     document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"
