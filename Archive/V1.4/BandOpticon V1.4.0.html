@@ -742,6 +742,7 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
         entities1Txt.forEach(entity => {
         entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
       });
+    }
     // plain text version of far entities to look for in other call's far entities
     let entities2Txt=entities2[0].innerText.split(', ');
     // loop through the farEntities2 collection so it picks up all rows when not grouped'
