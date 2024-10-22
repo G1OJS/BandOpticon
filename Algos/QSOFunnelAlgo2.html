@@ -170,14 +170,14 @@ div {margin: 0px;  padding: 0px;}
   }
   
   function analyseData(){
-    document.getElementById("nCallsReached").value=0;
-    document.getElementById("CallsReached").value="";
-    document.getElementById("nTxReached").value=0;
-    document.getElementById("TxReached").value="";
-    document.getElementById("nTxReachedHeardInHome").value=0;
-    document.getElementById("TxReachedHeardInHome").value="";
-    document.getElementById("nTxReachedHeardByMe").value=0;
-    document.getElementById("TxReachedHeardByMe").value="";
+    setCounterField(("nCallsReached");
+    clearTextField("CallsReached");
+    setCounterField("nTxReached");
+    clearTextField("TxReached");
+    setCounterField("nTxReachedHeardInHome");
+    clearTextField("TxReachedHeardInHome");
+    setCounterField("nTxReachedHeardByMe");
+    clearTextField("TxReachedHeardByMe");
     let tpcsHeardInHome=new Set();
     for(primaryCall in ObjPrimaryCalls) {
       incCounterField("nCallsReached");
