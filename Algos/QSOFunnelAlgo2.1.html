@@ -38,8 +38,7 @@ div {margin: 0px;  padding: 0px;}
        <br><br>Calls received in home: <output id="potentialPrimaryCalls">0</output>
        <br><br>Primary Calls: <output id="primaryCalls"></output>
        <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
-       <br><br>TPCs heard in home: <output id="tpcsHeardInHome"></output>
-       <br><br>TPC spots in home: <output id="tpcSpotsInHome"></output>
+       <br><br>TPC spots: <output id="tpcSpots"></output>
        <br><br>My reciprocals: <output id="myReciprocals"></output>
      </div>
    </div>
@@ -161,7 +160,6 @@ div {margin: 0px;  padding: 0px;}
       let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
       if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
         ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
-	      ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add("historic");
       }
      ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
     }
@@ -170,29 +168,29 @@ div {margin: 0px;  padding: 0px;}
   function analyseData(){
     let primaryCalls=new Set();
     let transmittingPrimaryCalls=new Set();
-    let tpcsHeardInHome=new Set();
-    let tpcSpotsInHome=new Set();
+    let tpcsHeard=new Set();
+    let tpcSpots="";
     let myReciprocals=new Set();
     for(primaryCall in ObjPrimaryCalls) {
       primaryCalls.add(primaryCall);
       if(ObjPrimaryCalls[primaryCall].size>0){
         let transmittingPrimaryCall=primaryCall;
         transmittingPrimaryCalls.add(primaryCall); 
-        let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]);
-        for (const tpcReceiver of tpcReceiversArr){
-          let tpcReceiverCall=tpcReceiver[0];
-          tpcsHeardInHome.add(transmittingPrimaryCall);
-	        tpcSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
-          if(tpcReceiverCall==myCall){
-            myReciprocals.add(transmittingPrimaryCall);
-          }
+        let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]).toSorted();
+        tpcSpots+=transmittingPrimaryCall +": "+tpcReceiversArr+" ";          
+        if(tpcReceiversArr.indexOf(myCall)>=0){
+          myReciprocals.add(transmittingPrimaryCall);
         }
       }
     }  
+    let spots="";
+    for(spot in tpcsHeardInHome){
+       spots=spot+": "+tpcsHeardInHome[spot].toSorted().join(',');
+    }
     setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", ")); 	  
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
-    setTextField("tpcsHeardInHome",Array.from(tpcsHeardInHome).toSorted().join(", "));
-    setTextField("tpcSpotsInHome",Array.from(tpcSpotsInHome).toSorted().join(", "));
+    setTextField("tpcsHeard",Array.from(tpcsHeard).toSorted().join(", "));
+    setTextField("tpcSpots",Array.from(tpcSpots).toSorted().join(", "));
     setTextField("myReciprocals",Array.from(myReciprocals).toSorted().join(", "));
   }
   
