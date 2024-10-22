@@ -33,7 +33,6 @@ div {margin: 0px;  padding: 0px;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
    <div id="details_group">
      <div id="screen">
-	Band: <output id="band"></output>
        Total messages: <output id="nMessages">0</output>
        <br><br>Total subscriptions: <output id="nSubscriptions">0</output>
        <br><br>Calls received in home: <output id="potentialPrimaryCalls">0</output>
@@ -172,6 +171,8 @@ div {margin: 0px;  padding: 0px;}
     let primaryCalls=new Set();
     let transmittingPrimaryCalls=new Set();
     let tpcsHeardInHome=new Set();
+    let tpcSpotsInHome=new Set();
+    let myReciprocals=new Set();
     for(primaryCall in ObjPrimaryCalls) {
       primaryCalls.add(primaryCall);
       if(ObjPrimaryCalls[primaryCall].size>0){
@@ -185,7 +186,7 @@ div {margin: 0px;  padding: 0px;}
           let tpcReceiverCall=tpcReceiver[0];
           let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
           if(tpcReceiverL4Sq==myL4Square) {
-	    tpcsSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
+	    tpcSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
               if(tpcReceiverCall==myCall){
                 myReciprocals.add(transmittingPrimaryCall);
               }
@@ -193,7 +194,6 @@ div {margin: 0px;  padding: 0px;}
         }
       }
     }  
-    setTextField("band",band);
     setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", ")); 	  
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
     setTextField("tpcsHeardInHome",Array.from(tpcsHeardInHome).toSorted().join(", "));
