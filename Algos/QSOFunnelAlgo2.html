@@ -107,15 +107,31 @@ div {margin: 0px;  padding: 0px;}
   }
   
   function analyseData(){
+    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "));	  
     setTextField("receivedCallsHome",Array.from(receivedCallsHome).toSorted().join(", ")); 
-    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "));
+
     // note that primary calls might be transmitting & heard globally, but do we care if they aren't being heard locally?
     let transmittingPrimaryCalls=primaryCalls.intersection(receivedCallsHome);
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
     let myReciprocals=primaryCalls.intersection(receivedCallsMe); 
     setTextField("myReciprocals",Array.from(myReciprocals).toSorted().join(", "));
   }
-  
+
+  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
+  if (item==", ") {return item} // don't highlight comma-spaces
+  if(item==pattern || pattern==true){
+        return "<span class="+hlClass1+">"+item+"</span>";
+    } else {
+	    if(hlClass2==""){
+	      return item;
+	    } else {
+	      return "<span class="+hlClass2+">"+item+"</span>";
+	    }
+    }
+  }
+	
   function incCounterField(id){
     let el=document.getElementById(id);    
     let n=parseInt(el.value);
