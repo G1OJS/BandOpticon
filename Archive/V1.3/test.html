@@ -35,6 +35,8 @@ div {margin: 0px;  padding: 0px;}
      <div id="screen">
        Simple counters not checking for anyone working several bands at once.<br><br>
        Reload the page to reset data.<br>
+       Total messages: <output id="nMessages">0</output>
+       <br><br>
        Total subscriptions: <output id="nSubscriptions">0</output>
        <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
        <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
@@ -111,6 +113,8 @@ div {margin: 0px;  padding: 0px;}
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
 
+    incCounterField("nMessages");
+    
     if(conn.sc=="G1OJS"){
       remObj[conn.rc]=new Set();
       let topic="pskr/filter/v2/+/+/"+conn.rc+"/#";
