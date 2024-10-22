@@ -7,10 +7,13 @@
 </tr>
 
 <tr>
-  <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.0'>V1.4.0</a></td>
+  <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.0'>V1.4.0</a></td>
   <td>
     <ol>
-      <li>In progress</li>
+      <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlightinh'),
+      opposite to the usual "transmit home calls share a common entity with another transmit home call" ('forward highlighting'). This
+      choice is useful when switching between looking for reciprocal connections (reverse highlighting) and benchmarking performance (forward highlighting)</li>
+      <li>Code improvements to stop the screen scrolling to the top on refresh</li>
     </ol>
   </td>
 </tr>
@@ -102,8 +105,9 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - think about the use case "For the calls hearing me (globally), who is hearing them? (or at least "is anyone hearing them?") This might need another seperate app because we can't throw away connections Dx-Dx at the onMessage stage
+  - radio buttons to replace hyperlink buttons
   - redsign screen layout (colours / borders etc)
+  - continue removing as much 'write to innerHTML' as possible out of the main loops
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
