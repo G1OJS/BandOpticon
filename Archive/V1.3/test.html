@@ -18,7 +18,7 @@ div {margin: 0px;  padding: 0px;}
 #clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
 
 #details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
-#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white; height:400px;}
+#details_group > div {margin:2px; margin-bottom:0px; padding:0px; background-color:white;}
 
 #creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -41,6 +41,7 @@ div {margin: 0px;  padding: 0px;}
        <br><br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
        <br><br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
        <br><br><br>Transmitting calls reached heard in IO90: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
+       <br><br><br>Transmitting calls reached heard by me: <output id="nTxReachedHeardByMe">0</output>: <output id="TxReachedHeardByMe"></output>
        
      </div>
    </div>
@@ -134,18 +135,24 @@ div {margin: 0px;  padding: 0px;}
     document.getElementById("TxReached").value="";
     document.getElementById("nTxReachedHeardInHome").value=0;
     document.getElementById("TxReachedHeardInHome").value="";
-    for(cl in remObj) {
+    document.getElementById("nTxReachedHeardByMe").value=0;
+    document.getElementById("TxReachedHeardByMe").value="";
+    for(clReached in remObj) {
       incCounterField("nCallsReached");
-      appendTextField("CallsReached",cl); 
-      if(remObj[cl].size>0){
+      appendTextField("CallsReached",clReached); 
+      if(remObj[clReached].size>0){
         incCounterField("nTxReached");
-        appendTextField("TxReached",cl); 
-        let secRxArr=Array.from(remObj[cl]);
+        appendTextField("TxReached",clReached); 
+        let secRxArr=Array.from(remObj[clReached]);
         for (const secRx of secRxArr){
           let sq=secRx[1].slice(0,4);
           if(sq=="IO90") {
             incCounterField("nTxReachedHeardInHome");
-            appendTextField("TxReachedHeardInHome",cl+": "+secRx[0]); 
+            appendTextField("TxReachedHeardInHome",clReached+": "+secRx[0]); 
+              if(secRx[0]==myCall){
+                incCounterField("nTxReachedHeardByMe");
+                appendTextField("TxReachedHeardByMe",clReached); 
+              }
           }
         }
         
