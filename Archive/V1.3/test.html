@@ -33,8 +33,10 @@ div {margin: 0px;  padding: 0px;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
    <div id="details_group">
      <div id="screen">
+       Simple counters not checking for anyone working several bands at once.<br><br>
+       Reload the page to reset data.<br>
        Total subscriptions: <output id="nSubscriptions">0</output>
-       <br>Calls reached: <output id="nCallsReached">0</output>
+       <br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
        <br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
        <br>Transmitting calls reached heard in IO90: <output id="nTxHeardInHomeReached">0</output>: <output id="TxHeardInHomeReached"></output>
        
@@ -128,6 +130,7 @@ div {margin: 0px;  padding: 0px;}
     document.getElementById("TxHeardInHomeReached").value="";
     for(cl in remObj) {
       incCounterField("nCallsReached");
+      appendTextField("CallsReached",cl); 
       if(remObj[cl].size>0){
         incCounterField("nTxReached");
         appendTextField("TxReached",cl); 
