@@ -129,7 +129,7 @@ div {margin: 0px;  padding: 0px;}
       let primaryCall=conn.rc
       // add a set to hold a list of calls receiving this primary call,
       // and add a subscription to get that data
-      subscribe('pskr/filter/v2/'+band+'/+/'+primaryCall+'/+/+/'+myL4Square+'/#');
+     // subscribe('pskr/filter/v2/'+band+'/+/'+primaryCall+'/+/+/'+myL4Square+'/#');
 
       if(primaryCall in ObjPotentialTransmittingPrimaryCalls){
         let transmittingPrimaryCall=primaryCall;
@@ -183,10 +183,7 @@ div {margin: 0px;  padding: 0px;}
         }
       }
     }  
-    let spots="";
-    for(spot in tpcsHeardInHome){
-       spots=spot+": "+tpcsHeardInHome[spot].toSorted().join(',');
-    }
+
     setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", ")); 	  
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
     setTextField("tpcsHeard",Array.from(tpcsHeard).toSorted().join(", "));
