@@ -123,25 +123,24 @@ div {margin: 0px;  padding: 0px;}
 
     incCounterField("nMessages");
 
-    //if I'm the sender call, record the call reached by me as it's a 'primary call'
+    //if I'm the sender call, then the receiver call is a 'primary call'
+    //so subscribe to that primary call as a transmitter to log its future receivers.
+    //Check if the primary call has already been received in Home and, if so, it must be
+    //a transmitting primary call so add its past receivers to ObjPrimaryCalls.
+    //If it hasn't already been heard, just make an empty set to hold its future receivers
     if(conn.sc==myCall){ 
       let primaryCall=conn.rc
       // add a set to hold a list of calls receiving this primary call,
       // and add a subscription to get that data
-      ObjPrimaryCalls[primaryCall]=new Set(); 
       let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
       subscribe(topic);
-    }
-
-    // if the sender call is in potentialTransmittingPrimaryCalls, it's already been received in Home
-    // so, given it's now appeared as a sender call, it must be a transmittingPrimaryCall, 
-    // and we can move it and its receiver list into ObjPrimaryCalls
-    // we can delete it from ObjPotentialTransmittingPrimaryCalls because the work of that obj is done
-    // for this call
-    if(conn.sc in ObjPotentialTransmittingPrimaryCalls){
-      let transmittingPrimaryCall=conn.sc;
-      ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
+      if(conn.rc in ObjPotentialTransmittingPrimaryCalls){
+        let transmittingPrimaryCall=conn.rc;
+        ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
   //    ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall].delete();
+      } else {
+        ObjPrimaryCalls[primaryCall]=new Set(); 
+      }
     }
    
     // if the sender call is in ObjPrimaryCalls, it's a primary call so now we know
