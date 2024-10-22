@@ -60,8 +60,9 @@ div {margin: 0px;  padding: 0px;}
 
  const myCall="G1OJS";
  const myL4Square="IO90";
- var ObjPrimaryCalls={};
- var ObjPotentialTransmittingPrimaryCalls={};
+ const band="20m";
+ const ObjPrimaryCalls={};
+ const ObjPotentialTransmittingPrimaryCalls={};
 
   setInterval(analyseData,1000);
   connectToFeed();
@@ -88,8 +89,8 @@ div {margin: 0px;  padding: 0px;}
   }
 
   function subscribe_initial(){
-    subscribe('pskr/filter/v2/+/+/'+myCall+'/#');
-    subscribe('pskr/filter/v2/+/+/+/+/+/'+myL4Square+'/#');
+    subscribe('pskr/filter/v2/'+band+'/+/'+myCall+'/#');
+    subscribe('pskr/filter/v2/'+band+'/+/+/+/+/'+myL4Square+'/#');
   }
 
   // subscribe to needed squares
@@ -160,8 +161,8 @@ div {margin: 0px;  padding: 0px;}
     let receiverL4Sq=(conn.rl).slice(0,4);
     if(receiverL4Sq==myL4Square){
       incCounterField("nCallsHeardInHome");
-      let potentialTransmittingPrimaryCall=conn.sc;
-      let potentialTransmittingPrimaryCallReceiver=["!"+conn.rc,conn.rl];
+      let potentialTransmittingPrimaryCall="!"+conn.sc;
+      let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
       if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
         ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
       }
