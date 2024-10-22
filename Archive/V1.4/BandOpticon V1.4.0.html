@@ -697,14 +697,16 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     let farEntities=new Set();
     for (id in cons) {
       let c=cons[id];
-      let farEntity="";
-      if (TxRx=="Tx" && c.sc==homeCall) {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
-      if (TxRx=="Rx" && c.rc==homeCall) {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
-      if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
+      if(c!=null){
+        let farEntity="";
+        if (TxRx=="Tx" && c.sc==homeCall) {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
+        if (TxRx=="Rx" && c.rc==homeCall) {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
+        if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
                                            farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
-      if(farEntity!=""){
-        farEntities.add(farEntity);
-        farEntitiesGrouped.add(farEntity);
+        if(farEntity!=""){
+          farEntities.add(farEntity);
+          farEntitiesGrouped.add(farEntity);
+        }
       }
     }
     if (!groupHomeEntities){
