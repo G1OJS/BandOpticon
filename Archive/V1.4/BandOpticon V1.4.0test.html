@@ -27,10 +27,12 @@ div {margin: 0px;  padding: 0px;}
 
 #detailsTop {background-color: white;  width:100%;}
 #detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1.5rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
+
+#titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
+#optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
+
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
-#detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 0px; padding: 5px; margin-left:1px; margin-right:1px; }
@@ -99,27 +101,49 @@ a:visited {color: blue;}
          <br></div><div class='noborder'></div></div>
      </div>
      <div id="detailsTop">
-	<fieldset>
-           <legend>Choose your monster's features:</legend>
-            <div>
-            <input type="checkbox" id="scales" name="scales" checked />
-            <label for="scales">Scales</label>
-         </div><div>
-           <input type="checkbox" id="horns" name="horns" />
-           <label for="horns">Horns</label>
-         </div>
-       </fieldset>
-
+       <div><strong><output id='detailsBand'></output>  <output id='watchedMode'></output> Details</strong>
+       <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
      </div>
-     <div id="detailsGrid"></div>
-   </div>
-   <div id="bandsGrid"><div id="bandTileDiv_0"></div>
-	<div id="bandTileDiv_1"></div><div id="bandTileDiv_2"></div><div id="bandTileDiv_3"></div><div id="bandTileDiv_4"></div><div id="bandTileDiv_5"></div>
-	<div id="bandTileDiv_6"></div><div id="bandTileDiv_7"></div><div id="bandTileDiv_8"></div><div id="bandTileDiv_9"></div><div id="bandTileDiv_10"></div>
-	<div id="bandTileDiv_11"></div><div id="bandTileDiv_12"></div><div id="bandTileDiv_13"></div><div id="bandTileDiv_14"></div><div id="bandTileDiv_15"></div>
-	<div id="bandTileDiv_16"></div><div id="bandTileDiv_17"></div><div id="bandTileDiv_18"></div><div id="bandTileDiv_19"></div>
-   </div>
-</div>
+       <div id='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
+	      <br><span class='notesText'>TxRx = call heard by any & hearing any</span></div>
+        <span style='text-align:center; font-size:1rem;'>&#8660</span>
+        <strong>Entities reached by <span class='Tx'>Tx Calls</span>, spotted by 
+        <span class='Rx'>Rx Calls</span>, and both reached and spotted by any 
+        <span class='TxRx'>TxRx&nbspCall</span></strong>
+      	<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both
+        hears and reaches the same remote callsign</span>
+      </div>
+        
+     <div id='optionsRow'>
+      Show: <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>
+	          <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>
+      <br>Format: <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>
+       <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>
+     </div><div class='optionsRow'></div>
+    <div class='optionsRow'>Show:"
+      <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>
+      <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>
+      <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>
+      <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>
+     <br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>
+     <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>
+    </div>
+  </div>  
+  
+  <div id="detailsGrid">
+  
+  </div>
+  
+  
+  
+  <div id="bandsGrid">
+    <div id="bandTileDiv_0"></div><div id="bandTileDiv_1"></div><div id="bandTileDiv_2"></div><div id="bandTileDiv_3"></div>
+    <div id="bandTileDiv_4"></div><div id="bandTileDiv_5"></div><div id="bandTileDiv_6"></div><div id="bandTileDiv_7"></div>
+    <div id="bandTileDiv_8"></div><div id="bandTileDiv_9"></div><div id="bandTileDiv_10"></div><div id="bandTileDiv_11"></div>
+    <div id="bandTileDiv_12"></div><div id="bandTileDiv_13"></div><div id="bandTileDiv_14"></div><div id="bandTileDiv_15"></div>
+	  <div id="bandTileDiv_16"></div><div id="bandTileDiv_17"></div><div id="bandTileDiv_18"></div><div id="bandTileDiv_19"></div>
+  </div>
+
 <div id="creditsGrid">
     <div>
         Javascript & HTML developed by Alan Robinson:<br>
@@ -288,10 +312,8 @@ a:visited {color: blue;}
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
     document.getElementById("legendContainer").style="display:inline-block;"
-
-
-    document.getElementById("detailsGrid").innerHTML="";
-    document.getElementById("detailsTop").innerHTML="";
+    document.getElementById("detailsGrid").style="display:none;"
+    document.getElementById("detailsTop").style="display:none;"
   }
 	  
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
@@ -588,38 +610,12 @@ a:visited {color: blue;}
  
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
-     detailsWanted="BandDetails";
-	  
-     document.getElementById("legendContainer").innerHTML="";
-     document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
-          +" <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>"
-          +"</div>";
-		
-     document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
-          +"<strong><span id='lhEntitiesTitle'></span></strong>"
-	  +"<br><span class='notesText'>TxRx = call heard by any & hearing any</span>"
-          +"</div><div class='titleRow'>"+LEFTRIGHTARROW+"</div>"
-          +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
-	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>TxRx&nbspCall</span></strong>"
-      	  +"<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both hears and reaches the same remote callsign</span>"
-      	  +"<br><span class='notesText'>Highlighting: "+((highlightType=="Common") ? "Same direction":"Reverse direction")+"</span>"
-	  +"</div>"
-
-    document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"
-    +"Show: "	  
-	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-          +"<br>Format: "
-          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
-          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
-          +"</div><div class='optionsRow'></div><div class='optionsRow'>Show:"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>"
-	  +"<br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>"
-	  +"</div>";
+    detailsWanted="BandDetails";
+    document.getElementById("legendContainer").style="display:none;"
+    document.getElementById("detailsGrid").style="display:inline-block;"
+    document.getElementById("detailsTop").style="display:inline-block;"
+    
+ 
 	  
        // get copy of connections for just this band and mode
        let cons={};
