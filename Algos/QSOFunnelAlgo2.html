@@ -223,7 +223,7 @@ div {margin: 0px;  padding: 0px;}
   
   function appendTextField(id,txt){
     let el=document.getElementById(id);    
-    el.value+=", "+txt;
+    el.value+=((el.value=="") ? "":", ")+txt;
   }
 
   function clearTextField(id){
