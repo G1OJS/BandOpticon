@@ -650,16 +650,12 @@ a:visited {color: blue;}
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
-       // "prehighlight" all myCall far entities with Neg highlighting	 
-       highlightEntitiesList("myCallRx","");
-       highlightEntitiesList("myCallTx","");  
-       highlightEntitiesList("myCallTxRx",""); 
+
        // do the highlighting 	
-   //    highlightEntitiesList("myCallRx","othersRx");
-   //    highlightEntitiesList("myCallTx","othersTx");  
-       highlightEntitiesList("myCallRx","othersTx");
-       highlightEntitiesList("myCallTx","othersRx");  
-       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+       highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
+       highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
+       highlightEntitiesList("othersRx_farEntities","othersTx_farEntities");
      
        resizeGridColumns();
 }	
@@ -732,31 +728,18 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
   }
 
-function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
-
-  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
-      
-  if (farEntities_me[0]!=undefined && ((farEntities_others[0]!=undefined) || (othersRowClassPrefix==""))){
+function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
+  const entities1=document.getElementById("detailsGrid").getElementsByClassName(rowClassPrefix1);  
+  const entities2=document.getElementById("detailsGrid").getElementsByClassName(rowClassPrefix2);
+  if (entities1[0]!=undefined && entities2[0]!=undefined){
     // plain text version of far entities to look for in other call's far entities
-    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
-      farEntities_meTxt.forEach(entity => {      
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll(entity,HL(entity,true,"HighlightExclusive"));
-      });
-    } else {
-      // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
-      for (let i=0;i<farEntities_others.length;i++){
-        // highlight the matches in the other call's far entities
-        farEntities_meTxt.forEach(entity => {
-          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replaceAll(entity,HL(entity,true));
-        });
-        // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
-        let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
-        farEntities_othersTxt.forEach(entity => {      
-          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
-        });
-      }
+    let entities1Txt=entities1[0].innerText.split(', ');
+    // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
+    for (let i=0;i<entities2.length;i++){
+      // highlight the matches in the other call's far entities
+      entities1.forEach(entity => {
+        entities2.innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
+     });     
     }
   }
 }
