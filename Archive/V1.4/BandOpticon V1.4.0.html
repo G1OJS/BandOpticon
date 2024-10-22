@@ -624,7 +624,7 @@ a:visited {color: blue;}
            if (c.sc==myCall) {hearingMe.add(c.rc)}
          }
          for (id in cons) {
-           if !(hearingMe.has(cons[id].rc)) {cons[id]=null}
+           if (!(hearingMe.has(cons[id].rc))) {cons[id]=null}
          }
        }
 
