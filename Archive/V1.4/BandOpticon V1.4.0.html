@@ -135,6 +135,7 @@ a:visited {color: blue;}
   var entityDisplayType="Square";
   var squaresDisplayLevel=2;
   var groupHomeEntities=true;
+  var highlightType="Common";
   let myCall="G1OJS";
   let listFilter="";
   var mqttClient=null;	
@@ -582,8 +583,7 @@ a:visited {color: blue;}
      document.getElementById("legendContainer").innerHTML="";
      document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
           +" <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>"
-	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
-          +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
+          +"</div>";
 		
      document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
           +"<strong><span id='lhEntitiesTitle'></span></strong>"
@@ -598,7 +598,6 @@ a:visited {color: blue;}
     +"Show: "	  
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
 	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-//	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;hearingMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
           +"<br>Format: "
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
           +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
@@ -606,7 +605,11 @@ a:visited {color: blue;}
 	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
           +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a></div>";
+	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>"
+	  +"<br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Tx to Tx, Rx to Rx</a>"
+	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Tx to Rx</a>"
+//	  +" <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Exclusive&quot;; updateDisplays();'>myCall Tx/Rx/TxRx to others not</a>"
+	  +"</div>";
 	  
        // get copy of connections for just this band and mode
        let cons={};
@@ -618,13 +621,7 @@ a:visited {color: blue;}
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
        if(listFilter!=""){
-           if(listFilter=="hearingMe"){
-	     txCalls.clear();rxCalls.clear();txRxCalls.clear();
-	     for (id in cons){
-	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); rxCalls.add(myCall)}
-	     }
-	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span> Calls</span> hearing "+myCall;
-           } else if(listFilter=='txRxOnly') {
+           if(listFilter=='txRxOnly') {
 	     txCalls.clear();rxCalls.clear();
 	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
 	   } else {
@@ -652,12 +649,20 @@ a:visited {color: blue;}
        document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
-	highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
-	highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
-       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
-       highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
-       highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
-       highlightEntitiesList("othersRx_farEntities","othersTx_farEntities");
+       if(highlightType="Common"){
+         highlightEntitiesList("myCallTx_farEntities","othersTx_farEntities");
+         highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
+         highlightEntitiesList("othersTxRx_farEntities","othersTxRx_farEntities");
+       }
+
+       if(highlightType="Reverse"){
+	 highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
+	 highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+         highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+         highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
+         highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
+         highlightEntitiesList("othersRx_farEntities","othersTx_farEntities");
+       }
      
        resizeGridColumns();
 }	
