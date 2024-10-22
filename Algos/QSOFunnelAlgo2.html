@@ -174,8 +174,6 @@ div {margin: 0px;  padding: 0px;}
     clearTextField("CallsReached");
     setCounterField("nTxReached",0);
     clearTextField("TxReached");
-    setCounterField("nTxReachedHeardInHome",0);
-    clearTextField("TxReachedHeardInHome");
     setCounterField("nTxReachedHeardInHomeSpots",0);
     clearTextField("TxReachedHeardInHomeSpots");
     setCounterField("nTxReachedHeardByMe",0);
@@ -193,7 +191,7 @@ div {margin: 0px;  padding: 0px;}
           tpcsHeardInHome.add(transmittingPrimaryCall);
         }
         setCounterField("nTxReachedHeardInHome",tpcsHeardInHome.size);
-        appendTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome));
+        setTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome));
         for (const tpcReceiver of tpcReceiversArr){
           let tpcReceiverCall=tpcReceiver[0];
           let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
