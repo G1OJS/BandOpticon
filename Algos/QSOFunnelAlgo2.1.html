@@ -180,16 +180,11 @@ div {margin: 0px;  padding: 0px;}
         transmittingPrimaryCalls.add(primaryCall); 
         let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]);
         for (const tpcReceiver of tpcReceiversArr){
-          tpcsHeardInHome.add(transmittingPrimaryCall);
-        }
-        for (const tpcReceiver of tpcReceiversArr){
           let tpcReceiverCall=tpcReceiver[0];
-          let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
-          if(tpcReceiverL4Sq==myL4Square) {
-	    tpcSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
-              if(tpcReceiverCall==myCall){
-                myReciprocals.add(transmittingPrimaryCall);
-              }
+          tpcsHeardInHome.add(transmittingPrimaryCall);
+	        tpcSpotsInHome.add(transmittingPrimaryCall+": "+tpcReceiverCall);
+          if(tpcReceiverCall==myCall){
+            myReciprocals.add(transmittingPrimaryCall);
           }
         }
       }
