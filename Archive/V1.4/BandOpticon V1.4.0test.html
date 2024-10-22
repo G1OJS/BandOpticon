@@ -33,6 +33,8 @@ div {margin: 0px;  padding: 0px;}
 
 #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+#detailsGrid > div.titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
+#detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 0px; padding: 5px; margin-left:1px; margin-right:1px; }
@@ -107,7 +109,8 @@ a:visited {color: blue;}
        <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a></div>
      </div>
 	
-     <div id='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
+	<div id="detailsGrid">
+     <div class='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
 	      <br><span class='notesText'>TxRx = call heard by any & hearing any</span>
         <span style='text-align:center; font-size:1rem;'>&#8660</span>
         Entities reached by <span class='Tx'>Tx Calls</span>, spotted by 
@@ -117,7 +120,7 @@ a:visited {color: blue;}
         hears and reaches the same remote callsign</span>
       </div>
         
-     <div id='optionsRow'>
+     <div class='optionsRow'>
        <div>Show: <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>
 	          <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>
               <br>Format: <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>
@@ -132,9 +135,8 @@ a:visited {color: blue;}
        <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>
     </div>
   </div>  
-  
-  <div id="detailsGrid">
-  
+    <div id="gridContent">
+					</div>
   </div>
 	
 </div>
@@ -648,13 +650,13 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       document.getElementById("detailsContent").innerHTML=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       document.getElementById("detailsContent").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       document.getElementById("detailsContent").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       document.getElementById("detailsContent").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       document.getElementById("detailsContent").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       document.getElementById("detailsContent").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
        if(highlightType=="Common"){
