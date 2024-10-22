@@ -130,8 +130,8 @@ div {margin: 0px;  padding: 0px;}
       let primaryCall=conn.rc
       // add a set to hold a list of calls receiving this primary call,
       // and add a subscription to get that data
-      let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
-      subscribe(topic);
+      subscribe('pskr/filter/v2/'+band+'/+/'+primaryCall+'/+/+/'+myL4Square+'/#');
+
       if(primaryCall in ObjPotentialTransmittingPrimaryCalls){
         let transmittingPrimaryCall=primaryCall;
         ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
