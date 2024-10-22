@@ -33,9 +33,10 @@ div {margin: 0px;  padding: 0px;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
    <div id="details_group">
      <div id="screen">
+	Band: <output id="band"></output>
        Total messages: <output id="nMessages">0</output>
        <br><br>Total subscriptions: <output id="nSubscriptions">0</output>
-       <br><br>Calls received in home: <output id="potentialPrimaryCalls"></output>
+       <br><br>Calls received in home: <output id="potentialPrimaryCalls">0</output>
        <br><br>Primary Calls: <output id="primaryCalls"></output>
        <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
        <br><br>TPCs heard in home: <output id="tpcsHeardInHome"></output>
@@ -192,6 +193,7 @@ div {margin: 0px;  padding: 0px;}
         }
       }
     }  
+    setTextField("band",band);
     setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", ")); 	  
     setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
     setTextField("tpcsHeardInHome",Array.from(tpcsHeardInHome).toSorted().join(", "));
