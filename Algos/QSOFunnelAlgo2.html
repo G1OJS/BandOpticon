@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>QSOFunnel A2</title>
+<title>QSOFunnel A2.1</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -24,33 +24,22 @@ div {margin: 0px;  padding: 0px;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 0.8rem;}
 .hidden {display: none;}
-
-
+	
 </style>
 </head>
 <body>
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
-   <div id="details_group">
-     <div id="screen">
-       Simple counters not checking for anyone working several bands at once.<br><br>
-       Reload the page to reset data.<br>
-       Total messages: <output id="nMessages">0</output>
-       <br><br>
-       Total subscriptions: <output id="nSubscriptions">0</output>
-       <br><br>Calls heard in my L4 square: <output id="nCallsHeardInHome">0</output>
-       <br><br>Calls reached: <output id="nCallsReached">0</output>: <output id="CallsReached"></output>
-       <br><br>Transmitting calls reached: <output id="nTxReached">0</output>: <output id="TxReached"></output>
-       <br><br>Transmitting calls reached heard in my L4 square: <output id="nTxReachedHeardInHome">0</output>: <output id="TxReachedHeardInHome"></output>
-       <br><br>Transmitting calls reached heard in my L4 square: spots <output id="nTxReachedHeardInHomeSpots">0</output>: <output id="TxReachedHeardInHomeSpots"></output>
-       <br><br>Transmitting calls reached heard by me: <output id="nTxReachedHeardByMe">0</output>: <output id="TxReachedHeardByMe"></output>
-       
-     </div>
-   </div>
-
-<div id="creditsGrid">
-
+<div id="details_group">
+  <div id="screen">
+    Total messages: <output id="nMessages">0</output>
+    <br><br>Calls received in home: <output id="receivedCallsHome">0</output>
+    <br><br>Primary Calls: <output id="primaryCalls"></output>
+    <br><br>Transmitting Primary Calls: <output id="transmittingPrimaryCalls"></output>
+    <br><br>My reciprocals: <output id="myReciprocals"></output>
+  </div>
 </div>
+<div id="creditsGrid"></div>
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -58,50 +47,35 @@ div {margin: 0px;  padding: 0px;}
 <!-- BandOpticon script -->
 <script>
 
- const myCall="G1OJS";
- const myL4Square="IO90";
- const band="20m";
- const ObjPrimaryCalls={};
- const ObjPotentialTransmittingPrimaryCalls={};
+  const myCall="G1OJS";
+  const myL4Square="IO90";
+  const band="20m";
+  var primaryCalls=new Set();
+  var receivedCallsHome=new Set();
+  var receivedCallsMe=new Set();
 
   setInterval(analyseData,1000);
   connectToFeed();
   
-  
- // connectToTestData();
-  
-  // ***********************************
-  // * End of main: Functions below    *
-  // ***********************************
-
-  function connectToTestData(){
-    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
-    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":"40m"');
-  }
-
   // connect to MQTT feed  
-   function connectToFeed(){
+  function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    // connect and subscribe on success
     mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess=subscribe_initial();
+    mqttClient.onSuccess=subscribe_topics();
     mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
   }
 
-  function subscribe_initial(){
+  function subscribe_topics(){
     subscribe('pskr/filter/v2/'+band+'/+/'+myCall+'/#');
     subscribe('pskr/filter/v2/'+band+'/+/+/+/+/'+myL4Square+'/#');
   }
-
-  // subscribe to needed squares
+	
   function subscribe(topic){
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
     //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
      console.log("Subscribe to "+topic);
      mqttClient.subscribe(topic, (error) => {if (error) {
         console.error('subscription failed to '+topic, error)
-     } else {
-        incCounterField("nSubscriptions"); 
      }});
   }
 
@@ -117,97 +91,29 @@ div {margin: 0px;  padding: 0px;}
            let kvp=v.split(":");
            conn[kvp[0]]=kvp[1];
          });
-	  
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
-    
-//    console.log(conn.sc,conn.sl,conn.rc,conn.rl)
-
     incCounterField("nMessages");
 
-    //if I'm the sender call, then the receiver call is a 'primary call'
-    //so subscribe to that primary call as a transmitter to log its future receivers.
-    //Check if the primary call has already been received in Home and, if so, it must be
-    //a transmitting primary call so add its past receivers to ObjPrimaryCalls.
-    //If it hasn't already been heard, just make an empty set to hold its future receivers
-    if(conn.sc==myCall){ 
-      let primaryCall=conn.rc
-      // add a set to hold a list of calls receiving this primary call,
-      // and add a subscription to get that data
-      let topic="pskr/filter/v2/+/+/"+primaryCall+"/#";
-      subscribe(topic);
-      if(conn.rc in ObjPotentialTransmittingPrimaryCalls){
-        let transmittingPrimaryCall=conn.rc;
-        ObjPrimaryCalls[transmittingPrimaryCall]=ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall];
-        ObjPotentialTransmittingPrimaryCalls[transmittingPrimaryCall]=null;
-      } else {
-        ObjPrimaryCalls[primaryCall]=new Set(); 
+    // conn is either myCall received by anyone, or any other call received by my level 4 square
+    if(conn.sc==myCall){ // myCall being heard by a remote call
+      if(!primaryCalls.has(conn.rc)){ primaryCalls.add(conn.rc) }
+    } else { // any other call being heard by anyone
+      if(!receivedCallsHome.has(conn.sc)){ receivedCallsHome.add(conn.sc) }
+      if(conn.rc==myCall) {// any other call being heard by me
+	      if(!receivedCallsMe.has(conn.sc)){ receivedCallsMe.add(conn.sc) } 
       }
-    }
-   
-    // if the sender call is in ObjPrimaryCalls, it's a primary call so now we know
-    // it's a transmitting primary call and we can add its list of receiver calls and squares
-    if(conn.sc in ObjPrimaryCalls){
-      let transmittingPrimaryCall=conn.sc;
-      let transmittingPrimaryCallReceiver=[conn.rc,conn.rl];
-      ObjPrimaryCalls[transmittingPrimaryCall].add(transmittingPrimaryCallReceiver);
-    } 
-   
-    // if the receiver call is in Home, add the sender to ObjPotentialTransmittingPrimaryCalls
-    // with a set to hold its receiver calls and locations
-    // incase it appears later as a Primary Call via the logic immediately above.
-    // Then (or if it's already in ObjPotentialTransmittingPrimaryCalls), 
-    // add this receiver info to its receivers list
-    let receiverL4Sq=(conn.rl).slice(0,4);
-    if(receiverL4Sq==myL4Square){
-      incCounterField("nCallsHeardInHome");
-      let potentialTransmittingPrimaryCall="!"+conn.sc;
-      let potentialTransmittingPrimaryCallReceiver=[conn.rc,conn.rl];
-      if (!(potentialTransmittingPrimaryCall in ObjPotentialTransmittingPrimaryCalls)){
-        ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall]=new Set();
-      }
-     ObjPotentialTransmittingPrimaryCalls[potentialTransmittingPrimaryCall].add(potentialTransmittingPrimaryCallReceiver);
     }
   }
   
   function analyseData(){
-    setCounterField("nCallsReached",0);
-    clearTextField("CallsReached");
-    setCounterField("nTxReached",0);
-    clearTextField("TxReached");
-    setCounterField("nTxReachedHeardInHomeSpots",0);
-    clearTextField("TxReachedHeardInHomeSpots");
-    setCounterField("nTxReachedHeardByMe",0);
-    clearTextField("TxReachedHeardByMe");
-    let tpcsHeardInHome=new Set();
-    for(primaryCall in ObjPrimaryCalls) {
-      incCounterField("nCallsReached");
-      appendTextField("CallsReached",primaryCall); 
-      if(ObjPrimaryCalls[primaryCall].size>0){
-        let transmittingPrimaryCall=primaryCall;
-        incCounterField("nTxReached");
-        appendTextField("TxReached",primaryCall); 
-        let tpcReceiversArr=Array.from(ObjPrimaryCalls[transmittingPrimaryCall]);
-        for (const tpcReceiver of tpcReceiversArr){
-          tpcsHeardInHome.add(transmittingPrimaryCall);
-        }
-        setCounterField("nTxReachedHeardInHome",tpcsHeardInHome.size);
-        clearTextField("TxReachedHeardInHome");
-        appendTextField("TxReachedHeardInHome",Array.from(tpcsHeardInHome));
-        for (const tpcReceiver of tpcReceiversArr){
-          let tpcReceiverCall=tpcReceiver[0];
-          let tpcReceiverL4Sq=tpcReceiver[1].slice(0,4);
-          if(tpcReceiverL4Sq==myL4Square) {
-            incCounterField("nTxReachedHeardInHomeSpots");
-            appendTextField("TxReachedHeardInHomeSpots",transmittingPrimaryCall+": "+tpcReceiverCall); 
-              if(tpcReceiverCall==myCall){
-                incCounterField("nTxReachedHeardByMe");
-                appendTextField("TxReachedHeardByMe",transmittingPrimaryCall); 
-              }
-          }
-        }
-      }
-    }  
+    setTextField("receivedCallsHome",Array.from(receivedCallsHome).toSorted().join(", ")); 
+    setTextField("primaryCalls",Array.from(primaryCalls).toSorted().join(", "));
+    // note that primary calls might be transmitting & heard globally, but do we care if they aren't being heard locally?
+    let transmittingPrimaryCalls=primaryCalls.intersection(receivedCallsHome);
+    setTextField("transmittingPrimaryCalls",Array.from(transmittingPrimaryCalls).toSorted().join(", ")); 
+    let myReciprocals=primaryCalls.intersection(receivedCallsMe); 
+    setTextField("myReciprocals",Array.from(myReciprocals).toSorted().join(", "));
   }
   
   function incCounterField(id){
@@ -226,11 +132,10 @@ div {margin: 0px;  padding: 0px;}
     el.value+=((el.value=="") ? "":", ")+txt;
   }
 
-  function clearTextField(id){
+  function setTextField(id,val){
     let el=document.getElementById(id);    
-    el.value="";
+    el.value=val;
   }
-  
 	
 </script>
 	
