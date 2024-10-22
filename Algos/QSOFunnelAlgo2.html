@@ -170,13 +170,13 @@ div {margin: 0px;  padding: 0px;}
   }
   
   function analyseData(){
-    setCounterField("nCallsReached");
+    setCounterField("nCallsReached",0);
     clearTextField("CallsReached");
-    setCounterField("nTxReached");
+    setCounterField("nTxReached",0);
     clearTextField("TxReached");
-    setCounterField("nTxReachedHeardInHome");
+    setCounterField("nTxReachedHeardInHome",0);
     clearTextField("TxReachedHeardInHome");
-    setCounterField("nTxReachedHeardByMe");
+    setCounterField("nTxReachedHeardByMe",0);
     clearTextField("TxReachedHeardByMe");
     let tpcsHeardInHome=new Set();
     for(primaryCall in ObjPrimaryCalls) {
