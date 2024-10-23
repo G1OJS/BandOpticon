@@ -30,8 +30,8 @@ div {background-color: white; margin: 0px;  padding: 5px;}
   #legend > div.noborder {border:none; margin: 0px;  padding: 0px;}
   #legend > div.active {background-color: white;}
 
-  #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-  #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+  #bandDetailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+  #bandDetailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
 #bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
 #bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px; padding: 5px; }
@@ -112,12 +112,14 @@ a:visited {color: blue;}
        
        </div>
 
-       <div id='bandDetails'>
+       <div id='bandDetailsTop'>
          <strong><output id='detailsBand'></output>  <output id='watchedMode'></output> Details</strong>
          <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
        </div>
     
-       <div id="detailsGrid" ></div>
+       <div id="bandDetailsGrid" >
+         <!-- written by script later -->
+       </div>
 		
     </div>
      
@@ -293,13 +295,13 @@ a:visited {color: blue;}
   function showNothing(){
     detailsWanted="Nothing";
     document.getElementById("legend").style="display:none;"
-    document.getElementById("detailsGrid").style="display:none;"
+    document.getElementById("bandDetailsGrid").style="display:none;"
   }
   
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
     document.getElementById("legend").style="display:inline-block;"
-    document.getElementById("detailsGrid").style="display:none;"
+    document.getElementById("bandDetailsGrid").style="display:none;"
   }
 	  
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
@@ -477,7 +479,7 @@ a:visited {color: blue;}
     const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
  
      // redistribute grid columns
-    let gridDiv=document.getElementById('detailsGrid');
+    let gridDiv=document.getElementById('bandDetailsGrid');
     if (groupHomeEntities) {
       let lhCharsCount=39;   
       let rhCharsCount=97;
@@ -598,7 +600,7 @@ a:visited {color: blue;}
 
     detailsWanted="BandDetails";
     document.getElementById("legend").style="display:none;"
-    document.getElementById("detailsGrid").style="display:grid;"
+    document.getElementById("bandDetailsGrid").style="display:grid;"
     		
  
        // get copy of connections for just this band and mode
@@ -627,13 +629,13 @@ a:visited {color: blue;}
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       document.getElementById("bandDetailsGrid").innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
        if(highlightType=="Common"){
@@ -654,7 +656,7 @@ a:visited {color: blue;}
 }	
 
 
-function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
+function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 	
   if(homeCalls.size==0) {return ""};
   
@@ -722,8 +724,8 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   }
 
 function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
-  const entities1=document.getElementById("detailsGrid").getElementsByClassName(rowClassPrefix1);  
-  const entities2=document.getElementById("detailsGrid").getElementsByClassName(rowClassPrefix2);
+  const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
+  const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
   if (entities1[0]!=undefined && entities2[0]!=undefined){
     // plain text version of far entities to look for in other call's far entities
     let entities1Txt=entities1[0].innerText.split(', ');
