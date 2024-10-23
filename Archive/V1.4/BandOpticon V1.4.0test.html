@@ -17,10 +17,12 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 #app_group > div{background-color:#4e4e4e ;}
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
+#appTop { display: grid; grid-template-columns:  fit-content(30%) auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
-.detailsPanel {font-size:1.5rem;}
+/* holds the divs for legend & details grid */
+#detailsGroup { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
+#detailsGroup > div {font-size:1.5rem; border-style:solid; border-color:red;}
 
   #legend {display: grid; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto;}
   #legend > div {display:inline-block; background-color: rgb(230, 230, 255); margin-bottom:5px; margin-right: 2px; padding: 5px; font-size: 1rem; border:solid; border-color:blue; border-width:2px; width:fit-content;}
@@ -82,9 +84,11 @@ a:visited {color: blue;}
    
    <div id="detailsGroup">
      
-      <div id="legend" class='detailsPanel'>
-      <span><strong>Band tile legend:</strong><br></span>
+      <div id="legend">
+     
+      <span><strong>Band tile legend:</strong></span>
       <span></span><span> <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;'>close</span></a></span>
+         <br>
          <div class='active'>
            <span class='textAnchorButton-strong'>Band & Mode</span>
            <span class='notesText'> (click for detailed stats)</span>
@@ -103,14 +107,15 @@ a:visited {color: blue;}
            <br>
          </div>
          <div class='noborder'></div>
+       
        </div>
 
-       <div id='bandDetails' class='detailsPanel'>
+       <div id='bandDetails'>
          <strong><output id='detailsBand'></output>  <output id='watchedMode'></output> Details</strong>
          <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
        </div>
     
-       <div id="detailsGrid" class='detailsPanel' ></div>
+       <div id="detailsGrid" ></div>
 		
     </div>
      
@@ -296,7 +301,6 @@ a:visited {color: blue;}
     detailsWanted="BandTileLegend";
     document.getElementById("legend").style="display:inline-block;"
     document.getElementById("detailsGrid").style="display:none;"
-    document.getElementById("detailsTop").style="display:none;"
   }
 	  
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
@@ -595,7 +599,6 @@ a:visited {color: blue;}
 
     detailsWanted="BandDetails";
     document.getElementById("legend").style="display:none;"
-    document.getElementById("detailsTop").style="display:inline-block;"
     document.getElementById("detailsGrid").style="display:grid;"
     		
  
