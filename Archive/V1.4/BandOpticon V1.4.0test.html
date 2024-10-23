@@ -23,16 +23,16 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 
 /* holds the divs for legend & band details - the two things shown and hidden by script */
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
-#innerScreen > div {font-size:1.5rem; float:left; padding:0px;}
+#innerScreen > div {font-size:1.5rem; }
 
   #legend {display: grid; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto;}
   #legend > div {display:inline-block; background-color: rgb(230, 230, 255); margin-bottom:5px; margin-right: 2px; padding: 5px; font-size: 1rem; border:solid; border-color:blue; border-width:2px; width:fit-content;}
   #legend > div.noborder {border:none; margin: 0px;  padding: 0px;}
   #legend > div.active {background-color: white;}
 
-  #bandDetails{background-color:grey; padding:1px;}
-  #bandDetailsTop {}
-  #bandDetailsGrid {background-color:grey; padding:2px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+  #bandDetails{background-color:grey; padding:2px;}
+  #bandDetails >* {background-color:white; }
+  #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
   #bandDetailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
 #bandTilesGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
@@ -57,7 +57,7 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 .TxRx_farEnd {font-style:italic;}
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
-fieldset {transform:scale(70%); float:left; padding:0px;}
+fieldset {transform:scale(100%); float:left; padding:0px;}
 fieldset > div {float:left;}
 a:link {color: blue;}
 a:visited {color: blue;}
