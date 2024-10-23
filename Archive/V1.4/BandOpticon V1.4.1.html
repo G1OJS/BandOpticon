@@ -141,7 +141,7 @@ a:visited {color: blue;}
            </fieldset>
            <div style="clear: both;"></div>
          </div>
-         <div><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
+         <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
          <div id="bandDetailsGrid">
            <!-- written by script later -->
          </div>
@@ -645,7 +645,13 @@ a:visited {color: blue;}
 	       callsFilter.add(listFilter);
 	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
        }
-       document.getElementById("listFilterClear").style="visibility:"+(listFilter=="" ? "hidden":"visible")+";";
+       if(listFilter!=""){
+         document.getElementById("listFilterClear").style="visibility:visible;";
+         document.getElementById("listFilterClearDiv").style="padding:0px; padding-left:5px; margin:0px;";
+       } else {
+         document.getElementById("listFilterClear").style="visibility:hidden;";
+         document.getElementById("listFilterClearDiv").style="height:0px; padding:0px; margin:0px;";
+       }
 
        if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
        if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
