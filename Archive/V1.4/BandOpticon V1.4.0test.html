@@ -288,14 +288,14 @@ a:visited {color: blue;}
 
   function showNothing(){
     detailsWanted="Nothing";
-    document.getElementById("legendContainer").style="display:none;"
+    document.getElementById("legend").style="display:none;"
     document.getElementById("detailsGrid").style="display:none;"
     document.getElementById("detailsTop").style="display:none;"
   }
   
   function showBandTileLegend(){
     detailsWanted="BandTileLegend";
-    document.getElementById("legendContainer").style="display:inline-block;"
+    document.getElementById("legend").style="display:inline-block;"
     document.getElementById("detailsGrid").style="display:none;"
     document.getElementById("detailsTop").style="display:none;"
   }
@@ -595,7 +595,7 @@ a:visited {color: blue;}
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
     detailsWanted="BandDetails";
-    document.getElementById("legendContainer").style="display:none;"
+    document.getElementById("legend").style="display:none;"
     document.getElementById("detailsTop").style="display:inline-block;"
     document.getElementById("detailsGrid").style="display:grid;"
     		
