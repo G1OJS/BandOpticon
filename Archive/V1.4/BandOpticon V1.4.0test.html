@@ -123,15 +123,15 @@ a:visited {color: blue;}
          <div>
            <fieldset>
              <legend>Home Callsigns</legend>
-              <div><input type="checkbox" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
-              <div><input  type="checkbox" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
+              <div><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
+              <div><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
            </fieldset>
            <fieldset>
              <legend>Far Entities</legend>
-              <div><input type="radio" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
-              <div><input type="radio" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
-              <div><input type="radio" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
-              <div><input type="radio" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
            </fieldset>
            <div style="clear: both;"></div>
          </div>
@@ -196,7 +196,6 @@ a:visited {color: blue;}
   var detailsWanted="";
   var entityDisplayType="Square";
   var squaresDisplayLevel=2;
-  var groupHomeEntities=true;
   var highlightType="Common";
   let myCall="G1OJS";
   let listFilter="";
@@ -630,19 +629,15 @@ a:visited {color: blue;}
 
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
+       if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
        if(listFilter!=""){
-           if(listFilter=='txRxOnly') {
-	     txCalls.clear();rxCalls.clear();
-	   } else {
 	   // filter specific callsign plus myCall
 	     let callsFilter=new Set();
 	     callsFilter.add(myCall);
 	     callsFilter.add(listFilter);
 	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
           }
-       } else {
 
-       }
 	  
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
@@ -684,6 +679,8 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Tx"){Arrow=RIGHTARROW}
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
+  
+  let groupHomeEntities=document.getElementById("groupHomeEntities").checked
   
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach( (homeCall) => {
