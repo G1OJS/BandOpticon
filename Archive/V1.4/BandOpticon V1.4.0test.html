@@ -89,7 +89,6 @@ a:visited {color: blue;}
    <div id="innerScreen">
      
       <div id="legend">
-     
       <span><strong>Band tile legend:</strong></span>
       <span></span><span> <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;'>close</span></a></span>
          <br>
@@ -115,9 +114,23 @@ a:visited {color: blue;}
        </div>
 
        <div id="bandDetails">
-         <div id='bandDetailsTop'>
+         <div>
            <strong><output id='detailsBand'></output>  <output id='watchedMode'></output> Details</strong>
            <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
+         </div>
+         <div>
+           <fieldset>
+             <legend>Home Callsigns</legend>
+              <div><input type="checkbox" id="groupHomeEntities" name="groupHomeEntities" checked />
+              <label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
+              <div><input type="checkbox" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
+           </fieldset>
+           <fieldset>
+             <legend>Far Entities</legend>
+              <div><input type="checkbox" id="groupHomeEntities" name="groupHomeEntities" checked />
+              <label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
+              <div><input type="checkbox" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
+           </fieldset>
          </div>
          <div id="bandDetailsGrid" >
            <!-- written by script later -->
