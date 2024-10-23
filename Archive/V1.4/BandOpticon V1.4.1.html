@@ -118,7 +118,7 @@ a:visited {color: blue;}
 
        <div id="bandDetails">
          <div>
-           <strong><output id='detailsBand'></output>  <output id='watchedMode'></output> Details</strong>
+           <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
            <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
          </div>
          <div>
@@ -626,7 +626,8 @@ a:visited {color: blue;}
     detailsWanted="BandDetails";
     document.getElementById("legend").style="display:none;"
     document.getElementById("bandDetails").style="display:inline-block;"
-    		
+    document.getElementById("detailsBand").innerHTML=detailsBand;
+    document.getElementById("watchedMode").innerHTML=watchedMode;
  
        // get copy of connections for just this band and mode
        let cons={};
