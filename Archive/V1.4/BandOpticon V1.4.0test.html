@@ -133,6 +133,11 @@ a:visited {color: blue;}
               <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
               <div><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
            </fieldset>
+           <fieldset>
+             <legend>Highlighting</legend>
+              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting" checked /><label for="showCallsigns">Callsigns</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" /><label for="showL2sq">L2 squares</label></div>
+           </fieldset>
            <div style="clear: both;"></div>
          </div>
          <div id="bandDetailsGrid" >
@@ -194,9 +199,8 @@ a:visited {color: blue;}
   var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="";
-  var entityDisplayType="Square";
-  var squaresDisplayLevel=2;
-  var highlightType="Common";
+  var entityDisplayType;
+  var squaresDisplayLevel;
   let myCall="G1OJS";
   let listFilter="";
   var mqttClient=null;	
@@ -644,7 +648,8 @@ a:visited {color: blue;}
        if(document.getElementById("showL4sq").checked) {squaresDisplayLevel=4} 
        if(document.getElementById("showL6sq").checked) {squaresDisplayLevel=6} 
 
-	  
+	     
+              
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
        // all except myCall:
@@ -657,15 +662,13 @@ a:visited {color: blue;}
        document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
-       if(highlightType=="Common"){
+       if(document.getElementById("forward").checked) {
          highlightEntitiesList("myCallTx_farEntities","othersTx_farEntities");
          highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
-       }
-
-       if(highlightType=="Reverse"){
-  	 highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
-	 highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+       } else {
+  	     highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
+	       highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
