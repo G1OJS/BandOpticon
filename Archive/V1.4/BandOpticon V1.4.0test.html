@@ -644,7 +644,6 @@ a:visited {color: blue;}
 	       callsFilter.add(myCall);
 	       callsFilter.add(listFilter);
 	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
-
        }
        document.getElementById("listFilterClear").style="visibility:"+(listFilter=="" ? "hidden":"visible")+";";
 
@@ -652,8 +651,6 @@ a:visited {color: blue;}
        if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
        if(document.getElementById("showL4sq").checked) {squaresDisplayLevel=4} 
        if(document.getElementById("showL6sq").checked) {squaresDisplayLevel=6} 
-
-	     
               
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
@@ -700,7 +697,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
-      gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"
+      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
