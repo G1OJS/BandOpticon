@@ -10,7 +10,9 @@
   <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.1'>V1.4.1</a></td>
   <td>
     <ol>
+      <li>Rework styling top to bottom</li>
       <li>Change hypertext buttons for radio buttons and checkboxes</li>
+      <li>Lots of internal code changes to enable the above</li>
     </ol>
   </td>
 </tr>
@@ -114,9 +116,9 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - radio buttons to replace hyperlink buttons
   - redsign screen layout (colours / borders etc)
-  - continue removing as much 'write to innerHTML' as possible out of the main loops
+  - continue moving unnecessary updates out of the main screen update function and into where it's needed
+  - fix legend layout
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
