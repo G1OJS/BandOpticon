@@ -13,8 +13,9 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 #subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 
 /* everything but the titles and credits. Padding sets the outer blue border */
-#app_group {margin:0px; padding:5px; background-color:blue;} 
-#app_group > div{background-color:#4e4e4e ;}
+#app {margin:0px; padding:5px; background-color:blue;} 
+/* Padding sets the inner group borders*/
+#app >* {background-color:lightblue ; padding:2px;}
 
 /* holds the divs for the clock & counters, and info / controls */
 #appTop { display: grid; grid-template-columns:  fit-content(30%) auto; grid-template-rows: auto;}
@@ -22,7 +23,7 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 
 /* holds the divs for legend & details grid */
 #detailsGroup { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
-#detailsGroup > div {font-size:1.5rem; border-style:solid; border-color:red;}
+#detailsGroup > div {font-size:1.5rem; }
 
   #legend {display: grid; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto;}
   #legend > div {display:inline-block; background-color: rgb(230, 230, 255); margin-bottom:5px; margin-right: 2px; padding: 5px; font-size: 1rem; border:solid; border-color:blue; border-width:2px; width:fit-content;}
@@ -32,12 +33,13 @@ div {background-color: white; margin: 0px;  padding: 5px;}
   #detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
   #detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
-#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 0px; padding: 5px; margin-left:1px; margin-right:1px; }
-#bandsGrid > div.active	{background-color:white;  margin: 1px; }
+#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px; padding: 5px; }
+#bandsGrid > div.active	{background-color:white;   }
 
-#creditsGrid { color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
-#creditsGrid > {div background-color: #91FCFE;}
+#creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
+#creditsGrid > * {background-color: #91FCFE;}
+
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 0.8rem;}
 .hidden {display: none;}
@@ -64,7 +66,7 @@ a:visited {color: blue;}
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
-<div id="app_group">
+<div id="app">
 	
    <div id="appTop">
       <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
@@ -127,33 +129,30 @@ a:visited {color: blue;}
       <div id="bandTileDiv_16"></div><div id="bandTileDiv_17"></div><div id="bandTileDiv_18"></div><div id="bandTileDiv_19"></div>
     </div>
 
+    <div id="creditsGrid">
+        <div>
+            Javascript & HTML developed by Alan Robinson:<br>
+            <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+            <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
+           <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+       </div>
+       <div>
+            Thanks to:<br>
+            Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
+            Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
+            <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+       </div>
+       <div>
+          License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+          Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
+          GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+          Old versions: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Archive</a><br>
+          <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/BandOpticon"></a>                        
+       </div>
+    </div>
+    
 </div>
-	
-<div id="creditsGrid">
-    <div>
-        Javascript & HTML developed by Alan Robinson:<br>
-        <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
-        <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
-        <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
-        <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
-   </div>
-   <div>
-        Thanks to:<br>
-        Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
-        Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
-        <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
-   </div>
-   <div>
-      License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
-      Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
-      GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
-      Old versions: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Archive</a><br>
-	   
-      <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/BandOpticon"></a>                        
-   </div>
-</div>
-
-
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
