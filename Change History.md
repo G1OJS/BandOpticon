@@ -118,7 +118,8 @@ Additional labels for pre-release and build metadata are available as extensions
 To do:
   - redsign screen layout (colours / borders etc)
   - continue moving unnecessary updates out of the main screen update function and into where it's needed
-  - fix legend layout
+  - fix legend layout (need equal height tiles) - last resort, fix with script
+  - stop word wrap on filter link in LH column when not grouping calls
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
   - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
