@@ -638,6 +638,12 @@ a:visited {color: blue;}
 	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
           }
 
+
+       if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
+       if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
+       if(document.getElementById("showL4sq").checked) {squaresDisplayLevel=4} 
+       if(document.getElementById("showL6sq").checked) {squaresDisplayLevel=6} 
+
 	  
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
