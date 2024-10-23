@@ -70,8 +70,8 @@ a:visited {color: blue;}
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
-	
 <div id="app_group">
+	
    <div id="appTop">
       <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
@@ -87,8 +87,8 @@ a:visited {color: blue;}
 	<br><span>Click any underlined number to sort band tiles on that number</span>
       </div>
    </div>
-<div id="details_group">
 	
+<div id="details_group">	
      <div id="legendContainer">
        <div><strong>Band tile legend:</strong>
       <span></span> <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;'>close</span></a>
@@ -112,39 +112,41 @@ a:visited {color: blue;}
        <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a></div>
      </div>
 	
-	<div id="detailsGridHead">
+     <div id="detailsGridHead">
 	
-     <div class='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
-	      <br><span class='notesText'>TxRx = call heard by any & hearing any</span>
-        <div><span style='text-align:center; font-size:1rem;'>&#8660</span></div>
-        <div>Entities reached by <span class='Tx'>Tx Calls</span>, spotted by 
-        <span class='Rx'>Rx Calls</span>, and both reached and spotted by any 
-        <span class='TxRx'>TxRx&nbspCall</span>
-      	<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both
-        hears and reaches the same remote callsign</span></div>
-      </div>
+         <div class='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
+    	    <br><span class='notesText'>TxRx = call heard by any & hearing any</span>
+         </div>
+         <div class='titleRow'>
+           <span style='text-align:center; font-size:1rem;'>&#8660</span>
+        </div>
+        <div class='titleRow'>
+           Entities reached by <span class='Tx'>Tx Calls</span>, spotted by 
+           <span class='Rx'>Rx Calls</span>, and both reached and spotted by any 
+           <span class='TxRx'>TxRx&nbspCall</span>
+           <br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both
+              hears and reaches the same remote callsign</span>
+        </div>
         
-     <div class='optionsRow'>
-       <div>Show: <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>
+        <div class='optionsRow'>
+           Show: <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>
 	          <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>
               <br>Format: <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>
               <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>
-      </div>
-						<div></div>
-      <div>Show:"
-        <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>
-        <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>
-        <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>
-        <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>
-       <br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>
-       <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>
-    </div>
+         </div>
+         <div class='optionsRow'></div>
+         <div class='optionsRow'>Show:"
+           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>
+           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>
+           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>
+           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>
+          <br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>
+          <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>
+       </div>
   </div>  
 	
   <div id="detailsGrid"></div>
 		
-  </div>
-	
 </div>
   
 <div id="bandsGrid">
@@ -177,6 +179,8 @@ a:visited {color: blue;}
 	   
       <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/BandOpticon"></a>                        
    </div>
+</div>
+
 </div>
 
 <!--Get the library for MQTT functions -->
