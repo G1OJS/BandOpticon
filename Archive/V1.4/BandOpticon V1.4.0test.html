@@ -135,12 +135,14 @@ a:visited {color: blue;}
            </fieldset>
            <fieldset>
              <legend>Highlighting</legend>
-              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting" checked /><label for="showCallsigns">Callsigns</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" /><label for="showL2sq">L2 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting" checked /><label for="showCallsigns">Forward</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" /><label for="showL2sq">Reverse</label></div>
            </fieldset>
            <div style="clear: both;"></div>
          </div>
-         <div id="bandDetailsGrid" >
+         <div id="listFilterClear">
+         </div>
+         <div id="bandDetailsGrid">
            <!-- written by script later -->
          </div>
        </div>
@@ -636,12 +638,13 @@ a:visited {color: blue;}
        if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
        if(listFilter!=""){
 	   // filter specific callsign plus myCall
-	     let callsFilter=new Set();
-	     callsFilter.add(myCall);
-	     callsFilter.add(listFilter);
-	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
-          }
+	       let callsFilter=new Set();
+	       callsFilter.add(myCall);
+	       callsFilter.add(listFilter);
+	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
 
+       }
+         document.getElementById("listFilterClear").innerHTML="<a href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>"+(listFilter=="" ? "":"clear filter")+"</a>"
 
        if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
        if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
