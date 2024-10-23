@@ -141,8 +141,7 @@ a:visited {color: blue;}
            </fieldset>
            <div style="clear: both;"></div>
          </div>
-         <div id="listFilterClear">
-         </div>
+         <div><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
          <div id="bandDetailsGrid">
            <!-- written by script later -->
          </div>
@@ -501,12 +500,14 @@ a:visited {color: blue;}
     // find the largest counts of characters in the LH and RH columns
     const farEntities=document.querySelectorAll('[class$="_farEntities"]');
     const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
- 
+    
+    let groupHomeEntities=document.getElementById("groupHomeEntities").checked
+    
      // redistribute grid columns
     let gridDiv=document.getElementById('bandDetailsGrid');
     if (groupHomeEntities) {
-      let lhCharsCount=39;   
-      let rhCharsCount=97;
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
       if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
         Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
         Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
@@ -645,7 +646,7 @@ a:visited {color: blue;}
 	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
 
        }
-         document.getElementById("listFilterClear").innerHTML="<a href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>"+(listFilter=="" ? "":"clear filter")+"</a>"
+       document.getElementById("listFilterClear").style="visibility:"+(listFilter=="" ? "hidden":"visible")+";";
 
        if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
        if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
