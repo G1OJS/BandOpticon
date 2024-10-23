@@ -116,7 +116,9 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - redsign screen layout (colours / borders etc)
+  - try a line in the detail grid showing "home reciprocals"
+    - any home -> dx call -> any home
+  - eliminate websafe colours
   - continue moving unnecessary updates out of the main screen update function and into where it's needed
   - fix legend layout (need equal height tiles) - last resort, fix with script
   - stop word wrap on filter link in LH column when not grouping calls
