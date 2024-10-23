@@ -112,38 +112,14 @@ a:visited {color: blue;}
        <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a></div>
      </div>
 	
+  
      <div id="detailsGridHead">
-	
-         <div class='titleRow'><strong><span id='lhEntitiesTitle'></span></strong>
-    	    <br><span class='notesText'>TxRx = call heard by any & hearing any</span>
-         </div>
-         <div class='titleRow'>
-           <span style='text-align:center; font-size:1rem;'>&#8660</span>
-        </div>
-        <div class='titleRow'>
-           Entities reached by <span class='Tx'>Tx Calls</span>, spotted by 
-           <span class='Rx'>Rx Calls</span>, and both reached and spotted by any 
-           <span class='TxRx'>TxRx&nbspCall</span>
-           <br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both
-              hears and reaches the same remote callsign</span>
-        </div>
-        
-        <div class='optionsRow'>
-           Show: <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>
-	          <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>
-              <br>Format: <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>
-              <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>
-         </div>
-         <div class='optionsRow'></div>
-         <div class='optionsRow'>Show:"
-           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>
-           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>
-           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>
-           <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a>
-          <br> Highlight: <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Common&quot;; updateDisplays();'>Same direction</a>
-          <a class='textAnchorButton' href='#' onclick='highlightType=&quot;Reverse&quot;; updateDisplays();'>Reverse direction</a>
-       </div>
-  </div>  
+	<!--
+    
+       
+    -->
+       
+     </div>  
 	
   <div id="detailsGrid"></div>
 		
@@ -649,17 +625,15 @@ a:visited {color: blue;}
        if(listFilter!=""){
            if(listFilter=='txRxOnly') {
 	     txCalls.clear();rxCalls.clear();
-	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
 	   } else {
 	   // filter specific callsign plus myCall
 	     let callsFilter=new Set();
 	     callsFilter.add(myCall);
 	     callsFilter.add(listFilter);
 	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
-	     document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
           }
        } else {
-	 document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> and <span class='TxRx'>TxRx&nbspCalls</span>";
+
        }
 	  
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
