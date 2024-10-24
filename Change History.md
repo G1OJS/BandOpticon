@@ -17,8 +17,6 @@
   </td>
 </tr>
 
-
-
 <tr>
   <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.0'>V1.4.0</a></td>
   <td>
@@ -119,6 +117,7 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - V2 - fix inactive tile not changing colour
+       - solve long extra mode list expanding tile
        - make extra mode click not change global mode
        - centre tiles or use grid or padding
        - add text to explain abbreviations
