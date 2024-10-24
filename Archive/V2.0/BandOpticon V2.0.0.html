@@ -21,7 +21,7 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 #appTop { display: grid; grid-template-columns:  fit-content(30%) auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
-/* holds the divs for legend & band details - the two things shown and hidden by script */
+/* holds the divs for help text & band details - the two things shown and hidden by script */
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
 #innerScreen > div {font-size:1.5rem; }
 
@@ -73,7 +73,7 @@ a:visited {color: blue;}
 	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
 	Mode: <span id='modeSelector'></span>
 	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
-	Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>
+	Currently sorting band tiles on <output id='bandTilesSortKey'></output>
 	<span id='bandSortResetButton' style='visibility:hidden'><a href='#' onclick='setSort(&quot;BandName&quot;);'>reset to Band Name</a></span>
 	<br><span>Click any underlined number to sort band tiles on that number</span>
       </div>
@@ -190,8 +190,6 @@ a:visited {color: blue;}
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(purgeSpots, 15000);
   setInterval(writeData, 1000*dataWriteSeconds);
-  
-//  showBandTileLegend();
 
   connectToFeed();
  // connectToTestData();
@@ -279,19 +277,7 @@ a:visited {color: blue;}
        }
      }
    }
-
-  function showNothing(){
-    detailsWanted="Nothing";
-//    document.getElementById("legend").style="display:none;"
-    document.getElementById("bandTilesBlock").style="display:none;"
-  }
   
-  function showBandTileLegend(){
-//    detailsWanted="BandTileLegend";
-//    document.getElementById("legend").style="display:inline-block;"
-    document.getElementById("bandTilesBlock").style="display:none;"
-  }
-	  
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
     // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
@@ -509,7 +495,7 @@ function initBandTiles(){
  function setSort(sortKey){
    console.log("Set sort key: "+sortKey);
    bandTilesSortKey=sortKey;
-   document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
+   document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
     
@@ -590,7 +576,6 @@ function initBandTiles(){
        document.getElementById("tileTitle_"+index).innerHTML="<a class='textAnchorButton-strong' href='#'"
          +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
          +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
-       document.getElementById("mode_"+index).value=watchedMode;
        document.getElementById("nH2H_"+index).value=bandData[1];
        document.getElementById("nH2DX_"+index).value=bandData[2];
        document.getElementById("nDX2H_"+index).value=bandData[3];
