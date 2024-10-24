@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2.0/BandOpticon%20V2.0.0'>V2.0.0</a></td>
+  <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V2.0.0'>V2.0.0</a></td>
   <td>
     <ol>
       <li>Rework styling top to bottom</li>
@@ -18,7 +18,7 @@
 </tr>
 
 <tr>
-  <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.0'>V1.4.0</a></td>
+  <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.4.0'>V1.4.0</a></td>
   <td>
     <ol>
       <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlightinh'),
@@ -31,7 +31,7 @@
 
 
 <tr>
-  <td>21-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.3/BandOpticon%20V1.3.0'>V1.3.0</a></td>
+  <td>21-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.3.0'>V1.3.0</a></td>
   <td>
     <ol>
       <li>Added more options to the band details grid:
@@ -44,7 +44,7 @@
 </tr>
 
 <tr>
-  <td>20-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.1'>V1.2.1</a></td>
+  <td>20-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.2.1'>V1.2.1</a></td>
   <td>
     <ol>
       <li>Efficiency improvements necessary for when band details are shown with a large number of home callsigns</li>
@@ -53,7 +53,7 @@
 </tr>
 
 <tr>
-  <td>19-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.2/BandOpticon%20V1.2.0'>V1.2.0</a></td>
+  <td>19-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.2.0'>V1.2.0</a></td>
   <td>
     <ol>
       <li>"List all calls" view can now be filtered to single other call for benchmarking against myCall</li>
@@ -63,7 +63,7 @@
 </tr>
 
 <tr>
-  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
+  <td>18-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.1.1'>V1.1.1</a></td>
   <td>
     <ol>
       <li>Ground-up rewrite to make code underneath Band Activity Details pane modular/reuseable for different comparison and highlighting schemes and metrics</li>
@@ -78,7 +78,7 @@
 </tr>
 
 <tr>
-  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.4'>V1.0.4</a></td>
+  <td>11-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.0.4'>V1.0.4</a></td>
   <td>
     <ol>
       <li>Updated instructions in squares list edit dialogue</li>
@@ -97,7 +97,7 @@
 </tr>
 
 <tr>
-  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.0/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
+  <td>08-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.0.0'>V1.0.0</a></td><td>Added V1.0.0 to Title tag of live version</td>
 </tr>
 
 </table>  
