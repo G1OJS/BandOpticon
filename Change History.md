@@ -118,11 +118,13 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - V2 - fix inactive tile not changing colour
+       - make extra mode click not change global mode
+       - centre tiles or use grid or padding
+       - add text to explain abbreviations
+       - day / night theme?
   - try a line in the detail grid showing "home reciprocals"
     - any home -> dx call -> any home
-  - eliminate websafe colours
-  - continue moving unnecessary updates out of the main screen update function and into where it's needed
-  - fix legend layout (need equal height tiles) - last resort, fix with script
   - stop word wrap on filter link in LH column when not grouping calls
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
