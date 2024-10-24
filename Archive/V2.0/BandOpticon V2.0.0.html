@@ -489,8 +489,8 @@ a:visited {color: blue;}
 function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
   for (let i=0;i<20;i++){
-  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_'"+i+"'>"
-     +"<div class='bandTileTitle' id='tileTitle_'"+i+"'></div>"
+  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
+     +"<div class='bandTileTitle' id='tileTitle_"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
      +"Spots <a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H:<output id='nH2H_"+i+"'></output></a>"
      +" <a href='#' onclick='setSort(&quot;nH2DX&quot;)'>H2DX:<output id='nH2DX_"+i+"'></output></a>"
