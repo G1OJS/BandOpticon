@@ -42,9 +42,8 @@ fieldset > div >* {vertical-align:middle;}
     row-gap: 2px;; 
     grid-template-rows: repeat(auto-fill, 1fr);}
 .bandTile {display:none; width:minmax(fit-content,200px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
-.bandTile .active {background-color:blue;}
-.bandTile .inactive {background-color:red;}
-.bandTile .tileTitle {font-weight:bold;}
+.bandTile.active {background-color:blue;}
+.tileTitle {font-weight:bold;}
 
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
 .bandTileStatsGrid .RowHeading {text-align:left; font-weight:bold; }
@@ -494,9 +493,9 @@ function initBandTiles(){
      +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
        +"<span class='RowHeading'></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHD&quot;)'>H2DX</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nDH&quot;)'>DX2H</a></span>"  
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHH&quot;)'>H>H</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHD&quot;)'>H>DX</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nDH&quot;)'>DX>H</a></span>"  
        +"<span class='RowHeading'>Spots</span>"
        +"<output class='Stats' id='nH2H_"+i+"'></output>"
        +"<output class='Stats' id='nH2DX_"+i+"'></output>"
@@ -615,11 +614,9 @@ function initBandTiles(){
          document.getElementById("modes_"+index).innerHTML
          +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
        
-       if((bandData[4]+bandData[5])>0){
-         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile active'";
-       } else {
-         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile inactive'";
-       }
+       document.getElementById("tile_"+index).style="display:inline-block";
+       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
+
     });
     
     // hide unused band tiles
