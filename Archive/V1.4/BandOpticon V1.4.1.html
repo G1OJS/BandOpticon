@@ -35,11 +35,13 @@ div {background-color: white; margin: 0px;  padding: 5px;}
   #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
   #bandDetailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
-#bandTilesGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+#bandTilesGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
 #bandTilesGrid > div {background-color: rgb(230, 230, 255); margin: 1px; padding: 5px; }
 #bandTilesGrid > div.active	{background-color:white;   }
 
-#creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
+.bandStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
+
+#creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
 #creditsGrid > * {background-color: #91FCFE;}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -595,17 +597,25 @@ a:visited {color: blue;}
        band=bandsArr[bandIndex];
        let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
        bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand=\&quot;"+band+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; updateDisplays();'>"+band+" "+watchedMode+"</a>";
-       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}        
-       bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
-         +"DX2H:"
-         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='HomeEntity' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
-         +" H2H:"
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>"
-         +" H2DX:"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>"
-         +"<br><span>Calls Tx:</span><a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a>"
-         +"<span> Rx:</span><a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a>"
-         +"<span> TxRx:</span><a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
+       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}  
+       bandTileDocEl.innerHTML+="<div class='bandStatsGrid'>"
+       bandTileDocEl.innerHTML+="<div>Spots</div>"
+         +"<div><a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H</a></div>"
+         +"<div><a href='#' onclick='setSort(&quot;nH2DX&quot;)'>H2DX</a></div>"
+         +"<div><a href='#' onclick='setSort(&quot;nDH&quot;)'>DX2H</a></div>"
+         +"<div></div>"
+         +"<div>"+bandsDataArr[bandIndex][1]+"</div>"
+         +"<div>"+bandsDataArr[bandIndex][2]+"</div>"
+         +"<div>"+bandsDataArr[bandIndex][3]+"</div>"
+         +"<div>Calls</div>"
+         +"<div><a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a></div>"
+         +"<div><a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a></div>"
+         +"<div><a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a></div>"
+         +"<div></div>"
+         +"<div>"+bandsDataArr[bandIndex][4]+"</div>"
+         +"<div>"+bandsDataArr[bandIndex][5]+"</div>"
+         +"<div>"+bandsDataArr[bandIndex][6]+"</div>"
+         +"</div>";
        let modesHTML="";
        let modesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
        modesThisBandArr.forEach((md) =>{
