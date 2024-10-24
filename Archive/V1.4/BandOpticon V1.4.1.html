@@ -556,10 +556,10 @@ a:visited {color: blue;}
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
-      let bandExtraModes=new Set;
+      let bandModes=new Set;
       for (id in connections) {
         let c=connections[id];
-        if (c.b==band && c.md!=watchedMode) {bandExtraModes.add(c.md);}
+        if (c.b==band) {bandModes.add(c.md)}
         if (c.b==band && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
@@ -569,10 +569,10 @@ a:visited {color: blue;}
         }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandExtraModes)];
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
-      dataForRecord="Mode="+watchedMode+", ";bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
+      dataForRecord="Mode="+watchedMode+", "+bandData.slice(0,7)+", "; // save the stats from above to the recording string
+      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
@@ -597,18 +597,21 @@ a:visited {color: blue;}
        bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand=\&quot;"+band+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; updateDisplays();'>"+band+" "+watchedMode+"</a>";
        if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}        
        bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
+         +"DX2H:"
          +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='HomeEntity' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
-         +"<br><span class='HomeEntity'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a><br>"
-         +"<span class='HomeEntity'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a><br>"
-         +"<span class='HomeEntity'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
-       let extraModesHTML="";
-       let extraModesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
-       extraModesThisBandArr.forEach((md) =>{
-         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; detailsBand=&quot;"+band+"&quot;; updateDisplays()'>"+md+"</a> ";
+         +" H2H:"
+         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>"
+         +" H2DX:"
+         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='HomeEntity' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>"
+         +"<br><span>Calls Tx:</span><a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a>"
+         +"<span> Rx:</span><a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a>"
+         +"<span> TxRx:</span><a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='HomeEntity' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
+       let modesHTML="";
+       let modesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
+       modesThisBandArr.forEach((md) =>{
+         modesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; detailsBand=&quot;"+band+"&quot;; updateDisplays()'>"+md+"</a> ";
        });
-       if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
+       bandTileDocEl.innerHTML+="<br><span>Modes: "+modesHTML+"</span>"
        // change class of band tile to active if there is activity
        if((bandsDataArr[bandIndex][3]+bandsDataArr[bandIndex][4])>0){bandTileDocEl.className='active'}
      }); 
