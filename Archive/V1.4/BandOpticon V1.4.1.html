@@ -51,10 +51,7 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 .TxRx {color:blue; font-style:italic;}
 .HomeEntity {color:blue; }
 .DxEntity {color:Fuchsia; }
-.IntraHome_farEnd {color:blue; }
-.Tx_farEnd {color:Fuchsia; }
-.Rx_farEnd {color:olive;}
-.TxRx_farEnd {font-style:italic;}
+.IntraHome {color:blue; }
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
@@ -98,9 +95,9 @@ a:visited {color: blue;}
          <div class='active'>
            <span class='textAnchorButton-strong'>Band & Mode</span>
            <span class='notesText'> (click for detailed stats)</span>
-           <br>Spots: <span class='notesText'>number of spots<span class='IntraHome_farEnd'> Home<span style='text-align:center; font-size:1rem;'>&#8680</span>Home</span>
-           /<span class='Tx_farEnd'>Home<span style='text-align:center; font-size:1rem;'>&#8680</span>DX</span>
-           /<span class='Rx_farEnd'>DX<span style='text-align:center; font-size:1rem;'>&#8680</span>Home</span></span>
+           <br>Spots: <span class='notesText'>number of spots<span class='IntraHome'> Home<span style='text-align:center; font-size:1rem;'>&#8680</span>Home</span>
+           /<span class='Tx'>Home<span style='text-align:center; font-size:1rem;'>&#8680</span>DX</span>
+           /<span class='Rx'>DX<span style='text-align:center; font-size:1rem;'>&#8680</span>Home</span></span>
            <br><span class='Tx'>Tx Calls: <span class='notesText'>number of unique calls in 'Home' received by anyone</span></span>
            <br><span class='Rx'>Rx Calls: <span class='notesText'>number of unique calls in 'Home' receiving anyone</span></span>
            <br><span class='TxRx'>TxRx Calls: <span class='notesText'> calls that are both Tx Calls and Rx Calls</span></span>
@@ -604,9 +601,9 @@ a:visited {color: blue;}
        bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand=\&quot;"+band+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; updateDisplays();'>"+band+" "+watchedMode+"</a>";
        if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}        
        bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
+         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
+         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
          +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a><br>"
          +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a><br>"
          +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
@@ -661,14 +658,15 @@ a:visited {color: blue;}
               
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
+       let el=document.getElementById("bandDetailsGrid");
        // all except myCall:
-       document.getElementById("bandDetailsGrid").innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       el.innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("bandDetailsGrid").innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
 
        // do the highlighting 	
        if(document.getElementById("forward").checked) {
