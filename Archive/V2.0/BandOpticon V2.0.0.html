@@ -33,6 +33,7 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 #bandTilesBlock {height:500px; }
 .bandTile { float:left; width:150px; height:fit-content; background-color: rgb(230, 230, 255); margin: 1px; padding: 5px; }
 .bandTile.active{background-color:white;   }
+.bandTileTitle {}
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
 
 #creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
@@ -488,7 +489,8 @@ a:visited {color: blue;}
 function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
   for (let i=0;i<20;i++){
-  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_'"+i+"'><strong><output id='band_"+i+"'></output> <output id='mode_"+i+"'</output></strong>"
+  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_'"+i+"'>"
+     +"<div class='bandTileTitle' id='tileTitle_'"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
      +"Spots <a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H:<output id='nH2H_"+i+"'></output></a>"
      +" <a href='#' onclick='setSort(&quot;nH2DX&quot;)'>H2DX:<output id='nH2DX_"+i+"'></output></a>"
@@ -585,7 +587,9 @@ function initBandTiles(){
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
        let bandData=bandsDataArr[bandIndex];
-       document.getElementById("band_"+index).value=bandData[0];
+       document.getElementById("tileTitle_"+index).innerHTML="<a class='textAnchorButton-strong' href='#'"
+         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+         +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
        document.getElementById("mode_"+index).value=watchedMode;
        document.getElementById("nH2H_"+index).value=bandData[1];
        document.getElementById("nH2DX_"+index).value=bandData[2];
