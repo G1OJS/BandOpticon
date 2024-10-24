@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V2.0.0</title>
+<title>BandOpticon V1.4.1</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -516,7 +516,7 @@ function initBandTiles(){
     document.getElementById("modeSelector").innerHTML=modeSelector;
     let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
     bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
-    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
+    document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
     document.getElementById("bandSortResetButton").style.visibility = (bandTilesSortKey=="BandName") ? 'hidden' : 'visible';
 
     console.log(detailsBand,watchedMode);
@@ -602,7 +602,6 @@ function initBandTiles(){
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
     detailsWanted="BandDetails";
-    document.getElementById("legend").style="display:none;"
     document.getElementById("bandDetails").style="display:inline-block;"
     document.getElementById("detailsBand").innerHTML=detailsBand;
     document.getElementById("watchedMode").innerHTML=watchedMode;
