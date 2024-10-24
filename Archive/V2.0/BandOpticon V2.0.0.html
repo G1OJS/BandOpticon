@@ -25,16 +25,26 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
 #innerScreen > div {font-size:1.5rem; }
 
+fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
+fieldset > div {float:left; padding-left:0px;}
+fieldset > div >* {vertical-align:middle;}
+
   #bandDetails{background-color:grey; padding:2px;}
   #bandDetails >* {background-color:white; }
   #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
   #bandDetailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
 #bandTilesBlock {height:500px; }
-.bandTile { float:left; width:150px; height:fit-content; background-color: rgb(230, 230, 255); margin: 1px; padding: 5px; }
-.bandTile.active{background-color:white;   }
-.bandTileTitle {}
+.bandTile { float:left; width:150px; height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
+.bandTile.active{background-color:white;}
+.bandTile .tileTitle {font-weight:bold;}
+
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
+.bandTileStatsGrid .RowHeading {text-align:left; font-weight:bold;}
+.bandTileStatsGrid .ColumnHeading {text-align:center; font-weight:bold;}
+.bandTileStatsGrid .Stats {text-align:center; padding-top:1px; padding-bottom:2px;}
+
+.bandTile .tileModes {font-size:0.7rem;}
 
 #creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
 #creditsGrid > * {background-color: #91FCFE;}
@@ -42,14 +52,11 @@ div {background-color: white; margin: 0px;  padding: 5px;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 0.8rem;}
 .hidden {display: none;}
-.extraModes {font-size:0.7rem;}
 .HomeEntity {color:blue; }
 .DxEntity {color:Fuchsia; }
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
-fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
-fieldset > div {float:left; padding-left:0px;}
-fieldset > div >* {vertical-align:middle;}
+
 a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {color: blue; font-size:1rem;}
@@ -85,7 +92,7 @@ a:visited {color: blue;}
        <div id="bandDetails">
          <div>
            <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
-           <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>
+           <a class='textAnchorButton' href='#' onclick='detailsWanted=""; updateDisplays();'><span style='float:right;'>close</span></a>
          </div>
          <div>
            <fieldset>
@@ -183,7 +190,7 @@ a:visited {color: blue;}
   var connectionsPurged=0;
 
   loadConfig();
-//  showNothing();
+  document.getElementById("bandDetails").style="display:none;";
   initBandTiles();
   updateDisplays();
 
@@ -476,16 +483,27 @@ function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
   for (let i=0;i<20;i++){
   bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
-     +"<div class='bandTileTitle' id='tileTitle_"+i+"'></div>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
-     +"Spots <a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H:<output id='nH2H_"+i+"'></output></a>"
-     +" <a href='#' onclick='setSort(&quot;nH2DX&quot;)'>H2DX:<output id='nH2DX_"+i+"'></output></a>"
-     +" <a href='#' onclick='setSort(&quot;nDX2H&quot;)'>DX2H:<output id='nDX2H_"+i+"'></output></a>"  
-     +"Calls <a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx:<output id='nTx_"+i+"'></output></a>"
-     +" <a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx:<output id='nRx_"+i+"'></output></a>"
-     +" <a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx:<output id='nTxRx_"+i+"'></output></a>"  
+       +"<span class='RowHeading'>Spots</span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nH2DX&quot;)'>H2DX</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nDX2H&quot;)'>DX2H</a></span>"  
+       +"<span class='RowHeading'></span>"
+       +"<output class='Stats' id='nH2H_"+i+"'></output>"
+       +"<output class='Stats' id='nH2DX_"+i+"'></output>"
+       +"<output class='Stats' id='nDX2H_"+i+"'></output>"
+       +"<span class='RowHeading'> </span><span class='Stats'> </span><span class='Stats'> </span><span class='Stats'> </span>"
+       +"<span class='RowHeading'>Calls</span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a></span>"
+       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a></span>"
+       +"<span class='RowHeading'></span>"
+       +"<output class='Stats' id='nTx_"+i+"'></output>"
+       +"<output class='Stats' id='nRx_"+i+"'></output>"
+       +"<output class='Stats' id='nTxRx_"+i+"'></output>"
      +"</div>"
-     +"<div id='modes_"+i+"'></div>"
+     +"<div class='tileModes' id='modes_"+i+"'></div>"
      +"</div>";
   }
 }
@@ -499,8 +517,11 @@ function initBandTiles(){
    updateDisplays();
  } 
     
-  function updateDisplays(){
+ function updateDisplays(){
 	  
+    if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
+    if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
+    
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
@@ -518,8 +539,6 @@ function initBandTiles(){
     bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
     document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
     document.getElementById("bandSortResetButton").style.visibility = (bandTilesSortKey=="BandName") ? 'hidden' : 'visible';
-
-    console.log(detailsBand,watchedMode);
 
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
@@ -573,7 +592,7 @@ function initBandTiles(){
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
        let bandData=bandsDataArr[bandIndex];
-       document.getElementById("tileTitle_"+index).innerHTML="<a class='textAnchorButton-strong' href='#'"
+       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
          +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
          +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
        document.getElementById("nH2H_"+index).value=bandData[1];
@@ -587,7 +606,7 @@ function initBandTiles(){
        let modesThisBandArr=bandData.slice(7);
        modesThisBandArr[0].forEach((md) =>{
          document.getElementById("modes_"+index).innerHTML
-         +="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"
+         +="<a href='#' onclick='watchedMode=&quot;"
          +md+"&quot;; detailsBand=&quot;"+bandData[0]+"&quot;; updateDisplays()'>"+md+"</a> "; });
     // change class of band tile to active if there is activity
     //   let bandTile=document.GetElementById("tile_"+index);
