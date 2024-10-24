@@ -116,18 +116,15 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - V2 - fix inactive tile not changing colour
-       - solve long extra mode list expanding tile
-       - make extra mode click not change global mode
-       - centre tiles or use grid or padding
-       - add text to explain abbreviations
-       - day / night theme?
+  - home & DX colours - distinct but not lurid
+  - make extra mode click not change global mode
+  - add text to explain abbreviations
+  - day / night theme?
   - try a line in the detail grid showing "home reciprocals"
     - any home -> dx call -> any home
   - stop word wrap on filter link in LH column when not grouping calls
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
-  - think of a different colour for Tx-Rx spots so it doesn't look so similar to remove entities in home
   
 Code tidying:
   - make the test message injector work
