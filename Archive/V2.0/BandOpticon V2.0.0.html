@@ -7,7 +7,7 @@
 <meta http-equiv="Expires" content="0"/>
  
 <style>
-:root {background-color: #91FCFE; --main-paper-color:#cce5ff; text-align: left; color:#4e4e4e;}
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; text-align: left; color:#4e4e4e; font-size:1.1rem;}
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #title {background-color: #91FCFE; text-align: center; font-size: 5rem;}
 #subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
@@ -18,32 +18,37 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #app >* {background-color:lightblue ; padding:1px;}
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; grid-template-columns:  fit-content(30%) auto; grid-template-rows: auto;}
+#appTop { display: grid; grid-template-columns:  min-content auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 /* holds the divs for help text & band details - the two things shown and hidden by script */
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
 #innerScreen > div {font-size:1.5rem; }
 
-fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
-fieldset > div {float:left; padding-left:0px;}
-fieldset > div >* {vertical-align:middle;}
+  fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
+  fieldset > div {float:left; padding-left:0px;}
+  fieldset > div >* {vertical-align:middle;}
 
   #bandDetails{background-color:grey; padding:2px;}
   #bandDetails >* {background-color:var(--main-paper-color); }
   #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
   #bandDetailsGrid > div {var(--main-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
 
-#bandTilesBlock {overflow:auto; }
-.bandTile {display:none; float:left; width:fit-content; height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
-.bandTile .active {background-color:blue;}
-.bandTile .inactive {background-color:red;}
-.bandTile .tileTitle {font-weight:bold;}
+#bandTilesBlock {  display: grid;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: repeat(auto-fill, 1fr);
+    column-gap: 2px;
+    row-gap: 2px; 
+    grid-template-rows: repeat(auto-fill, 1fr);}
+.bandTile {display:none; width:fit-content(250px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
+.bandTile.active {background-color:blue;}
+.tileTitle {font-weight:bold; }
 
-.bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
-.bandTileStatsGrid .RowHeading {text-align:left; font-weight:bold; }
-.bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;}
-.bandTileStatsGrid .Stats {text-align:center; font-weight:bold;}
+.bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
+.bandTileStatsGrid .RowHeading {text-align:left; font-weight:bold; border-bottom:solid; border-width:1px;}
+.bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;  padding-top:8px;}
+.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px;}
 
 .bandTile .tileModes {font-size:0.7rem;}
 
@@ -81,9 +86,15 @@ a:visited {color: blue;}
 	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
 	Mode: <span id='modeSelector'></span>
 	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
-	Currently sorting band tiles on <output id='bandTilesSortKey'></output>
-	<span id='bandSortResetButton' style='visibility:hidden'><a href='#' onclick='setSort(&quot;BandName&quot;);'>reset to Band Name</a></span>
-	<br><span>Click any underlined column heading to sort band tiles on that column's values</span>
+	Sorting band tiles on <output id='bandTilesSortKey'></output>
+	<br>Select:
+   <a href='#' onclick='setSort(&quot;BandName&quot;)'>Band Name</a>
+   <a href='#' onclick='setSort(&quot;nHH&quot;)'>H→H</a>
+   <a href='#' onclick='setSort(&quot;nHD&quot;)'>H→DX</a>
+   <a href='#' onclick='setSort(&quot;nDH&quot;)'>DX→H</a>
+   <a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a>
+   <a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a>
+   <a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a>
       </div>
    </div>
    
@@ -487,25 +498,25 @@ function initBandTiles(){
   bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
      +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
-       +"<span class='RowHeading'></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHH&quot;)'>H2H</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nHD&quot;)'>H2DX</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nDH&quot;)'>DX2H</a></span>"  
+       +"<span></span>"
+       +"<span class='ColumnHeading'>H→H</span>"
+       +"<span class='ColumnHeading'>H→DX</span>"
+       +"<span class='ColumnHeading'>DX→H</span>"  
        +"<span class='RowHeading'>Spots</span>"
        +"<output class='Stats' id='nH2H_"+i+"'></output>"
        +"<output class='Stats' id='nH2DX_"+i+"'></output>"
        +"<output class='Stats' id='nDX2H_"+i+"'></output>"
-       +"<span class='RowHeading'></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a></span>"
-       +"<span class='ColumnHeading'><a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a></span>"
+       +"<span></span>"
+       +"<span class='ColumnHeading'>Tx</span>"
+       +"<span class='ColumnHeading'>Rx</span>"
+       +"<span class='ColumnHeading'>TxRx</span>"
        +"<span class='RowHeading'>Calls</span>"
        +"<output class='Stats' id='nTx_"+i+"'></output>"
        +"<output class='Stats' id='nRx_"+i+"'></output>"
        +"<output class='Stats' id='nTxRx_"+i+"'></output>"
      +"</div>"
      +"<div class='tileModes' id='modes_"+i+"'></div>"
-     +"</div>";
+     +"</div> ";
   }
 }
 
@@ -528,7 +539,7 @@ function initBandTiles(){
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
 
     // update the top banner  
-    document.getElementById("clock").value=utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2];
+    document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
     document.getElementById("connectionsAdded").value=connectionsAdded;
@@ -539,7 +550,6 @@ function initBandTiles(){
     let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
     bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
     document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
-    document.getElementById("bandSortResetButton").style.visibility = (bandTilesSortKey=="BandName") ? 'hidden' : 'visible';
 
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
@@ -609,11 +619,9 @@ function initBandTiles(){
          document.getElementById("modes_"+index).innerHTML
          +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
        
-       if((bandData[4]+bandData[5])>0){
-         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile active'";
-       } else {
-         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile inactive'";
-       }
+       document.getElementById("tile_"+index).style="display:inline-block";
+       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
+
     });
     
     // hide unused band tiles
