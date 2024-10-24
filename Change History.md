@@ -7,6 +7,17 @@
 </tr>
 
 <tr>
+  <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2.0/BandOpticon%20V2.0.0'>V2.0.0</a></td>
+  <td>
+    <ol>
+      <li>Rework styling top to bottom</li>
+      <li>Change hypertext buttons for radio buttons and checkboxes</li>
+      <li>Lots of internal code changes to enable the above</li>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>In progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1.4/BandOpticon%20V1.4.1'>V1.4.1</a></td>
   <td>
     <ol>
