@@ -36,7 +36,8 @@ fieldset > div >* {vertical-align:middle;}
 
 #bandTilesBlock {overflow:auto; }
 .bandTile {display:none; float:left; width:fit-content; height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
-.bandTile.inactive{background-color:grey;}
+.bandTile .active {background-color:blue;}
+.bandTile .inactive {background-color:red;}
 .bandTile .tileTitle {font-weight:bold;}
 
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;}
@@ -591,7 +592,6 @@ function initBandTiles(){
 
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
-       document.getElementById("tile_"+index).style="display:inline-block;";
        let bandData=bandsDataArr[bandIndex];
        document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
          +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
@@ -607,8 +607,13 @@ function initBandTiles(){
        let modesThisBandArr=bandData.slice(7);
        modesThisBandArr[0].forEach((md) =>{
          document.getElementById("modes_"+index).innerHTML
-         +="<a href='#' onclick='watchedMode=&quot;"
-         +md+"&quot;; detailsBand=&quot;"+bandData[0]+"&quot;; updateDisplays()'>"+md+"</a> "; });
+         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
+       
+       if((bandData[4]+bandData[5])>0){
+         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile active'";
+       } else {
+         document.getElementById("tile_"+index).style="display:inline-block; class='bandTile inactive'";
+       }
     });
     
     // hide unused band tiles
