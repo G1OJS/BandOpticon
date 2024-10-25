@@ -757,8 +757,12 @@ function initBandTiles(){
          highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        } else {
-  	     highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
-	       highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+         highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
+	 highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+
+	 highlightEntitiesList("othersTxRx_farEntities","myCallTx_farEntities");
+	 highlightEntitiesList("othersTxRx_farEntities","myCallRx_farEntities");
+
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
