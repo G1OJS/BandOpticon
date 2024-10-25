@@ -614,7 +614,7 @@ function initBandTiles(){
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
      
       let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
-      if(modesAcrossAllBandsArrNew.size>modesAcrossAllBandsArr.size){
+      if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
         modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
         makeModeButtons();
       } 
