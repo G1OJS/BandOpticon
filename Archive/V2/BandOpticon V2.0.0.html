@@ -51,7 +51,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
 #creditsGrid > * {background-color: #91FCFE;}
 
-.button {padding: 0.5em 1em; border-radius: 0.5em; background-color: silver; border: 3px solid grey; cursor: pointer;}
+.button {font-size:0.7rem; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 3px solid grey; cursor: pointer;}
 .button.active {border: 2px solid black;}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
@@ -79,22 +79,30 @@ a:visited {color: blue;}
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
         <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
       <div id="appTop_r">
-        <span style='float:right;'><a class='textAnchorButton-right' href='#' onclick='startRecording();'>record</a></span>
-	My call = <output id='myCall'></output> <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>
-	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
-	Mode: <span id='modeSelector'></span>
-	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
+          <span style='float:right;'><a class='textAnchorButton-right' href='#' onclick='startRecording();'>record</a></span>
+	        My call = <output id='myCall'></output> <button type='button' class='button' onclick='editMyCall();'>edit</button><br>
+	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button' onclick='editPurgeMins();'>edit</button><br>
+	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button' onclick='editSquaresList();'>edit</button></p>
+          
+        <fieldset id=modeSelect>
+           <legend>Mode to watch</legend>
+           <button  type="button" class="button" name="FT4" id="FT4" onclick='setMode(&quot;FT4&quot;)'>FT4</button>
+           <button  type="button" class="button" name="FT8" id="FT8" onclick='setMode(&quot;FT8&quot;)'>FT8</button>
+           <button  type="button" class="button" name="CW" id="CW" onclick='setMode(&quot;CW&quot;)'>CW</button>
+           <button  type="button" class="button" name="WSPR" id="WSPR" onclick='setMode(&quot;WSPR&quot;)'>WSPR</button>
+	      </fieldset>
 
-	<fieldset>
-    <legend>Sort band tiles by</legend>
-      <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
-      <button  type="button" class="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
-	</fieldset>
+	       <fieldset>
+           <legend>Sort band tiles by</legend>
+           <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
+	      </fieldset>
+        
       </div>
    </div>
    
@@ -177,7 +185,7 @@ a:visited {color: blue;}
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
   var watchedMode="FT8";
-  var modesAcrossAllBandsArr=["FT4","FT8","JS8","WSPR","CW"];
+  var modesAcrossAllBandsArr=["FT4","FT8","CW","WSPR"];
   var detailsBand=bandsArr[0];
   var bandTilesSortKey="BandName";
   var refresh_mSeconds=5000;
@@ -204,6 +212,7 @@ a:visited {color: blue;}
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
   setSort("BandName");
+  setMode("FT8");
   initBandTiles();
   updateDisplays();
 
@@ -523,10 +532,16 @@ function initBandTiles(){
   document.getElementById("tile_0").style="display:inline-block;"
 }
 
+ function setMode(mode){
+   watchedMode=mode;
+   let pressedButton=document.getElementById(mode)
+   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+   pressedButton.classList.add('active');
+   updateDisplays();
+ } 
 
   
  function setSort(sortKey){
-   console.log("Set sort key: "+sortKey);
    bandTilesSortKey=sortKey;
    let pressedButton=document.getElementById(sortKey)
    for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
@@ -554,9 +569,9 @@ function initBandTiles(){
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
 
-    let modeSelector="";
-    modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
-    document.getElementById("modeSelector").innerHTML=modeSelector;
+  //  let modeSelector="";
+  //  modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
+   // document.getElementById("modeSelector").innerHTML=modeSelector;
 
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
@@ -625,7 +640,7 @@ function initBandTiles(){
        let modesThisBandArr=bandData.slice(7);
        modesThisBandArr[0].forEach((md) =>{
          document.getElementById("modes_"+index).innerHTML
-         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
+         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
        
        document.getElementById("tile_"+index).style="display:inline-block";
        document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
