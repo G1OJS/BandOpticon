@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0"/>
  
 <style>
-:root {background-color: #91FCFE; --main-paper-color:#cce5ff; text-align: left; color:#4e4e4e; }
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #title {background-color: #91FCFE; text-align: center; font-size: 5rem;}
 #subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
@@ -33,13 +33,13 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
   #bandDetails{background-color:grey; padding:2px;}
   #bandDetails >* {background-color:var(--main-paper-color); }
   #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-  #bandDetailsGrid > div {var(--main-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+  #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 #bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-template-rows: repeat(auto-fill, 1fr);}
 .bandTile {display:none; width:fit-content(250px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
-.bandTile.active {background-color:blue;}
+.bandTile.active >* {background-color:var(--light-paper-color);}
 .tileTitle {font-weight:bold; font-size:2rem;}
 
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
@@ -55,8 +55,8 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
-.HomeEntity {color:#2066a8; }
-.DxEntity {color:#3594cc; }
+.HomeEntity {color:blue; }
+.DxEntity {color:#ed49ef; }
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
@@ -102,12 +102,12 @@ a:visited {color: blue;}
          </div>
          <div>
            <fieldset>
-             <legend><span class='homeEntity'>Home</span> Callsigns</legend>
+             <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
               <div><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
               <div><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
            </fieldset>
            <fieldset>
-             <legend>Far Entities (<span class='homeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
+             <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
               <div><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
               <div><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
               <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
@@ -496,7 +496,7 @@ function initBandTiles(){
        +"<span class='ColumnHeading'>H→H</span>"
        +"<span class='ColumnHeading'>H→DX</span>"
        +"<span class='ColumnHeading'>DX→H</span>"  
-       +"<div class='RowHeading'>Spots</div>"
+       +"<span class='RowHeading'>Spots</span>"
        +"<output class='Stats' id='nH2H_"+i+"'></output>"
        +"<output class='Stats' id='nH2DX_"+i+"'></output>"
        +"<output class='Stats' id='nDX2H_"+i+"'></output>"
@@ -504,7 +504,7 @@ function initBandTiles(){
        +"<span class='ColumnHeading'>Tx</span>"
        +"<span class='ColumnHeading'>Rx</span>"
        +"<span class='ColumnHeading'>TxRx</span>"
-       +"<div class='RowHeading'>Calls</div>"
+       +"<span class='RowHeading'>Calls</span>"
        +"<output class='Stats' id='nTx_"+i+"'></output>"
        +"<output class='Stats' id='nRx_"+i+"'></output>"
        +"<output class='Stats' id='nTxRx_"+i+"'></output>"
