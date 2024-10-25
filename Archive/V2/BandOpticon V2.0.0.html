@@ -212,7 +212,7 @@ a:visited {color: blue;}
   document.getElementById("bandDetails").style="display:none;";
   setSort("BandName");
   makeModeButtons();
-  setMode("FT8");
+  setMode("FT8");  
   initBandTiles();
   updateDisplays();
 
@@ -508,6 +508,7 @@ function makeModeButtons(){
   modesAcrossAllBandsArr.forEach((md) => {
     el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button> "
   });
+  setMode(watchedMode);
 }
   
 function initBandTiles(){
