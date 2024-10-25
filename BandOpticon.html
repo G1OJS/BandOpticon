@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
-
+ 
 <style>
 :root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
@@ -14,25 +14,33 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 
 /* everything but the titles and credits. Padding sets the outer blue border */
 #app {margin:0px; padding:5px; background-color:blue;} 
-/* Padding sets the inner group borders*/
-#app >* {background-color:lightblue ; padding:1px;}
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+#appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
-/* holds the divs for help text & band details - the two things shown and hidden by script */
-#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
-#innerScreen > * {font-size:2rem; }
+#controls {display: grid; grid-template-columns:1fr; grid-template-rows: auto; }
+#controls {border-bottom: solid blue 2px}
+#controls > div {float:left}
+#controls > div > div {display:inline-block;}
 
-  fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:1rem; }
+/* area above band tiles grid used for detailed output */
+#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; }
+
+#bandDetails {border: solid grey 2px}
+#bandDetails .title {font-size:2rem; }
+
+fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
   fieldset > div {float:left; padding-left:0px;}
   fieldset > div >* {vertical-align:middle;}
+.button {font-size:0.7rem; color:#404040; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 4px solid grey; cursor: pointer;}
+.button.active {border: 2px solid black; color:blue; font-weight:bold;}
+.button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
+.button-tiny.active {border: 2px solid black;}
 
-  #bandDetails{background-color:grey; padding:2px;}
-  #bandDetails >* {background-color:var(--main-paper-color); }
-  #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-  #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+#bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+#bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 #bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -44,13 +52,10 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
 .bandTileStatsGrid .RowHeading {text-align:left; vertical-align:bottom; font-weight:bold; border-bottom:solid; border-width:1px;}
 .bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;  padding-top:8px;}
-.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:2rem;}
+.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:1.5rem;}
 
 .bandTile .tileModes {font-size:1rem;}
-
-#creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
-#creditsGrid > * {background-color: #91FCFE;}
-
+	
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
@@ -61,6 +66,12 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {font-size:1rem;}
+.filterLink{float:right;}
+
+.loading{font-size:2rem;}
+
+#creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
+#creditsGrid > * {background-color: #91FCFE;}
 
 </style>
 </head>
@@ -70,65 +81,93 @@ a:visited {color: blue;}
 
 <div id="app">
 	
-   <div id="appTop">
-      <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
+    <div id="appTop">
+      <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
-        <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
-      <div id="appTop_r">
-        <span style='float:right;'><a class='textAnchorButton-right' href='#' onclick='startRecording();'>record</a></span>
-	My call = <output id='myCall'></output> <a class='textAnchorButton' href='#' onclick='editMyCall();'>edit</a><br>
-	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
-	Mode: <span id='modeSelector'></span>
-	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
-	Sorting band tiles on <output id='bandTilesSortKey'></output>
-	<br>Select:
-   <a href='#' onclick='setSort(&quot;BandName&quot;)'>Band Name</a>
-   <a href='#' onclick='setSort(&quot;nHH&quot;)'>H→H</a>
-   <a href='#' onclick='setSort(&quot;nHD&quot;)'>H→DX</a>
-   <a href='#' onclick='setSort(&quot;nDH&quot;)'>DX→H</a>
-   <a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a>
-   <a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a>
-   <a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a>
+      <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+      </div>   
+      <div>
+        <span style='float:right;'><button type='button' class='button-tiny' onclick='startRecording();'>record</button></span>
+        <fieldset>
+          <legend>Settings</legend>
+	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
+	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
+	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
+        </fieldset>
       </div>
+    </div>
+    
+    <div id='controls'>
+       <div>
+	      <div>
+          <fieldset>
+           <legend>Sort band tiles by</legend>
+           <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
+           </fieldset>
+         </div>
+        
+        <div>
+          <fieldset id=modeSelect >
+            <legend>Mode to watch</legend>
+            <!-- written by script -->
+            </fieldset>
+        </div>
+      </div>
+
    </div>
    
    <div id="innerScreen">
- 
-
-       <div id="bandDetails">
+      <div id="bandDetails" style="float:left;">
          <div>
-           <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
-           <a class='textAnchorButton' href='#' onclick='detailsWanted=""; updateDisplays();'><span style='float:right;'>close</span></a>
+            <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
          </div>
-         <div>
-           <fieldset>
-             <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
-              <div><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
-              <div><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
-           </fieldset>
-           <fieldset>
-             <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
-              <div><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
-           </fieldset>
+         <br>
+         <div style="display:inline-block">
+            <fieldset>
+              <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
+              <div><label for="groupHomeEntities"><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked />Group into Tx, Rx and TxRx</label></div>
+              <div><label for="txRxOnly"><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" />Just TxRx</label></div>
+            </fieldset>
+        </div>
+        <div style="display:inline-block">
+            <fieldset>
+              <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
+              <div><label for="showCallsigns"><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked />Callsigns</label></div>
+              <div><label for="showL2sq"><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" />L2 squares</label></div>
+              <div><label for="showL4sq"><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" />L4 squares</label></div>
+              <div><label for="showL6sq"><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" />L6 squares</label></div>
+            </fieldset>
+        </div>
+        <div style="display:inline-block">
            <fieldset>
              <legend>Highlighting</legend>
-              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  /><label for="showCallsigns">Forward</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /><label for="showL2sq">Reverse</label></div>
+                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Forward</label></div>
+                <div><label for="reverse">Reverse</label><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /></div>
            </fieldset>
-           <div style="clear: both;"></div>
-         </div>
-         <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
-         <div id="bandDetailsGrid">
+        </div>
+        <div style="clear:both">
+        
+        </div>
+
+        <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
+        <div id="bandDetailsGrid">
            <!-- written by script -->
-         </div>
-       </div>
+        </div>
+        
+     </div>
+  </div>
        
-    </div>
+
      
     <div id="bandTilesBlock">
+      <div class='loading' id='loading'>Loading ...</div>
       <!-- written by script -->
     </div>
 
@@ -169,7 +208,7 @@ a:visited {color: blue;}
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
   var watchedMode="FT8";
-  var modesAcrossAllBandsArr=["FT4","FT8","JS8","WSPR","CW"];
+  var modesAcrossAllBandsArr=["FT4","FT8","CW","WSPR"];
   var detailsBand=bandsArr[0];
   var bandTilesSortKey="BandName";
   var refresh_mSeconds=5000;
@@ -195,6 +234,9 @@ a:visited {color: blue;}
 
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
+  setSort("BandName");
+  makeModeButtons();
+  setMode("FT8");  
   initBandTiles();
   updateDisplays();
 
@@ -435,8 +477,8 @@ a:visited {color: blue;}
     var resp=prompt("Please enter a list of squares (level 4,6,8 or 10) separated by commas.\n\n"
 		   +"To specify a rectangle within a larger square, use a colon to \n"
 		   +"separate the 'lower left' and 'top right' corners.g. IO50:85, IO50ab:pq\n\n"
-		   +"Input example: IO50:85,JO01,JO03ku,JO80:87",squaresList+"\n"
-		   +"\n NOTE: changes don't affect existing connections in the database");
+		   +"Input example: IO50:85,JO01,JO03ku,JO80:87\n"
+		   +"\n NOTE: changes don't affect existing connections in the database",squaresList);
     if(resp==null){return}
     let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
@@ -480,16 +522,24 @@ a:visited {color: blue;}
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
    //   console.log("Resize grid ",lhCharsCount,":",rhCharsCount);
     } else {
-      gridDiv.style.gridTemplateColumns = "min-content min-content auto";
+      gridDiv.style.gridTemplateColumns = "max-content min-content auto";
     }
   }
   
+function makeModeButtons(){
+  let el=document.getElementById("modeSelect");
+  el.innerHTML="<legend>Mode to watch</legend>";
+  modesAcrossAllBandsArr.forEach((md) => {
+    el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button> "
+  });
+  setMode(watchedMode);
+}
+  
 function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
-  bandTilesGrid.innerHTML="";
   for (let i=0;i<maxTiles;i++){
   bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
-     +"<div class='tileTitle' id='tileTitle_"+i+"'>Loading ...</div>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
      +"<div class='bandTileStatsGrid'>"
        +"<span></span>"
        +"<span class='ColumnHeading'>H→H</span>"
@@ -511,15 +561,22 @@ function initBandTiles(){
      +"<div class='tileModes' id='modes_"+i+"'></div>"
      +"</div> ";
   }
-  document.getElementById("tile_0").style="display:inline-block;"
 }
 
+ function setMode(mode){
+   watchedMode=mode;
+   let pressedButton=document.getElementById(mode);
+   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+   pressedButton.classList.add('active');
+   updateDisplays();
+ } 
 
   
  function setSort(sortKey){
-   console.log("Set sort key: "+sortKey);
    bandTilesSortKey=sortKey;
-   document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKey;
+   let pressedButton=document.getElementById(sortKey);
+   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+   pressedButton.classList.add('active');
    updateDisplays();
  } 
  
@@ -543,19 +600,17 @@ function initBandTiles(){
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
 
-    let modeSelector="";
-    modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
-    document.getElementById("modeSelector").innerHTML=modeSelector;
-    let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
-    bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
-    document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
-
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
- 
-	  
+    
+    let loadScr=document.getElementById('loading');
+    if(loadScr.innerHTML!="" && bandsHeard.size>0) {
+      loadScr.innerHTML="";
+      loadScr.style="display:none;";
+    }
+ 	  
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let bandsDataArr=new Array();
@@ -582,7 +637,15 @@ function initBandTiles(){
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
+     
+      
+     
+      let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
+      if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
+        modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
+        makeModeButtons();
+      } 
+      
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
@@ -617,7 +680,7 @@ function initBandTiles(){
        let modesThisBandArr=bandData.slice(7);
        modesThisBandArr[0].forEach((md) =>{
          document.getElementById("modes_"+index).innerHTML
-         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
+         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
        
        document.getElementById("tile_"+index).style="display:inline-block";
        document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
@@ -625,9 +688,10 @@ function initBandTiles(){
     });
     
     // hide unused band tiles
+    if(indexArr.length>0){
     for (let i=indexArr.length+1;i<maxTiles;i++){
       document.getElementById("tile_"+i).style="display:none;"
-    }
+    }}
     
 }
  
@@ -714,7 +778,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
-      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
+      if(listFilter=="") {gridHTML+="<span class='filterLink'>&nbsp;<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>filter</a></span>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
