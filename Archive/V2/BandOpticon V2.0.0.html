@@ -83,13 +83,17 @@ a:visited {color: blue;}
 	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
 	Sorting band tiles on <output id='bandTilesSortKey'></output>
 	<br>Select:
-   <a href='#' onclick='setSort(&quot;BandName&quot;)'>Band Name</a>
-   <a href='#' onclick='setSort(&quot;nHH&quot;)'>H→H</a>
-   <a href='#' onclick='setSort(&quot;nHD&quot;)'>H→DX</a>
-   <a href='#' onclick='setSort(&quot;nDH&quot;)'>DX→H</a>
-   <a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a>
-   <a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a>
-   <a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a>
+	<fieldset>
+        <legend><span class='Sort band tiles by'>Home</span> Callsigns</legend>
+   <button  type="button" id="bandTileSortKey" id="BandName" onchange='setSort(&quot;BandName&quot;)'>Band Name</button>
+   <button  type="button" id="bandTileSortKey" id="nHH" onchange='setSort(&quot;nHH&quot;)'>H→H</button>
+   <button  type="button" id="bandTileSortKey" id="nHD" onchange='setSort(&quot;nHD&quot;)'>H→DX</button>
+   <button  type="button" id="bandTileSortKey" id="nDH" onchange='setSort(&quot;nDH&quot;)'>DX→H</button>
+   <button  type="button" id="bandTileSortKey" id="nTx" onchange='setSort(&quot;nTx&quot;)'>Tx</button>
+   <button  type="button" id="bandTileSortKey" id="nRx" onchange='setSort(&quot;nRx&quot;)'>Rx</button>
+   <button  type="button" id="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
+	</legend>
+	</fieldset>
       </div>
    </div>
    
@@ -118,8 +122,8 @@ a:visited {color: blue;}
            </fieldset>
            <fieldset>
              <legend>Highlighting</legend>
-              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  /><label for="showCallsigns">Forward</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /><label for="showL2sq">Reverse</label></div>
+              <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Forward</label></div>
+              <div><label for="reverse">Reverse</label><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /></div>
            </fieldset>
            <div style="clear: both;"></div>
          </div>
