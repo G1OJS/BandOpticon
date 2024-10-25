@@ -747,8 +747,8 @@ function initBandTiles(){
        el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
        el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall (don't show if not active)
-       if(myCallIsRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Tx","myCallTx");}
-       if(myCallIsTx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Rx","myCallRx");}
+       if(myCallIsTx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Tx","myCallTx");}
+       if(myCallIsRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Rx","myCallRx");}
        if(myCallIsTxRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"TxRx","myCallTxRx");}   
 
        // do the highlighting 	
