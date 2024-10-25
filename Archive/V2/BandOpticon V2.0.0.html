@@ -54,6 +54,9 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 .button {font-size:0.7rem; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 3px solid grey; cursor: pointer;}
 .button.active {border: 2px solid black;}
 
+.button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;}
+.button-tiny.active {border: 2px solid black;}
+
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
@@ -79,10 +82,10 @@ a:visited {color: blue;}
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
         <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
       <div id="appTop_r">
-          <span style='float:right;'><a class='textAnchorButton-right' href='#' onclick='startRecording();'>record</a></span>
-	        My call = <output id='myCall'></output> <button type='button' class='button' onclick='editMyCall();'>edit</button><br>
-	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button' onclick='editPurgeMins();'>edit</button><br>
-	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button' onclick='editSquaresList();'>edit</button></p>
+          <span style='float:right;'><button type='button' class='button-tiny' onclick='startRecording();'>record</button></span>
+	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
+	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
+	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
           
         <fieldset id=modeSelect>
            <legend>Mode to watch</legend>
@@ -453,8 +456,8 @@ a:visited {color: blue;}
     var resp=prompt("Please enter a list of squares (level 4,6,8 or 10) separated by commas.\n\n"
 		   +"To specify a rectangle within a larger square, use a colon to \n"
 		   +"separate the 'lower left' and 'top right' corners.g. IO50:85, IO50ab:pq\n\n"
-		   +"Input example: IO50:85,JO01,JO03ku,JO80:87",squaresList+"\n"
-		   +"\n NOTE: changes don't affect existing connections in the database");
+		   +"Input example: IO50:85,JO01,JO03ku,JO80:87\n"
+		   +"\n NOTE: changes don't affect existing connections in the database",squaresList);
     if(resp==null){return}
     let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
     squaresListValid=true;
