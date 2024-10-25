@@ -18,7 +18,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #app >* {background-color:lightblue ; padding:1px;}
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+.appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 /* holds the divs for help text & band details - the two things shown and hidden by script */
@@ -77,19 +77,22 @@ a:visited {color: blue;}
 
 <div id="app">
 	
-   <div id="appTop">
-      <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
+   <div class="appTop">
+      <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
-        <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
-      <div id="appTop_r">
-          <span style='float:right;'><button type='button' class='button-tiny' onclick='startRecording();'>record</button></span>
+      <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+      </div>   
+      <div>
+        <span style='float:right;'><button type='button' class='button-tiny' onclick='startRecording();'>record</button></span>
         <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
 	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
 	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
         </fieldset>
-        
+      </div>
+    </div>
+    <div class="appTop">
         <fieldset id=modeSelect>
            <legend>Mode to watch</legend>
            <button  type="button" class="button" name="FT4" id="FT4" onclick='setMode(&quot;FT4&quot;)'>FT4</button>
@@ -109,7 +112,6 @@ a:visited {color: blue;}
            <button  type="button" class="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
 	      </fieldset>
         
-      </div>
    </div>
    
    <div id="innerScreen">
@@ -549,7 +551,7 @@ function initBandTiles(){
 
  function setMode(mode){
    watchedMode=mode;
-   let pressedButton=document.getElementById(mode)
+   let pressedButton=document.getElementById(mode);
    for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
    pressedButton.classList.add('active');
    updateDisplays();
@@ -558,7 +560,7 @@ function initBandTiles(){
   
  function setSort(sortKey){
    bandTilesSortKey=sortKey;
-   let pressedButton=document.getElementById(sortKey)
+   let pressedButton=document.getElementById(sortKey);
    for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
    pressedButton.classList.add('active');
    updateDisplays();
