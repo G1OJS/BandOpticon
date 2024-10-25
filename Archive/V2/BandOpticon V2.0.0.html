@@ -14,11 +14,9 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 
 /* everything but the titles and credits. Padding sets the outer blue border */
 #app {margin:0px; padding:5px; background-color:blue;} 
-/* Padding sets the inner group borders*/
-#app >* {background-color:lightblue ; padding:1px;}
 
 /* holds the divs for the clock & counters, and info / controls */
-.appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+.appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 /* holds the divs for help text & band details - the two things shown and hidden by script */
@@ -94,14 +92,11 @@ a:visited {color: blue;}
     </div>
     <div class="appTop">
         <fieldset id=modeSelect>
-           <legend>Mode to watch</legend>
-           <button  type="button" class="button" name="FT4" id="FT4" onclick='setMode(&quot;FT4&quot;)'>FT4</button>
-           <button  type="button" class="button" name="FT8" id="FT8" onclick='setMode(&quot;FT8&quot;)'>FT8</button>
-           <button  type="button" class="button" name="CW" id="CW" onclick='setMode(&quot;CW&quot;)'>CW</button>
-           <button  type="button" class="button" name="WSPR" id="WSPR" onclick='setMode(&quot;WSPR&quot;)'>WSPR</button>
+          <legend>Mode to watch</legend>
+          <!-- written by script -->
 	      </fieldset>
 
-	       <fieldset>
+	      <fieldset>
            <legend>Sort band tiles by</legend>
            <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
            <button  type="button" class="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
@@ -115,8 +110,7 @@ a:visited {color: blue;}
    </div>
    
    <div id="innerScreen">
- 
-
+   
        <div id="bandDetails">
          <div>
            <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
