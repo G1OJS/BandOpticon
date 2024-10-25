@@ -81,18 +81,16 @@ a:visited {color: blue;}
 	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
 	Mode: <span id='modeSelector'></span>
 	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
-	Sorting band tiles on <output id='bandTilesSortKey'></output>
-	<br>Select:
+
 	<fieldset>
-        <legend><span class='Sort band tiles by'>Home</span> Callsigns</legend>
-   <button  type="button" id="bandTileSortKey" id="BandName" onchange='setSort(&quot;BandName&quot;)'>Band Name</button>
-   <button  type="button" id="bandTileSortKey" id="nHH" onchange='setSort(&quot;nHH&quot;)'>H→H</button>
-   <button  type="button" id="bandTileSortKey" id="nHD" onchange='setSort(&quot;nHD&quot;)'>H→DX</button>
-   <button  type="button" id="bandTileSortKey" id="nDH" onchange='setSort(&quot;nDH&quot;)'>DX→H</button>
-   <button  type="button" id="bandTileSortKey" id="nTx" onchange='setSort(&quot;nTx&quot;)'>Tx</button>
-   <button  type="button" id="bandTileSortKey" id="nRx" onchange='setSort(&quot;nRx&quot;)'>Rx</button>
-   <button  type="button" id="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
-	</legend>
+    <legend>Sort band tiles by</legend>
+      <button  type="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+      <button  type="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
+      <button  type="button" name="bandTileSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
+      <button  type="button" name="bandTileSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
+      <button  type="button" name="bandTileSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
+      <button  type="button" name="bandTileSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
+      <button  type="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
 	</fieldset>
       </div>
    </div>
