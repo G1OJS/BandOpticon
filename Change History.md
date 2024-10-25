@@ -106,6 +106,8 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - look again at highlighting function & what loops are doing
+    - potentially replace by finding common entries first and then highlighting, rather than brute force loops
   - add a list option (replace tiles) as an *option*
   - make extra mode click not change global mode
   - add text to explain abbreviations
