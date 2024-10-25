@@ -508,7 +508,7 @@ function makeModeButtons(){
   let el=document.getElementById("modeSelect");
   el.innerHTML="<legend>Mode to watch</legend>";
   modesAcrossAllBandsArr.forEach((md) => {
-    el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button>"
+    el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button> "
   });
 }
   
