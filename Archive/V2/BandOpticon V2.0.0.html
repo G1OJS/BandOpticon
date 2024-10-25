@@ -17,15 +17,18 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 
 /* holds the divs for the clock & counters, and info / controls */
 #appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 #controls {display: grid; grid-template-columns:1fr; grid-template-rows: auto; }
+#controls {border-bottom: solid blue 2px}
 #controls > div {float:left}
 #controls > div > div {display:inline-block;}
 
 /* area above band tiles grid used for detailed output */
-#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; background-color:grey}
+#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; }
 
+#bandDetails {border: solid grey 2px}
 #bandDetails .title {font-size:2rem; }
 
 fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
