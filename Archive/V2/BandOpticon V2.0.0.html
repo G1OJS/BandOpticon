@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,7 +8,7 @@
 <meta http-equiv="Expires" content="0"/>
  
 <style>
-:root {background-color: #91FCFE; --main-paper-color:#cce5ff; text-align: left; color:#4e4e4e; font-size:1.1rem;}
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; text-align: left; color:#4e4e4e; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #title {background-color: #91FCFE; text-align: center; font-size: 5rem;}
 #subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
@@ -18,55 +19,48 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #app >* {background-color:lightblue ; padding:1px;}
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; grid-template-columns:  min-content auto; grid-template-rows: auto;}
+#appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 /* holds the divs for help text & band details - the two things shown and hidden by script */
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
 #innerScreen > div {font-size:1.5rem; }
 
-  fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:0.8rem; }
+  fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:1rem; }
   fieldset > div {float:left; padding-left:0px;}
   fieldset > div >* {vertical-align:middle;}
 
   #bandDetails{background-color:grey; padding:2px;}
   #bandDetails >* {background-color:var(--main-paper-color); }
   #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-  #bandDetailsGrid > div {var(--main-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
+  #bandDetailsGrid > div {var(--main-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
-#bandTilesBlock {  display: grid;
-    grid-auto-flow: row;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    grid-template-rows: repeat(auto-fill, 1fr);
-    column-gap: 2px;
-    row-gap: 2px; 
+#bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-template-rows: repeat(auto-fill, 1fr);}
 .bandTile {display:none; width:fit-content(250px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
 .bandTile.active {background-color:blue;}
-.tileTitle {font-weight:bold; }
+.tileTitle {font-weight:bold; font-size:2rem;}
 
 .bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
-.bandTileStatsGrid .RowHeading {text-align:left; font-weight:bold; border-bottom:solid; border-width:1px;}
+.bandTileStatsGrid .RowHeading {text-align:left; vertical-align:bottom; font-weight:bold; border-bottom:solid; border-width:1px;}
 .bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;  padding-top:8px;}
-.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px;}
+.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:2rem;}
 
-.bandTile .tileModes {font-size:0.7rem;}
+.bandTile .tileModes {font-size:1rem;}
 
-#creditsGrid { font-size: 0.7em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
+#creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
 #creditsGrid > * {background-color: #91FCFE;}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
-.notesText {font-weight:normal; font-size: 0.8rem;}
+.notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
 .HomeEntity {color:black; }
 .DxEntity {color:blue; }
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
-
 a:link {color: blue;}
 a:visited {color: blue;}
-.textAnchorButton {color: blue; font-size:1rem;}
-.textAnchorButton-strong {color: blue; font-weight:bold; font-size:1rem;}
 
 </style>
 </head>
@@ -502,7 +496,7 @@ function initBandTiles(){
        +"<span class='ColumnHeading'>H→H</span>"
        +"<span class='ColumnHeading'>H→DX</span>"
        +"<span class='ColumnHeading'>DX→H</span>"  
-       +"<span class='RowHeading'>Spots</span>"
+       +"<div class='RowHeading'>Spots</div>"
        +"<output class='Stats' id='nH2H_"+i+"'></output>"
        +"<output class='Stats' id='nH2DX_"+i+"'></output>"
        +"<output class='Stats' id='nDX2H_"+i+"'></output>"
@@ -510,7 +504,7 @@ function initBandTiles(){
        +"<span class='ColumnHeading'>Tx</span>"
        +"<span class='ColumnHeading'>Rx</span>"
        +"<span class='ColumnHeading'>TxRx</span>"
-       +"<span class='RowHeading'>Calls</span>"
+       +"<div class='RowHeading'>Calls</div>"
        +"<output class='Stats' id='nTx_"+i+"'></output>"
        +"<output class='Stats' id='nRx_"+i+"'></output>"
        +"<output class='Stats' id='nTxRx_"+i+"'></output>"
