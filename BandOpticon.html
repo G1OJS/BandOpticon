@@ -1,61 +1,67 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V1.3.0</title>
+<title>BandOpticon V2.0.0</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
  
 <style>
-:root {background-color: #91FCFE; color:black;text-align: left; font-size: 1.3vmax; color:#4e4e4e;}
-div {margin: 0px;  padding: 0px;}
-#title {text-align: center; font-size: 5rem;}
-#subtitle {text-align: center; font-size: 1.5rem; margin-bottom:10px;}
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
+div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
+#title {background-color: #91FCFE; text-align: center; font-size: 5rem;}
+#subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
 
-#app_group {margin:0px;padding:2px; background-color:blue;}
-#appTop {display: grid; grid-template-columns: minmax(30%,max-content) auto; grid-template-rows: auto;}
-#appTop > div {background-color: white; margin: 1px;  margin-bottom:1px; padding: 5px;}
-#clock {display:inline-block; margin:0px; margin-bottom:5px; padding:5px; background-color:lightblue; font-size:2rem;}
+/* everything but the titles and credits. Padding sets the outer blue border */
+#app {margin:0px; padding:5px; background-color:blue;} 
+/* Padding sets the inner group borders*/
+#app >* {background-color:lightblue ; padding:1px;}
 
-#details_group {margin:2px; margin-bottom:0px; padding:0px; background-color:blue;}
+/* holds the divs for the clock & counters, and info / controls */
+#appTop { display: grid; grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+#clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
-#legendContainer { background-color: white;  width:100%;}
-#legendContainer > div {display: grid; background-color: white; margin: 0px;  padding:2px; padding-left: 5px; padding-right: 5px; grid-template-columns: fit-content(75%) fit-content(25%) auto; grid-template-rows: auto; font-size:1.5rem}
-#legendContainer > div > div {display:inline-block; background-color: rgb(230, 230, 255); margin-bottom:5px; margin-right: 2px; padding: 5px; font-size: 1rem; border:solid; border-color:blue; border-width:2px; width:fit-content;}
-#legendContainer > div > div.noborder {border:none; margin: 0px;  padding: 0px;}
-#legendContainer > div > div.active {background-color: white;}
+/* holds the divs for help text & band details - the two things shown and hidden by script */
+#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
+#innerScreen > div {font-size:1.5rem; }
 
-#detailsTop {background-color: white;  width:100%;}
-#detailsTop > div {background-color: white; margin: 0px;  padding: 5px; font-size: 1.5rem; border-right:solid; border-bottom:solid; border-color:grey; border-width:1px; }
-#detailsGrid {display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
-#detailsGrid > div {background-color: white; margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 0.8rem; min-height:10px; }
-#detailsGrid > div.titleRow {padding:5px; padding-bottom:5px; font-size: 1rem; font-weight:bold; border-bottom:none;}
-#detailsGrid > div.optionsRow {padding:5px; padding-bottom:15px; font-size: 0.8rem; font-weight:normal; border-top:none;}
+  fieldset {transform:scale(100%); float:left; padding-left:0px; font-size:1rem; }
+  fieldset > div {float:left; padding-left:0px;}
+  fieldset > div >* {vertical-align:middle;}
 
-#bandsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; margin: 1px; margin-top:1px;}
-#bandsGrid > div {background-color: rgb(230, 230, 255); margin: 1px;  padding: 5px; min-height: 40px;}
-#bandsGrid > div.active	{background-color:white;}
+  #bandDetails{background-color:grey; padding:2px;}
+  #bandDetails >* {background-color:var(--main-paper-color); }
+  #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+  #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
-#creditsGrid {color:black; font-size: 0.7em; display: grid; grid-template-columns: auto auto auto;}
+#bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: repeat(auto-fill, 1fr);}
+.bandTile {display:none; width:fit-content(250px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
+.bandTile.active >* {background-color:var(--light-paper-color);}
+.tileTitle {font-weight:bold; font-size:2rem;}
+
+.bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
+.bandTileStatsGrid .RowHeading {text-align:left; vertical-align:bottom; font-weight:bold; border-bottom:solid; border-width:1px;}
+.bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;  padding-top:8px;}
+.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:2rem;}
+
+.bandTile .tileModes {font-size:1rem;}
+
+#creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
+#creditsGrid > * {background-color: #91FCFE;}
+
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
-.notesText {font-weight:normal; font-size: 0.8rem;}
+.notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
-.extraModes {font-size:0.7rem;}
-.Tx {color:red;}
-.Rx {color:green; }
-.TxRx {color:blue; font-style:italic;}
 .HomeEntity {color:blue; }
-.DxEntity {color:Fuchsia; }
-.IntraHome_farEnd {color:blue; }
-.Tx_farEnd {color:Fuchsia; }
-.Rx_farEnd {color:olive;}
-.TxRx_farEnd {font-style:italic;}
+.DxEntity {color:#ed49ef; }
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
 a:visited {color: blue;}
-.textAnchorButton {color: blue;}
-.textAnchorButton-strong {color: blue; font-weight:bold; font-size:1rem;}
+.textAnchorButton {font-size:1rem;}
 
 </style>
 </head>
@@ -63,11 +69,11 @@ a:visited {color: blue;}
 <div id="title">BandOpticon</div>
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
 
+<div id="app">
 	
-<div id="app_group">
    <div id="appTop">
       <div id="appTop_l"><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
-	<br><span class='notesText'><output id='connectionsIn'></output> connections in database: 
+      <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
         <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span></div>   
       <div id="appTop_r">
         <span style='float:right;'><a class='textAnchorButton-right' href='#' onclick='startRecording();'>record</a></span>
@@ -75,42 +81,82 @@ a:visited {color: blue;}
 	Spots purged if older than <output id='purgeMinutes'></output> mins <a class='textAnchorButton' href='#' onclick='editPurgeMins();'>edit</a><br>
 	Mode: <span id='modeSelector'></span>
 	<p class='hanging20'>Home = <output id='squaresListDisplay'></output> <a class='textAnchorButton' href='#' onclick='editSquaresList();'>edit</a></p>
-	Currently sorting band tiles on <output id='Legend__bandTilesSortKey'></output>
-	<span id='bandSortResetButton' style='visibility:hidden'><a href='#' onclick='setSort(&quot;BandName&quot;);'>reset to Band Name</a></span>
-	<br><span>Click any underlined number to sort band tiles on that number</span>
+	Sorting band tiles on <output id='bandTilesSortKey'></output>
+	<br>Select:
+   <a href='#' onclick='setSort(&quot;BandName&quot;)'>Band Name</a>
+   <a href='#' onclick='setSort(&quot;nHH&quot;)'>H→H</a>
+   <a href='#' onclick='setSort(&quot;nHD&quot;)'>H→DX</a>
+   <a href='#' onclick='setSort(&quot;nDH&quot;)'>DX→H</a>
+   <a href='#' onclick='setSort(&quot;nTx&quot;)'>Tx</a>
+   <a href='#' onclick='setSort(&quot;nRx&quot;)'>Rx</a>
+   <a href='#' onclick='setSort(&quot;nTxRx&quot;)'>TxRx</a>
       </div>
    </div>
-   <div id="details_group">
-     <div id="legendContainer"></div>
-     <div id="detailsTop"></div>
-     <div id="detailsGrid"></div>
-   </div>
-   <div id="bandsGrid"></div>
+   
+   <div id="innerScreen">
+ 
+
+       <div id="bandDetails">
+         <div>
+           <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
+           <a class='textAnchorButton' href='#' onclick='detailsWanted=""; updateDisplays();'><span style='float:right;'>close</span></a>
+         </div>
+         <div>
+           <fieldset>
+             <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
+              <div><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
+              <div><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
+           </fieldset>
+           <fieldset>
+             <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
+              <div><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
+           </fieldset>
+           <fieldset>
+             <legend>Highlighting</legend>
+              <div><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  /><label for="showCallsigns">Forward</label></div>
+              <div><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /><label for="showL2sq">Reverse</label></div>
+           </fieldset>
+           <div style="clear: both;"></div>
+         </div>
+         <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
+         <div id="bandDetailsGrid">
+           <!-- written by script -->
+         </div>
+       </div>
+       
+    </div>
+     
+    <div id="bandTilesBlock">
+      <!-- written by script -->
+    </div>
+
+    <div id="creditsGrid">
+        <div>
+            Javascript & HTML developed by Alan Robinson:<br>
+            <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+            <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
+           <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+       </div>
+       <div>
+            Thanks to:<br>
+            Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
+            Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
+            <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+       </div>
+       <div>
+          License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+          Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
+          GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+          Old versions: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Archive</a><br>                     
+       </div>
+    </div>
+    
 </div>
 
-<div id="creditsGrid">
-    <div>
-        Javascript & HTML developed by Alan Robinson:<br>
-        <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
-        <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
-        <a href='https://g1ojs.github.io/'>G1OJS Ham Radio @GitHub</a><br>
-        <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
-   </div>
-   <div>
-        Thanks to:<br>
-        Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
-        Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
-        <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
-   </div>
-   <div>
-      License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
-      Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
-      GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
-      Old versions: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Archive</a><br>
-	   
-      <a href="https://hits.seeyoufarm.com"><img alt="Seeyoufarm HitCounter" src="https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https://g1ojs.github.io/BandOpticon/BandOpticon"></a>                        
-   </div>
-</div>
 
 <!--Get the library for MQTT functions -->
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
@@ -119,7 +165,6 @@ a:visited {color: blue;}
 <script>
 
  // initialisation and functions to load and save configuration
- 
   var bandsArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
@@ -131,9 +176,8 @@ a:visited {color: blue;}
   var refresh_mSeconds=1000;
   var purgeMinutes=15;
   var detailsWanted="";
-  var entityDisplayType="Square";
-  var squaresDisplayLevel=2;
-  var groupHomeEntities=true;
+  var entityDisplayType;
+  var squaresDisplayLevel;
   let myCall="G1OJS";
   let listFilter="";
   var mqttClient=null;	
@@ -148,15 +192,16 @@ a:visited {color: blue;}
   var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
+  const maxTiles=20;
 
   loadConfig();
+  document.getElementById("bandDetails").style="display:none;";
+  initBandTiles();
   updateDisplays();
 
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(purgeSpots, 15000);
   setInterval(writeData, 1000*dataWriteSeconds);
-  
-//  showBandTileLegend();
 
   connectToFeed();
  // connectToTestData();
@@ -244,30 +289,7 @@ a:visited {color: blue;}
        }
      }
    }
-
-  function showNothing(){
-    detailsWanted="Nothing";
-    document.getElementById("legendContainer").innerHTML="";
-    document.getElementById("detailsGrid").innerHTML="";
-    document.getElementById("detailsTop").innerHTML="";
-  }
   
-  function showBandTileLegend(){
-    detailsWanted="BandTileLegend";
-    document.getElementById("legendContainer").innerHTML="<div><strong>Band tile legend:</strong>"
-      +" <span></span> <a class='textAnchorButton' href='#' onclick='showNothing()'><span style='float:right;';>close</span></a>"
-      +" </div><div><div style='background-color:white;''><span class='textAnchorButton-strong'>Band & Mode</span></strong><span class='notesText'> (click for detailed stats)</span><br>Spots: <span class='notesText'>number of spots<span class='IntraHome_farEnd'> Home"+RIGHTARROW+"Home </span>/<span class='Tx_farEnd'>Home"+RIGHTARROW+"DX</span>/<span class='Rx_farEnd'>DX"+RIGHTARROW+"Home</span></span><br>"
-      +"<span class='Tx'>Tx Calls: <span class='notesText'>number of unique calls in 'Home' received by anyone</span></span><br>"
-      +"<span class='Rx'>Rx Calls: <span class='notesText'>number of unique calls in 'Home' receiving anyone</span></span><br>"
-      +"<span class='TxRx'>TxRx Calls: <span class='notesText'> calls that are both Tx Calls and Rx Calls</span></span><br>"
-      +"<span class='extraModes'><span class='textAnchorButton'>+ OTHER MODES <span class='notesText'>in use on this band (click to show details)</span></span></span><br></div> "
-      +" <div><span class='textAnchorButton-strong'>Band & Mode</span></strong><span class='notesText'> (click for detailed stats ...</span> <br><br><span class='notesText'> Silver background indicates that the band <br>is not active on the current mode</span>"
-      +"<br></div><div class='noborder'></div></div>";
-
-    document.getElementById("detailsGrid").innerHTML="";
-    document.getElementById("detailsTop").innerHTML="";
-  }
-	  
   function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
     // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
     // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
@@ -441,12 +463,14 @@ a:visited {color: blue;}
     // find the largest counts of characters in the LH and RH columns
     const farEntities=document.querySelectorAll('[class$="_farEntities"]');
     const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
- 
+    
+    let groupHomeEntities=document.getElementById("groupHomeEntities").checked
+    
      // redistribute grid columns
-    let gridDiv=document.getElementById('detailsGrid');
+    let gridDiv=document.getElementById('bandDetailsGrid');
     if (groupHomeEntities) {
-      let lhCharsCount=39;   
-      let rhCharsCount=97;
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
       if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
         Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
         Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
@@ -460,21 +484,54 @@ a:visited {color: blue;}
     }
   }
   
+function initBandTiles(){
+  let bandTilesGrid=document.getElementById("bandTilesBlock");
+  for (let i=0;i<maxTiles;i++){
+  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
+     +"<div class='bandTileStatsGrid'>"
+       +"<span></span>"
+       +"<span class='ColumnHeading'>H→H</span>"
+       +"<span class='ColumnHeading'>H→DX</span>"
+       +"<span class='ColumnHeading'>DX→H</span>"  
+       +"<span class='RowHeading'>Spots</span>"
+       +"<output class='Stats' id='nH2H_"+i+"'></output>"
+       +"<output class='Stats' id='nH2DX_"+i+"'></output>"
+       +"<output class='Stats' id='nDX2H_"+i+"'></output>"
+       +"<span></span>"
+       +"<span class='ColumnHeading'>Tx</span>"
+       +"<span class='ColumnHeading'>Rx</span>"
+       +"<span class='ColumnHeading'>TxRx</span>"
+       +"<span class='RowHeading'>Calls</span>"
+       +"<output class='Stats' id='nTx_"+i+"'></output>"
+       +"<output class='Stats' id='nRx_"+i+"'></output>"
+       +"<output class='Stats' id='nTxRx_"+i+"'></output>"
+     +"</div>"
+     +"<div class='tileModes' id='modes_"+i+"'></div>"
+     +"</div> ";
+  }
+}
+
+
+  
  function setSort(sortKey){
    console.log("Set sort key: "+sortKey);
    bandTilesSortKey=sortKey;
-   document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKey;
+   document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKey;
    updateDisplays();
  } 
     
-  function updateDisplays(){
+ function updateDisplays(){
 	  
+    if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
+    if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
+    
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
 
     // update the top banner  
-    document.getElementById("clock").value=utc_timestamp.split(" ")[1]+" "+utc_timestamp.split(" ")[2];
+    document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
     document.getElementById("connectionsAdded").value=connectionsAdded;
@@ -484,29 +541,14 @@ a:visited {color: blue;}
     document.getElementById("modeSelector").innerHTML=modeSelector;
     let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
     bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
-    document.getElementById("Legend__bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
-    document.getElementById("bandSortResetButton").style.visibility = (bandTilesSortKey=="BandName") ? 'hidden' : 'visible';
+    document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
 
-    // Write the <div>s for each band summary tile in the bandsGrid area
+    // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
-    var bandsGridDocEl = document.getElementById("bandsGrid"); 
-    while (bandsGridDocEl.firstChild) {bandsGridDocEl.firstChild.remove()}
-    var bandTileDivs = document.createDocumentFragment();
-    bandsArr.forEach((band,index) => {
-      var newDiv = document.createElement('div');  
-      newDiv.id="bandTileDiv_"+index;
-      bandTileDivs.appendChild(newDiv);
-    });
-    let nfillerDivs=4-(bandsArr.length-1) %5;
-    for (let i=0;i<nfillerDivs;i++){
-      var newDiv = document.createElement('div');  
-      if(connectionsAdded==0){newDiv.innerHTML="... loading"}
-      bandTileDivs.appendChild(newDiv);
-    }
-    bandsGridDocEl.appendChild(bandTileDivs);
-    
+ 
+	  
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let bandsDataArr=new Array();
@@ -516,10 +558,10 @@ a:visited {color: blue;}
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
-      let bandExtraModes=new Set;
+      let bandModes=new Set;
       for (id in connections) {
         let c=connections[id];
-        if (c.b==band && c.md!=watchedMode) {bandExtraModes.add(c.md);}
+        if (c.b==band) {bandModes.add(c.md)}
         if (c.b==band && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
@@ -529,10 +571,10 @@ a:visited {color: blue;}
         }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandExtraModes)];
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
-      dataForRecord="Mode="+watchedMode+", ";bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandExtraModes));
+      dataForRecord="Mode="+watchedMode+", "+bandData.slice(0,7)+", "; // save the stats from above to the recording string
+      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
@@ -550,63 +592,44 @@ a:visited {color: blue;}
     });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
-    // populate the band tile HTML in the sorted order
-    indexArr.forEach((bandIndex,index) =>{
-       band=bandsArr[bandIndex];
-       let bandTileDocEl=document.getElementById("bandTileDiv_"+index);
-       bandTileDocEl.innerHTML=" <a class='textAnchorButton-strong' href='#' onclick='detailsBand=\&quot;"+band+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; updateDisplays();'>"+band+" "+watchedMode+"</a>";
-       if(detailsWanted!="BandTileLegend") {bandTileDocEl.innerHTML+=" <a class='textAnchorButton' href='#' onclick=showBandTileLegend();><span style='float:right;';>legend</span></a>";}        
-       bandTileDocEl.innerHTML+="<br><span id='"+band+"__spots'>Spots "
-         +"<a href='#' onclick='setSort(&quot;nHH&quot;)'><span class='IntraHome_farEnd' id='"+band+"__stats-nHH'>"+bandsDataArr[bandIndex][1]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nHD&quot;)'><span class='Tx_farEnd' id='"+band+"__stats-nHD'>"+bandsDataArr[bandIndex][2]+"</span></a>/"
-         +"<a href='#' onclick='setSort(&quot;nDH&quot;)'><span class='Rx_farEnd' id='"+band+"__stats-nDH'>"+bandsDataArr[bandIndex][3]+"</span></a></span>"
-         +"<br><span class='Tx'>Tx Calls:</span> <a href='#' onclick='setSort(&quot;nTx&quot;)'><span class='Tx' id='"+band+"__stats-nTx'>"+bandsDataArr[bandIndex][4]+"</span></a><br>"
-         +"<span class='Rx'>Rx Calls:</span> <a href='#' onclick='setSort(&quot;nRx&quot;)'><span class='Rx' id='"+band+"__stats-nRx'>"+bandsDataArr[bandIndex][5]+"</span></a><br>"
-         +"<span class='TxRx'>TxRx Calls:</span> <a href='#' onclick='setSort(&quot;nTxRx&quot;)'><span class='TxRx' id='"+band+"__stats-nTxRx'>"+bandsDataArr[bandIndex][6]+"</span></a>";
-       let extraModesHTML="";
-       let extraModesThisBandArr=bandsDataArr[bandIndex].slice(7)[0];
-       extraModesThisBandArr.forEach((md) =>{
-         extraModesHTML+="<a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; detailsBand=&quot;"+band+"&quot;; updateDisplays()'>"+md+"</a> ";
-       });
-       if(extraModesHTML.length>0){bandTileDocEl.innerHTML+="<br><span class='extraModes'>+ "+extraModesHTML+"</span>"}
-       // change class of band tile to active if there is activity
-       if((bandsDataArr[bandIndex][3]+bandsDataArr[bandIndex][4])>0){bandTileDocEl.className='active'}
-     }); 
-  }
+    // populate the band tile outputs in the sorted order
+    indexArr.forEach((bandIndex,index) => {
+       let bandData=bandsDataArr[bandIndex];
+       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
+         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+         +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
+       document.getElementById("nH2H_"+index).value=bandData[1];
+       document.getElementById("nH2DX_"+index).value=bandData[2];
+       document.getElementById("nDX2H_"+index).value=bandData[3];
+       document.getElementById("nTx_"+index).value=bandData[4];
+       document.getElementById("nRx_"+index).value=bandData[5];
+       document.getElementById("nTxRx_"+index).value=bandData[6];
+       
+       document.getElementById("modes_"+index).innerHTML="";
+       let modesThisBandArr=bandData.slice(7);
+       modesThisBandArr[0].forEach((md) =>{
+         document.getElementById("modes_"+index).innerHTML
+         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; watchedMode=\&quot;"+md+"\&quot;; updateDisplays()'>"+md+"</a> "; });
+       
+       document.getElementById("tile_"+index).style="display:inline-block";
+       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
+
+    });
+    
+    // hide unused band tiles
+    for (let i=indexArr.length+1;i<maxTiles;i++){
+      document.getElementById("tile_"+i).style="display:none;"
+    }
+    
+}
  
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
 
-     detailsWanted="BandDetails";
-	  
-     document.getElementById("legendContainer").innerHTML="";
-     document.getElementById("detailsTop").innerHTML="<div><strong>"+detailsBand+" "+watchedMode+" Details</strong>"
-          +" <a class='textAnchorButton' href='#' onclick='showNothing();'><span style='float:right;'>close</span></a>"
-	  +"<br><span class='notesText'>Entities reached and/or spotted both by "+myCall+" and other displayed calls are "+HL("highlighted",true,"HighlightMatch")+".</span>"
-          +" <span class='notesText'> Entities reached and/or spotted only by "+myCall+" are "+HL("highlighted",true,"HighlightExclusive")+".</span></div>";
-		
-     document.getElementById("detailsGrid").innerHTML="<div class='titleRow'>"
-          +"<strong><span id='lhEntitiesTitle'></span></strong>"
-	  +"<br><span class='notesText'>TxRx = call heard by any & hearing any</span>"
-          +"</div><div class='titleRow'>"+LEFTRIGHTARROW+"</div>"
-          +"<div class='titleRow'><strong>Entities reached by <span class='Tx'>Tx Calls</span>, "
-	  +"spotted by <span class='Rx'>Rx Calls</span>, and both reached and spotted by any <span class='TxRx'>TxRx&nbspCall</span></strong>"
-      	  +"<br><span class='notesText'>Far end spots for TxRx&nbspcalls appear only if a listed call both hears and reaches the same remote callsign</span>"
-	  +"</div>"
-
-    document.getElementById("detailsGrid").innerHTML+="<div class='optionsRow'>"
-    +"Show: "	  
-	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;\&quot;; updateDisplays();'>[Home&nbsp;calls]</a>"
-	  +"  <a class='textAnchorButton' href='#' onclick='listFilter=\&quot;txRxOnly\&quot;; updateDisplays();'>[Home&nbsp;TxRx&nbsp;calls]</a>"
-//	  +"  <a class='textAnchorButton' href='#' onclick=' listFilter=\&quot;hearingMe\&quot;; updateDisplays();'>[Global&nbsp;calls&nbsp;hearing&nbsp;me]</a>"
-          +"<br>Format: "
-          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=true; updateDisplays();'>[Grouped]</a>"
-          +"  <a class='textAnchorButton' href='#' onclick='groupHomeEntities=false; updateDisplays();'>[Ungrouped]</a>"
-          +"</div><div class='optionsRow'></div><div class='optionsRow'>Show:"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=2; updateDisplays();'>[L2&nbsp;squares]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=4; updateDisplays();'>[L4&nbsp;squares]</a>"
-          +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Square&quot;;squaresDisplayLevel=6; updateDisplays();'>[L6&nbsp;squares]</a>"
-	  +" <a class='textAnchorButton' href='#' onclick='entityDisplayType=&quot;Call&quot;; updateDisplays();'>[Callsigns]</a></div>";
-	  
+    detailsWanted="BandDetails";
+    document.getElementById("bandDetails").style="display:inline-block;"
+    document.getElementById("detailsBand").innerHTML=detailsBand;
+    document.getElementById("watchedMode").innerHTML=watchedMode;
+ 
        // get copy of connections for just this band and mode
        let cons={};
        for (id in connections) {
@@ -616,53 +639,57 @@ a:visited {color: blue;}
 
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
+       if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
        if(listFilter!=""){
-           if(listFilter=="hearingMe"){
-	     txCalls.clear();rxCalls.clear();txRxCalls.clear();
-	     for (id in cons){
-	       if(cons[id].sc==myCall){txCalls.add(cons[id].rc); rxCalls.add(myCall)}
-	     }
-	     document.getElementById("lhEntitiesTitle").innerHTML="Global <span class='Tx'>Tx&nbspCalls</span> Calls</span> hearing "+myCall;
-           } else if(listFilter=='txRxOnly') {
-	     txCalls.clear();rxCalls.clear();
-	     document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='TxRx'>TxRx&nbspCalls</span>";
-	   } else {
 	   // filter specific callsign plus myCall
-	     let callsFilter=new Set();
-	     callsFilter.add(myCall);
-	     callsFilter.add(listFilter);
-//	     txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
-             txCalls=callsFilter; rxCalls=callsFilter; txRxCalls=callsFilter;
-	     document.getElementById("lhEntitiesTitle").innerHTML=myCall+" and " + listFilter;
-          }
-       } else {
-	 document.getElementById("lhEntitiesTitle").innerHTML="Home <span class='Tx'>Tx&nbspCalls</span>, <span class='Rx'>Rx&nbspCalls</span> and <span class='TxRx'>TxRx&nbspCalls</span>";
+	       let callsFilter=new Set();
+	       callsFilter.add(myCall);
+	       callsFilter.add(listFilter);
+	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
        }
-	  
+       if(listFilter!=""){
+         document.getElementById("listFilterClear").style="visibility:visible;";
+         document.getElementById("listFilterClearDiv").style="padding:0px; padding-left:5px; margin:0px;";
+       } else {
+         document.getElementById("listFilterClear").style="visibility:hidden;";
+         document.getElementById("listFilterClearDiv").style="height:0px; padding:0px; margin:0px;";
+       }
+
+       if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
+       if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
+       if(document.getElementById("showL4sq").checked) {squaresDisplayLevel=4} 
+       if(document.getElementById("showL6sq").checked) {squaresDisplayLevel=6} 
+              
        // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
        let setMyCall=new Set().add(myCall);
+       let el=document.getElementById("bandDetailsGrid");
        // all except myCall:
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       el.innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
        // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       document.getElementById("detailsGrid").innerHTML+=getBandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
-       // "prehighlight" all myCall far entities with Neg highlighting	 
-       highlightEntitiesList("myCallRx","");
-       highlightEntitiesList("myCallTx","");  
-       highlightEntitiesList("myCallTxRx",""); 
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+
        // do the highlighting 	
-       highlightEntitiesList("myCallRx","othersRx");
-       highlightEntitiesList("myCallTx","othersTx");  
-       highlightEntitiesList("myCallTxRx","othersTxRx"); 
+       if(document.getElementById("forward").checked) {
+         highlightEntitiesList("myCallTx_farEntities","othersTx_farEntities");
+         highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
+         highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
+       } else {
+  	     highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
+	       highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+         highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
+       }
      
        resizeGridColumns();
+     
+       
 }	
 
 
-function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
+function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 	
   if(homeCalls.size==0) {return ""};
   
@@ -673,11 +700,13 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   if (TxRx=="Rx"){Arrow=LEFTARROW}
   if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
   
+  let groupHomeEntities=document.getElementById("groupHomeEntities").checked
+  
   let homeCallsArr=Array.from(homeCalls).toSorted();
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
-      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCall+"</span>";
-      gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
+      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
@@ -689,7 +718,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     }
     let farEntities=new Set();
     for (id in cons) {
-      let c=cons[id];
+      let c=cons[id]; 
       let farEntity="";
       if (TxRx=="Tx" && c.sc==homeCall) {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
       if (TxRx=="Rx" && c.rc==homeCall) {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
@@ -711,7 +740,7 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     }
   });
   if (groupHomeEntities){
-    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='"+TxRx+"'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
     let farEntitiesHomeArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
     let farEntitiesDxArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
     gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"; 
@@ -729,36 +758,31 @@ function getBandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
   }
 
-function highlightEntitiesList(myCallrowClassPrefix,othersRowClassPrefix){
-
-  const farEntities_me=document.getElementById("detailsGrid").getElementsByClassName(myCallrowClassPrefix+"_farEntities");  
-  const farEntities_others=document.getElementById("detailsGrid").getElementsByClassName(othersRowClassPrefix+"_farEntities");
-      
-  if (farEntities_me[0]!=undefined && ((farEntities_others[0]!=undefined) || (othersRowClassPrefix==""))){
+function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
+  const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
+  const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
+  if (entities1[0]!=undefined && entities2[0]!=undefined){
     // plain text version of far entities to look for in other call's far entities
-    let farEntities_meTxt=farEntities_me[0].innerText.split(', ');
-    if(othersRowClassPrefix==""){ // no class in second argument means "prehighlight" (HighlightExclusive) my call entities
-      farEntities_meTxt.forEach(entity => {      
-        farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll(entity,HL(entity,true,"HighlightExclusive"));
+    let entities1Txt=entities1[0].innerText.split(', ');
+    // loop through the farEntities2 collection so it picks up all rows when not grouped'
+    for (let i=0;i<entities2.length;i++){
+        entities1Txt.forEach(entity => {
+        entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
       });
-    } else {
-      // loop through the farEntities_others collection so it works with 'grouped home calls' and 'list all'
-      for (let i=0;i<farEntities_others.length;i++){
-        // highlight the matches in the other call's far entities
-        farEntities_meTxt.forEach(entity => {
-          farEntities_others[i].innerHTML=farEntities_others[i].innerHTML.replaceAll(entity,HL(entity,true));
-        });
-        // highlight the (same) matches in myCall's far entities, by swapping the class from pre-highlighting (HighlightExclusive) to highlighting (HighlightMatch)
-        let farEntities_othersTxt=farEntities_others[i].innerText.split(', ');
-        farEntities_othersTxt.forEach(entity => {      
-          farEntities_me[0].innerHTML=farEntities_me[0].innerHTML.replaceAll('HighlightExclusive">'+entity,'HighlightMatch">'+entity);
-        });
-      }
+    }
+    // plain text version of far entities to look for in other call's far entities
+    let entities2Txt=entities2[0].innerText.split(', ');
+    // loop through the farEntities2 collection so it picks up all rows when not grouped'
+    for (let i=0;i<entities1.length;i++){
+      entities2Txt.forEach(entity => {
+        entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+     }); 
     }
   }
 }
 	
 </script>
+
 	
 </body>
 </html>
