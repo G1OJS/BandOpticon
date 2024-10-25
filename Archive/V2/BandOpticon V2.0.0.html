@@ -551,9 +551,6 @@ function initBandTiles(){
     let modeSelector="";
     modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
     document.getElementById("modeSelector").innerHTML=modeSelector;
-    let bandTilesSortKeyHR=["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey);
-    bandTilesSortKeyHR=["Band Name","number of spots Home to Home","number of spots Home to DX","number of spots DX to Home","number of Tx calls","number of Rx calls","numbder of TxRx calls"][bandTilesSortKeyHR];
-    document.getElementById("bandTilesSortKey").innerHTML=bandTilesSortKeyHR;
 
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
