@@ -61,6 +61,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {font-size:1rem;}
+.filterLink{margin-left:auto; margin-right:0px;}
 
 </style>
 </head>
@@ -714,7 +715,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
-      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>&nbsp;filter</a>"}
+      if(listFilter=="") {gridHTML+=" <span class='filterLink'><a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>&nbsp;filter</a></span>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
