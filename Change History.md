@@ -13,22 +13,12 @@
       <li>Rework styling top to bottom</li>
       <li>Change hypertext buttons for radio buttons and checkboxes</li>
       <li>Lots of internal code changes to enable the above</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>22-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.4.0'>V1.4.0</a></td>
-  <td>
-    <ol>
-      <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlightinh'),
+      <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlighting'),
       opposite to the usual "transmit home calls share a common entity with another transmit home call" ('forward highlighting'). This
       choice is useful when switching between looking for reciprocal connections (reverse highlighting) and benchmarking performance (forward highlighting)</li>
-      <li>Code improvements to stop the screen scrolling to the top on refresh</li>
     </ol>
   </td>
 </tr>
-
 
 <tr>
   <td>21-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V1/BandOpticon%20V1.3.0'>V1.3.0</a></td>
