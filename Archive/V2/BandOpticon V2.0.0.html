@@ -85,8 +85,8 @@ a:visited {color: blue;}
 	
     <div id="appTop">
       <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
-      <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
-      <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+      <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
+  //    <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
       <label for='recordButton'><button type='button' id="recordButton"   onclick='startRecording();'>O</button> record</label>
       
       </div>   
@@ -593,8 +593,8 @@ function initBandTiles(){
     document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
-    document.getElementById("connectionsAdded").value=connectionsAdded;
-    document.getElementById("connectionsPurged").value=connectionsPurged;
+//    document.getElementById("connectionsAdded").value=connectionsAdded;
+//    document.getElementById("connectionsPurged").value=connectionsPurged;
     
  }
     
