@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
- 
+
 <style>
 :root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
@@ -486,9 +486,10 @@ a:visited {color: blue;}
   
 function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
+  bandTilesGrid.innerHTML="";
   for (let i=0;i<maxTiles;i++){
   bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
-     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'>Loading ...</div>"
      +"<div class='bandTileStatsGrid'>"
        +"<span></span>"
        +"<span class='ColumnHeading'>H→H</span>"
@@ -510,6 +511,7 @@ function initBandTiles(){
      +"<div class='tileModes' id='modes_"+i+"'></div>"
      +"</div> ";
   }
+  document.getElementById("tile_0").style="display:inline-block;"
 }
 
 
