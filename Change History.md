@@ -116,18 +116,14 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - home & DX colours - distinct but not lurid
   - make extra mode click not change global mode
   - add text to explain abbreviations
   - day / night theme?
-  - try a line in the detail grid showing "home reciprocals"
-    - any home -> dx call -> any home
   - stop word wrap on filter link in LH column when not grouping calls
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
   
 Code tidying:
-  - make the test message injector work
   - is there a better way to count for statistics?
   - move variables out of global
   - check consistency of let, var, continuation + and \ and <br> plus variable names e.g.
