@@ -486,9 +486,10 @@ a:visited {color: blue;}
   
 function initBandTiles(){
   let bandTilesGrid=document.getElementById("bandTilesBlock");
+  bandTilesGrid.innerHTML="";
   for (let i=0;i<maxTiles;i++){
   bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
-     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'>Loading ...</div>"
      +"<div class='bandTileStatsGrid'>"
        +"<span></span>"
        +"<span class='ColumnHeading'>H→H</span>"
@@ -510,6 +511,7 @@ function initBandTiles(){
      +"<div class='tileModes' id='modes_"+i+"'></div>"
      +"</div> ";
   }
+  document.getElementById("tile_0").style="display:inline-block;"
 }
 
 
