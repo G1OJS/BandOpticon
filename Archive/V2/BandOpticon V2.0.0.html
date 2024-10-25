@@ -714,7 +714,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
-      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'><span style='float:right;'>filter</span></a>"}
+      if(listFilter=="") {gridHTML+="<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>&nbsp;filter</a>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
