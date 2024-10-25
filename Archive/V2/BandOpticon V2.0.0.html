@@ -104,15 +104,17 @@ a:visited {color: blue;}
          <div>
            <fieldset>
              <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
-              <div><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked /><label for="groupHomeEntities">Group into Tx, Rx and TxRx</label></div>
-              <div><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" /><label for="txRxOnly">Just TxRx</label></div>
+              <div><label for="groupHomeEntities">
+		      <input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked />
+		      Group into Tx, Rx and TxRx</label></div>
+              <div><label for="txRxOnly"><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" />Just TxRx</label></div>
            </fieldset>
            <fieldset>
              <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
-              <div><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked /><label for="showCallsigns">Callsigns</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" /><label for="showL2sq">L2 squares</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" /><label for="showL4sq">L4 squares</label></div>
-              <div><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" /><label for="showL6sq">L6 squares</label></div>
+              <div><label for="showCallsigns"><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked />Callsigns</label></div>
+              <div><label for="showL2sq"><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" />L2 squares</label></div>
+              <div><label for="showL4sq"><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" />L4 squares</label></div>
+              <div><label for="showL6sq"><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" />L6 squares</label></div>
            </fieldset>
            <fieldset>
              <legend>Highlighting</legend>
