@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
- 
+
 <style>
 :root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
@@ -20,6 +20,8 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
+#recordButton {background-color: red; color:red; border: none; padding: 5px; text-align: center;display: inline-block;font-size: 2px; margin: 0px 0px;cursor: pointer; border-radius: 10px; vertical-align:middle;}
+
 #controls {display: grid; grid-template-columns:1fr; grid-template-rows: auto; }
 #controls {border-bottom: solid blue 2px}
 #controls > div {float:left}
@@ -29,7 +31,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; }
 
 #bandDetails {border: solid grey 2px}
-#bandDetails .title {font-size:2rem; }
+#bandDetails .title {font-size:2rem; font-weight:bold;}
 
 fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
   fieldset > div {float:left; padding-left:0px;}
@@ -83,12 +85,13 @@ a:visited {color: blue;}
 	
     <div id="appTop">
       <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
-      <br><span class='notesText'><output id='connectionsIn'></output> connections in database: </span>
-      <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+      <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
+  //    <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+      <label for='recordButton'><button type='button' id="recordButton"   onclick='startRecording();'>O</button> record</label>
+      
       </div>   
       <div>
-        <span style='float:right;'><button type='button' class='button-tiny' onclick='startRecording();'>record</button></span>
-        <fieldset>
+          <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
 	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
@@ -590,8 +593,8 @@ function initBandTiles(){
     document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
-    document.getElementById("connectionsAdded").value=connectionsAdded;
-    document.getElementById("connectionsPurged").value=connectionsPurged;
+//    document.getElementById("connectionsAdded").value=connectionsAdded;
+//    document.getElementById("connectionsPurged").value=connectionsPurged;
     
  }
     
@@ -709,6 +712,10 @@ function initBandTiles(){
          if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
       }
 
+      let myCallIsTx=txCalls.has(myCall);
+      let myCallIsRx=rxCalls.has(myCall);
+      let myCallIsTxRx=txRxCalls.has(myCall);
+	
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
        if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
@@ -739,10 +746,10 @@ function initBandTiles(){
        el.innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
        el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
        el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
-       // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       // just myCall (don't show if not active)
+       if(myCallIsTx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Tx","myCallTx");}
+       if(myCallIsRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Rx","myCallRx");}
+       if(myCallIsTxRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"TxRx","myCallTxRx");}   
 
        // do the highlighting 	
        if(document.getElementById("forward").checked) {
