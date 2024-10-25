@@ -86,7 +86,7 @@ a:visited {color: blue;}
     <div id="appTop">
       <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
-  //    <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+  <br> <!--    <span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span> -->
       <label for='recordButton'><button type='button' id="recordButton"   onclick='startRecording();'>O</button> record</label>
       
       </div>   
@@ -846,15 +846,19 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
     // loop through the farEntities2 collection so it picks up all rows when not grouped'
     for (let i=0;i<entities2.length;i++){
         entities1Txt.forEach(entity => {
-        entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
+        if(entity.length>2){
+          entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
+        }
       });
     }
     // plain text version of far entities to look for in other call's far entities
     let entities2Txt=entities2[0].innerText.split(', ');
     // loop through the farEntities2 collection so it picks up all rows when not grouped'
     for (let i=0;i<entities1.length;i++){
-      entities2Txt.forEach(entity => {
-        entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+        entities2Txt.forEach(entity => {
+        if(entity.length>2){  
+          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+        }
      }); 
     }
   }
