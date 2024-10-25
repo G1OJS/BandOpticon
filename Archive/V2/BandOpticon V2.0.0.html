@@ -481,7 +481,7 @@ a:visited {color: blue;}
       gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
    //   console.log("Resize grid ",lhCharsCount,":",rhCharsCount);
     } else {
-      gridDiv.style.gridTemplateColumns = "min-content min-content auto";
+      gridDiv.style.gridTemplateColumns = "max-content min-content auto";
     }
   }
   
@@ -715,7 +715,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
   homeCallsArr.forEach( (homeCall) => {
     if (!groupHomeEntities){
       gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
-      if(listFilter=="") {gridHTML+=" <span class='filterLink'><a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>&nbsp;filter</a></span>"}
+      if(listFilter=="") {gridHTML+="<span class='filterLink'> <a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>&nbsp;filter</a></span>"}
       gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
     }
     let far=new Set(); // home call has reached
