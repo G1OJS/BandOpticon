@@ -20,21 +20,21 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
 #controls {display: grid; grid-template-columns:1fr; grid-template-rows: auto; }
+#controls > div {float:left}
+#controls > div > div {display:inline-block;}
 
 /* area above band tiles grid used for detailed output */
-#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto;}
-#innerScreen > * {font-size:2rem; }
+#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; background-color:grey}
 
-fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content; }
+#bandDetails .title {font-size:2rem; }
+
+fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
   fieldset > div {float:left; padding-left:0px;}
   fieldset > div >* {vertical-align:middle;}
 .button {font-size:0.7rem; color:#404040; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 4px solid grey; cursor: pointer;}
 .button.active {border: 2px solid black; color:blue; font-weight:bold;}
 .button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
 .button-tiny.active {border: 2px solid black;}
-
-#bandDetails{background-color:grey; padding:2px;}
-#bandDetails >* {background-color:var(--main-paper-color); }
 
 #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
@@ -95,8 +95,8 @@ a:visited {color: blue;}
     </div>
     
     <div id='controls'>
-       <div style="float:left; ">
-	      <div style="display:inline-block;">
+       <div>
+	      <div>
           <fieldset>
            <legend>Sort band tiles by</legend>
            <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
@@ -109,7 +109,7 @@ a:visited {color: blue;}
            </fieldset>
          </div>
         
-        <div style="display:inline-block;">
+        <div>
           <fieldset id=modeSelect >
             <legend>Mode to watch</legend>
             <!-- written by script -->
@@ -120,19 +120,20 @@ a:visited {color: blue;}
    </div>
    
    <div id="innerScreen">
-      <div id="bandDetails">
+      <div id="bandDetails" style="float:left;">
          <div>
-            <strong>Details for <output id='detailsBand'></output> <output id='watchedMode'></output></strong>
-            <a class='textAnchorButton' href='#' onclick='detailsWanted=""; updateDisplays();'><span style='float:right;'>close</span></a>
+            <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
          </div>
-         <div style="display:inline-block;">
+         <br>
+         <div style="display:inline-block">
             <fieldset>
               <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
               <div><label for="groupHomeEntities"><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked />Group into Tx, Rx and TxRx</label></div>
               <div><label for="txRxOnly"><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" />Just TxRx</label></div>
             </fieldset>
         </div>
-        <div style="display:inline-block;">
+        <div style="display:inline-block">
             <fieldset>
               <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
               <div><label for="showCallsigns"><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked />Callsigns</label></div>
@@ -141,18 +142,22 @@ a:visited {color: blue;}
               <div><label for="showL6sq"><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" />L6 squares</label></div>
             </fieldset>
         </div>
-        <div style="display:inline-block;">
+        <div style="display:inline-block">
            <fieldset>
              <legend>Highlighting</legend>
                 <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Forward</label></div>
                 <div><label for="reverse">Reverse</label><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /></div>
            </fieldset>
         </div>
+        <div style="clear:both">
+        
+        </div>
 
-     </div>
-     <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
-     <div id="bandDetailsGrid">
+        <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
+        <div id="bandDetailsGrid">
            <!-- written by script -->
+        </div>
+        
      </div>
   </div>
        
