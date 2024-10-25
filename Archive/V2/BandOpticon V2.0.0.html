@@ -552,6 +552,7 @@ function initBandTiles(){
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let bandsDataArr=new Array();
+    dataForRecord="Mode="+watchedMode+", ";
     bandsArr.forEach((band,index) => {
       let nSpotsHH=0;
       let nSpotsHD=0;
@@ -573,7 +574,7 @@ function initBandTiles(){
       let txRxCalls=txCalls.intersection(rxCalls);
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
-      dataForRecord="Mode="+watchedMode+", "+bandData.slice(0,7)+", "; // save the stats from above to the recording string
+      dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
       modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
