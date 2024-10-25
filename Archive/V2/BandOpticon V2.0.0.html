@@ -61,6 +61,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
 a:visited {color: blue;}
+.textAnchorButton {font-size:1rem;}
 
 </style>
 </head>
@@ -122,14 +123,14 @@ a:visited {color: blue;}
          </div>
          <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
          <div id="bandDetailsGrid">
-           <!-- written by script later -->
+           <!-- written by script -->
          </div>
        </div>
        
     </div>
      
     <div id="bandTilesBlock">
-
+      <!-- written by script -->
     </div>
 
     <div id="creditsGrid">
@@ -158,15 +159,12 @@ a:visited {color: blue;}
 
 
 <!--Get the library for MQTT functions -->
-
 <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
 
 <!-- BandOpticon script -->
-
 <script>
 
  // initialisation and functions to load and save configuration
- 
   var bandsArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
