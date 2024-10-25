@@ -509,10 +509,9 @@ a:visited {color: blue;}
 function makeModeButtons(){
   let el=document.getElementById("modeSelect");
   el.innerHTML="<legend>Mode to watch</legend>";
-  modesAcrossAllBandsArr.forEach{(md) => {
+  modesAcrossAllBandsArr.forEach((md) => {
     el.innerHTML+="<button  type='button' class='button' name='"+md+"' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'>"+md+"</button>"
-    }
-  }
+  });
 }
   
 function initBandTiles(){
@@ -582,16 +581,11 @@ function initBandTiles(){
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
 
-  //  let modeSelector="";
-  //  modesAcrossAllBandsArr.forEach((md) => {modeSelector+=" <a class='textAnchorButton' href='#' onclick='watchedMode=&quot;"+md+"&quot;; updateDisplays();'>"+md+"</a> "});
-   // document.getElementById("modeSelector").innerHTML=modeSelector;
-
     // Write the <div>s for each band summary tile in the bandTilesGrid area
     var bandsHeard=new Set();
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
- 
-	  
+ 	  
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let bandsDataArr=new Array();
@@ -618,7 +612,13 @@ function initBandTiles(){
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-      modesAcrossAllBandsArr=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
+     
+      let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
+      if(modesAcrossAllBandsArrNew.size>modesAcrossAllBandsArr.size){
+        modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
+        makeModeButtons();
+      } 
+      
       if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
     });
     
