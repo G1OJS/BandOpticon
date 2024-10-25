@@ -106,6 +106,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - make easier to click options on mobile
   - make extra mode click not change global mode
   - add text to explain abbreviations
   - day / night theme?
