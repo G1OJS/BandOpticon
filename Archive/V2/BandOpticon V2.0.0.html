@@ -712,6 +712,10 @@ function initBandTiles(){
          if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
       }
 
+      let myCallIsTx=txCalls.has(myCall);
+      let myCallIsRx=rxCalls.has(myCall);
+      let myCallIsTxRx=txRxCalls.has(myCall);
+	
        // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
      //  document.getElementById("homeDomain").value="Home";
        if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
@@ -742,10 +746,10 @@ function initBandTiles(){
        el.innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
        el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
        el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
-       // just myCall (intersection used to filter out myCall row if no spots for my Tx,Rx, TxRx)
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,txCalls.intersection(setMyCall),"Tx","myCallTx");
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.intersection(setMyCall),"Rx","myCallRx");
-       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.intersection(setMyCall),"TxRx","myCallTxRx");   
+       // just myCall (don't show if not active)
+       if(myCallIsRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Tx","myCallTx");}
+       if(myCallIsTx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Rx","myCallRx");}
+       if(myCallIsTxRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"TxRx","myCallTxRx");}   
 
        // do the highlighting 	
        if(document.getElementById("forward").checked) {
