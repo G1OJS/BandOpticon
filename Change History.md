@@ -106,6 +106,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  try ordinary buttons in frameset for main mode selection
   - make easier to click options on mobile
   - check display OK with large numbers of spots
   - add a list option (replace tiles) as an *option*
