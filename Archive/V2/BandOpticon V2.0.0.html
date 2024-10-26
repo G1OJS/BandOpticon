@@ -63,8 +63,8 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .hidden {display: none;}
 .HomeEntity {color:blue; }
 .DxEntity {color:#ed49ef; }
-.HighlightMatch {background-color:#d1d1e0;} 
-.HighlightExclusive {background-color:#ffff00;} 
+.HighlightBasic {background-color:#d1d1e0;} 
+.HighlightStrong {background-color:#ffff00;} 
 a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {font-size:1rem;}
@@ -363,9 +363,9 @@ a:visited {color: blue;}
      }
    }
   
-  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
+  function HL(item,pattern,hlClass1="HighlightBasic",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightBasic) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightStrong
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
         return "<span class="+hlClass1+">"+item+"</span>";
@@ -789,7 +789,7 @@ function initBandTiles(){
 	 highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
 	 highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
 
-	 highlightEntitiesList("myCallTx_farEntities","myCallRx_farEntities");
+	 highlightEntitiesList("myCallTx_farEntities","myCallRx_farEntities","HighlightStrong");
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
@@ -868,7 +868,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
   }
 
-function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
+function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2,hlClass="HighlightBasic"){
   const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
   const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
   let myMatches=new Set();
@@ -886,10 +886,10 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
     if(myMatches.size>0){
         Array.from(myMatches).forEach(entity => {
         for (let i=0;i<entities1.length;i++){
-          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true),hlClass);
         }
         for (let j=0;j<entities2.length;j++){
-          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true));
+          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true),hlClass);
         }
       });
     }
