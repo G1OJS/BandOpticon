@@ -91,7 +91,7 @@ a:visited {color: blue;}
       
       </div>   
       <div>
-      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>Instructions</a>
+      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a>
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -128,7 +128,7 @@ a:visited {color: blue;}
    
    <div id="innerScreen">
       <div class="innerPanel" id="instructions" style="display:none;">
-      <span class="title">How to use ...</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
+      <span class="title">Overview</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
       <br>BandOpticon has two main displays. 1) A grid of tiles showing band usage information for each active band on the currently-selected mode (select via 'Mode to watch' buttons) and 2) a 'band details' grid showing who is spotting whom on a single selected band. To activate the band details display, click on the band name and mode in any band tile, or on a mode at the bottom of the band tile.
       <br>
       <br>
@@ -137,13 +137,19 @@ a:visited {color: blue;}
       <br>
       <strong>Band Tiles</strong>
       <br>
-      <br>
+      Each band tile shows the number of connections from home to home, home to DX and DX to home, plus the number of active home transmitters, home receivers, and home transmitter-receivers. Band tiles can be sorted in order of any of these quantitties, or by band name.
+      <br><br>
+      Band tiles are dimmed when the band is active but not on the currently watched mode.
+      <br><br>
       <strong>Band Details</strong>
       <br>
       The band details grid shows active callsigns in the 'Home' squares on the left, and calls they are spotting or being spotted by on the right. Colour coding on the right hand side differentiates Home-Home connections from Home-DX connections.
-      <br>
-      <br>
-      Options
+      <br><br>
+      Home calls can be listed individually, or grouped into active transmitters, active receivers and active transmitter-receivers. The latter group, home callsigns spotting anyone and being spotted by anyone, can be shown in isolation to reduce screen clutter on busy bands. Note that transmitter-receivers may appear on the left with no connected callsigns on the right. This is because a transmitter-receiver is defined as a home callsign spotting *anyone* and being spotted by *anyone*, whilst transmitter-receiver connections on the right indicate remote entities being spotted by and spotting the *same* home callsign.
+      <br><br>
+      When listed individually, home callsigns can be filtered to a single call plus your own callsign. This can be used to see how your own transmit and receive performance compares to another callsign's. If you have a second callsign (e.g. web SDR) you can compare performance of your own station with itself. Highlighting shows when the same callsign or square (select under 'Far Entities') appears in two or more lists.
+      <br><br>
+      <strong>Highlighting</strong> works for two use cases. "Peer performance" highlights calls appearing both in your receive list and other home calls' receive lists, and likewise transmit lists and transmit-receive lists. "QSO potential" highlights calls in your receive list that other home calls have been spotted by, and calls in your transmit list that other home calls have received, indicating that conditions may be favourable for a QSO with those highlighted callsigns.
       
       </div>
       <div class="innerPanel" id="bandDetails" style="float:left;">
