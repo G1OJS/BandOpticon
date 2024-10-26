@@ -24,7 +24,7 @@
       <li>Lots of internal code changes to enable the above</li>
       <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlighting'),
       opposite to the usual "transmit home calls share a common entity with another transmit home call" ('forward highlighting'). This
-      choice is useful when switching between looking for reciprocal connections (reverse highlighting) and benchmarking performance (forward highlighting)</li>
+      choice is useful when switching between looking for reciprocal connections (QSO potential) and benchmarking performance (Peer performance)</li>
       <li>Added 'overview' guide to BandOpticon</li>
     </ol>
   </td>
