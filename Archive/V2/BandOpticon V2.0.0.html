@@ -63,8 +63,8 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .hidden {display: none;}
 .HomeEntity {color:blue; }
 .DxEntity {color:#ed49ef; }
-.HighlightBasic {background-color:#d1d1e0;} 
-.HighlightStrong {background-color:#ffff00;} 
+.HighlightMatch {background-color:#d1d1e0;} 
+.HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {font-size:1rem;}
@@ -363,9 +363,9 @@ a:visited {color: blue;}
      }
    }
   
-  function HL(item,pattern,hlClass1="HighlightBasic",hlClass2=""){
-    // returns highlighted text using class hlClass1 (default HighlightBasic) if either item==pattern or pattern==true
-    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightStrong
+  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
   if (item==", ") {return item} // don't highlight comma-spaces
   if(item==pattern || pattern==true){
         return "<span class="+hlClass1+">"+item+"</span>";
@@ -668,7 +668,9 @@ function initBandTiles(){
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-
+     
+      
+     
       let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
       if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
         modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
@@ -783,13 +785,12 @@ function initBandTiles(){
          highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        } else {
-     //    highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
-	// highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+         highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
+	       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
 	       
-	// highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
-	// highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
-
-	 highlightEntitiesList("myCallTx_farEntities","myCallRx_farEntities","HighlightStrong");
+	       highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
+	       highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
+	       
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
@@ -868,7 +869,7 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
     if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
   }
 
-function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2,hlClass="HighlightBasic"){
+function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
   const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
   const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
   let myMatches=new Set();
@@ -886,10 +887,10 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2,hlClass="Highligh
     if(myMatches.size>0){
         Array.from(myMatches).forEach(entity => {
         for (let i=0;i<entities1.length;i++){
-          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true),hlClass);
+          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
         }
         for (let j=0;j<entities2.length;j++){
-          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true),hlClass);
+          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true));
         }
       });
     }
