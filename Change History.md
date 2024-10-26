@@ -16,6 +16,7 @@
       <li>Add option to highlight where transmit home calls share a common far entity with receive home calls ('reverse highlighting'),
       opposite to the usual "transmit home calls share a common entity with another transmit home call" ('forward highlighting'). This
       choice is useful when switching between looking for reciprocal connections (reverse highlighting) and benchmarking performance (forward highlighting)</li>
+      <li>Added 'overview' guide to BandOpticon</li>
     </ol>
   </td>
 </tr>
@@ -106,12 +107,8 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - look again at highlighting function & what loops are doing
-  -  highlighting doesn't HL my call row (rx at least) when there's a match to TxRx if ungrouped (works when grouped)
-    - potentially replace by finding common entries first and then highlighting, rather than brute force loops
   - add a list option (replace tiles) as an *option*
   - make extra mode click not change global mode
-  - add text to explain abbreviations
   - day / night theme?
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
