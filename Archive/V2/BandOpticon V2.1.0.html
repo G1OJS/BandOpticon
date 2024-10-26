@@ -98,8 +98,10 @@ a:visited {color: blue;}
       
       </div>   
       <div>
-      <button type="button" class="button" style='float:right;' onclick='document.getElementById("homeCallsDetails").style="display:inline-block;";'>Home Calls</button>
-      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>Overview</button>
+
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>BandOpticon Overview</button>
+      <br><br>
+            <button type="button" class="button" style='float:right;' onclick='document.getElementById("homeCallsDetails").style="display:inline-block;";'>Show Home Call Activity</button>
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -166,7 +168,7 @@ a:visited {color: blue;}
          <div>
             <span class="homeCallsDetails title">Home Calls</span>
             <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("homeCallsDetails").style="display:none;";'>close</a>
-            <br><br>The following callsigns are actively reporting in the Home squares on the bands and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
+            <br><br>The following callsigns in the Home squares are actively reporting on the bands and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
          </div>
          <br>
         <div style="clear:both"></div>
@@ -673,19 +675,19 @@ function initBandTiles(){
       el=document.getElementById("homeCallsDetailsGrid");
       el.innerHTML="";
       Object.keys(homeCallsInfo).toSorted().forEach( (call) => {
-        console.log(call);
         let rx=homeCallsInfo[call].rx; let tx=homeCallsInfo[call].tx; 
         let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
-        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted()+"</span> <span class='tx'>"+Array.from(txOnly).toSorted()+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
       });
   
   }
     
  function updateDisplays(){
  
-    updateHomeCallsDetails();
+ console.log(document.getElementById("homeCallsDetails").style.display);
+    if (document.getElementById("homeCallsDetails").style.display=="inline-block") {updateHomeCallsDetails();} 
 	  
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
