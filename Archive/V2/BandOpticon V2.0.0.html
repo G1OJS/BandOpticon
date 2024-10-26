@@ -151,8 +151,8 @@ a:visited {color: blue;}
         <div style="display:inline-block">
            <fieldset>
              <legend>Highlighting</legend>
-                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Forward</label></div>
-                <div><label for="reverse">Reverse</label><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /></div>
+                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Peer performance</label></div>
+                <div><label for="reverse"><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked />QSO potential</label></div>
            </fieldset>
         </div>
         <div style="clear:both">
@@ -758,10 +758,10 @@ function initBandTiles(){
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        } else {
          highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
-	 highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+	       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
 	       
-	 highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
-	 highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
+	       highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
+	       highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
 	       
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
@@ -844,26 +844,27 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
   const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
   const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
+  let myMatches=new Set();
   if (entities1[0]!=undefined && entities2[0]!=undefined){
-    // plain text version of far entities to look for in other call's far entities
-    let entities1Txt=entities1[0].innerText.split(', ');
-    // loop through the farEntities2 collection so it picks up all rows when not grouped'
-    for (let i=0;i<entities2.length;i++){
-        entities1Txt.forEach(entity => {
-        if(entity.length>2){
-          entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
-        }
-      });
-    }
-    // plain text version of far entities to look for in other call's far entities
-    let entities2Txt=entities2[0].innerText.split(', ');
-    // loop through the farEntities2 collection so it picks up all rows when not grouped'
     for (let i=0;i<entities1.length;i++){
-        entities2Txt.forEach(entity => {
-        if(entity.length>2){  
+         let entities1TxtArr=entities1[i].innerText.split(', ');
+         let e1set=new Set(entities1TxtArr);
+         for (let j=0;j<entities2.length;j++){
+           let entities2TxtArr=entities2[j].innerText.split(', ');
+           let e2set=new Set(entities2TxtArr);
+           myMatches=myMatches.union(e1set.intersection(e2set));
+         }  
+    }
+    
+    if(myMatches.size>0){
+        Array.from(myMatches).forEach(entity => {
+        for (let i=0;i<entities1.length;i++){
           entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
         }
-     }); 
+        for (let j=0;j<entities2.length;j++){
+          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true));
+        }
+      });
     }
   }
 }
