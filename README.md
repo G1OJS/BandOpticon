@@ -3,7 +3,7 @@
 
 ## BONUS - works great on phones and tablets too! [click here]({{ site.baseurl }}/BandOpticon) 
 
-NOTE - this page needs updating to reflect the latest version of BandOpticon.
+==NOTE - this page needs updating to reflect the latest version of BandOpticon.==
 
 ![BandOpticon Screenshots](https://github.com/user-attachments/assets/649ad87f-8726-4581-a807-e2c565cf62d5)
 
