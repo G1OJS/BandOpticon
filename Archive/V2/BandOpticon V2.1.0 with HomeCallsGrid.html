@@ -643,6 +643,31 @@ function initBandTiles(){
 //    document.getElementById("connectionsPurged").value=connectionsPurged;
     
  }
+
+ function updateHomeCallsDetails(){
+    
+    bandsArr.forEach((band,index) => {
+ 
+    let homeCallsInfo={};
+      for (id in connections) {
+        let c=connections[id];
+        if (c.sd=="home") {
+          if (c.sc in homeCallsInfo) {
+            homeCallsInfo[c.sc][txBands].add(c.b+" "+c.md)
+            }
+        }
+        if (c.b==band) {bandModes.add(c.md)}
+     
+          if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+        }
+      }
+      let txRxCalls=txCalls.intersection(rxCalls);
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes),txCalls,rxCalls];
+      bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
+      dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
+     
+  
+  }
     
  function updateDisplays(){
 	  
