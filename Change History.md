@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>25-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V2.0.0'>V2.0.0</a></td>
+  <td>26-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V2.0.0'>V2.0.0</a></td>
   <td>
     <ol>
       <li>Rework styling top to bottom</li>
