@@ -668,9 +668,7 @@ function initBandTiles(){
       let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-     
-      
-     
+
       let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
       if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
         modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
@@ -786,11 +784,12 @@ function initBandTiles(){
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        } else {
          highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
-	       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+	 highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
 	       
-	       highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
-	       highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
-	       
+	 highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
+	 highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
+
+	 highlightEntitiesList("myCallTx_farEntities","myCallRx_farEntities");
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
