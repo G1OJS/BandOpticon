@@ -107,9 +107,11 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
+  - add QSO potenital highlighting between my own Tx and Rx list
+  - add option "Just my own call"
+  - add an alert if an entered rectangle contains no squares (e.g. IO89:90) - or make the expansion work on the reversed characters
   - add a list option (replace tiles) as an *option*
   - make extra mode click not change global mode
-  - add an alert if an entered rectangle contains no squares (e.g. IO89:90) - or make the expansion work on the reversed characters
   - day / night theme?
   - QRZ link for displayed callsigns?
   - switch to https://www.brailleinstitute.org/freefont/
