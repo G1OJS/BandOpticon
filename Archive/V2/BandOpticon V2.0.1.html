@@ -716,7 +716,7 @@ function initBandTiles(){
          +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
          
        let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
-       tileCallsHTML+=" "+Array.from(bandData[9]).toSorted().join(', ');
+       tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8]).toSorted().join(', ');
        document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
 
        
