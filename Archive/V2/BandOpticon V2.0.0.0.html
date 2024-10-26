@@ -30,8 +30,8 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 /* area above band tiles grid used for detailed output */
 #innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; }
 
-#bandDetails {border: solid grey 2px}
-#bandDetails .title {font-size:2rem; font-weight:bold;}
+.innerPanel {border: solid grey 2px}
+.innerPanel .title {font-size:2rem; font-weight:bold;}
 
 fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
   fieldset > div {float:left; padding-left:0px;}
@@ -86,11 +86,13 @@ a:visited {color: blue;}
     <div id="appTop">
       <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
-  //    <br><span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span>
+  <br> <!--    <span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span> -->
       <label for='recordButton'><button type='button' id="recordButton"   onclick='startRecording();'>O</button> record</label>
       
       </div>   
       <div>
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>Overview</button>
+<!--      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a> -->
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -126,7 +128,33 @@ a:visited {color: blue;}
    </div>
    
    <div id="innerScreen">
-      <div id="bandDetails" style="float:left;">
+      <div class="innerPanel" id="instructions" style="display:none;">
+      <span class="title">Overview</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
+      <br>BandOpticon has two main displays. 1) A grid of tiles showing band usage information for each active band on the currently-selected mode (select via 'Mode to watch' buttons) and 2) a 'band details' grid showing who is spotting whom on a single selected band. To activate the band details display, click on the band name and mode in any band tile, or on a mode at the bottom of the band tile.
+      <br><br>
+      On both displays, BandOpticon shows connections between callsigns in the 'Home' squares and DX callsigns, as well as Home to Home connections.
+      <br><br>
+      A 'record' button under the clock starts a new window that records the statistics shown in the band tiles. This can be used to monitor band activity over a long period for later analysis using your own preferred analysis methods.
+      <br><br>
+      <strong>Band Tiles</strong>
+      <br>
+      Each band tile shows the number of connections from home to home, home to DX and DX to home, plus the number of active home transmitters, home receivers, and home transmitter-receivers. Band tiles can be sorted in order of any of these quantitties, or by band name.
+      <br><br>
+      Band tiles are dimmed when the band is active but not on the currently watched mode.
+      <br><br>
+      <strong>Band Details</strong>
+      <br>
+      The band details grid shows active callsigns in the 'Home' squares on the left, and calls they are spotting or being spotted by on the right. Colour coding on the right hand side differentiates Home-Home connections from Home-DX connections.
+      <br><br>
+      Home calls can be listed individually, or grouped into active transmitters, active receivers and active transmitter-receivers. The latter group, home callsigns spotting anyone and being spotted by anyone, can be shown in isolation to reduce screen clutter on busy bands. Note that transmitter-receivers may appear on the left with no connected callsigns on the right. This is because a transmitter-receiver is defined as a home callsign spotting *anyone* and being spotted by *anyone*, whilst transmitter-receiver connections on the right indicate remote entities being spotted by and spotting the *same* home callsign.
+      <br><br>
+      When listed individually, home callsigns can be filtered to a single call plus your own callsign. This can be used to see how your own transmit and receive performance compares to another callsign's. If you have a second callsign (e.g. web SDR) you can compare performance of your own station with itself. Highlighting shows when the same callsign or square (select under 'Far Entities') appears in two or more lists.
+      <br><br>
+      <strong>Highlighting</strong> works for two use cases. "Peer performance" highlights calls appearing both in your receive list and other home calls' receive lists, and likewise transmit lists and transmit-receive lists.
+	      "QSO potential" highlights calls in your receive list that have spotted other home calls, and calls in your transmit list that other home calls have spotted, indicating that conditions may be favourable for a QSO with those highlighted callsigns.
+      
+      </div>
+      <div class="innerPanel" id="bandDetails" style="float:left;">
          <div>
             <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
             <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
@@ -151,8 +179,8 @@ a:visited {color: blue;}
         <div style="display:inline-block">
            <fieldset>
              <legend>Highlighting</legend>
-                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Forward</label></div>
-                <div><label for="reverse">Reverse</label><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked /></div>
+                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Peer performance</label></div>
+                <div><label for="reverse"><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked />QSO potential</label></div>
            </fieldset>
         </div>
         <div style="clear:both">
@@ -757,8 +785,12 @@ function initBandTiles(){
          highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
          highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
        } else {
-  	     highlightEntitiesList("othersRx_farEntities","myCallTx_farEntities");
-	       highlightEntitiesList("othersTx_farEntities","myCallRx_farEntities");
+         highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
+	       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+	       
+	       highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
+	       highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
+	       
          highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
        }
      
@@ -840,22 +872,27 @@ function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
 function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
   const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
   const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
+  let myMatches=new Set();
   if (entities1[0]!=undefined && entities2[0]!=undefined){
-    // plain text version of far entities to look for in other call's far entities
-    let entities1Txt=entities1[0].innerText.split(', ');
-    // loop through the farEntities2 collection so it picks up all rows when not grouped'
-    for (let i=0;i<entities2.length;i++){
-        entities1Txt.forEach(entity => {
-        entities2[i].innerHTML=entities2[i].innerHTML.replaceAll(entity,HL(entity,true));
-      });
-    }
-    // plain text version of far entities to look for in other call's far entities
-    let entities2Txt=entities2[0].innerText.split(', ');
-    // loop through the farEntities2 collection so it picks up all rows when not grouped'
     for (let i=0;i<entities1.length;i++){
-      entities2Txt.forEach(entity => {
-        entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
-     }); 
+         let entities1TxtArr=entities1[i].innerText.split(', ');
+         let e1set=new Set(entities1TxtArr);
+         for (let j=0;j<entities2.length;j++){
+           let entities2TxtArr=entities2[j].innerText.split(', ');
+           let e2set=new Set(entities2TxtArr);
+           myMatches=myMatches.union(e1set.intersection(e2set));
+         }  
+    }
+    
+    if(myMatches.size>0){
+        Array.from(myMatches).forEach(entity => {
+        for (let i=0;i<entities1.length;i++){
+          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+        }
+        for (let j=0;j<entities2.length;j++){
+          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true));
+        }
+      });
     }
   }
 }
