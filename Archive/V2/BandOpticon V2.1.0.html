@@ -44,6 +44,9 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
+#homeCallsDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% auto; grid-template-rows: auto; }
+#homeCallsDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+
 #bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-template-rows: repeat(auto-fill, 1fr);}
@@ -92,8 +95,8 @@ a:visited {color: blue;}
       
       </div>   
       <div>
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("homeCallsDetails").style="display:inline-block;";'>Home Calls</button>
       <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>Overview</button>
-<!--      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a> -->
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -155,6 +158,19 @@ a:visited {color: blue;}
 	      "QSO potential" highlights calls in your receive list that have spotted other home calls, and calls in your transmit list that other home calls have spotted, indicating that conditions may be favourable for a QSO with those highlighted callsigns.
       
       </div>
+
+      <div class="innerPanel" id="homeCallsDetails" style="display:none;">
+         <div>
+            <span class="homeCallsDetails title">Home Calls</span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("homeCallsDetails").style="display:none;";'>close</a>
+         </div>
+         <br>
+        <div style="clear:both"></div>
+        <div id="homeCallsDetailsGrid">
+           <!-- written by script -->
+        </div>
+      </div>
+	   
       <div class="innerPanel" id="bandDetails" style="float:left;">
          <div>
             <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
@@ -627,8 +643,40 @@ function initBandTiles(){
 //    document.getElementById("connectionsPurged").value=connectionsPurged;
     
  }
+
+
+
+ function updateHomeCallsDetails(){
+      let homeCallsInfo={};
+
+      for (id in connections) {
+        let c=connections[id];
+        if (c.sd=="home") {
+          if (c.sc in homeCallsInfo) {
+            homeCallsInfo[c.sc].tx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.sc]={"tx":new Set().add(c.b+"-"+c.md),"rx":new Set()};
+          }
+        }
+        if (c.rd=="home") {
+          if (c.rc in homeCallsInfo) {
+            homeCallsInfo[c.rc].rx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.rc]={"tx":new Set(),"rx":new Set().add(c.b+"-"+c.md)};
+          }
+        }
+      }
+      el=document.getElementById("homeCallsDetailsGrid");
+      el.innerHTML="";
+      for (call in homeCallsInfo) {
+        el.innerHTML+="<div>"+call+"</div><div>"+ Array.from(homeCallsInfo[call].tx)+" "+ Array.from(homeCallsInfo[call].rx)+"</div>";
+      }
+  
+  }
     
  function updateDisplays(){
+ 
+    updateHomeCallsDetails();
 	  
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
