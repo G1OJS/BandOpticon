@@ -117,6 +117,7 @@ Additional labels for pre-release and build metadata are available as extensions
 
 To do:
   - reintrodcuce even/odd indicators
+  - fix: default squares not shown when fail to load fom local storage
   - add frequency info in the band details pane - what frequencies are being used for this mode on this band?
   - add an alert if an entered rectangle contains no squares (e.g. IO89:90) - or make the expansion work on the reversed characters
   - add context-sensitive explainers for highlighting (add text to each row on click?)
