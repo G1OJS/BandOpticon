@@ -107,7 +107,7 @@ Additional labels for pre-release and build metadata are available as extensions
 # To-do list & ideas
 
 To do:
-  - add QSO potenital highlighting between my own Tx and Rx list
+  - reintrodcuce even/odd indicators
   - add option "Just my own call"
   - add an alert if an entered rectangle contains no squares (e.g. IO89:90) - or make the expansion work on the reversed characters
   - add a list option (replace tiles) as an *option*
