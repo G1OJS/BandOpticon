@@ -67,6 +67,9 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .hidden {display: none;}
 .HomeEntity {color:blue; }
 .DxEntity {color:#ed49ef; }
+.txrx {color:purple;font-weight:bold}
+.tx {color:red}
+.rx {color:green}
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
@@ -668,9 +671,16 @@ function initBandTiles(){
       }
       el=document.getElementById("homeCallsDetailsGrid");
       el.innerHTML="";
-      for (call in homeCallsInfo) {
-        el.innerHTML+="<div>"+call+"</div><div>"+ Array.from(homeCallsInfo[call].tx)+" "+ Array.from(homeCallsInfo[call].rx)+"</div>";
-      }
+      Object.keys(homeCallsInfo).toSorted().forEach( (call) => {
+        console.log(call);
+        let rx=homeCallsInfo[call].rx; let tx=homeCallsInfo[call].tx; 
+        let txrx=rx.intersection(tx);
+        let txOnly=tx.difference(txrx);
+        let rxOnly=rx.difference(txrx);
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>";
+        el.innerHTML+=" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>;";
+        el.innerHTML+=" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+      });
   
   }
     
