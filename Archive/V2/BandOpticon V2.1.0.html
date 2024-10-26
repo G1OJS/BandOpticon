@@ -677,9 +677,7 @@ function initBandTiles(){
         let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
-        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>";
-        el.innerHTML+=" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>;";
-        el.innerHTML+=" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted()+"</span> <span class='tx'>"+Array.from(txOnly).toSorted()+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
       });
   
   }
