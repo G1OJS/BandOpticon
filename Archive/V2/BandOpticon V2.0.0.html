@@ -91,7 +91,8 @@ a:visited {color: blue;}
       
       </div>   
       <div>
-      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a>
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>Overview</button>
+<!--      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a> -->
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -135,6 +136,7 @@ a:visited {color: blue;}
       On both displays, BandOpticon shows connections between callsigns in the 'Home' squares and DX callsigns, as well as Home to Home connections.
       <br>
       <br>
+      A 'record' button under the clock starts a new window that records the statistics shown in the band tiles. This can be used to monitor band activity over a long period for later analysis using your own preferred analysis methods.
       <strong>Band Tiles</strong>
       <br>
       Each band tile shows the number of connections from home to home, home to DX and DX to home, plus the number of active home transmitters, home receivers, and home transmitter-receivers. Band tiles can be sorted in order of any of these quantitties, or by band name.
