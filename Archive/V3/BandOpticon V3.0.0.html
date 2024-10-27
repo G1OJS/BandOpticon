@@ -777,7 +777,10 @@ function initBandRows(){
 	let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
-        document.getElementById("rowCalls_"+index).innerHTML="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+        document.getElementById("rowCalls_"+index).innerHTML=""
+		+"<span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>"
+		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>"
+		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
   
      });       
 
