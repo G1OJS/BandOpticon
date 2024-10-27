@@ -595,17 +595,17 @@ function makeModeButtons(){
   
 function initBandTiles(){
   let bandsGrid=document.getElementById("bandsGridContainer");
-  bandsGrid.innerHTML="<div id='bandsGrid'>";
+  bandsGrid.innerHTML="<div id='bandsGrid'>test";
   for (let i=0;i<maxTiles;i++){
     console.log("bandsGrid row "+i);
-    bandsGrid.innerHTML+="<div><output class='Stats' id='nH2H_"+i+"'></output></div>";
-//       +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
-//       +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
-//          +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
-//       +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
-//       +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
-//	  +"<div></div>"
-//	  	  +"<div></div>"
+    bandsGrid.innerHTML+="<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
+          +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
+	  +"<div></div>"
+	  	  +"<div></div>";
   }
   bandsGrid.innerHTML+="</div>";
 }
