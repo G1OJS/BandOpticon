@@ -733,7 +733,7 @@ function initBandRows(){
   //      const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
   //      criteria.push(metres(band));
   //    } else {
-        criteria.push(bandmodeDataArr[index][["BandName","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
+        criteria.push(bandmodeDataArr[index][["bandmode","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
   //    }
     });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
