@@ -10,8 +10,7 @@
   <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V3/BandOpticon%20V3.0.0'>V3.0.0</a></td>
   <td>
     <ol>
-      <li>experimenting with new features</li>  
-      <li> - replace band tiles by rows in a grid</li>
+      <li>experimental - replace band tiles by rows in a grid</li>
     </ol>
   </td>
 </tr>
