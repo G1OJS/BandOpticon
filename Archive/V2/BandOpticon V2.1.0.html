@@ -773,10 +773,9 @@ function initBandTiles(){
          document.getElementById("modes_"+index).innerHTML
          +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
          
-       let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
-       tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
-       document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
-
+  //     let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
+  //     tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
+  //     document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
        
        document.getElementById("tile_"+index).style="display:inline-block";
        document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
