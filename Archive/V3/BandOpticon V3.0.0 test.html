@@ -717,7 +717,7 @@ function initBandRows(){
         if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandmodeData=[bm,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes),txCalls,rxCalls];
+      let bandmodeData=[bm,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
    
@@ -764,7 +764,7 @@ function initBandRows(){
  //      rowCallsHTML+=" "+Array.from(bandmodeData[9].difference(bandmodeData[8])).toSorted().join(', ');
  //      document.getElementById("rowCalls_"+index).innerHTML=rowCallsHTML;
 
-	let tx=bandmodeData[8]; let rx=bandmodeData[9];
+	let tx=bandmodeData[7]; let rx=bandmodeData[8];
 	let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
