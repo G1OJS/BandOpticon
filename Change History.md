@@ -11,15 +11,8 @@
   <td>
     <ol>
       <li>experimenting with new features</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V2.1.0'>V2.1.0</a></td>
-  <td>
-    <ol>
-      <li>experimenting with new features</li>
+      <li> - home call activity view</li>      
+      <li> - replace band tiles by rows in a grid</li>
     </ol>
   </td>
 </tr>
