@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V2.0.0</title>
+<title>BandOpticon V2.1.0</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -44,6 +44,9 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 #bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
 #bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
+#homeCallsDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: max-content auto; grid-template-rows: auto; }
+#homeCallsDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+
 #bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
   grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-template-rows: repeat(auto-fill, 1fr);}
@@ -57,12 +60,16 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:1.5rem;}
 
 .bandTile .tileModes {font-size:1rem;}
+.bandTile .tileCalls {font-size:0.7rem; padding-top:0px;margin-top:0px}
 	
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
 .hidden {display: none;}
 .HomeEntity {color:blue; }
 .DxEntity {color:#ed49ef; }
+.txrx {color:purple;font-weight:bold}
+.tx {color:red}
+.rx {color:green}
 .HighlightMatch {background-color:#d1d1e0;} 
 .HighlightExclusive {background-color:#ffff00;} 
 a:link {color: blue;}
@@ -91,8 +98,10 @@ a:visited {color: blue;}
       
       </div>   
       <div>
-      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>Overview</button>
-<!--      <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:inline-block;";'>?</a> -->
+
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>BandOpticon Overview</button>
+      <br><br>
+            <button type="button" class="button" style='float:right;' onclick='document.getElementById("homeCallsDetails").style="display:inline-block;";'>Show Home Call Activity</button>
           <fieldset>
           <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
@@ -154,6 +163,20 @@ a:visited {color: blue;}
 	      "QSO potential" highlights calls in your receive list that have spotted other home calls, and calls in your transmit list that other home calls have spotted, indicating that conditions may be favourable for a QSO with those highlighted callsigns.
       
       </div>
+
+      <div class="innerPanel" id="homeCallsDetails" style="display:none;">
+         <div>
+            <span class="homeCallsDetails title">Home Calls Activity (experimental)</span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("homeCallsDetails").style="display:none;";'>close</a>
+            <br><br>The following callsigns in the Home squares are actively reporting on the bands and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
+         </div>
+         <br>
+        <div style="clear:both"></div>
+        <div id="homeCallsDetailsGrid">
+           <!-- written by script -->
+        </div>
+      </div>
+	   
       <div class="innerPanel" id="bandDetails" style="float:left;">
          <div>
             <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
@@ -590,6 +613,7 @@ function initBandTiles(){
        +"<output class='Stats' id='nTxRx_"+i+"'></output>"
      +"</div>"
      +"<div class='tileModes' id='modes_"+i+"'></div>"
+     +"<div class='tileCalls' id='tileCalls_"+i+"'></div>"
      +"</div> ";
   }
 }
@@ -625,8 +649,44 @@ function initBandTiles(){
 //    document.getElementById("connectionsPurged").value=connectionsPurged;
     
  }
+
+
+
+ function updateHomeCallsDetails(){
+      let homeCallsInfo={};
+
+      for (id in connections) {
+        let c=connections[id];
+        if (c.sd=="home") {
+          if (c.sc in homeCallsInfo) {
+            homeCallsInfo[c.sc].tx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.sc]={"tx":new Set().add(c.b+"-"+c.md),"rx":new Set()};
+          }
+        }
+        if (c.rd=="home") {
+          if (c.rc in homeCallsInfo) {
+            homeCallsInfo[c.rc].rx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.rc]={"tx":new Set(),"rx":new Set().add(c.b+"-"+c.md)};
+          }
+        }
+      }
+      el=document.getElementById("homeCallsDetailsGrid");
+      el.innerHTML="";
+      Object.keys(homeCallsInfo).toSorted().forEach( (call) => {
+        let rx=homeCallsInfo[call].rx; let tx=homeCallsInfo[call].tx; 
+        let txrx=rx.intersection(tx);
+        let txOnly=tx.difference(txrx);
+        let rxOnly=rx.difference(txrx);
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+      });
+  
+  }
     
  function updateDisplays(){
+
+    if (document.getElementById("homeCallsDetails").style.display=="inline-block") {updateHomeCallsDetails();} 
 	  
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
@@ -665,7 +725,7 @@ function initBandTiles(){
         }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes)];
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes),txCalls,rxCalls];
       bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
       dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
      
@@ -712,6 +772,10 @@ function initBandTiles(){
        modesThisBandArr[0].forEach((md) =>{
          document.getElementById("modes_"+index).innerHTML
          +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
+         
+  //     let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
+  //     tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
+  //     document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
        
        document.getElementById("tile_"+index).style="display:inline-block";
        document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
