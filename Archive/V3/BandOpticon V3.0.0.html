@@ -597,9 +597,9 @@ function makeModeButtons(){
   
 function initBandTiles(){
   let bandsGrid=document.getElementById("bandsGrid");
-  bandsGrid.innerHTML="<strong><div>Band</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div></div></strong>";
+  bandsGrid.innerHTML="<div>Band</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div></div>";
   for (let i=0;i<maxTiles;i++){
-    bandsGrid.innerHTML+=""
+    bandsGrid.innerHTML+="<div id=tile_'"+i+"'>"
        +"<div><output class='Stats' id='tileTitle_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
@@ -608,8 +608,9 @@ function initBandTiles(){
        +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
 	+"<div><output class='Stats' id='tileCalls_"+i+"'></output></div>"
-       +"<div></div>";
+       +"<div></div></div>";
   }
+// bandsGrid.innerHTML+="</div>";
 }
 
  function setMode(mode){
