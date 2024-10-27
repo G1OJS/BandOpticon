@@ -222,7 +222,9 @@ a:visited {color: blue;}
 
      </div>
      <div class="innerPanel" id="bandsGridContainer" style="display:inline-block;">
+	<div id='bandsGrid'>
          <!-- written by script -->
+	</div>
      </div> 
   </div>
        
@@ -594,10 +596,9 @@ function makeModeButtons(){
 }
   
 function initBandTiles(){
-  let bandsGrid=document.getElementById("bandsGridContainer");
-  bandsGrid.innerHTML="<div id='bandsGrid'>test";
+  let bandsGrid=document.getElementById("bandsGrid");
+  bandsGrid.innerHTML="";
   for (let i=0;i<maxTiles;i++){
-    console.log("bandsGrid row "+i);
     bandsGrid.innerHTML+="<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
@@ -607,7 +608,6 @@ function initBandTiles(){
 	  +"<div></div>"
 	  	  +"<div></div>";
   }
-  bandsGrid.innerHTML+="</div>";
 }
 
  function setMode(mode){
