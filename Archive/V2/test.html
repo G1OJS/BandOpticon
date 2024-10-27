@@ -594,28 +594,16 @@ function makeModeButtons(){
 }
   
 function initBandTiles(){
-  let bandTilesGrid=document.getElementById("bandTilesBlock");
+  let bandsGrid=document.getElementById("bandsGrid");
   for (let i=0;i<maxTiles;i++){
-  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
-     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
-     +"<div class='bandTileStatsGrid'>"
-       +"<span></span>"
-       +"<span class='ColumnHeading'>H→H</span>"
-       +"<span class='ColumnHeading'>H→DX</span>"
-       +"<span class='ColumnHeading'>DX→H</span>"  
-       +"<span class='RowHeading'>Spots</span>"
-       +"<output class='Stats' id='nH2H_"+i+"'></output>"
-       +"<output class='Stats' id='nH2DX_"+i+"'></output>"
-       +"<output class='Stats' id='nDX2H_"+i+"'></output>"
-       +"<span></span>"
-       +"<span class='ColumnHeading'>Tx</span>"
-       +"<span class='ColumnHeading'>Rx</span>"
-       +"<span class='ColumnHeading'>TxRx</span>"
-       +"<span class='RowHeading'>Calls</span>"
-       +"<output class='Stats' id='nTx_"+i+"'></output>"
-       +"<output class='Stats' id='nRx_"+i+"'></output>"
-       +"<output class='Stats' id='nTxRx_"+i+"'></output>"
-     +"</div>"
+  bandsGrid.innerHTML+=""
+       +"<div>"
+      +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
+          +"<div><output class='Stats' id='nTx_"+i+"'></output>"
+       +"<div><output class='Stats' id='nRx_"+i+"'></output>"
+       +"<div><output class='Stats' id='nTxRx_"+i+"'></output>"
      +"<div class='tileModes' id='modes_"+i+"'></div>"
      +"<div class='tileCalls' id='tileCalls_"+i+"'></div>"
      +"</div> ";
