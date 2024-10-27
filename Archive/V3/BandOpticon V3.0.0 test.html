@@ -710,11 +710,13 @@ function initBandRows(){
       let rxCalls=new Set;
       for (id in connections) {
         let c=connections[id];
-        if(c.sd=="home") {txCalls.add(c.sc)}
-        if(c.rd=="home") {rxCalls.add(c.rc)}
-        if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
-        if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
-        if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+	if(c.bm==bm) {
+          if(c.sd=="home") {txCalls.add(c.sc)}
+          if(c.rd=="home") {rxCalls.add(c.rc)}
+          if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
+          if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
+          if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
       let bandmodeData=[bm,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
@@ -731,7 +733,7 @@ function initBandRows(){
       indexArr.push(index);
   //    if (bandRowsSortKey=="BandName") {
   //      const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
-  //      criteria.push(metres(band));
+  //      criteria.push(metres(bandmode));
   //    } else {
         criteria.push(bandmodeDataArr[index][["bandmode","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
   //    }
