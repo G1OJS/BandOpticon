@@ -594,7 +594,7 @@ function makeModeButtons(){
 }
   
 function initBandTiles(){
-  let bandsGrid=document.getElementById("bandsGridBlock");
+  let bandsGrid=document.getElementById("bandsGrid");
   for (let i=0;i<maxTiles;i++){
   bandsGrid.innerHTML+="<div  class='bandsGrid'>"
        +"<div>"
@@ -676,7 +676,7 @@ function initBandTiles(){
     
  function updateDisplays(){
 
-    if (document.getElementById("homeCalls").style.display=="inline-block") {updateHomeCalls();} 
+    if (document.getElementById("bandsGrid").style.display=="inline-block") {updateHomeCalls();} 
 	  
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
@@ -686,11 +686,11 @@ function initBandTiles(){
     for (id in connections) {bandsHeard.add(connections[id].b)}
     bandsArr=Array.from(bandsHeard);
     
-    let loadScr=document.getElementById('loading');
-    if(loadScr.innerHTML!="" && bandsHeard.size>0) {
-      loadScr.innerHTML="";
-      loadScr.style="display:none;";
-    }
+  //  let loadScr=document.getElementById('loading');
+  //  if(loadScr.innerHTML!="" && bandsHeard.size>0) {
+  //    loadScr.innerHTML="";
+  //    loadScr.style="display:none;";
+  //  }
  	  
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
@@ -747,9 +747,9 @@ function initBandTiles(){
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
        let bandData=bandsDataArr[bandIndex];
-//       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
- //        +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
-  //       +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
+   //    document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
+   //      +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+   //      +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
        document.getElementById("nH2H_"+index).value=bandData[1];
        document.getElementById("nH2DX_"+index).value=bandData[2];
        document.getElementById("nDX2H_"+index).value=bandData[3];
