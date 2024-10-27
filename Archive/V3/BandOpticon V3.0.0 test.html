@@ -708,10 +708,8 @@ function initBandRows(){
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
-      let bandModes=new Set;
       for (id in connections) {
         let c=connections[id];
-        if (c.bm==bm) {bandModes.add(c.md)}
         if(c.sd=="home") {txCalls.add(c.sc)}
         if(c.rd=="home") {rxCalls.add(c.rc)}
         if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
