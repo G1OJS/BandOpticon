@@ -47,7 +47,7 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 #homeCallsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: max-content auto; grid-template-rows: auto; }
 #homeCallsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
-#bandsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto; }
+#bandsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; grid-template-rows: auto; }
 #bandsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 
@@ -182,6 +182,7 @@ a:visited {color: blue;}
       </div>
 	   
       <div class="innerPanel" id="bandDetails" style="float:left;">
+  
          <div>
             <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
             <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
@@ -213,7 +214,7 @@ a:visited {color: blue;}
         <div style="clear:both">
         
         </div>
-
+   
         <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
         <div id="bandDetailsGrid">
            <!-- written by script -->
@@ -223,9 +224,8 @@ a:visited {color: blue;}
   </div>
        
 
-     
-    <div id="bandTilesBlock">
-      <div class='loading' id='loading'>Loading ...</div>
+    <div class="innerPanel" id="bandsGrid" style="float:left;">
+
       <!-- written by script -->
     </div>
 
@@ -594,9 +594,9 @@ function makeModeButtons(){
 }
   
 function initBandTiles(){
-  let bandsGrid=document.getElementById("bandsGrid");
+  let bandsGrid=document.getElementById("bandsGridBlock");
   for (let i=0;i<maxTiles;i++){
-  bandsGrid.innerHTML+=""
+  bandsGrid.innerHTML+="<div  class='bandsGrid'>"
        +"<div>"
       +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
@@ -604,9 +604,7 @@ function initBandTiles(){
           +"<div><output class='Stats' id='nTx_"+i+"'></output>"
        +"<div><output class='Stats' id='nRx_"+i+"'></output>"
        +"<div><output class='Stats' id='nTxRx_"+i+"'></output>"
-     +"<div class='tileModes' id='modes_"+i+"'></div>"
-     +"<div class='tileCalls' id='tileCalls_"+i+"'></div>"
-     +"</div> ";
+     +"</div> </div>";
   }
 }
 
