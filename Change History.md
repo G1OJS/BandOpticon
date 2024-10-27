@@ -7,7 +7,7 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V3.0.0'>V3.0.0</a></td>
+  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V3/BandOpticon%20V3.0.0'>V3.0.0</a></td>
   <td>
     <ol>
       <li>experimenting with new features</li>
