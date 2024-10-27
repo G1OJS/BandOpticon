@@ -749,37 +749,37 @@ function initBandTiles(){
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
        let bandData=bandsDataArr[bandIndex];
-       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
-         +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
+//       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
+ //        +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+  //       +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
        document.getElementById("nH2H_"+index).value=bandData[1];
        document.getElementById("nH2DX_"+index).value=bandData[2];
        document.getElementById("nDX2H_"+index).value=bandData[3];
        document.getElementById("nTx_"+index).value=bandData[4];
        document.getElementById("nRx_"+index).value=bandData[5];
        document.getElementById("nTxRx_"+index).value=bandData[6];
-       
-       document.getElementById("modes_"+index).innerHTML="";
-       let modesThisBandArr=bandData.slice(7);
-       modesThisBandArr[0].forEach((md) =>{
-         document.getElementById("modes_"+index).innerHTML
-         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
+     });
+  //     document.getElementById("modes_"+index).innerHTML="";
+   //    let modesThisBandArr=bandData.slice(7);
+   //    modesThisBandArr[0].forEach((md) =>{
+   //      document.getElementById("modes_"+index).innerHTML
+   //      +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
          
-       let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
-       tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
-       document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
+  //     let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
+  //     tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
+ //      document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
 
        
-       document.getElementById("tile_"+index).style="display:inline-block";
-       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
+//      document.getElementById("tile_"+index).style="display:inline-block";
+//       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
 
-    });
+ 
     
     // hide unused band tiles
-    if(indexArr.length>0){
-    for (let i=indexArr.length;i<maxTiles;i++){
-      document.getElementById("tile_"+i).style="display:none;"
-    }}
+ //   if(indexArr.length>0){
+ //   for (let i=indexArr.length;i<maxTiles;i++){
+ //     document.getElementById("tile_"+i).style="display:none;"
+ //   }}
     
 }
  
