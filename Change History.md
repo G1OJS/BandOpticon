@@ -10,8 +10,7 @@
   <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V3/BandOpticon%20V3.0.0'>V3.0.0</a></td>
   <td>
     <ol>
-      <li>experimenting with new features</li>
-      <li> - home call activity view</li>      
+      <li>experimenting with new features</li>  
       <li> - replace band tiles by rows in a grid</li>
     </ol>
   </td>
@@ -28,6 +27,7 @@
       opposite to the usual "transmit home calls share a common entity with another transmit home call" ('forward highlighting'). This
       choice is useful when switching between looking for reciprocal connections (QSO potential) and benchmarking performance (Peer performance)</li>
       <li>Added 'overview' guide to BandOpticon</li>
+      <li>Added experimental 'home call activity view'</li>    
     </ol>
   </td>
 </tr>
