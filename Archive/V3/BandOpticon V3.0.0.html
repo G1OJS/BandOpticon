@@ -220,11 +220,10 @@ a:visited {color: blue;}
            <!-- written by script -->
         </div>
 
-	    <div class="innerPanel" id="bandsGrid" style="float:left;">
-
-      <!-- written by script -->
-    </div>      
-        
+        <div class="innerPanel" id="bandsGridContainer" style="float:left;">
+         <!-- written by script -->
+        </div>     
+	      
      </div>
   </div>
        
@@ -598,7 +597,7 @@ function makeModeButtons(){
 function initBandTiles(){
   let bandsGrid=document.getElementById("bandsGrid");
   for (let i=0;i<maxTiles;i++){
-  bandsGrid.innerHTML+="<div  class='bandsGrid'>"
+  bandsGrid.innerHTML+="<div class='bandsGrid'>"
       +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
