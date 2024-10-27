@@ -599,7 +599,9 @@ function initBandTiles(){
   let bandsGrid=document.getElementById("bandsGrid");
   bandsGrid.innerHTML="";
   for (let i=0;i<maxTiles;i++){
-    bandsGrid.innerHTML+="<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
+    bandsGrid.innerHTML+=""
+       +"<div><output class='Stats' id='tileTitle_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
           +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
@@ -749,9 +751,9 @@ function initBandTiles(){
     // populate the band tile outputs in the sorted order
     indexArr.forEach((bandIndex,index) => {
        let bandData=bandsDataArr[bandIndex];
-   //    document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
-   //      +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
-   //      +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
+       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
+         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+         +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
        document.getElementById("nH2H_"+index).value=bandData[1];
        document.getElementById("nH2DX_"+index).value=bandData[2];
        document.getElementById("nDX2H_"+index).value=bandData[3];
