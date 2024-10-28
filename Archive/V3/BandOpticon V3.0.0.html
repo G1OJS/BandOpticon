@@ -680,12 +680,12 @@ function initBandRows(){
    
        let distChartHTML="";
        for (let x=1;x<9;x++){
-         distChartHTML+="<span id='distHist_"+i+"_x"+x+"' style='border-bottom: solid 3px;'>&nbsp&nbsp</span>";
+         distChartHTML+="<span id='distHist_"+i+"_x"+x+"' style='display:inline-block; border-bottom: solid 3px;'>&nbsp&nbsp</span>";
        }
-     bandmodeGrid.innerHTML+="<div>"+distChartHTML+"</div>";
+     bandmodeGrid.innerHTML+="<div vertical-align:bottom;>"+distChartHTML+"</div>";
        let brgChartHTML="";
        for (let x=1;x<9;x++){
-         brgChartHTML+="<span id='brgHist_"+i+"_x"+x+"' style='border-bottom: solid 3px;'>&nbsp&nbsp</span>";
+         brgChartHTML+="<span id='brgHist_"+i+"_x"+x+"'display:inline-block;  style='box-sizing: border-box; border-bottom: solid 3px;'>&nbsp&nbsp</span>";
        }
      bandmodeGrid.innerHTML+="<div>"+brgChartHTML+"</div>";
 
