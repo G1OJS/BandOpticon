@@ -120,7 +120,7 @@ a:visited {color: blue;}
 	      <div>
           <fieldset>
            <legend>Sort band rows by</legend>
-           <button  type="button" class="button" name="bandRowSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+           <button  type="button" class="button" name="bandRowSortKey" id="bandmode" onclick='setSort(&quot;bandmode&quot;)'>Band-mode</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
@@ -270,7 +270,7 @@ a:visited {color: blue;}
   var watchedMode="FT8";
   var allModesHeardArrArr=["FT4","FT8","CW","WSPR"];
   var detailsBandmode=bandmodeArr[0];
-  var bandRowsSortKey="BandName";
+  var bandRowsSortKey="bandmode";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
   var detailsWanted="";
@@ -294,7 +294,7 @@ a:visited {color: blue;}
 
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
-  setSort("BandName");
+  setSort("bandmode");
   makeModeButtons();
   setMode("FT8");  
   initBandRows();
@@ -675,7 +675,8 @@ function initBandRows(){
         let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
-        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+//        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</div>";
       });
   
   }
@@ -731,7 +732,7 @@ function initBandRows(){
     let indexArr=new Array();
     bandmodeArr.forEach((bandmode,index) => {
       indexArr.push(index);
-  //    if (bandRowsSortKey=="BandName") {
+  //    if (bandRowsSortKey=="bandmode") {
   //      const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
   //      criteria.push(metres(bandmode));
   //    } else {
@@ -772,8 +773,8 @@ function initBandRows(){
         let rxOnly=rx.difference(txrx);
         document.getElementById("rowCalls_"+index).innerHTML=""
 		+"<span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>"
-		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>"
-		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
+		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>";
+//		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
   
      });       
 
