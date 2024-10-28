@@ -787,7 +787,6 @@ function initBandRows(){
 	  let kmDeg=c.kmDeg;
 	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg.deg)]+=1;
 	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
-//    if(isNaN(brgHist[8])){console.log(kmDeg.deg)}
 	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
@@ -817,7 +816,7 @@ function initBandRows(){
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBandmode="+bandmodeData[0]+"; "
+         +" onclick='detailsBandmode='"+bandmodeData[0]+"'; "
          +"updateDisplays();'>"+bandmodeData[0]+"</a>";
        document.getElementById("nH2H_"+index).value=bandmodeData[1];
        document.getElementById("nH2DX_"+index).value=bandmodeData[2];
