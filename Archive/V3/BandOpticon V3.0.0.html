@@ -500,17 +500,6 @@ a:visited {color: blue;}
     return this.map(e => Math.round(100*e/sum));
   };
 
-//  Array.prototype.nonNegsToPercent = function() {
-  //   if(!this.every(isNumber)) this=NaN;
-  //   if(Math.min(this)<0) this= -1;
-  //   let sum = this.reduce((a,b) => a+b);
-  //   if(!(sum>0) this= NaN;
-  //  for (let i = 0; i < this.length; i++) {
-  //    this[i] = 100* this[i]/sum;
-  //  }
-    // this=this.map(e => 100*e/sum);
- // }
-
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
     let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
@@ -750,7 +739,7 @@ function initBandRows(){
 	
  function updateDisplays(){
 
-    if (document.getElementById("bandmodeGridContainer").style.display=="inline-block") {updateHomeCalls();} 
+    if (document.getElementById("homeCalls").style.display=="inline-block") {updateHomeCalls();} 
     if(detailsBandmode==""){
 	    document.getElementById("bandDetails").style="display:none;"
     } else {
