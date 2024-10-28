@@ -492,12 +492,13 @@ a:visited {color: blue;}
        +("0"+t.getUTCSeconds()).slice(-2)+" UTC";
   }
   
-  Array.prototype.nonNegsToRoundPercent = function() {
+  Array.prototype.nonNegsToRoundPercent = function(norm=false) {
     if(!this.every((e) => (typeof e === 'number'))) return NaN;
     if(Math.min(this)<0) return -1;
-    let sum = this.reduce((a,b) => a+b);
-    if(!(sum>0)) return NaN;
-    return this.map(e => Math.round(100*e/sum));
+    let s = this.reduce((a,b) => a+b);
+    if(!(s>0)) return NaN;
+    if(norm) {s=Math.max.apply(Math,this);}
+    return this.map(e => Math.round(100*e/s));
   };
 
   function startRecording(){
@@ -781,8 +782,7 @@ function initBandRows(){
 	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let pcSpots=nSpots.nonNegsToRoundPercent();
-      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(),brgHist.nonNegsToRoundPercent()];
+      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(true),brgHist.nonNegsToRoundPercent(true)];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData+", "; // save the stats from above to the recording string
    
