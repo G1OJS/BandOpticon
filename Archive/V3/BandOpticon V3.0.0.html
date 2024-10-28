@@ -514,7 +514,9 @@ a:visited {color: blue;}
     newWindow = window.open("", "newWindow", "width=1800, height=300");
     let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
     +"'Home' = "+squaresList
-    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)]</strong><BR> ";
+    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, "
+    +"n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)"
+    +"percent spots in distance bins "+distBins+" km, percent spots in bearing bins "+brgBins+" deg]</strong><BR> ";
   	  newWindow.document.write(htmlTmp);
   }
   
@@ -792,7 +794,7 @@ function initBandRows(){
       let pcSpots=nSpots.nonNegsToRoundPercent();
       let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(),brgHist.nonNegsToRoundPercent()];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
-      dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
+      dataForRecord+=bandmodeData+", "; // save the stats from above to the recording string
    
       if(bm==detailsBandmode) {showBandDetails(txCalls,rxCalls,txRxCalls,bandmodeData);} // if we hit the detailsBandmode, call showBandDetails
     });
