@@ -750,8 +750,8 @@ function initBandRows(){
     let distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
     let brgBinsArr=[0,45,90,135,180,225,270,315,360];
     bandmodeArr.forEach((bm,index) => {
-      let distHist=[0,0,0,0,0,0,0,0];
-      let brgHist=[0,0,0,0,0,0,0,0];
+      let distHist=[0,0,0,0,0,0,0,0,0];
+      let brgHist=[0,0,0,0,0,0,0,0,0];
       let nSpotsHH=0;
       let nSpotsHD=0;
       let nSpotsDH=0;
@@ -768,6 +768,7 @@ function initBandRows(){
 	  let kmDeg=c.kmDeg;
 	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg.deg)]+=1;
 	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
+//    if(isNaN(brgHist[8])){console.log(kmDeg.deg)}
 	}
       }
       let t=nSpotsHH+nSpotsHD+nSpotsDH;
