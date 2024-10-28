@@ -662,17 +662,16 @@ function initBandRows(){
 	
   for (let i=0;i<maxRows;i++){
     bandmodeGrid.innerHTML+=""
-       +"<div><output class='Stats' id='rowTitle_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='distHist_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='brgHist_"+i+"'></output></div>"
-       +"<div><output class='Stats' id='txCalls_"+i+"'></output></div>"
-     bandmodeGrid.innerHTML+="</div>";
+       +"<div class='Stats_"+i+"'><output id='rowTitle_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nH2H_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nH2DX_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nDX2H_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nTx_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nRx_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='nTxRx_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='distHist_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='brgHist_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"'><output id='txCalls_"+i+"'></output></div>";
   }
 }
 
@@ -825,11 +824,10 @@ function initBandRows(){
     });       
 
     
-    // hide unused band rows
+    // hide unused band row divs
     if(indexArr.length>0){
       for (let i=indexArr.length;i<maxRows;i++){
-        const el = document.querySelector("[id$='_"+i+"']");
-        el.forEach((element) => { element.style="display:none;"});
+        document.querySelectorAll(".Stats_"+i).forEach(function(el) {el.style="display:none;";});
       }
     }
     
