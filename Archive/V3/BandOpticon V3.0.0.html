@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -269,7 +270,7 @@ a:visited {color: blue;}
   var squaresList=""; // the human-firendly list of squares to watch
   var watchedMode="FT8";
   var allModesHeardArrArr=["FT4","FT8","CW","WSPR"];
-  var detailsBandmode=bandmodeArr[0];
+  var detailsBandmode="";
   var bandRowsSortKey="bandmode";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
@@ -683,7 +684,6 @@ function initBandRows(){
  function updateDisplays(){
 
     if (document.getElementById("bandmodeGridContainer").style.display=="inline-block") {updateHomeCalls();} 
-	  
     if(detailsBandmode==""){
 	    document.getElementById("bandDetails").style="display:none;"
     } else {
@@ -726,7 +726,7 @@ function initBandRows(){
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
    
-      if(bandmode==detailsBandmode) {showBandDetails(txCalls,rxCalls,txRxCalls,bandmodeData);} // if we hit the detailsBandmode, call showBandDetails
+      if(bm==detailsBandmode) {showBandDetails(txCalls,rxCalls,txRxCalls,bandmodeData);} // if we hit the detailsBandmode, call showBandDetails
     });
     
     // get the bandmode row sort order
@@ -779,8 +779,9 @@ function initBandRows(){
   function showBandDetails(txCalls, rxCalls, txRxCalls,bandmodeData){
 
     document.getElementById("bandDetails").style="display:inline-block;"
+    console.log(detailsBandmode);
     document.getElementById("detailsBandmode").innerHTML=detailsBandmode;
- 
+    
        // get copy of connections for just this band and mode
        let cons={};
        for (id in connections) {
