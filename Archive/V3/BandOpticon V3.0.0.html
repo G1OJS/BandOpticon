@@ -656,8 +656,8 @@ function initBandRows(){
   bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTx","Tx")+"</div>";  
   bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nRx","Rx")+"</div>";
   bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTxRx","TxRx")+"</div>";
-  bandmodeGrid.innerHTML+="<div>Distance></div>"
-  bandmodeGrid.innerHTML+="<div>Bearing S-W-N-E</div>";
+  bandmodeGrid.innerHTML+="<div>Distance</div>"
+  bandmodeGrid.innerHTML+="<div>Bearing SWNES</div>";
   bandmodeGrid.innerHTML+="<div>Home transmit calls</div>"; 
 	
   for (let i=0;i<maxRows;i++){
@@ -666,7 +666,7 @@ function initBandRows(){
        +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nDX2H_"+i+"'></output></div>"
-          +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='distHist_"+i+"'></output></div>"
@@ -674,7 +674,6 @@ function initBandRows(){
        +"<div><output class='Stats' id='txCalls_"+i+"'></output></div>"
      bandmodeGrid.innerHTML+="</div>";
   }
-// bandmodeGrid.innerHTML+="</div>";
 }
 
  function setMode(mode){
@@ -828,9 +827,11 @@ function initBandRows(){
     
     // hide unused band rows
     if(indexArr.length>0){
-    for (let i=indexArr.length;i<maxRows;i++){
- //     document.getElementById("row_"+i).style="display:none;"
-    }}
+      for (let i=indexArr.length;i<maxRows;i++){
+        const el = document.querySelector("id$='"+_+i+"'");
+        el.forEach((element) => { element.style="display:none;"});
+      }
+    }
     
 }
  
