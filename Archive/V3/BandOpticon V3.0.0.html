@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -114,31 +115,16 @@ a:visited {color: blue;}
         </fieldset>
       </div>
     </div>
-    
-    <div id='controls'>
-       <div>
-	      <div>
-          <fieldset>
-           <legend>Sort band rows by</legend>
-           <button  type="button" class="button" name="bandRowSortKey" id="bandmode" onclick='setSort(&quot;bandmode&quot;)'>Band-mode</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
-           <button  type="button" class="button" name="bandRowSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
-           </fieldset>
-         </div>
-        
+      <!--
         <div>
           <fieldset id=modeSelect >
             <legend>Mode to watch</legend>
-            <!-- written by script -->
+
             </fieldset>
         </div>
-      </div>
+      -->
+ </div>
 
-   </div>
    
    <div id="innerScreen">
       <div class="innerPanel" id="instructions" style="display:none;">
@@ -290,12 +276,14 @@ a:visited {color: blue;}
   var connectionsAdded=0;
   var connectionsPurged=0;
   const maxRows=50;
+  var distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
+  var brgBinsArr=[0,45,90,135,180,225,270,315,360];
 
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
   setSort("bandmode");
-  makeModeButtons();
-  setMode("FT8");  
+  //makeModeButtons();
+ // setMode("FT8");  
   initBandRows();
   updateDisplays();
 
@@ -660,9 +648,24 @@ function makeModeButtons(){
   setMode(watchedMode);
 }
   
+  
+  
+function sortButtonHTML(sortKey,caption){
+   return "<button type='button' class='button' onclick='setSort(&quot;"+sortKey+"&quot;)'>"+caption+"</button>";
+}  
+
 function initBandRows(){
   let bandmodeGrid=document.getElementById("bandmodeGrid");
-  bandmodeGrid.innerHTML="<div>Band mode</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div>Distance</div><div>Bearing</div><div></div>";
+  bandmodeGrid.innerHTML="";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("bandmode","Band mode")+"</div>";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHH","H►H")+"</div>";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHD","H►DX")+"</div>";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nDH","DX►H")+"</div>";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTx","Tx")+"</div>";  
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nRx","Rx")+"</div>";
+  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTxRx","TxRx")+"</div>";
+  bandmodeGrid.innerHTML+="<div>Distance km<br><span style='font-size:0.5rem;'>"+distBinsArr+"</span></div><div>Bearing deg <br><span style='font-size:0.5rem;'>"+brgBinsArr+"</span></div><div></div>";
+  
   for (let i=0;i<maxRows;i++){
     bandmodeGrid.innerHTML+=""
        +"<div><output class='Stats' id='rowTitle_"+i+"'></output></div>"
@@ -691,8 +694,8 @@ function initBandRows(){
  function setSort(sortKey){
    bandRowsSortKey=sortKey;
    let pressedButton=document.getElementById(sortKey);
-   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
-   pressedButton.classList.add('active');
+ //  for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+ //  pressedButton.classList.add('active');
    updateDisplays();
  } 
  
@@ -765,8 +768,6 @@ function initBandRows(){
     // can this be done more compactly?
     let bandmodeDataArr=new Array();
     dataForRecord="";
-    let distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
-    let brgBinsArr=[0,45,90,135,180,225,270,315,360];
     bandmodeArr.forEach((bm,index) => {
       let distHist=[0,0,0,0,0,0,0,0,0];
       let brgHist=[0,0,0,0,0,0,0,0,0];
