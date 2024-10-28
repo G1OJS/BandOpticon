@@ -353,8 +353,6 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
 
-    if(conn.md!="FT8"){return}
-
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
 
@@ -806,7 +804,7 @@ function initBandRows(){
 
 	 
     // populate the band row outputs in the sorted order
-    const spark=["&#9601;","&#9602;","&#9603;","&#9604;","&#9605;","&#9606;",&#9607;","&#9608","&#9609"];
+    const spark="▁▂▃▄▅▆▇█";
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
@@ -818,8 +816,8 @@ function initBandRows(){
        document.getElementById("nTx_"+index).value=bandmodeData[4];
        document.getElementById("nRx_"+index).value=bandmodeData[5];
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
-       document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark[Math.trunc(e/12.5)]);
-       document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark[Math.trunc(e/12.5)]);;
+       document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark[Math.trunc(e/12.5)]).join('');
+       document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark[Math.trunc(e/12.5)]).join('');
      });       
 
     
