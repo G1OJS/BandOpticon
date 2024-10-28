@@ -817,7 +817,7 @@ function initBandRows(){
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBandmode=\&quot;"+bandmodeData[0]+"\&quot;; "
+         +" onclick='detailsBandmode="+bandmodeData[0]+"; "
          +"updateDisplays();'>"+bandmodeData[0]+"</a>";
        document.getElementById("nH2H_"+index).value=bandmodeData[1];
        document.getElementById("nH2DX_"+index).value=bandmodeData[2];
