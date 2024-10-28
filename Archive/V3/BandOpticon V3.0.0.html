@@ -458,9 +458,6 @@ a:visited {color: blue;}
     return outputSqsArr;
   }
 
-   console.log(mhToLatLong("IO90ju"));
-   console.log(squaresToKmDeg("IO90ju","EM56kc"));
-   
    function mhToLatLong(Sq_mixedCase,inRadians=false){
     let Sq=Sq_mixedCase.toUpperCase();
     let lat=10*(Sq.charCodeAt(1)-65);
@@ -691,12 +688,7 @@ function initBandRows(){
     document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
-//    document.getElementById("connectionsAdded").value=connectionsAdded;
-//    document.getElementById("connectionsPurged").value=connectionsPurged;
-    
- }
-
-
+}
 
  function updateHomeCalls(){
       let homeCallsInfo={};
@@ -774,8 +766,8 @@ function initBandRows(){
           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
 	  let kmDeg=c.kmDeg;
-	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg[1])]+=1;
-	  distHist[distBinsArr.findIndex((km) => km > kmDeg[0])]+=1;	
+	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg.deg)]+=1;
+	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
 	}
       }
       let t=nSpotsHH+nSpotsHD+nSpotsDH;
