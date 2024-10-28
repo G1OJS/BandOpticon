@@ -47,8 +47,8 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 #homeCallsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: max-content auto; grid-template-rows: auto; }
 #homeCallsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
-#bandsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: min-content  min-content  min-content  min-content  min-content  min-content  min-content  auto auto auto; grid-template-rows: auto; }
-#bandsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+#bandmodeGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: min-content  min-content  min-content  min-content  min-content  min-content  min-content  auto auto auto; grid-template-rows: auto; }
+#bandmodeGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 
 #bandRowsBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
@@ -90,7 +90,7 @@ a:visited {color: blue;}
 </head>
 <body>
 <div id="title">BandOpticon</div>
-<div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
+<div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bandmode between Home and DX</div>
 
 <div id="app">
 	
@@ -120,7 +120,7 @@ a:visited {color: blue;}
 	      <div>
           <fieldset>
            <legend>Sort band rows by</legend>
-           <button  type="button" class="button" name="bandRowSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+           <button  type="button" class="button" name="bandRowSortKey" id="bandmode" onclick='setSort(&quot;bandmode&quot;)'>Band-mode</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
            <button  type="button" class="button" name="bandRowSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
@@ -159,7 +159,7 @@ a:visited {color: blue;}
       <br>
       The band details grid shows active callsigns in the 'Home' squares on the left, and calls they are spotting or being spotted by on the right. Colour coding on the right hand side differentiates Home-Home connections from Home-DX connections.
       <br><br>
-      Home calls can be listed individually, or grouped into active transmitters, active receivers and active transmitter-receivers. The latter group, home callsigns spotting anyone and being spotted by anyone, can be shown in isolation to reduce screen clutter on busy bands. Note that transmitter-receivers may appear on the left with no connected callsigns on the right. This is because a transmitter-receiver is defined as a home callsign spotting *anyone* and being spotted by *anyone*, whilst transmitter-receiver connections on the right indicate remote entities being spotted by and spotting the *same* home callsign.
+      Home calls can be listed individually, or grouped into active transmitters, active receivers and active transmitter-receivers. The latter group, home callsigns spotting anyone and being spotted by anyone, can be shown in isolation to reduce screen clutter on busy bandmode. Note that transmitter-receivers may appear on the left with no connected callsigns on the right. This is because a transmitter-receiver is defined as a home callsign spotting *anyone* and being spotted by *anyone*, whilst transmitter-receiver connections on the right indicate remote entities being spotted by and spotting the *same* home callsign.
       <br><br>
       When listed individually, home callsigns can be filtered to a single call plus your own callsign. This can be used to see how your own transmit and receive performance compares to another callsign's. If you have a second callsign (e.g. web SDR) you can compare performance of your own station with itself. Highlighting shows when the same callsign or square (select under 'Far Entities') appears in two or more lists.
       <br><br>
@@ -172,7 +172,7 @@ a:visited {color: blue;}
          <div>
             <span class="homeCalls title">Home Calls</span>
             <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("homeCalls").style="display:none;";'>close</a>
-            <br><br>The following callsigns in the Home squares are actively reporting on the bands and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
+            <br><br>The following callsigns in the Home squares are actively reporting on the bandmode and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
          </div>
          <br>
         <div style="clear:both"></div>
@@ -184,7 +184,7 @@ a:visited {color: blue;}
       <div class="innerPanel" id="bandDetails" style="float:left;">
   
          <div>
-            <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
+            <span class="bandDetails title">Details for <output id='detailsBandmode'></output> <output id='watchedMode'></output></span>
             <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
          </div>
          <br>
@@ -221,8 +221,8 @@ a:visited {color: blue;}
         </div>
 
      </div>
-     <div class="innerPanel" id="bandsGridContainer" style="display:inline-block;">
-	<div id='bandsGrid'>
+     <div class="innerPanel" id="bandmodeGridContainer" style="display:inline-block;">
+	<div id='bandmodeGrid'>
          <!-- written by script -->
 	</div>
      </div> 
@@ -263,14 +263,14 @@ a:visited {color: blue;}
 <script>
 
  // initialisation and functions to load and save configuration
-  var bandsArr=new Array();
+  var bandmodeArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
   var watchedMode="FT8";
-  var modesAcrossAllBandsArr=["FT4","FT8","CW","WSPR"];
-  var detailsBand=bandsArr[0];
-  var bandRowsSortKey="BandName";
+  var allModesHeardArrArr=["FT4","FT8","CW","WSPR"];
+  var detailsBandmode=bandmodeArr[0];
+  var bandRowsSortKey="bandmode";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
   var detailsWanted="";
@@ -290,11 +290,11 @@ a:visited {color: blue;}
   var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
-  const maxRows=20;
+  const maxRows=50;
 
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
-  setSort("BandName");
+  setSort("bandmode");
   makeModeButtons();
   setMode("FT8");  
   initBandRows();
@@ -365,7 +365,8 @@ a:visited {color: blue;}
            let kvp=v.split(":");
            conn[kvp[0]]=kvp[1];
          });
-	  
+
+    conn["bm"]=conn.b+"&nbsp;"+conn.md;
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
 			
@@ -589,17 +590,17 @@ a:visited {color: blue;}
 function makeModeButtons(){
   let el=document.getElementById("modeSelect");
   el.innerHTML="<legend>Mode to watch</legend>";
-  modesAcrossAllBandsArr.forEach((md) => {
+  allModesHeardArrArr.forEach((md) => {
     el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button> "
   });
   setMode(watchedMode);
 }
   
 function initBandRows(){
-  let bandsGrid=document.getElementById("bandsGrid");
-  bandsGrid.innerHTML="<div>Band</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div></div><div></div><div></div>";
+  let bandmodeGrid=document.getElementById("bandmodeGrid");
+  bandmodeGrid.innerHTML="<div>Band mode</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div></div><div></div><div></div>";
   for (let i=0;i<maxRows;i++){
-    bandsGrid.innerHTML+=""
+    bandmodeGrid.innerHTML+=""
        +"<div><output class='Stats' id='rowTitle_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2H_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nH2DX_"+i+"'></output></div>"
@@ -610,7 +611,7 @@ function initBandRows(){
 	+"<div><output class='Stats' id='rowCalls_"+i+"'></output></div>"
        +"<div></div><div></div>";
   }
-// bandsGrid.innerHTML+="</div>";
+// bandmodeGrid.innerHTML+="</div>";
 }
 
  function setMode(mode){
@@ -674,113 +675,106 @@ function initBandRows(){
         let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
-        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+//        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</div>";
       });
   
   }
     
  function updateDisplays(){
 
-    if (document.getElementById("bandsGridContainer").style.display=="inline-block") {updateHomeCalls();} 
+    if (document.getElementById("bandmodeGridContainer").style.display=="inline-block") {updateHomeCalls();} 
 	  
     if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
     if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
 
     // Write the <div>s for each band summary row in the bandRowsGrid area
-    var bandsHeard=new Set();
-    for (id in connections) {bandsHeard.add(connections[id].b)}
-    bandsArr=Array.from(bandsHeard);
+    var bandmodeHeard=new Set();
+    for (id in connections) {bandmodeHeard.add(connections[id].bm)}
+    bandmodeArr=Array.from(bandmodeHeard);
     
   //  let loadScr=document.getElementById('loading');
-  //  if(loadScr.innerHTML!="" && bandsHeard.size>0) {
+  //  if(loadScr.innerHTML!="" && bandmodeHeard.size>0) {
   //    loadScr.innerHTML="";
   //    loadScr.style="display:none;";
   //  }
  	  
-    // get the band stats for each band. if detailsBand, call showBandDetails 
+    // get the band stats for each band. if detailsBandmode, call showBandDetails 
     // can this be done more compactly?
-    let bandsDataArr=new Array();
-    dataForRecord="Mode="+watchedMode+", ";
-    bandsArr.forEach((band,index) => {
+    let bandmodeDataArr=new Array();
+    dataForRecord="";
+    bandmodeArr.forEach((bm,index) => {
       let nSpotsHH=0;
       let nSpotsHD=0;
       let nSpotsDH=0;
       let txCalls=new Set;
       let rxCalls=new Set;
-      let bandModes=new Set;
       for (id in connections) {
         let c=connections[id];
-        if (c.b==band) {bandModes.add(c.md)}
-        if (c.b==band && c.md==watchedMode) {
+	if(c.bm==bm) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
           if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
-        }
+	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes),txCalls,rxCalls];
-      bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
-      dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
-     
-      let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
-      if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
-        modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
-        makeModeButtons();
-      } 
-      
-      if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
+      let bandmodeData=[bm,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
+      bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
+      dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
+   
+      if(detailsWanted=="BandDetails" && bandmode==detailsBandmode) {showBandDetails(txCalls,rxCalls,txRxCalls,bandmodeData);} // if we hit the detailsBandmode, call showBandDetails
     });
     
-    // get the band row sort order
+    // get the bandmode row sort order
     let criteria=new Array();
     let indexArr=new Array();
-    bandsArr.forEach((band,index) => {
+    bandmodeArr.forEach((bandmode,index) => {
       indexArr.push(index);
-      if (bandRowsSortKey=="BandName") {
+      if (bandRowsSortKey=="bandmode") {
         const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
-        criteria.push(metres(band));
+        criteria.push(metres(bandmode.split(' ')[0]));
       } else {
-        criteria.push(bandsDataArr[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
+        criteria.push(bandmodeDataArr[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
       }
     });    
     indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
 
     // populate the band row outputs in the sorted order
-    indexArr.forEach((bandIndex,index) => {
-       let bandData=bandsDataArr[bandIndex];
+    indexArr.forEach((bandmodeIndex,index) => {
+       let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
-         +"updateDisplays();'>"+bandData[0]+"&nbsp;"+watchedMode+"</a>";
-       document.getElementById("nH2H_"+index).value=bandData[1];
-       document.getElementById("nH2DX_"+index).value=bandData[2];
-       document.getElementById("nDX2H_"+index).value=bandData[3];
-       document.getElementById("nTx_"+index).value=bandData[4];
-       document.getElementById("nRx_"+index).value=bandData[5];
-       document.getElementById("nTxRx_"+index).value=bandData[6];
+         +" onclick='detailsBandmode=\&quot;"+bandmodeData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+         +"updateDisplays();'>"+bandmodeData[0]+"</a>";
+       document.getElementById("nH2H_"+index).value=bandmodeData[1];
+       document.getElementById("nH2DX_"+index).value=bandmodeData[2];
+       document.getElementById("nDX2H_"+index).value=bandmodeData[3];
+       document.getElementById("nTx_"+index).value=bandmodeData[4];
+       document.getElementById("nRx_"+index).value=bandmodeData[5];
+       document.getElementById("nTxRx_"+index).value=bandmodeData[6];
 	    
   //     document.getElementById("row_"+index).style="display:inline-block";
-  //     document.getElementById("row_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandRow active":"bandRow");
+  //     document.getElementById("row_"+index).className=( ((bandmodeData[4]+bandmodeData[5])>0) ? "bandRow active":"bandRow");
 
   //     document.getElementById("modes_"+index).innerHTML="";
-   //    let modesThisBandArr=bandData.slice(7);
+   //    let modesThisBandArr=bandmodeData.slice(7);
    //    modesThisBandArr[0].forEach((md) =>{
    //      document.getElementById("modes_"+index).innerHTML
-   //      +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
+   //      +="<a href='#' onclick='detailsBandmode=\&quot;"+bandmodeData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
          
- //      let rowCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
- //      rowCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
+ //      let rowCallsHTML=Array.from(bandmodeData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
+ //      rowCallsHTML+=" "+Array.from(bandmodeData[9].difference(bandmodeData[8])).toSorted().join(', ');
  //      document.getElementById("rowCalls_"+index).innerHTML=rowCallsHTML;
 
-	let tx=bandData[8]; let rx=bandData[9];
+	let tx=bandmodeData[7]; let rx=bandmodeData[8];
 	let txrx=rx.intersection(tx);
         let txOnly=tx.difference(txrx);
         let rxOnly=rx.difference(txrx);
         document.getElementById("rowCalls_"+index).innerHTML=""
 		+"<span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>"
-		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>"
-		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
+		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>";
+//		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
   
      });       
 
@@ -793,18 +787,17 @@ function initBandRows(){
     
 }
  
-  function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
+  function showBandDetails(txCalls, rxCalls, txRxCalls,bandmodeData){
 
     detailsWanted="BandDetails";
     document.getElementById("bandDetails").style="display:inline-block;"
-    document.getElementById("detailsBand").innerHTML=detailsBand;
-    document.getElementById("watchedMode").innerHTML=watchedMode;
+    document.getElementById("detailsBandmode").innerHTML=detailsBandmode;
  
        // get copy of connections for just this band and mode
        let cons={};
        for (id in connections) {
          let c=connections[id];
-         if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+         if (c.b==detailsBandmode) {cons[id]=connections[id]}
       }
 
       let myCallIsTx=txCalls.has(myCall);
