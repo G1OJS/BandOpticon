@@ -677,17 +677,8 @@ function initBandRows(){
           +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
-   
-       let distChartHTML="";
-       for (let x=1;x<9;x++){
-         distChartHTML+="<span id='distHist_"+i+"_x"+x+"' style='display:inline-block; margin:0px; padding:0px; height:1px; min-width:10px; border-top: solid 1px;'></span>";
-       }
-     bandmodeGrid.innerHTML+="<div vertical-align:bottom;>"+distChartHTML+"</div>";
-       let brgChartHTML="";
-       for (let x=1;x<9;x++){
-         brgChartHTML+="<span id='brgHist_"+i+"_x"+x+"'  style='display:inline-block; margin:0px; padding:0px; height:1px; min-width:10px; border-top: solid 1px;'></span>";
-       }
-     bandmodeGrid.innerHTML+="<div>"+brgChartHTML+"</div>";
+       +"<div><output class='Stats' id='distHist_"+i+"'></output></div>"
+       +"<div><output class='Stats' id='brgHist_"+i+"'></output></div>"
 
      bandmodeGrid.innerHTML+="</div><div></div>";
   }
@@ -834,12 +825,8 @@ function initBandRows(){
        document.getElementById("nTx_"+index).value=bandmodeData[4];
        document.getElementById("nRx_"+index).value=bandmodeData[5];
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
-       for (let x=1;x<9;x++){
-         document.getElementById("distHist_"+index+"_x"+x).style.borderTopWidth=Math.trunc(bandmodeData[7][x-1]/5+1)+"px";
-         document.getElementById("brgHist_"+index+"_x"+x).style.borderTopWidth=Math.trunc(bandmodeData[8][x-1]/5+1)+"px";
-       }
-//       document.getElementById("distHist_"+index).value=bandmodeData[7];
-//       document.getElementById("brgHist_"+index).value=bandmodeData[8];
+       document.getElementById("distHist_"+index).value=bandmodeData[7];
+       document.getElementById("brgHist_"+index).value=bandmodeData[8];
      });       
 
     
