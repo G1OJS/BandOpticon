@@ -828,7 +828,7 @@ function initBandRows(){
     // hide unused band rows
     if(indexArr.length>0){
       for (let i=indexArr.length;i<maxRows;i++){
-        const el = document.querySelector("id$='_"+i+"'");
+        const el = document.querySelector("[id$='_"+i+"']");
         el.forEach((element) => { element.style="display:none;"});
       }
     }
