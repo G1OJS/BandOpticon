@@ -128,7 +128,7 @@ a:visited {color: blue;}
    
    <div id="innerScreen">
       <div class="innerPanel" id="instructions" style="display:none;">
-      <span class="title">Overview</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
+      <span class="title">Overview - needs revising for V3</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
       <br>BandOpticon has two main displays. 1) A grid of rows showing band usage information for each active band on the currently-selected mode (select via 'Mode to watch' buttons) and 2) a 'band details' grid showing who is spotting whom on a single selected band. To activate the band details display, click on the band name and mode in any band row, or on a mode at the bottom of the band row.
       <br><br>
       On both displays, BandOpticon shows connections between callsigns in the 'Home' squares and DX callsigns, as well as Home to Home connections.
@@ -279,6 +279,7 @@ a:visited {color: blue;}
   var distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
   var brgBinsArr=[0,45,90,135,180,225,270,315,360];
 
+	
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
   setSort("bandmode");
@@ -505,7 +506,7 @@ a:visited {color: blue;}
     +"'Home' = "+squaresList
     +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, "
     +"n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)"
-    +"percent spots in distance bins "+distBinsArr+" km, percent spots in bearing bins "+brgBinsArr+" deg]</strong><BR> ";
+    +"percent spots in distance bins "+distBinsArr+" km, percent spots in bearing bins "+brgBinsArr+" shifted by 180 deg]</strong><BR> ";
   	  newWindow.document.write(htmlTmp);
   }
   
@@ -777,7 +778,7 @@ function initBandRows(){
           if(c.sd=="home" && c.rd=="dx") {nSpots[1]+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpots[2]+=1} 
 	  let kmDeg=c.kmDeg;
-	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg.deg)]+=1;
+	  brgHist[brgBinsArr.findIndex(((deg+180) %360) => deg > kmDeg.deg)]+=1;
 	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
 	}
       }
@@ -820,8 +821,8 @@ function initBandRows(){
        document.getElementById("nRx_"+index).value=bandmodeData[5];
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
        document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark6[Math.trunc(e/12.5)]).join('');
-       document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc(((e+180) %360)/12.5)]).join('');
-       document.getElementById("txCalls_"+index).value=bandmodeData[9];
+       document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc((e/12.5)]).join('');
+       document.getElementById("txCalls_"+index).value=Array.from(bandmodeData[9]).toSorted();
     });       
 
     
