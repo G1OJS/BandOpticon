@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -503,6 +502,25 @@ a:visited {color: blue;}
        +("0"+t.getUTCMinutes()).slice(-2)+":"
        +("0"+t.getUTCSeconds()).slice(-2)+" UTC";
   }
+  
+  Array.prototype.nonNegsToRoundPercent = function() {
+    if(!this.every((e) => (typeof e === 'number'))) return NaN;
+    if(Math.min(this)<0) return -1;
+    let sum = this.reduce((a,b) => a+b);
+    if(!(sum>0)) return NaN;
+    return this.map(e => Math.round(100*e/sum));
+  };
+
+//  Array.prototype.nonNegsToPercent = function() {
+  //   if(!this.every(isNumber)) this=NaN;
+  //   if(Math.min(this)<0) this= -1;
+  //   let sum = this.reduce((a,b) => a+b);
+  //   if(!(sum>0) this= NaN;
+  //  for (let i = 0; i < this.length; i++) {
+  //    this[i] = 100* this[i]/sum;
+  //  }
+    // this=this.map(e => 100*e/sum);
+ // }
 
   function startRecording(){
     newWindow = window.open("", "newWindow", "width=1800, height=300");
@@ -644,7 +662,7 @@ function makeModeButtons(){
   
 function initBandRows(){
   let bandmodeGrid=document.getElementById("bandmodeGrid");
-  bandmodeGrid.innerHTML="<div>Band mode</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div></div><div></div><div></div>";
+  bandmodeGrid.innerHTML="<div>Band mode</div><div>H2H</div><div>H2DX</div><div>DX2H</div><div>Tx</div><div>Rx</div><div>TxRx</div><div>Distance</div><div>Bearing</div><div></div>";
   for (let i=0;i<maxRows;i++){
     bandmodeGrid.innerHTML+=""
        +"<div><output class='Stats' id='rowTitle_"+i+"'></output></div>"
@@ -752,9 +770,7 @@ function initBandRows(){
     bandmodeArr.forEach((bm,index) => {
       let distHist=[0,0,0,0,0,0,0,0,0];
       let brgHist=[0,0,0,0,0,0,0,0,0];
-      let nSpotsHH=0;
-      let nSpotsHD=0;
-      let nSpotsDH=0;
+      let nSpots=[0,0,0];
       let txCalls=new Set;
       let rxCalls=new Set;
       for (id in connections) {
@@ -762,25 +778,18 @@ function initBandRows(){
 	if(c.bm==bm) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
-          if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
-          if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
-          if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+          if(c.sd=="home" && c.rd=="home") {nSpots[0]+=1}
+          if(c.sd=="home" && c.rd=="dx") {nSpots[1]+=1} 
+          if(c.sd=="dx" && c.rd=="home") {nSpots[2]+=1} 
 	  let kmDeg=c.kmDeg;
 	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg.deg)]+=1;
 	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
 //    if(isNaN(brgHist[8])){console.log(kmDeg.deg)}
 	}
       }
-      let t=nSpotsHH+nSpotsHD+nSpotsDH;
-      let pcSpotsHH=0;let pcSpotsHD=0; let pcSpotsDH=0;
-      if(t>0) {
-        pcSpotsHH=Math.round(100*nSpotsHH/t);
-        pcSpotsHD=Math.round(100*nSpotsHD/t);
-        pcSpotsDH=Math.round(100*nSpotsHD/t);
-      }
       let txRxCalls=txCalls.intersection(rxCalls);
-
-      let bandmodeData=[bm,pcSpotsHH,pcSpotsHD,pcSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,distHist,brgHist];
+      let pcSpots=nSpots.nonNegsToRoundPercent();
+      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(),brgHist.nonNegsToRoundPercent()];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
    
