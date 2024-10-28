@@ -778,7 +778,7 @@ function initBandRows(){
           if(c.sd=="home" && c.rd=="dx") {nSpots[1]+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpots[2]+=1} 
 	  let kmDeg=c.kmDeg;
-	  brgHist[brgBinsArr.findIndex(((deg+180) %360) => deg > kmDeg.deg)]+=1;
+	  brgHist[brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
 	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
 	}
       }
