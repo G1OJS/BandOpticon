@@ -366,14 +366,20 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
 
-    conn["bm"]=conn.b+"&nbsp;"+conn.md;
+
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
-			
+
+    // add band-mode tag
+    conn["bm"]=conn.b+"&nbsp;"+conn.md;
+	  
     // add sender and receiver domain (home/dx)
     if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
     if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
-    
+
+    // add distance and bearing
+    	  
+	  
     // now add this connection to the connections object using sequence ID as key:
     if(conn.rd=="home" || conn.sd=="home") {
       connections[conn.sq]=conn
@@ -449,6 +455,45 @@ a:visited {color: blue;}
     console.log("Parsed squares result "+outputSqsArr);
     return outputSqsArr;
   }
+
+   function mhToLatLong(Sq,inRadians=false){
+//    =(CODE(MID(A1,2,1))-65)*10 + VALUE(MID(A1,4,1)) + (CODE(MID(A1,6,1))-97)/24 + 1/48 - 90
+//   =(CODE(MID(A1,1,1))-65)*20 + VALUE(MID(A1,3,1))*2 + (CODE(MID(A1,5,1))-97)/12 + 1/24 - 180	   
+    let lat=10*(Sq.charCodeAt(0)-65);
+    let lon=20*(Sq.charCodeAt(1)-65);
+    if(Sq.length>2) {
+      lat+=parseInt(Sq.charAt(2));
+      lon+=parseInt(Sq.charAt(3));
+    }
+    if(Sq.length>4){
+      lat+=(Sq.charCodeAt(4)-97)/24;
+      lon+=(Sq.charCodeAt(5)-97)/12;
+    }
+    lat+=1/48.0;
+    lon+=1/24.0;
+    if(inRadians){
+	lat=lat*Math.PI/180;    
+	lon=lon*Math.PI/180;    
+    }
+    return {"lat":lat,"lon":lon}
+  }
+
+  function squaresToKmDeg(SqA,SqB){
+//
+Haversine
+formula:	a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
+c = 2 ⋅ atan2( √a, √(1−a) )
+d = R ⋅ c
+where:	φ is latitude, λ is longitude, R is earth’s radius (mean radius = 6,371km);
+note that angles need to be in radians to pass to trig functions!
+	  
+     let A=mhToLatLong(SqA,true);
+     let B=mhToLatLong(SqB,true);
+     let a=Math.pow((Math.sin((A.lon-B.lon)/2),2)+Math.cos(A.lat)*Math.cos(B.lat)*Math.pow(Math.sin((A.lat-B.lat)/2),2);
+     
+     
+  }
+
    	
    function get_utc_timestamp(){ 
     var t=new Date;
