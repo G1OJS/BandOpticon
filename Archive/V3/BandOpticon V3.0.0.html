@@ -782,7 +782,7 @@ function initBandRows(){
       }
       let txRxCalls=txCalls.intersection(rxCalls);
       let pcSpots=nSpots.nonNegsToRoundPercent();
-      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(),brgHist.nonNegsToRoundPercent(),txCalls];
+      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(),brgHist.nonNegsToRoundPercent()];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData+", "; // save the stats from above to the recording string
    
@@ -820,7 +820,6 @@ function initBandRows(){
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
        document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark6[Math.trunc(e/12.5)]).join('');
        document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc(e/12.5)]).join('');
-       document.getElementById("txCalls_"+index).value=Array.from(bandmodeData[9]).toSorted();
     });       
 
     
