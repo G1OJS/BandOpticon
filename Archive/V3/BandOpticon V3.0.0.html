@@ -377,8 +377,10 @@ a:visited {color: blue;}
     if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
     if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
 
-    // add distance and bearing
-    	  
+    // add distance and bearing Home to DX 
+    // if both in home, sender to receiver
+    // compact logic == always sender to receiver unless Rx in home and Tx in DXin which case reverse
+    conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
 	  
     // now add this connection to the connections object using sequence ID as key:
     if(conn.rd=="home" || conn.sd=="home") {
@@ -456,24 +458,26 @@ a:visited {color: blue;}
     return outputSqsArr;
   }
 
-   function mhToLatLong(Sq,inRadians=false){
-//    =(CODE(MID(A1,2,1))-65)*10 + VALUE(MID(A1,4,1)) + (CODE(MID(A1,6,1))-97)/24 + 1/48 - 90
-//   =(CODE(MID(A1,1,1))-65)*20 + VALUE(MID(A1,3,1))*2 + (CODE(MID(A1,5,1))-97)/12 + 1/24 - 180	   
-    let lat=10*(Sq.charCodeAt(0)-65);
-    let lon=20*(Sq.charCodeAt(1)-65);
+   console.log(mhToLatLong("IO90ju"));
+   console.log(squaresToKmDeg("IO90ju","EM56kc"));
+   
+   function mhToLatLong(Sq_mixedCase,inRadians=false){
+    let Sq=Sq_mixedCase.toUpperCase();
+    let lat=10*(Sq.charCodeAt(1)-65);
+    let lon=20*(Sq.charCodeAt(0)-65);
     if(Sq.length>2) {
-      lat+=parseInt(Sq.charAt(2));
-      lon+=parseInt(Sq.charAt(3));
+      lat+=parseInt(Sq.charAt(3));
+      lon+=2*parseInt(Sq.charAt(2));
     }
     if(Sq.length>4){
-      lat+=(Sq.charCodeAt(4)-97)/24;
-      lon+=(Sq.charCodeAt(5)-97)/12;
+      lat+=(Sq.charCodeAt(5)-65)/24;
+      lon+=(Sq.charCodeAt(4)-65)/12;
     }
-    lat+=1/48.0;
-    lon+=1/24.0;
+    lat+=1/48.0 - 90;
+    lon+=1/24.0 - 180;
     if(inRadians){
-	lat=lat*Math.PI/180;    
-	lon=lon*Math.PI/180;    
+	    lat=lat*Math.PI/180;    
+	    lon=lon*Math.PI/180;    
     }
     return {"lat":lat,"lon":lon}
   }
@@ -482,18 +486,19 @@ a:visited {color: blue;}
 	  
      let A=mhToLatLong(SqA,true);
      let B=mhToLatLong(SqB,true);
-     let a=Math.pow((Math.sin((A.lat-B.lat)/2),2)+Math.cos(A.lat)*Math.cos(B.lat)*Math.pow(Math.sin((A.lon-B.lon)/2),2);
-     let c=Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+     let dLat=B.lat-A.lat;
+     let dLon=B.lon-A.lon;
+     let a=Math.pow(Math.sin(dLat/2),2)+Math.cos(A.lat)*Math.cos(B.lat)*Math.pow(Math.sin(dLon/2),2);
+     let c=2.0*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
      let km=6371.0*c;
-     let y=Math.sin(A.lon-B.lon)*Math.cos(B.lat);
-     let x=Math.cos(A.lat)*Math.cos(B.lat) - Math.sin(A.lat)*Math.cos(B.lat)*Math.cos(B.lon-A.lon);
+     let y=Math.sin(dLon)*Math.cos(B.lat);
+     let x=Math.cos(A.lat)*Math.sin(B.lat) - Math.sin(A.lat)*Math.cos(B.lat)*Math.cos(dLon);
      let th=Math.atan2(y,x);
      let brg=(th*180/Math.PI + 360) %360;
 
      return({"km":km,"deg":brg});
   }
-
-   	
+	
    function get_utc_timestamp(){ 
     var t=new Date;
     return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
@@ -724,7 +729,11 @@ function initBandRows(){
       });
   
   }
-    
+
+ function bin(x,xArr){
+   
+ }
+	
  function updateDisplays(){
 
     if (document.getElementById("bandmodeGridContainer").style.display=="inline-block") {updateHomeCalls();} 
@@ -773,6 +782,9 @@ function initBandRows(){
         pcSpotsDH=Math.round(100*nSpotsHD/t);
       }
       let txRxCalls=txCalls.intersection(rxCalls);
+      let kmDeg=c.kmDeg;
+      let distHist=bin(km,[0,500,1000,2000,5000,10000,90000]);
+      let brgHist=bin(deg,[0,45,90,135,180,225,270,315,360]);
       let bandmodeData=[bm,pcSpotsHH,pcSpotsHD,pcSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
