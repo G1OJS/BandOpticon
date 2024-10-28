@@ -721,8 +721,15 @@ function initBandRows(){
           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
 	}
       }
+      let t=nSpotsHH+nSpotsHD+nSpotsDH;
+      let pcSpotsHH=0;let pcSpotsHH=0; let pcSpotsHH=0;
+      if(t>0) {
+        pcSpotsHH=Math.round(100*nSpotsHH/t);
+        pcSpotsHD=Math.round(100*nSpotsHD/t);
+        pcSpotsDH=Math.round(100*nSpotsHD/t);
+      }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let bandmodeData=[bm,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
+      let bandmodeData=[bm,pcSpotsHH,pcSpotsHD,pcSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
    
