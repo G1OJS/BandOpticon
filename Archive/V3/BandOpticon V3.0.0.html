@@ -657,8 +657,9 @@ function initBandRows(){
           +"<div><output class='Stats' id='nTx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nRx_"+i+"'></output></div>"
        +"<div><output class='Stats' id='nTxRx_"+i+"'></output></div>"
-	+"<div><output class='Stats' id='rowCalls_"+i+"'></output></div>"
-       +"<div></div><div></div>";
+	+"<div><output class='Stats' id='distHist_"+i+"'></output></div>"
+	+"<div><output class='Stats' id='brgHist_"+i+"'></output></div>"
+       +"<div></div>";
   }
 // bandmodeGrid.innerHTML+="</div>";
 }
@@ -729,10 +730,6 @@ function initBandRows(){
       });
   
   }
-
- function bin(x,xArr){
-   
- }
 	
  function updateDisplays(){
 
@@ -758,6 +755,10 @@ function initBandRows(){
     // can this be done more compactly?
     let bandmodeDataArr=new Array();
     dataForRecord="";
+    let distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
+    let brgBinsArr=[0,45,90,135,180,225,270,315,360];
+    let distHist=[0,0,0,0,0,0,0,0];
+    let brgHist=[0,0,0,0,0,0,0,0];
     bandmodeArr.forEach((bm,index) => {
       let nSpotsHH=0;
       let nSpotsHD=0;
@@ -772,6 +773,9 @@ function initBandRows(){
           if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
           if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+	  let kmDeg=c.kmDeg;
+	  brgHist[brgBinsArr.findIndex((deg) => deg > kmDeg[1])]+=1;
+	  distHist[distBinsArr.findIndex((km) => km > kmDeg[0])]+=1;	
 	}
       }
       let t=nSpotsHH+nSpotsHD+nSpotsDH;
@@ -782,10 +786,8 @@ function initBandRows(){
         pcSpotsDH=Math.round(100*nSpotsHD/t);
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let kmDeg=c.kmDeg;
-      let distHist=bin(km,[0,500,1000,2000,5000,10000,90000]);
-      let brgHist=bin(deg,[0,45,90,135,180,225,270,315,360]);
-      let bandmodeData=[bm,pcSpotsHH,pcSpotsHD,pcSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,txCalls,rxCalls];
+
+      let bandmodeData=[bm,pcSpotsHH,pcSpotsHD,pcSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,distHist,brgHist];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData.slice(0,7)+", "; // save the stats from above to the recording string
    
@@ -818,16 +820,8 @@ function initBandRows(){
        document.getElementById("nTx_"+index).value=bandmodeData[4];
        document.getElementById("nRx_"+index).value=bandmodeData[5];
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
-	    
-	let tx=bandmodeData[7]; let rx=bandmodeData[8];
-	let txrx=rx.intersection(tx);
-        let txOnly=tx.difference(txrx);
-        let rxOnly=rx.difference(txrx);
-        document.getElementById("rowCalls_"+index).innerHTML=""
-		+"<span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span>"
-		+" <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span>";
-//		+" <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span>";
-  
+       document.getElementById("distHist_"+index).value=bandmodeData[7];
+       document.getElementById("brgHist_"+index).value=bandmodeData[8];
      });       
 
     
