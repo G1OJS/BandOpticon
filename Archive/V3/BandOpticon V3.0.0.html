@@ -367,8 +367,9 @@ a:visited {color: blue;}
     // add distance and bearing Home to DX 
     // if both in home, sender to receiver
     // compact logic == always sender to receiver unless Rx in home and Tx in DXin which case reverse
-    conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
-	  
+//    conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
+    conn["kmDeg"]= {"km":0,"deg":0}
+	    
     // now add this connection to the connections object using sequence ID as key:
     if(conn.rd=="home" || conn.sd=="home") {
       connections[conn.sq]=conn
