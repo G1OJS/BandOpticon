@@ -479,19 +479,18 @@ a:visited {color: blue;}
   }
 
   function squaresToKmDeg(SqA,SqB){
-//
-Haversine
-formula:	a = sin²(Δφ/2) + cos φ1 ⋅ cos φ2 ⋅ sin²(Δλ/2)
-c = 2 ⋅ atan2( √a, √(1−a) )
-d = R ⋅ c
-where:	φ is latitude, λ is longitude, R is earth’s radius (mean radius = 6,371km);
-note that angles need to be in radians to pass to trig functions!
 	  
      let A=mhToLatLong(SqA,true);
      let B=mhToLatLong(SqB,true);
-     let a=Math.pow((Math.sin((A.lon-B.lon)/2),2)+Math.cos(A.lat)*Math.cos(B.lat)*Math.pow(Math.sin((A.lat-B.lat)/2),2);
-     
-     
+     let a=Math.pow((Math.sin((A.lat-B.lat)/2),2)+Math.cos(A.lat)*Math.cos(B.lat)*Math.pow(Math.sin((A.lon-B.lon)/2),2);
+     let c=Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+     let km=6371.0*c;
+     let y=Math.sin(A.lon-B.lon)*Math.cos(B.lat);
+     let x=Math.cos(A.lat)*Math.cos(B.lat) - Math.sin(A.lat)*Math.cos(B.lat)*Math.cos(B.lon-A.lon);
+     let th=Math.atan2(y,x);
+     let brg=(th*180/Math.PI + 360) %360;
+
+     return({"km":km,"deg":brg});
   }
 
    	
