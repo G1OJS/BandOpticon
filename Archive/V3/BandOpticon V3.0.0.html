@@ -358,7 +358,7 @@ a:visited {color: blue;}
     conn.rl=(conn.rl).toUpperCase();
 
     // add band-mode tag
-    conn["bm"]=conn.b+"&nbsp;"+conn.md;
+    conn["bm"]=conn.b+"-"+conn.md;
 	  
     // add sender and receiver domain (home/dx)
     if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
@@ -816,7 +816,7 @@ function initBandRows(){
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBandmode='"+bandmodeData[0]+"'; "
+         +" onclick='detailsBandmode=&quot;"+bandmodeData[0]+"&quot;; "
          +"updateDisplays();'>"+bandmodeData[0]+"</a>";
        document.getElementById("nH2H_"+index).value=bandmodeData[1];
        document.getElementById("nH2DX_"+index).value=bandmodeData[2];
