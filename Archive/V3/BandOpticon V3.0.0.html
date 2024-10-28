@@ -817,7 +817,7 @@ function initBandRows(){
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
          +" onclick='detailsBandmode=&quot;"+bandmodeData[0]+"&quot;; "
-         +"updateDisplays();'>"+bandmodeData[0]+"</a>";
+         +"updateDisplays();'>"+bandmodeData[0].replace("-"," ")+"</a>";
        document.getElementById("nH2H_"+index).value=bandmodeData[1];
        document.getElementById("nH2DX_"+index).value=bandmodeData[2];
        document.getElementById("nDX2H_"+index).value=bandmodeData[3];
@@ -841,7 +841,7 @@ function initBandRows(){
 
     document.getElementById("bandDetails").style="display:inline-block;"
     console.log(detailsBandmode);
-    document.getElementById("detailsBandmode").innerHTML=detailsBandmode;
+    document.getElementById("detailsBandmode").innerHTML=detailsBandmode.replace("-"," ");
     
        // get copy of connections for just this band and mode
        let cons={};
