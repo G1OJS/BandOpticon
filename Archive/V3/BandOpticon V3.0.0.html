@@ -48,7 +48,7 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 #homeCallsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: max-content auto; grid-template-rows: auto; }
 #homeCallsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
-#bandmodeGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: repeat(9,min-content) auto; grid-template-rows: auto; }
+#bandmodeGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: min-content 9rem 9rem auto; grid-template-rows: auto; }
 #bandmodeGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 
@@ -115,14 +115,14 @@ a:visited {color: blue;}
         </fieldset>
       </div>
     </div>
-      <!--
+     
         <div>
           <fieldset id=modeSelect >
             <legend>Mode to watch</legend>
 
             </fieldset>
         </div>
-      -->
+    
  </div>
 
    
@@ -283,8 +283,8 @@ a:visited {color: blue;}
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
   setSort("bandmode");
-  //makeModeButtons();
- // setMode("FT8");  
+  makeModeButtons();
+  setMode("FT8");  
   initBandRows();
   updateDisplays();
 
@@ -650,28 +650,31 @@ function sortButtonHTML(sortKey,caption){
 function initBandRows(){
   let bandmodeGrid=document.getElementById("bandmodeGrid");
   bandmodeGrid.innerHTML="";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("bandmode","Band mode")+"</div>";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHH","H►H")+"</div>";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHD","H►DX")+"</div>";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nDH","DX►H")+"</div>";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTx","Tx")+"</div>";  
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nRx","Rx")+"</div>";
-  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTxRx","TxRx")+"</div>";
-  bandmodeGrid.innerHTML+="<div>Distance</div>"
-  bandmodeGrid.innerHTML+="<div>Bearing SWNES</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("bandmode","Band mode")+"</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHH","H►H")+"</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nHD","H►DX")+"</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nDH","DX►H")+"</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTx","Tx")+"</div>";  
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nRx","Rx")+"</div>";
+//  bandmodeGrid.innerHTML+="<div>"+sortButtonHTML("nTxRx","TxRx")+"</div>";
+
+  bandmodeGrid.innerHTML+="<div><strong>Band_mode</strong></div>";
+  bandmodeGrid.innerHTML+="<div><strong>Distance</strong></div>"
+  bandmodeGrid.innerHTML+="<div><strong>Bearing SWNES</strong></div>";
   bandmodeGrid.innerHTML+="<div></div>"; 
 	
   for (let i=0;i<maxRows;i++){
+
     bandmodeGrid.innerHTML+=""
        +"<div class='Stats_"+i+"' style='display:none;'><output id='rowTitle_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2H_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2DX_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nDX2H_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nTx_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nRx_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='nTxRx_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='distHist_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='brgHist_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2H_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2DX_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nDX2H_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nTx_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nRx_"+i+"'></output></div>"
+ //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nTxRx_"+i+"'></output></div>"
+       +"<div class='Stats_"+i+"' style='display:none; '><span id='distHist_"+i+"'></span></div>"
+       +"<div class='Stats_"+i+"' style='display:none; '><span id='brgHist_"+i+"'></span></div>"
        +"<div class='Stats_"+i+"' style='display:none;'><output id='txCalls_"+i+"'></output></div>";
   }
 }
@@ -763,29 +766,30 @@ function initBandRows(){
     let bandmodeDataArr=new Array();
     dataForRecord="";
     let nMax=0;
+    bandmodeArr= bandmodeArr.filter((bm) => bm.includes(watchedMode));
     bandmodeArr.forEach((bm,index) => {
-      let distHist=[0,0,0,0,0,0,0,0,0];
-      let brgHist=[0,0,0,0,0,0,0,0,0];
+      let distHistArr=[0,0,0,0,0,0,0,0];
+      let brgHistArr=[0,0,0,0,0,0,0,0];
       let nSpots=[0,0,0];
       let txCalls=new Set;
       let rxCalls=new Set;
       for (id in connections) {
         let c=connections[id];
-	if(c.bm==bm) {
+	      if(c.bm==bm) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
           if(c.sd=="home" && c.rd=="home") {nSpots[0]+=1}
           if(c.sd=="home" && c.rd=="dx") {nSpots[1]+=1} 
           if(c.sd=="dx" && c.rd=="home") {nSpots[2]+=1} 
 	  let kmDeg=c.kmDeg;
-	  brgHist[brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
-	  distHist[distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
+	  brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
+	  distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
 	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let nTx=txCalls.size;
-      nMax= (nTx>nMax) ? nTx:nMax
-      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(true),brgHist.nonNegsToRoundPercent(true)];
+      let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity)
+      nMax= (n>nMax) ? n:nMax
+      let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHistArr,brgHistArr];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData+", "; // save the stats from above to the recording string
    
@@ -808,23 +812,23 @@ function initBandRows(){
 
 	 
     // populate the band row outputs in the sorted order
-    const spark8="▁▂▃▄▅▆▇█";
-    const spark6="▁▂▂▃▅▆▇▇";
-
+const spark="▂▃▅▆▇";
+const zero="<span style='color:lightgrey;'>▂</span>";
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
          +" onclick='detailsBandmode=&quot;"+bandmodeData[0]+"&quot;; "
          +"updateDisplays();'>"+bandmodeData[0].replace("-","&nbsp;")+"</a>";
-       document.getElementById("nH2H_"+index).value=Math.trunc(bandmodeData[1]/bandmodeData[4]);
-       document.getElementById("nH2DX_"+index).value=Math.trunc(bandmodeData[2]/bandmodeData[4]);
-       document.getElementById("nDX2H_"+index).value=Math.trunc(bandmodeData[3]/bandmodeData[5]);
-       document.getElementById("nTx_"+index).value=bandmodeData[4];
-       document.getElementById("nRx_"+index).value=bandmodeData[5];
-       document.getElementById("nTxRx_"+index).value=bandmodeData[6];
-       document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark6[Math.trunc(e/12.6)]).join('');
-       document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc(e/12.6)]).join('');
+ //      document.getElementById("nH2H_"+index).value=Math.trunc(bandmodeData[1]/bandmodeData[4]);
+ //      document.getElementById("nH2DX_"+index).value=Math.trunc(bandmodeData[2]/bandmodeData[4]);
+ //      document.getElementById("nDX2H_"+index).value=Math.trunc(bandmodeData[3]/bandmodeData[5]);
+ //      document.getElementById("nTx_"+index).value=bandmodeData[4];
+ //      document.getElementById("nRx_"+index).value=bandmodeData[5];
+ //      document.getElementById("nTxRx_"+index).value=bandmodeData[6];
 
+      document.getElementById("distHist_"+index).innerHTML=bandmodeData[7].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('');
+       document.getElementById("brgHist_"+index).innerHTML=bandmodeData[8].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('');
+//(1+Math.trunc(7*e/nMax))
   //     let nTx=bandmodeData[4];
   //     let x=Math.trunc(255-255*nTx/nMax);
   //     let st="color:rgb("+x+" "+x+" "+x+");"
@@ -1020,3 +1024,4 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
 	
 </body>
 </html>
+
