@@ -273,7 +273,6 @@ a:visited {color: blue;}
 
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
-  setSort("Band");
   makeModeButtons();
   setMode("FT8");  
   updateDisplays();
@@ -685,7 +684,6 @@ function makeModeButtons(){
     // get the band stats for each band. if detailsBand, call showBandDetails 
     // can this be done more compactly?
     let BandDataArr=new Array();
-    dataForRecord="";
     let nMax=0;
     BandArr.forEach((b,index) => {
       let distHistArr=[0,0,0,0,0,0,0,0];
@@ -714,7 +712,7 @@ function makeModeButtons(){
   BandGrid.innerHTML="";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
-    indexArr.forEach((BandIndex,index) => {
+    BandDataArr.forEach((BandIndex,index) => {
        let BandData=BandDataArr[BandIndex];
        BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
 	+"<div>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
@@ -897,4 +895,3 @@ function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
 	
 </body>
 </html>
-
