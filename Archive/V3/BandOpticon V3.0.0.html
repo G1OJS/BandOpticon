@@ -762,6 +762,7 @@ function initBandRows(){
     // can this be done more compactly?
     let bandmodeDataArr=new Array();
     dataForRecord="";
+    let nMax=0;
     bandmodeArr.forEach((bm,index) => {
       let distHist=[0,0,0,0,0,0,0,0,0];
       let brgHist=[0,0,0,0,0,0,0,0,0];
@@ -782,6 +783,8 @@ function initBandRows(){
 	}
       }
       let txRxCalls=txCalls.intersection(rxCalls);
+      let nTx=txCalls.size;
+      nMax= (nTx>nMax) ? nTx:nMax
       let bandmodeData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHist.nonNegsToRoundPercent(true),brgHist.nonNegsToRoundPercent(true)];
       bandmodeDataArr.push(bandmodeData);  // accumulate the bandmode data to the bandmodeDataArr for use below  
       dataForRecord+=bandmodeData+", "; // save the stats from above to the recording string
@@ -807,6 +810,7 @@ function initBandRows(){
     // populate the band row outputs in the sorted order
     const spark8="▁▂▃▄▅▆▇█";
     const spark6="▁▂▂▃▅▆▇▇";
+
     indexArr.forEach((bandmodeIndex,index) => {
        let bandmodeData=bandmodeDataArr[bandmodeIndex];
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
@@ -821,7 +825,16 @@ function initBandRows(){
        document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark6[Math.trunc(e/12.6)]).join('');
        document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc(e/12.6)]).join('');
 
+       let nTx=bandmodeData[4];
+       let x=Math.trunc(255-255*nTx/nMax);
+       let st="color:rgb("+x+" "+x+" "+x+");"
+       document.getElementById("distHist_"+index).style=st;
+       document.getElementById("brgHist_"+index).style=st;
        document.querySelectorAll(".Stats_"+index).forEach(function(el) {el.style="display:inline-block;";});
+       
+       
+       
+       
     });       
 
     
