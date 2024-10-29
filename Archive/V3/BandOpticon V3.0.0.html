@@ -816,25 +816,23 @@ function initBandRows(){
        document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
          +" onclick='detailsBandmode=&quot;"+bandmodeData[0]+"&quot;; "
          +"updateDisplays();'>"+bandmodeData[0].replace("-","&nbsp;")+"</a>";
-       document.getElementById("nH2H_"+index).value=bandmodeData[1];
-       document.getElementById("nH2DX_"+index).value=bandmodeData[2];
-       document.getElementById("nDX2H_"+index).value=bandmodeData[3];
+       document.getElementById("nH2H_"+index).value=Math.trunc(bandmodeData[1]/bandmodeData[4]);
+       document.getElementById("nH2DX_"+index).value=Math.trunc(bandmodeData[2]/bandmodeData[4]);
+       document.getElementById("nDX2H_"+index).value=Math.trunc(bandmodeData[3]/bandmodeData[5]);
        document.getElementById("nTx_"+index).value=bandmodeData[4];
        document.getElementById("nRx_"+index).value=bandmodeData[5];
        document.getElementById("nTxRx_"+index).value=bandmodeData[6];
        document.getElementById("distHist_"+index).value=bandmodeData[7].map((e) => spark6[Math.trunc(e/12.6)]).join('');
        document.getElementById("brgHist_"+index).value=bandmodeData[8].map((e) => spark6[Math.trunc(e/12.6)]).join('');
 
-       let nTx=bandmodeData[4];
-       let x=Math.trunc(255-255*nTx/nMax);
-       let st="color:rgb("+x+" "+x+" "+x+");"
-       document.getElementById("distHist_"+index).style=st;
-       document.getElementById("brgHist_"+index).style=st;
-       document.querySelectorAll(".Stats_"+index).forEach(function(el) {el.style="display:inline-block;";});
-       
-       
-       
-       
+  //     let nTx=bandmodeData[4];
+  //     let x=Math.trunc(255-255*nTx/nMax);
+  //     let st="color:rgb("+x+" "+x+" "+x+");"
+  //     document.getElementById("distHist_"+index).style=st;
+  //     document.getElementById("brgHist_"+index).style=st;
+
+      document.querySelectorAll(".Stats_"+index).forEach(function(el) {el.style="display:inline-block;";});
+   
     });       
 
     
