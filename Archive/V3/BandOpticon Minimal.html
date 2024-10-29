@@ -214,8 +214,6 @@ a:visited {color: blue;}
   </div>
        
 
-
-
     <div id="creditsGrid">
         <div>
             Javascript & HTML developed by Alan Robinson:<br>
@@ -255,7 +253,6 @@ a:visited {color: blue;}
   var watchedMode="FT8";
   var allModesHeardArrArr=["FT4","FT8","CW","WSPR"];
   var detailsBand="";
-  var bandRowsSortKey="Band";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
   var entityDisplayType;
@@ -267,30 +264,23 @@ a:visited {color: blue;}
   const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
   const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
   const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
-  var dataForRecord="";
-  var newWindow=null;
-  var dataWriteSeconds=15;
   var connections = {};
   var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
-  const maxRows=100;
   var distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
   var brgBinsArr=[0,45,90,135,180,225,270,315,360];
 
-	
   loadConfig();
   document.getElementById("bandDetails").style="display:none;";
   setSort("Band");
   makeModeButtons();
   setMode("FT8");  
-  initBandRows();
   updateDisplays();
 
   setInterval(updateAppTop,1000);
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(purgeSpots, 15000);
-  setInterval(writeData, 1000*dataWriteSeconds);
 
   connectToFeed();
  // connectToTestData();
@@ -355,9 +345,6 @@ a:visited {color: blue;}
 
     conn.sl=(conn.sl).toUpperCase();
     conn.rl=(conn.rl).toUpperCase();
-
-    // add band-mode tag
-    conn["bm"]=conn.b+"-"+conn.md;
 	  
     // add sender and receiver domain (home/dx)
     if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
@@ -500,22 +487,6 @@ a:visited {color: blue;}
     return this.map(e => Math.round(100*e/s));
   };
 
-  function startRecording(){
-    newWindow = window.open("", "newWindow", "width=1800, height=300");
-    let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
-    +"'Home' = "+squaresList
-    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, "
-    +"n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)"
-    +"percent spots in distance bins "+distBinsArr+" km, percent spots in bearing bins "+brgBinsArr+" shifted by 180 deg]</strong><BR> ";
-  	  newWindow.document.write(htmlTmp);
-  }
-  
-  function writeData(){
-    if(newWindow==null){return}
-    var data_html="<br>"+get_utc_timestamp()+", "+dataForRecord.slice(0,-2);
-    newWindow.document.write(data_html);
-  }
-	
   function saveConfig(){
       console.log("Saving config:");
       localStorage.setItem('squaresList', JSON.stringify(squaresList));
@@ -640,44 +611,6 @@ function makeModeButtons(){
   setMode(watchedMode);
 }
   
-  
-  
-function sortButtonHTML(sortKey,caption){
-   return "<button type='button' class='button' onclick='setSort(&quot;"+sortKey+"&quot;)'>"+caption+"</button>";
-}  
-
-function initBandRows(){
-  let BandGrid=document.getElementById("BandGrid");
-  BandGrid.innerHTML="";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("Band","Band mode")+"</div>";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nHH","H►H")+"</div>";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nHD","H►DX")+"</div>";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nDH","DX►H")+"</div>";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nTx","Tx")+"</div>";  
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nRx","Rx")+"</div>";
-//  BandGrid.innerHTML+="<div>"+sortButtonHTML("nTxRx","TxRx")+"</div>";
-
-  BandGrid.innerHTML+="<div><strong>Band_mode</strong></div>";
-  BandGrid.innerHTML+="<div><strong>Distance</strong></div>"
-  BandGrid.innerHTML+="<div><strong>Bearing SWNES</strong></div>";
-  BandGrid.innerHTML+="<div></div>"; 
-	
-  for (let i=0;i<maxRows;i++){
-
-    BandGrid.innerHTML+=""
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='rowTitle_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2H_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nH2DX_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nDX2H_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nTx_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nRx_"+i+"'></output></div>"
- //      +"<div class='Stats_"+i+"' style='display:none;'><output id='nTxRx_"+i+"'></output></div>"
-       +"<div class='Stats_"+i+"' style='display:none; '><span id='distHist_"+i+"'></span></div>"
-       +"<div class='Stats_"+i+"' style='display:none; '><span id='brgHist_"+i+"'></span></div>"
-       +"<div class='Stats_"+i+"' style='display:none;'><output id='txCalls_"+i+"'></output></div>";
-  }
-}
-
  function setMode(mode){
    watchedMode=mode;
    let pressedButton=document.getElementById(mode);
@@ -685,22 +618,11 @@ function initBandRows(){
    pressedButton.classList.add('active');
    updateDisplays();
  } 
-
-  
- function setSort(sortKey){
-   bandRowsSortKey=sortKey;
-   let pressedButton=document.getElementById(sortKey);
- //  for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
- //  pressedButton.classList.add('active');
-   updateDisplays();
- } 
  
  function updateAppTop(){
-     
     var now = new Date;
     var utc_timestamp=get_utc_timestamp(now);
     var runningmins=Math.trunc(((now-tStart)/1000) / 60);
-
     // update the top banner  
     document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
     document.getElementById("runningMins").value=runningmins;
@@ -765,20 +687,16 @@ function initBandRows(){
     let BandDataArr=new Array();
     dataForRecord="";
     let nMax=0;
-    BandArr.forEach((bm,index) => {
+    BandArr.forEach((b,index) => {
       let distHistArr=[0,0,0,0,0,0,0,0];
       let brgHistArr=[0,0,0,0,0,0,0,0];
-      let nSpots=[0,0,0];
       let txCalls=new Set;
       let rxCalls=new Set;
       for (id in connections) {
         let c=connections[id];
-	      if(c.bm==bm) {
+	if(c.b==b && c.md==watchedMode) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
-          if(c.sd=="home" && c.rd=="home") {nSpots[0]+=1}
-          if(c.sd=="home" && c.rd=="dx") {nSpots[1]+=1} 
-          if(c.sd=="dx" && c.rd=="home") {nSpots[2]+=1} 
 	  let kmDeg=c.kmDeg;
 	  brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
 	  distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
@@ -787,64 +705,21 @@ function initBandRows(){
       let txRxCalls=txCalls.intersection(rxCalls);
       let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity)
       nMax= (n>nMax) ? n:nMax
-      let BandData=[bm,nSpots[0],nSpots[1],nSpots[2],txCalls.size,rxCalls.size,txRxCalls.size,distHistArr,brgHistArr];
+      let BandData=[b,distHistArr,brgHistArr];
       BandDataArr.push(BandData);  // accumulate the Band data to the BandDataArr for use below  
-      dataForRecord+=BandData+", "; // save the stats from above to the recording string
-   
-      if(bm==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,BandData);} // if we hit the detailsBand, call showBandDetails
+      if(b==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,BandData);} // if we hit the detailsBand, call showBandDetails
     });
     
-    // get the Band row sort order
-    let criteria=new Array();
-    let indexArr=new Array();
-    BandArr.forEach((Band,index) => {
-      indexArr.push(index);
-      if (bandRowsSortKey=="Band") {
-        const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
-        criteria.push(metres(Band.split(' ')[0]));
-      } else {
-        criteria.push(BandDataArr[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandRowsSortKey)]);
-      }
-    });    
-    indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
-
-	 
-    // populate the band row outputs in the sorted order
-const spark="▂▃▅▆▇";
-const zero="<span style='color:lightgrey;'>▂</span>";
+  let BandGrid=document.getElementById("BandGrid");
+  BandGrid.innerHTML="";
+  const spark="▂▃▅▆▇";
+  const zero="<span style='color:lightgrey;'>▂</span>";
     indexArr.forEach((BandIndex,index) => {
        let BandData=BandDataArr[BandIndex];
-       document.getElementById("rowTitle_"+index).innerHTML="<a href='#'"
-         +" onclick='detailsBand=&quot;"+BandData[0]+"&quot;; "
-         +"updateDisplays();'>"+BandData[0].replace("-","&nbsp;")+"</a>";
- //      document.getElementById("nH2H_"+index).value=Math.trunc(BandData[1]/BandData[4]);
- //      document.getElementById("nH2DX_"+index).value=Math.trunc(BandData[2]/BandData[4]);
- //      document.getElementById("nDX2H_"+index).value=Math.trunc(BandData[3]/BandData[5]);
- //      document.getElementById("nTx_"+index).value=BandData[4];
- //      document.getElementById("nRx_"+index).value=BandData[5];
- //      document.getElementById("nTxRx_"+index).value=BandData[6];
-
-      document.getElementById("distHist_"+index).innerHTML=BandData[7].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('');
-       document.getElementById("brgHist_"+index).innerHTML=BandData[8].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('');
-//(1+Math.trunc(7*e/nMax))
-  //     let nTx=BandData[4];
-  //     let x=Math.trunc(255-255*nTx/nMax);
-  //     let st="color:rgb("+x+" "+x+" "+x+");"
-  //     document.getElementById("distHist_"+index).style=st;
-  //     document.getElementById("brgHist_"+index).style=st;
-
-      document.querySelectorAll(".Stats_"+index).forEach(function(el) {el.style="display:inline-block;";});
-   
-    });       
-
-    
-    // hide unused band row divs
-    if(indexArr.length>0){
-      for (let i=indexArr.length;i<maxRows;i++){
-        document.querySelectorAll(".Stats_"+i).forEach(function(el) {el.style="display:none;";});
-      }
-    }
-    
+       BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
+	+"<div>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
+        +"<div>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
+    });         
 }
  
   function showBandDetails(txCalls, rxCalls, txRxCalls,BandData){
