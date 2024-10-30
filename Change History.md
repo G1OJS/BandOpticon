@@ -7,6 +7,15 @@
 </tr>
 
 <tr>
+  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Mini/BandOpticon%20Minimal'>BandOpticon Minimal V1.0.0</a></td>
+  <td>
+    <ol>
+      <li>experimental minimised version targetted at mobile use</li>
+    </ol>
+  </td>
+</tr>
+
+<tr>
   <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V3/BandOpticon%20V3.0.0'>V3.0.0</a></td>
   <td>
     <ol>
