@@ -713,7 +713,7 @@ function makeModeButtons(){
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
     BandDataArr.forEach((BandIndex,index) => {
-       let BandData=BandDataArr[BandIndex];
+       let BandData=BandDataArr[index];
        BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
 	+"<div>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
