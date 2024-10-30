@@ -35,10 +35,8 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
 .button-tiny.active {border: 2px solid black;}
 
-.anyGrid {background-color:grey; padding:1px; display: grid; grid-template-rows: auto; }
-.anyGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
-
-.bandRowStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
+.anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
+.anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
@@ -430,12 +428,13 @@ a:visited {color: blue;}
       for (id in connections) {
         let c=connections[id];
 	      if(c.sc==myCall) {spotsMe.add(myCall+"->"+c.rc+" "+c.rl+" "+c.rp)}
+        if(c.rc==myCall) {spotsMe.add(myCall+"->"+c.rc+" "+c.rl+" "+c.rp)}
       }
       
       let spotsGrid=document.getElementById("spotsGrid")
-      spotsGrid.innerHTML="";
-      spotsGrid.innerHTML+=Array.from(spotsMe).join('<br>');
-      console.log(Array.from(spotsMe));
+      spotsGrid.innerHTML="<div>";
+      spotsGrid.innerHTML+=Array.from(spotsMe).join('</div><div>');
+      spotsGrid.innerHTML+="</div>"
 }
  	
 </script>
