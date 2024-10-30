@@ -370,6 +370,22 @@ a:visited {color: blue;}
     document.getElementById("runningMins").value=runningmins;
     document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
 }
+
+ function wavelength(band){
+   let wl=parseInt(band.split("m")[0]);
+   if (band.search("cm")>0) {return wl/100} else {return wl}
+ }
+ 
+ function spark(dataArr,norm,invert=false){
+   let sparks=""; let zero="";
+   if(invert){
+   
+   } else {
+     sparks="▂▃▅▆▇";
+     zero="<span style='color:lightgrey;'>▂</span>";
+   }
+   return dataArr.map((e) => e==0? zero:sparks[Math.trunc(4.5*e/norm)]).join('')
+ }
 	
  function updateDisplays(){
 
@@ -377,61 +393,48 @@ a:visited {color: blue;}
     for (id in connections) {
       let myPseudoBand=(connections[id].sc==myCall || connections[id].rc==myCall);
       let incoming=(connections[id].rd=="home");
-      bandsHeard.add(connections[id].b + "-"+(incoming ? "i":"" ) + (myPseudoBand ? "_":"" ));
+      bandsHeard.add(connections[id].b + "-" + (myPseudoBand ? "_":"" ));
     }
     bandArr=Array.from(bandsHeard);
-    bandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
+    bandArr.sort((a,b) => wavelength(b)-wavelength(a) || a.split('-')[1].length-b.split('-')[1].length);
    
     let bandDataArr=new Array();
-    let nMax=0;
     bandArr.forEach((b,index) => {
       let myPseudoBand=(b.slice(-1)=="_");
-      let distHistArr=[0,0,0,0,0,0,0,0];
-      let brgHistArr=[0,0,0,0,0,0,0,0];
-      let txCalls=new Set;
-      let rxCalls=new Set;
+      let txDistHistArr=[0,0,0,0,0,0,0,0];
+      let txBrgHistArr=[0,0,0,0,0,0,0,0];
+      let rxDistHistArr=[0,0,0,0,0,0,0,0];
+      let rxBrgHistArr=[0,0,0,0,0,0,0,0];
       let modes=new Set;
       for (id in connections) {
         let c=connections[id];
 	      if(c.b==b.split('-')[0] ) {
-          if(c.sd=="home") {txCalls.add(c.sc)}
-          if(c.rd=="home") {rxCalls.add(c.rc)}
-          let spot=0;
-          if(b.split('-')[1].slice(0)=="i") {
-            if(c.rd=="home") spot=1;
-          } else {
-            if(c.sd=="home") spot=1;
-          }
-	        let kmDeg=c.kmDeg;
-	        distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=spot;
-	        brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=spot;
+          let kmDeg=c.kmDeg;
+          let distIndex=-1+distBinsArr.findIndex((km) => km > kmDeg.km);
+          let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 )); 
+          if(c.rd=="home") {rxDistHistArr[distIndex]+=1; rxBrgHistArr[distIndex]+=1;}
+          if(c.sd=="home") {txDistHistArr[distIndex]+=1; txBrgHistArr[distIndex]+=1;}
           modes.add(c.md);
 	      }
       }
-      let txRxCalls=txCalls.intersection(rxCalls);
-
-      let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity);
-      nMax= (n>nMax) ? n:nMax;
-      let bandData=[b,distHistArr,brgHistArr,modes];
+      let bandData=[b,txDistHistArr,rxDistHistArr,txBrgHistArr,rxBrgHistArr,modes];
       bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
     });
     
   let bandGrid=document.getElementById("bandGrid");
   bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0........1..2..5.10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
-  const spark="▂▃▅▆▇";
-  const zero="<span style='color:lightgrey;'>▂</span>";
+
     bandDataArr.forEach((bandData,index) => {
-          let norm=0;
-          if(bandData[0].slice(-1)=="_") {
-             norm=bandData[1].concat(bandData[2]).reduce((a, b) => Math.max(a, b), -Infinity);
-          } else {norm=nMax} 
-          bandGrid.innerHTML+="<div><strong>"+bandData[0]+"</strong></div>"
-	      +"<div class='spark'>"+bandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>"
-        +"<div class='spark'>"+bandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>";  
-        bandGrid.innerHTML+="<div style='font-size:0.7rem;'>"+Array.from(bandData[3]).toSorted().join(', ')+"</div>";
+      let markers=bandData[0].split('-')[1];
+      let band=bandData[0].split('-')[0] + ((markers.search("_")>0) ? "*":"");
+      let norm=bandData[1].concat(bandData[2]).concat(bandData[3]).concat(bandData[4]).reduce((a, b) => Math.max(a, b), -Infinity);
+         bandGrid.innerHTML+="<div><strong>"+band+"</strong></div>"
+         +"<div class='spark'>"+spark(bandData[1],norm)+"<br>"+spark(bandData[2],norm,true)+"</div>"
+         +"<div class='spark'>"+spark(bandData[3],norm)+"<br>"+spark(bandData[4],norm,true)+"</div>"      
+         +"<div style='font-size:0.7rem;'>"+Array.from(bandData[5]).toSorted().join(', ')+"</div>";
     });      
     
-   let spotsMe=new Set;
+      let spotsMe=new Set;
       for (id in connections) {
         let c=connections[id];
 	      if(c.sc==myCall) {
