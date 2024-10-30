@@ -56,7 +56,6 @@ a:visited {color: blue;}
 <div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all Band between Home and DX</div>
 
 <div id="app">
-	
     <div id="appTop">
       <div>
       <output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
@@ -71,7 +70,6 @@ a:visited {color: blue;}
         </fieldset>
      </div>
    </div>
-
    <div id="innerScreen">
      <div class="innerPanel" id="BandGridContainer" style="display:inline-block;">
 	     <div id='BandGrid'>
@@ -79,7 +77,6 @@ a:visited {color: blue;}
 	     </div>
      </div> 
   </div>
-  
 </div> 
        
 <!--Get the library for MQTT functions -->
@@ -93,22 +90,12 @@ a:visited {color: blue;}
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
-  var watchedMode="FT8";
-  var allModesHeardArrArr=["FT4","FT8","CW","WSPR"];
-  var detailsBand="";
   var refresh_mSeconds=5000;
   var purgeMinutes=15;
-  var entityDisplayType;
-  var squaresDisplayLevel;
   let myCall="G1OJS";
-  let listFilter="";
   var mqttClient=null;	
   var tStart=Date.now(); // software start time
-  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
-  const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
-  const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
   var connections = {};
-  var reciprocals=new Set;
   var connectionsAdded=0;
   var connectionsPurged=0;
   var distBinsArr=[0,250,500,1000,2000,5000,10000,20000,90000];
@@ -116,22 +103,11 @@ a:visited {color: blue;}
 
   loadConfig();
   updateDisplays();
-
   setInterval(updateAppTop,1000);
   setInterval(updateDisplays, refresh_mSeconds);
   setInterval(purgeSpots, 15000);
 
   connectToFeed();
- // connectToTestData();
-  
-  // ***********************************
-  // * End of main: Functions below    *
-  // ***********************************
-
-  function connectToTestData(){
-    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
-    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":"40m"');
-  }
 
   // connect to MQTT feed  
    function connectToFeed(){
