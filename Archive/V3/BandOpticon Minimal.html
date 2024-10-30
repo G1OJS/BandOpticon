@@ -672,7 +672,7 @@ function makeModeButtons(){
 
     // Write the <div>s for each band summary row in the bandRowsGrid area
     var BandHeard=new Set();
-    for (id in connections) {BandHeard.add(connections[id].bm)}
+    for (id in connections) {BandHeard.add(connections[id].b)}
     BandArr=Array.from(BandHeard);
     
   //  let loadScr=document.getElementById('loading');
@@ -717,6 +717,7 @@ function makeModeButtons(){
        BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
 	+"<div>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
+        BandGrid.innerHTML+="<div></div>"
     });         
 }
  
