@@ -693,7 +693,7 @@ function makeModeButtons(){
       let rxCalls=new Set;
       for (id in connections) {
         let c=connections[id];
-	if(c.b==b && c.md==watchedMode) {
+	      if(c.b==b) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
 	  let kmDeg=c.kmDeg;
