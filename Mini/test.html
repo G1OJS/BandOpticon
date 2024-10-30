@@ -432,7 +432,8 @@ a:visited {color: blue;}
 
     bandDataArr.forEach((bandData,index) => {
       let markers=bandData[0].split('-')[1];
-      let band=bandData[0].split('-')[0] + markers;
+      let band=bandData[0].split('-')[0] 
+      if (markers.length>0) {band+=" <br>"+myCall}
       let normDist=bandData[1].concat(bandData[2]).reduce((a, b) => Math.max(a, b), -Infinity);
       let normBrg=bandData[3].concat(bandData[4]).reduce((a, b) => Math.max(a, b), -Infinity);
          bandGrid.innerHTML+="<div><strong>"+band+"</strong></div>"
