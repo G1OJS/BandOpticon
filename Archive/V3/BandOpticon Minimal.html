@@ -70,7 +70,7 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="bandGridContainer" style="display:inline-block;">
-	     <div id='bandGrid' class='anyGrid' style='grid-template-columns: min-content 11rem 11rem auto;'>
+	     <div id='bandGrid' class='anyGrid' style='grid-template-columns: max-content max-content max-content auto;'>
          <!-- written by script -->
 	     </div>
      </div> 
@@ -414,7 +414,7 @@ a:visited {color: blue;}
     });
     
   let bandGrid=document.getElementById("bandGrid");
-  bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0..........1..2..5..10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
+  bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0........1..2..5.10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
     bandDataArr.forEach((bandData,index) => {
