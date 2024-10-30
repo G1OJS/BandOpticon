@@ -378,21 +378,13 @@ a:visited {color: blue;}
 	
  function updateDisplays(){
 
-    // Write the <div>s for each band summary row in the bandRowsGrid area
+
     var BandHeard=new Set();
     for (id in connections) {BandHeard.add(connections[id].b)}
     BandArr=Array.from(BandHeard);
     BandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
     
-    
-  //  let loadScr=document.getElementById('loading');
-  //  if(loadScr.innerHTML!="" && BandHeard.size>0) {
-  //    loadScr.innerHTML="";
-  //    loadScr.style="display:none;";
-  //  }
- 	  
-    // get the band stats for each band. if detailsBand, call showBandDetails 
-    // can this be done more compactly?
+   
     let BandDataArr=new Array();
     let nMax=0;
     BandArr.forEach((b,index) => {
@@ -400,20 +392,22 @@ a:visited {color: blue;}
       let brgHistArr=[0,0,0,0,0,0,0,0];
       let txCalls=new Set;
       let rxCalls=new Set;
+      let modes=new Set;
       for (id in connections) {
         let c=connections[id];
 	      if(c.b==b) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
-	  let kmDeg=c.kmDeg;
-	  brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
-	  distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
-	}
+	        let kmDeg=c.kmDeg;
+	        brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
+	        distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
+          modes.add(c.md);
+	      }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
       let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity)
       nMax= (n>nMax) ? n:nMax
-      let BandData=[b,distHistArr,brgHistArr];
+      let BandData=[b,distHistArr,brgHistArr,modes];
       BandDataArr.push(BandData);  // accumulate the Band data to the BandDataArr for use below  
     });
     
@@ -426,7 +420,7 @@ a:visited {color: blue;}
        BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
 	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
-        BandGrid.innerHTML+="<div></div>"
+        BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>"
     });         
 }
  	
