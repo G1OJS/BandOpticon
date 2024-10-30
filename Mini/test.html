@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -373,33 +374,45 @@ a:visited {color: blue;}
  function updateDisplays(){
 
     var bandsHeard=new Set();
-    for (id in connections) {bandsHeard.add(connections[id].b + ((connections[id].sc==myCall || connections[id].rc==myCall) ? "_":"" ))}
+    for (id in connections) {
+      let myPseudoBand=(connections[id].sc==myCall || connections[id].rc==myCall);
+      let incoming=(connections[id].rd=="home");
+      bandsHeard.add(connections[id].b + "-"+(incoming ? "i":"" ) + (myPseudoBand ? "_":"" ));
+    }
     bandArr=Array.from(bandsHeard);
     bandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
    
     let bandDataArr=new Array();
     let nMax=0;
     bandArr.forEach((b,index) => {
-      let allHistArr=new Array(32).fill(0);
+      let myPseudoBand=(b.slice(-1)=="_");
+      let distHistArr=[0,0,0,0,0,0,0,0];
+      let brgHistArr=[0,0,0,0,0,0,0,0];
       let txCalls=new Set;
       let rxCalls=new Set;
       let modes=new Set;
       for (id in connections) {
         let c=connections[id];
-	      if(c.b==b || ((c.b+"_")==b && (c.rc==myCall || c.sc==myCall)) ) {
+	      if(c.b==b.split('-')[0] ) {
           if(c.sd=="home") {txCalls.add(c.sc)}
           if(c.rd=="home") {rxCalls.add(c.rc)}
+          let spot=0;
+          if(b.split('-')[1].slice(0)=="i") {
+            if(c.rd=="home") spot=1;
+          } else {
+            if(c.sd=="home") spot=1;
+          }
 	        let kmDeg=c.kmDeg;
-	        allHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=1;
-	        allHistArr[8-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=1;
+	        distHistArr[-1+distBinsArr.findIndex((km) => km > kmDeg.km)]+=spot;
+	        brgHistArr[-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 ) )]+=spot;
           modes.add(c.md);
 	      }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
 
-      let n=allHistArr.slice(1,17).reduce((a, b) => Math.max(a, b), -Infinity);
+      let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity);
       nMax= (n>nMax) ? n:nMax;
-      let bandData=[b,allHistArr,modes];
+      let bandData=[b,distHistArr,brgHistArr,modes];
       bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
     });
     
@@ -410,12 +423,12 @@ a:visited {color: blue;}
     bandDataArr.forEach((bandData,index) => {
           let norm=0;
           if(bandData[0].slice(-1)=="_") {
-             norm=bandData[1].slice(1,17).reduce((a, b) => Math.max(a, b), -Infinity);
+             norm=bandData[1].concat(bandData[2]).reduce((a, b) => Math.max(a, b), -Infinity);
           } else {norm=nMax} 
           bandGrid.innerHTML+="<div><strong>"+bandData[0]+"</strong></div>"
-	      +"<div class='spark'>"+bandData[1].slice(1,9).map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>"
-        +"<div class='spark'>"+bandData[1].slice(9,17).map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>";  
-        bandGrid.innerHTML+="<div style='font-size:0.7rem;'>"+Array.from(bandData[2]).toSorted().join(', ')+"</div>";
+	      +"<div class='spark'>"+bandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>"
+        +"<div class='spark'>"+bandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/norm)]).join('')+"</div>";  
+        bandGrid.innerHTML+="<div style='font-size:0.7rem;'>"+Array.from(bandData[3]).toSorted().join(', ')+"</div>";
     });      
     
    let spotsMe=new Set;
