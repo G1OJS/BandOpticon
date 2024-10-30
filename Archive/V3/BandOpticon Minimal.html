@@ -50,8 +50,8 @@ a:visited {color: blue;}
 </style>
 </head>
 <body>
-<div id="title">BandOpticon</div>
-<div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all Band between Home and DX</div>
+<div id="title">BandOpticon Minimal</div>
+<div id="subtitle"></div>
 
 <div id="app">
     <div id="appTop">
@@ -413,7 +413,7 @@ a:visited {color: blue;}
     });
     
   let BandGrid=document.getElementById("BandGrid");
-  BandGrid.innerHTML="";
+  BandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance</strong></div><div><strong>Bearing SWNES</strong></div><div><strong>Modes</strong></div>";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
     BandDataArr.forEach((BandIndex,index) => {
