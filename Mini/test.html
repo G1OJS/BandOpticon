@@ -412,7 +412,7 @@ a:visited {color: blue;}
       let txCalls= new Set();
       for (id in connections) {
         let c=connections[id];
-	if(c.b==b.split('-')[0] && (!myPseudoBand || (myPseudoBand && (c.rc==myCall || c.sc==myCall))) ) {
+	if( (c.b==b.split('-')[0] && !myPseudoBand) || (myPseudoBand && (c.rc==myCall || c.sc==myCall)) ) {
 	  if(c.sd=="home"){txCalls.add(c.sc)};
 	  if(c.rd=="home"){rxCalls.add(c.rc)};
           let distIndex=-1+distBinsArr.findIndex((km) => km > c.kmDeg.km);
@@ -422,6 +422,7 @@ a:visited {color: blue;}
           modes.add(c.md);
 	}
       }
+ //     if (myPseudoBand) {console.log(Array.from(txCalls)); console.log(Array.from(rxCalls));}
       let bandData=[b,txDistHistArr,rxDistHistArr,txBrgHistArr,rxBrgHistArr,modes,txCalls.size,rxCalls.size];
       bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
     });
