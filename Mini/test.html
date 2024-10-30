@@ -411,11 +411,10 @@ a:visited {color: blue;}
       for (id in connections) {
         let c=connections[id];
 	      if(c.b==b.split('-')[0] && (!myPseudoBand || (myPseudoBand && (c.rc==myCall || c.sc==myCall))) ) {
-          let kmDeg=c.kmDeg;
-          let distIndex=-1+distBinsArr.findIndex((km) => km > kmDeg.km);
-          let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 )); 
+          let distIndex=-1+distBinsArr.findIndex((km) => km > c.kmDeg.km);
+          let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+c.kmDeg.deg) %360 )); 
           if(c.rd=="home") {rxDistHistArr[distIndex]+=1; rxBrgHistArr[brgIndex]+=1;}
-          if(c.sd=="home") {txDistHistArr[distIndex]+=1; txBrgHistArr[brgIndex]+=1;}
+          if(c.rd=="dx") {txDistHistArr[distIndex]+=1; txBrgHistArr[brgIndex]+=1;}
           modes.add(c.md);
 	      }
       }
