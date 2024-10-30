@@ -407,8 +407,8 @@ a:visited {color: blue;}
 	      }
       }
       let txRxCalls=txCalls.intersection(rxCalls);
-      let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity)
-      nMax= (n>nMax) ? n:nMax
+      let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity);
+      nMax= (n>nMax) ? n:nMax;
       let BandData=[b,distHistArr,brgHistArr,modes];
       BandDataArr.push(BandData);  // accumulate the Band data to the BandDataArr for use below  
     });
@@ -419,10 +419,10 @@ a:visited {color: blue;}
   const zero="<span style='color:lightgrey;'>▂</span>";
     BandDataArr.forEach((BandIndex,index) => {
        let BandData=BandDataArr[index];
-       BandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>"
+       BandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>";
 	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
-        BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>"
+        BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>";
     });      
     
    let spotsMe=new Set;
@@ -430,14 +430,14 @@ a:visited {color: blue;}
         let c=connections[id];
 	      if(c.sc==myCall) {
           let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
-          spotsMe.add(dt+" mins: "+myCall+"→"+c.rc+" "+c.rl+" "+c.kmDeg.km+"km "+c.kmDeg.deg+"deg "+c.rp)
+          spotsMe.add(dt+" mins: "+myCall+"→"+c.rc+" "+c.rl+" "+c.kmDeg.km+"km "+c.kmDeg.deg+"deg "+c.rp);
         }
 
       }
       
-      let spotsGrid=document.getElementById("spotsGrid")
+      let spotsGrid=document.getElementById("spotsGrid");
       let tmpHTML=Array.from(spotsMe).toSorted().join('</div><div>');
-      spotsGrid.innerHTML="<div>"+tmpHTML+"</div>"
+         spotsGrid.innerHTML="<div><strong>Spots of "+myCall+"</strong></div><div>"+tmpHTML+"</div>";
 }
  	
 </script>
