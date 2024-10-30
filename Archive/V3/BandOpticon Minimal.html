@@ -35,8 +35,8 @@ fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-con
 .button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
 .button-tiny.active {border: 2px solid black;}
 
-#BandGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: min-content 10rem 10rem auto; grid-template-rows: auto; }
-#BandGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+.anyGrid {background-color:grey; padding:1px; display: grid; grid-template-rows: auto; }
+.anyGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
 
 .bandRowStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
 
@@ -72,9 +72,14 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="BandGridContainer" style="display:inline-block;">
-	     <div id='BandGrid'>
+	     <div id='BandGrid' class='anyGrid' style='grid-template-columns: min-content 10rem 10rem auto;'>
          <!-- written by script -->
 	     </div>
+     </div> 
+     <div class="innerPanel" id="spotsContainer" style="display:inline-block;">
+	    <div id='spotsGrid' class='anyGrid' style='grid-template-columns: auto;'>
+         <!-- written by script -->
+	    </div>
      </div> 
   </div>
 </div> 
@@ -378,12 +383,10 @@ a:visited {color: blue;}
 	
  function updateDisplays(){
 
-
     var BandHeard=new Set();
     for (id in connections) {BandHeard.add(connections[id].b)}
     BandArr=Array.from(BandHeard);
     BandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
-    
    
     let BandDataArr=new Array();
     let nMax=0;
@@ -421,7 +424,18 @@ a:visited {color: blue;}
 	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
         BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>"
-    });         
+    });      
+    
+   let spotsMe=new Set;
+      for (id in connections) {
+        let c=connections[id];
+	      if(c.sc==myCall) {spotsMe.add(myCall+"->"+c.rc+" "+c.rl+" "+c.rp)}
+      }
+      
+      let spotsGrid=document.getElementById("spotsGrid")
+      spotsGrid.innerHTML="";
+      spotsGrid.innerHTML+=Array.from(spotsMe).join('<br>');
+      console.log(Array.from(spotsMe));
 }
  	
 </script>
