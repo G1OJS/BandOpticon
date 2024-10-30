@@ -409,20 +409,19 @@ a:visited {color: blue;}
       let txRxCalls=txCalls.intersection(rxCalls);
       let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity);
       nMax= (n>nMax) ? n:nMax;
-      let BandData=[b,distHistArr,brgHistArr,modes];
-      bandDataArr.push(BandData);  // accumulate the Band data to the bandDataArr for use below  
+      let bandData=[b,distHistArr,brgHistArr,modes];
+      bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
     });
     
   let bandGrid=document.getElementById("bandGrid");
   bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0..........1..2..5..10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
-    bandDataArr.forEach((BandIndex,index) => {
-       let BandData=bandDataArr[index];
-       bandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>";
-	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
-        +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
-        bandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>";
+    bandDataArr.forEach((bandData,index) => {
+          bandGrid.innerHTML+="<div><strong>"+bandData[0]+"</strong></div>"
+	      +"<div class='spark'>"+bandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
+        +"<div class='spark'>"+bandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
+        bandGrid.innerHTML+="<div>"+Array.from(bandData[3]).toSorted().join(', ')+"</div>";
     });      
     
    let spotsMe=new Set;
