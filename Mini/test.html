@@ -34,7 +34,6 @@ fieldset > div >* {vertical-align:middle;}
 .notesText {font-weight:normal; font-size: 1rem;}
 a:link {color: blue;}
 a:visited {color: blue;}
-.spark{font-size:0.2rem; color:blue;}
 .smallText{font-size: 0.4rem;}
 
 #creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
@@ -381,7 +380,7 @@ a:visited {color: blue;}
    if(invert){
      sparks="▇▆▅▃▂";
      zero="▇";
-     style="background-color:"+myColor+"; color:var(--light-paper-color); ";
+     style="background-color:"+myColor+"; color:var(--light-paper-color);   ";
    } else {
      sparks="▂▃▅▆▇";
      zero="▂"; 
@@ -411,7 +410,7 @@ a:visited {color: blue;}
       let modes=new Set;
       for (id in connections) {
         let c=connections[id];
-	      if(c.b==b.split('-')[0] ) {
+	      if(c.b==b.split('-')[0] && (!myPseudoBand || (myPseudoBand && (c.rc==myCall || c.sc==myCall))) ) {
           let kmDeg=c.kmDeg;
           let distIndex=-1+distBinsArr.findIndex((km) => km > kmDeg.km);
           let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+kmDeg.deg) %360 )); 
@@ -429,11 +428,11 @@ a:visited {color: blue;}
 
     bandDataArr.forEach((bandData,index) => {
       let markers=bandData[0].split('-')[1];
-      let band=bandData[0].split('-')[0] + ((markers.search("_")>0) ? "*":"");
+      let band=bandData[0].split('-')[0] + markers;
       let norm=bandData[1].concat(bandData[2]).concat(bandData[3]).concat(bandData[4]).reduce((a, b) => Math.max(a, b), -Infinity);
          bandGrid.innerHTML+="<div><strong>"+band+"</strong></div>"
-         +"<div class='spark'>"+spark(bandData[1],norm,false,"red")+"<br>"+spark(bandData[2],norm,true,"green")+"</div>"
-         +"<div class='spark'>"+spark(bandData[3],norm,false,"red")+"<br>"+spark(bandData[4],norm,true,"green")+"</div>"      
+         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[1],norm,false,"red")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[2],norm,true,"green")+"</p></div>"
+         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[3],norm,false,"red")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[4],norm,true,"green")+"</p></div>"      
          +"<div style='font-size:0.7rem;'>"+Array.from(bandData[5]).toSorted().join(', ')+"</div>";
     });      
     
