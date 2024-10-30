@@ -16,7 +16,7 @@ div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #app {margin:0px; padding:5px; background-color:blue;} 
 
 /* holds the divs for the clock & counters, and info / controls */
-#appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns:   auto; grid-template-rows: auto;}
+#appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns: max-content auto; grid-template-rows: auto;}
 
 #clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
 
@@ -427,13 +427,16 @@ a:visited {color: blue;}
    let spotsMe=new Set;
       for (id in connections) {
         let c=connections[id];
-	      if(c.sc==myCall) {spotsMe.add(myCall+"->"+c.rc+" "+c.rl+" "+c.rp)}
-        if(c.rc==myCall) {spotsMe.add(myCall+"->"+c.rc+" "+c.rl+" "+c.rp)}
+	      if(c.sc==myCall) {
+          let dt=Math.trunc(((new Date -parseInt(c.t))/1000) / 60);
+          spotsMe.add(dt+" mins: "+myCall+"->"+c.rc+" "+c.rl+" "+c.rp)
+        }
+
       }
       
       let spotsGrid=document.getElementById("spotsGrid")
       spotsGrid.innerHTML="<div>";
-      spotsGrid.innerHTML+=Array.from(spotsMe).join('</div><div>');
+      spotsGrid.innerHTML+=Array.from(spotsMe).toSorted().join('</div><div>');
       spotsGrid.innerHTML+="</div>"
 }
  	
