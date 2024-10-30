@@ -673,7 +673,7 @@ function makeModeButtons(){
     var BandHeard=new Set();
     for (id in connections) {BandHeard.add(connections[id].b)}
     BandArr=Array.from(BandHeard);
-    BandArr.sort((a,b) => parseInt(a.slice(-1))-parseInt(b.slice(-1)));
+    BandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
     
     
   //  let loadScr=document.getElementById('loading');
