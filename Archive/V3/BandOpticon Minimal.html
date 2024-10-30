@@ -428,7 +428,7 @@ a:visited {color: blue;}
       for (id in connections) {
         let c=connections[id];
 	      if(c.sc==myCall) {
-          let dt=Math.trunc(((new Date -parseInt(c.t))/1000) / 60);
+          let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
           spotsMe.add(dt+" mins: "+myCall+"->"+c.rc+" "+c.rl+" "+c.rp)
         }
 
