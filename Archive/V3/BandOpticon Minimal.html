@@ -80,6 +80,7 @@ a:link {color: blue;}
 a:visited {color: blue;}
 .textAnchorButton {font-size:1rem;}
 .filterLink{float:right;}
+.spark{font-size:0.2rem; color:blue;}
 
 .loading{font-size:2rem;}
 
@@ -235,8 +236,6 @@ a:visited {color: blue;}
           Old versions: <a href='https://g1ojs.github.io/BandOpticon/Change%20History.html'>Archive</a><br>                     
        </div>
     </div>
-    
-</div>
 
 
 <!--Get the library for MQTT functions -->
@@ -674,6 +673,8 @@ function makeModeButtons(){
     var BandHeard=new Set();
     for (id in connections) {BandHeard.add(connections[id].b)}
     BandArr=Array.from(BandHeard);
+    BandArr.sort((a,b) => parseInt(a.slice(-1))-parseInt(b.slice(-1)));
+    
     
   //  let loadScr=document.getElementById('loading');
   //  if(loadScr.innerHTML!="" && BandHeard.size>0) {
@@ -715,8 +716,8 @@ function makeModeButtons(){
     BandDataArr.forEach((BandIndex,index) => {
        let BandData=BandDataArr[index];
        BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
-	+"<div>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
-        +"<div>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
+	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
+        +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
         BandGrid.innerHTML+="<div></div>"
     });         
 }
