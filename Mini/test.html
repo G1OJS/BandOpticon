@@ -8,7 +8,7 @@
 <meta http-equiv="Expires" content="0"/>
 
 <style>
-:root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; --tx-color:red; --rx-color:green; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
 #app {margin:0px; padding:5px; background-color:blue; max-width:600px;} 
 #appTitle {text-align: center; font-size: 3rem;}
@@ -427,7 +427,7 @@ a:visited {color: blue;}
     });
     
   let bandGrid=document.getElementById("bandGrid");
-  bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0........1..2..5.10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Tx/Rx</strong></div><div><strong>Modes</strong></div>";
+  bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0........1..2..5.10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Tx<br>Rx</strong></div><div><strong>Modes</strong></div>";
 
     bandDataArr.forEach((bandData,index) => {
       let markers=bandData[0].split('-')[1];
@@ -435,9 +435,9 @@ a:visited {color: blue;}
       let normDist=bandData[1].concat(bandData[2]).reduce((a, b) => Math.max(a, b), -Infinity);
       let normBrg=bandData[3].concat(bandData[4]).reduce((a, b) => Math.max(a, b), -Infinity);
          bandGrid.innerHTML+="<div><strong>"+band+"</strong></div>"
-         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[1],normDist,false,"red")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[2],normDist,true,"green")+"</p></div>"
-         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[3],normBrg,false,"red")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[4],normBrg,true,"green")+"</p></div>"      
-         +"<div style=''>"+bandData[6]+"/"+bandData[7]+"</div>";
+         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[1],normDist,false,"var(--tx-color)")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[2],normDist,true,"var(--rx-color)")+"</p></div>"
+         +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[3],normBrg,false,"var(--tx-color)")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[4],normBrg,true,"var(--rx-color)")+"</p></div>"      
+         +"<div style='padding-top:10px;'><span style=' color:var(--tx-color)'>"+bandData[6]+"</span><br><span style='color:var(--rx-color)'>"+bandData[7]+"</span></div>"
          +"<div style='font-size:0.7rem;'>"+Array.from(bandData[5]).toSorted().join(', ')+"</div>";
     });      
     
