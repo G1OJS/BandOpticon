@@ -69,8 +69,8 @@ a:visited {color: blue;}
      </div>
    </div>
    <div id="innerScreen">
-     <div class="innerPanel" id="BandGridContainer" style="display:inline-block;">
-	     <div id='BandGrid' class='anyGrid' style='grid-template-columns: min-content 10rem 10rem auto;'>
+     <div class="innerPanel" id="bandGridContainer" style="display:inline-block;">
+	     <div id='bandGrid' class='anyGrid' style='grid-template-columns: min-content 11rem 11rem auto;'>
          <!-- written by script -->
 	     </div>
      </div> 
@@ -89,7 +89,7 @@ a:visited {color: blue;}
 <script>
 
  // initialisation and functions to load and save configuration
-  var BandArr=new Array();
+  var bandArr=new Array();
   const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
@@ -382,14 +382,14 @@ a:visited {color: blue;}
 	
  function updateDisplays(){
 
-    var BandHeard=new Set();
-    for (id in connections) {BandHeard.add(connections[id].b)}
-    BandArr=Array.from(BandHeard);
-    BandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandArr=Array.from(bandsHeard);
+    bandArr.sort((a,b) => parseInt(b.slice(0,-1))-parseInt(a.slice(0,-1)));
    
-    let BandDataArr=new Array();
+    let bandDataArr=new Array();
     let nMax=0;
-    BandArr.forEach((b,index) => {
+    bandArr.forEach((b,index) => {
       let distHistArr=[0,0,0,0,0,0,0,0];
       let brgHistArr=[0,0,0,0,0,0,0,0];
       let txCalls=new Set;
@@ -410,19 +410,19 @@ a:visited {color: blue;}
       let n=distHistArr.concat(brgHistArr).reduce((a, b) => Math.max(a, b), -Infinity);
       nMax= (n>nMax) ? n:nMax;
       let BandData=[b,distHistArr,brgHistArr,modes];
-      BandDataArr.push(BandData);  // accumulate the Band data to the BandDataArr for use below  
+      bandDataArr.push(BandData);  // accumulate the Band data to the bandDataArr for use below  
     });
     
-  let BandGrid=document.getElementById("BandGrid");
-  BandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0..........1..2..5..10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
+  let bandGrid=document.getElementById("bandGrid");
+  bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0..........1..2..5..10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
-    BandDataArr.forEach((BandIndex,index) => {
-       let BandData=BandDataArr[index];
-       BandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>";
+    bandDataArr.forEach((BandIndex,index) => {
+       let BandData=bandDataArr[index];
+       bandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>";
 	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
-        BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>";
+        bandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>";
     });      
     
    let spotsMe=new Set;
