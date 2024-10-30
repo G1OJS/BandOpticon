@@ -429,15 +429,14 @@ a:visited {color: blue;}
         let c=connections[id];
 	      if(c.sc==myCall) {
           let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
-          spotsMe.add(dt+" mins: "+myCall+"->"+c.rc+" "+c.rl+" "+c.rp)
+          spotsMe.add(dt+" mins: "+myCall+"→"+c.rc+" "+c.rl+" "+c.rp)
         }
 
       }
       
       let spotsGrid=document.getElementById("spotsGrid")
-      spotsGrid.innerHTML="<div>";
-      spotsGrid.innerHTML+=Array.from(spotsMe).toSorted().join('</div><div>');
-      spotsGrid.innerHTML+="</div>"
+      let tmpHTML=Array.from(spotsMe).toSorted().join('</div><div>');
+      spotsGrid.innerHTML="<div>"+tmpHTML+"</div>"
 }
  	
 </script>
