@@ -414,12 +414,12 @@ a:visited {color: blue;}
     });
     
   let BandGrid=document.getElementById("BandGrid");
-  BandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance</strong></div><div><strong>Bearing SWNES</strong></div><div><strong>Modes</strong></div>";
+  BandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0..........1..2..5..10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Modes</strong></div>";
   const spark="▂▃▅▆▇";
   const zero="<span style='color:lightgrey;'>▂</span>";
     BandDataArr.forEach((BandIndex,index) => {
        let BandData=BandDataArr[index];
-       BandGrid.innerHTML+="<div>"+BandData[0]+"</div>"
+       BandGrid.innerHTML+="<div><strong>"+BandData[0]+"</strong></div>"
 	      +"<div class='spark'>"+BandData[1].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>"
         +"<div class='spark'>"+BandData[2].map((e) => e==0? zero:spark[Math.trunc(4.5*e/nMax)]).join('')+"</div>";   
         BandGrid.innerHTML+="<div>"+Array.from(BandData[3]).toSorted().join(', ')+"</div>"
