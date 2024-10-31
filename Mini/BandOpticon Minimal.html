@@ -421,12 +421,12 @@ a:visited {color: blue;}
 
       for (id in connections) {
         let c=connections[id];
-	      if( (c.b==b.split('-')[0] && !myPseudoBand) || (myPseudoBand && (c.rc==myCall || c.sc==myCall)) ) {
-	        if(c.sd=="home"){
+	      if(c.b==b.split('-')[0])  {
+	        if(c.sd=="home" || (myPseudoBand && c.sc==myCall)){
     	      txCalls.add(c.sc)
             if(c.md=="FT8" && isEven(c.t)) {txCalls_e.add(c.sc)}
           }
-	        if(c.rd=="home"){
+	        if(c.rd=="home"  || (myPseudoBand && c.rc==myCall)){
             rxCalls.add(c.rc)
             if(c.md=="FT8" && isEven(c.t)) {rxCalls_e.add(c.rc)}
           }
