@@ -435,6 +435,7 @@ a:visited {color: blue;}
           if(c.rd=="home") {rxDistHistArr[distIndex]+=1; rxBrgHistArr[brgIndex]+=1;}
           if(c.rd=="dx") {txDistHistArr[distIndex]+=1; txBrgHistArr[brgIndex]+=1;}
           modes.add(c.md);
+          if (myPseudoBand) {console.log(""); console.log(b); console.log(Array.from(txCalls)); console.log(Array.from(rxCalls)); console.log(Array.from(txCalls_e)) ; console.log(Array.from(rxCalls_e))   }
 	      }
       }
       nCallsMax=(txCalls.size>nCallsMax) ? txCalls.size:nCallsMax;
@@ -460,8 +461,9 @@ a:visited {color: blue;}
          +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark([bandData[6]],nCallsMax,false,"var(--tx-color)")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark([bandData[7]],nCallsMax,true,"var(--rx-color)")+"</p></div>"
          +"<div style='padding-top:10px;'><span style=' color:var(--tx-color)'>"+percent(bandData[8],bandData[6])+"%</span><br><span style='color:var(--rx-color)'>"+percent(bandData[9],bandData[7])+"%</span></div>"
          +"<div style='font-size:0.7rem;'>"+Array.from(bandData[10]).toSorted().join(', ')+"</div>";
-    });      
     
+     if (markers.length>0) {console.log(""); console.log(band); console.log(bandData[6],bandData[7],bandData[8],bandData[9])}
+        });  
       let spotsMe=new Set;
       for (id in connections) {
         let c=connections[id];
