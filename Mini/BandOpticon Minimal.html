@@ -391,7 +391,8 @@ a:visited {color: blue;}
 	
  function isEven(epoch){
    let secs=(new Date(epoch * 1000)).getSeconds();
-   return ((Math.trunc((secs+7.5)/15) %2)==0);
+   // note that even Tx spots will be timestamped around the beginning of the odd Rx cycle and vice versa
+   return ((Math.trunc((secs+7.5)/15) %2)==1);
  }
   
  function updateDisplays(){
