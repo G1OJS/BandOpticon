@@ -408,7 +408,7 @@ a:visited {color: blue;}
     let bandDataArr=new Array();
     let nCallsMax=0;
     bandArr.forEach((b,index) => {
-      let myPseudoBand=(b.slice(-1)=="_");
+
       let txDistHistArr=[0,0,0,0,0,0,0,0];
       let txBrgHistArr=[0,0,0,0,0,0,0,0];
       let rxDistHistArr=[0,0,0,0,0,0,0,0];
@@ -418,32 +418,34 @@ a:visited {color: blue;}
       let txCalls= new Set();
       let rxCalls_e= new Set();
       let txCalls_e= new Set();
-
+      let myPseudoBand=(b.slice(-1)=="_");
+      let filter=false;
+	    
       for (id in connections) {
         let c=connections[id];
-	      if(c.b==b.split('-')[0])  {
-	        if(c.sd=="home" || (myPseudoBand && c.sc==myCall)){
-    	      txCalls.add(c.sc)
-            if(c.md=="FT8" && isEven(c.t)) {txCalls_e.add(c.sc)}
-          }
-	        if(c.rd=="home"  || (myPseudoBand && c.rc==myCall)){
-            rxCalls.add(c.rc)
-            if(c.md=="FT8" && isEven(c.t)) {rxCalls_e.add(c.rc)}
-          }
-          let distIndex=-1+distBinsArr.findIndex((km) => km > c.kmDeg.km);
-          let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+c.kmDeg.deg) %360 )); 
-          if(c.rd=="home") {rxDistHistArr[distIndex]+=1; rxBrgHistArr[brgIndex]+=1;}
-          if(c.rd=="dx") {txDistHistArr[distIndex]+=1; txBrgHistArr[brgIndex]+=1;}
-          modes.add(c.md);
-          if (myPseudoBand) {console.log(""); console.log(b); console.log(Array.from(txCalls)); console.log(Array.from(rxCalls)); console.log(Array.from(txCalls_e)) ; console.log(Array.from(rxCalls_e))   }
-	      }
-      }
-      nCallsMax=(txCalls.size>nCallsMax) ? txCalls.size:nCallsMax;
-      nCallsMax=(rxCalls.size>nCallsMax) ? rxCalls.size:nCallsMax;
- //     if (myPseudoBand) {console.log(Array.from(txCalls)); console.log(Array.from(rxCalls));}
-      let bandData=[b,txDistHistArr,rxDistHistArr,txBrgHistArr,rxBrgHistArr,modes,txCalls.size,rxCalls.size,txCalls_e.size,rxCalls_e.size,modes];
-      bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
-    });
+          if(c.b==b.split('-')[0])  {
+	    if(!myPseudoBand || ( myPseudoBand && (c.sc==myCall || c.rc==myCall))) {
+  	      if(c.sd=="home") {
+    	        txCalls.add(c.sc)
+                if(c.md=="FT8" && isEven(c.t)) {txCalls_e.add(c.sc)}
+              }
+	      if(c.rd=="home") {
+                rxCalls.add(c.rc)
+                if(c.md=="FT8" && isEven(c.t)) {rxCalls_e.add(c.rc)}
+              }
+              let distIndex=-1+distBinsArr.findIndex((km) => km > c.kmDeg.km);
+              let brgIndex=-1+brgBinsArr.findIndex((deg) => deg > ( (180+c.kmDeg.deg) %360 )); 
+              if(c.rd=="home") {rxDistHistArr[distIndex]+=1; rxBrgHistArr[brgIndex]+=1;}
+              if(c.rd=="dx") {txDistHistArr[distIndex]+=1; txBrgHistArr[brgIndex]+=1;}
+              modes.add(c.md);
+	    }
+   	  }
+        }
+        nCallsMax=(txCalls.size>nCallsMax) ? txCalls.size:nCallsMax;
+        nCallsMax=(rxCalls.size>nCallsMax) ? rxCalls.size:nCallsMax;
+        let bandData=[b,txDistHistArr,rxDistHistArr,txBrgHistArr,rxBrgHistArr,modes,txCalls.size,rxCalls.size,txCalls_e.size,rxCalls_e.size,modes];
+        bandDataArr.push(bandData);  // accumulate the Band data to the bandDataArr for use below  
+      });
     
   let bandGrid=document.getElementById("bandGrid");
   bandGrid.innerHTML="<div><strong>Band</strong></div><div><strong>Distance 1000s km<br>0........1..2..5.10.20</strong></div><div><strong>Bearing<br>S.....W.....N.....E.....S</strong></div><div><strong>Tx<br>Rx</strong></div><div><strong>FT8<br>TxE<br>RxE</strong></div><div><strong>Modes</strong></div>";
@@ -460,9 +462,7 @@ a:visited {color: blue;}
          +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark(bandData[3],normBrg,false,"var(--tx-color)")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark(bandData[4],normBrg,true,"var(--rx-color)")+"</p></div>"   
          +"<div>"+"<p style='padding:0px; margin:0px; margin-bottom:-8px;'>"+spark([bandData[6]],nCallsMax,false,"var(--tx-color)")+"</p><p style='padding:0px; margin:0px; margin-top:-7px;'>"+spark([bandData[7]],nCallsMax,true,"var(--rx-color)")+"</p></div>"
          +"<div style='padding-top:10px;'><span style=' color:var(--tx-color)'>"+percent(bandData[8],bandData[6])+"%</span><br><span style='color:var(--rx-color)'>"+percent(bandData[9],bandData[7])+"%</span></div>"
-         +"<div style='font-size:0.7rem;'>"+Array.from(bandData[10]).toSorted().join(', ')+"</div>";
-    
-     if (markers.length>0) {console.log(""); console.log(band); console.log(bandData[6],bandData[7],bandData[8],bandData[9])}
+         +"<div style='font-size:0.7rem;'>"+Array.from(bandData[10]).toSorted().join(', ')+"</div>";    
         });  
       let spotsMe=new Set;
       for (id in connections) {
@@ -471,7 +471,6 @@ a:visited {color: blue;}
           let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
           spotsMe.add(dt+" mins: "+myCall+"→"+c.rc+" "+c.rl+" "+c.kmDeg.km+"km "+c.kmDeg.deg+"deg "+c.rp);
         }
-
       }
       
       let spotsGrid=document.getElementById("spotsGrid");
