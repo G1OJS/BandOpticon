@@ -1,3 +1,7 @@
+	
+ function isEven(epoch){
+   let secs=(new Date(epoch * 1000)).getSeconds();
+   // note that even Tx spots will be timestamped around the beginning of the odd Rx cycle and vice versa
    return ((Math.trunc((secs+7.5)/15) %2)==1);
  }
   
@@ -13,7 +17,7 @@
       
       let spotsGrid=document.getElementById("spotsGrid");
       let tmpHTML="";
-      for (s in spots) {tmpHTML+=s +": "+ spots(s)+"<br>"}
+   for (const [s,n] of Object.entries(spots)) {tmpHTML+=s +": "+ n+"<br>"};
       spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+tmpHTML+"</div>";
 }
  	
