@@ -401,14 +401,22 @@ function updateDisplays(){
       let spots=document.getElementById("spots");
       spots.innerHTML="<div><strong>Spots </strong></div><div>"+routesArr.join('<br>')+"</div>";
       
-      
       let txCallsArr=new Array();
       for (const [sq,txCallsList] of Object.entries(txCalls)) {
-         txCallsArr.push(sq +": "+Array.from(txCallsArr).toSorted().join(' '));
+         txCallsArr.push(sq +": "+Array.from(txCallsList).toSorted().join(' '));
       }
-      txCallsArr.sort((a,b) => { return b.split(':')[0]-a.split(':')[0] });
+      txCallsArr.sort((a,b) => { return ((b.split(':')[0]>a.split(':')[0]) ? -1:1) });
       let txcalls=document.getElementById("txcalls");
-      txcalls.innerHTML="<div><strong>Tx Calls </strong></div><div>"+txCallsArr.join('<br>')+"</div>";
+      txcalls.innerHTML="<div><strong>Active Transmitters </strong></div><div>"+txCallsArr.join('<br>')+"</div>";
+      
+      let rxCallsArr=new Array();
+      for (const [sq,rxCallsList] of Object.entries(rxCalls)) {
+         rxCallsArr.push(sq +": "+Array.from(rxCallsList).toSorted().join(' '));
+      }
+      rxCallsArr.sort((a,b) => { return ((b.split(':')[0]>a.split(':')[0]) ? -1:1) });
+      let rxcalls=document.getElementById("rxcalls");
+      rxcalls.innerHTML="<div><strong>Active Monitors </strong></div><div>"+rxCallsArr.join('<br>')+"</div>";
+      
 }
  
 </script>
