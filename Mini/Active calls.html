@@ -387,7 +387,7 @@ function updateDisplays(){
           }
       let routesArr=new Array();
       for (const [s,n] of Object.entries(spots)) {routesArr.push(s +": "+ n)}
-      routesArr.sort((a,b)  {return parseInt(a.split(':')[0]-parseInt(b.split(':')[0]})};
+      routesArr.sort(a,b)  {return (parseInt(a.split(':')[0])-parseInt(b.split(':')[0]}))};
       let spotsGrid=document.getElementById("spotsGrid");
    
       spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+routesArr.join('<br>')+"</div>";
