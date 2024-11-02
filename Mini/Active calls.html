@@ -461,17 +461,19 @@ a:visited {color: blue;}
          +"<div style='padding-top:10px;'><span style=' color:var(--tx-color)'>"+percent(bandData[8],bandData[6])+"%</span><br><span style='color:var(--rx-color)'>"+percent(bandData[9],bandData[7])+"%</span></div>"
          +"<div style='font-size:0.7rem;'>"+Array.from(bandData[10]).toSorted().join(', ')+"</div>";    
         });  
-      let spotsMe=new Set;
+      let spots={};
       for (id in connections) {
         let c=connections[id];
+          let route = c.sl.slice(0,2)+"-"+c.rl.slice(0,2);
+          if spots includes route {spots[route]+=1} else {spots[route]=0}
 	      //if(c.sc==myCall) {
-          let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
-          spotsMe.add(c.b +" " + c.sa + " " + c.ra);
+          //let dt=Math.trunc((((new Date)/1000 -parseInt(c.t))) / 60);
+          //spotsMe.add(c.b +" " + c.sa + " " + c.ra);
       //  }
       }
       
       let spotsGrid=document.getElementById("spotsGrid");
-      let tmpHTML=Array.from(spotsMe).toSorted().join('</div><div>');
+      let tmpHTML=Array.from(spots).toSorted().join('</div><div>');
          spotsGrid.innerHTML="<div><strong>Spots of "+myCall+"</strong></div><div>"+tmpHTML+"</div>";
 }
  	
