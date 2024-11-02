@@ -117,21 +117,12 @@ a:visited {color: blue;}
 
   // subscribe to needed squares
   function subscribe(){
-    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
-    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    
-    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
-    let subs=new Set;
-    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
-    let subsArr=Array.from(subs);
-    
-    // now subscribe to the level 4 squares
-    subsArr.forEach((sq) => {
+   
       var topic='pskr/filter/v2raw_1pc/#';
       console.log("Subscribe to "+topic);
       mqttClient.subscribe(topic, (error) => {if (error) {
               console.error('subscription failed to '+topic, error)}});
-    } );
+
   }
 
   // process MQTT messages
@@ -387,12 +378,11 @@ function updateDisplays(){
           }
       let routesArr=new Array();
       for (const [s,n] of Object.entries(spots)) {routesArr.push(s +": "+ n)}
-      routesArr.sort(a,b)  {return (parseInt(a.split(':')[0])-parseInt(b.split(':')[0]}))};
+      routesArr.sort((a,b) => { return parseInt(a.split(':')[0])-parseInt(b.split(':')[0]) });
       let spotsGrid=document.getElementById("spotsGrid");
-   
-      spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+routesArr.join('<br>')+"</div>";
+ 
+      
+      spotsGrid.innerHTML="<div><strong>Spots </strong></div><div>"+routesArr.join('<br>')+"</div>";
 }
  
-
-
 </script>
