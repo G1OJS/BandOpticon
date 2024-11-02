@@ -260,12 +260,12 @@ a:visited {color: blue;}
       saveConfig();
     }
     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-    document.getElementById("squaresListDisplay").innerHTML=squaresListDisplay; 
+//    document.getElementById("squaresListDisplay").innerHTML=squaresListDisplay; 
     squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
     
     if(localStorage.getItem('myCall')){
       myCall=localStorage.getItem('myCall');
-      document.getElementById("myCall").value=myCall; 
+  //    document.getElementById("myCall").value=myCall; 
     } else {
       myCall="G1OJS";
       saveConfig();
@@ -273,7 +273,7 @@ a:visited {color: blue;}
 	  
     if(localStorage.getItem('purgeMinutes')){
       purgeMinutes=localStorage.getItem('purgeMinutes');
-      document.getElementById("purgeMinutes").value=purgeMinutes; 
+   //   document.getElementById("purgeMinutes").value=purgeMinutes; 
     } else {
       purgeMinutes=5;
       saveConfig();
@@ -286,7 +286,7 @@ a:visited {color: blue;}
     if(resp==null){return}
     myCall=resp.toUpperCase();
     localStorage.setItem('myCall',myCall);
-    document.getElementById("myCall").value=myCall; 
+//    document.getElementById("myCall").value=myCall; 
   }
   
   function editPurgeMins(){
@@ -325,9 +325,9 @@ a:visited {color: blue;}
       updateDisplays();
  //     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
 //      document.getElementById("squaresListDisplay").value=squaresListDisplay; 
- //  } else {
-   //   alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
- //   }
+   } else {
+      alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
+    }
   }
  
  function updateAppTop(){
@@ -384,11 +384,11 @@ function updateDisplays(){
         txCalls[sl2].add(c.sc);
         if (!(rl2 in rxCalls)) {rxCalls[rl2]=new Set()}
         rxCalls[rl2].add(c.rc);
-        
       }
       let routesArr=new Array();
       for (const [rt,rtInfo] of Object.entries(routes)) {
-         routesArr.push(rt +": "+ rtInfo[0]+": " +Array.from(rtInfo[1]).toSorted().join(' '))
+//         routesArr.push(rt +": "+ rtInfo[0]+": " +Array.from(rtInfo[1]).toSorted().join(' '));
+           routesArr.push(rt +": "+ rtInfo[0]+": ");
       }
       routesArr.sort((a,b) => { return parseInt(b.split(':')[1])-parseInt(a.split(':')[1]) });
       let spotsGrid=document.getElementById("spotsGrid");
@@ -396,3 +396,5 @@ function updateDisplays(){
 }
  
 </script>
+</body>
+</html>
