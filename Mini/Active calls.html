@@ -18,8 +18,8 @@
       routesArr.sort((a,b) {parseInt(a.split(':')[0]-parseInt(b.split(':')[0]});
       let spotsGrid=document.getElementById("spotsGrid");
       let tmpHTML="";
-   for (const [s,n] of Object.entries(spots)) {tmpHTML+=s +": "+ n+"<br>"};
-      spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+tmpHTML+"</div>";
+   
+      spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+routesArr.join('<br>')+"</div>";
 }
  	
 </script>
