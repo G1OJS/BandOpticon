@@ -373,8 +373,8 @@ function updateDisplays(){
       let spots={};
       for (id in connections) {
         let c=connections[id];
-            let route = c.sl.slice(0,2)+"-"+c.rl.slice(0,2);
-          if (route in spots) {spots[route]+=1} else {spots[route]=0}
+            let route = c.sl.slice(0,2).toUpperCase()+"-"+c.rl.slice(0,2).toUpperCase();
+          if (route in spots) {spots[route]+=1} else {spots[route]=1}
           }
       let routesArr=new Array();
       for (const [s,n] of Object.entries(spots)) {routesArr.push(s +": "+ n)}
