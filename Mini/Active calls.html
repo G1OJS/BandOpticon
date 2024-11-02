@@ -49,21 +49,18 @@ a:visited {color: blue;}
       <output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
      </div>
-     <div>               
+     <div>    
+     <!--
      <fieldset>
         <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
 	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
 	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
         </fieldset>
+    -->
      </div>
    </div>
    <div id="innerScreen">
-     <div class="innerPanel" id="bandGridContainer" style="display:inline-block;">
-	     <div id='bandGrid' class='anyGrid' style='grid-template-columns: max-content max-content max-content max-content max-content auto;'>
-         <!-- written by script -->
-	     </div>
-     </div> 
      <div class="innerPanel" id="spotsContainer" style="display:inline-block;">
 	    <div id='spotsGrid' class='anyGrid' style='grid-template-columns: auto;'>
          <!-- written by script -->
@@ -326,11 +323,11 @@ a:visited {color: blue;}
       squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
       connectToFeed();
       updateDisplays();
-      let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
-      document.getElementById("squaresListDisplay").value=squaresListDisplay; 
-    } else {
-      alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
-    }
+ //     let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+//      document.getElementById("squaresListDisplay").value=squaresListDisplay; 
+ //  } else {
+   //   alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
+ //   }
   }
  
  function updateAppTop(){
