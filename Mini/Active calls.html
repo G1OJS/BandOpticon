@@ -147,23 +147,9 @@ a:visited {color: blue;}
            conn[kvp[0]]=kvp[1];
          });
 
-    conn.sl=(conn.sl);
-    conn.rl=(conn.rl);
-	  
-    // add sender and receiver domain (home/dx)
-    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
-    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
+    connections[conn.sq]=conn
+    connectionsAdded+=1;
 
-    // add distance and bearing Home to DX 
-    // if both in home, sender to receiver
-    // compact logic == always sender to receiver unless Rx in home and Tx in DXin which case reverse
-      conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
-
-    // now add this connection to the connections object using sequence ID as key:
-    if(conn.rd=="home" || conn.sd=="home") {
-      connections[conn.sq]=conn
-      connectionsAdded+=1;
-    }
   }
   
    function purgeSpots(){
@@ -401,20 +387,12 @@ function updateDisplays(){
           }
       let routesArr=new Array();
       for (const [s,n] of Object.entries(spots)) {routesArr.push(s +": "+ n)}
-      routesArr.sort((a,b) {parseInt(a.split(':')[0]-parseInt(b.split(':')[0]});
+      routesArr.sort((a,b)  {return parseInt(a.split(':')[0]-parseInt(b.split(':')[0]})};
       let spotsGrid=document.getElementById("spotsGrid");
-      let tmpHTML="";
    
       spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+routesArr.join('<br>')+"</div>";
 }
  
 
-let spotsGrid=document.getElementById("spotsGrid");
-      let tmpHTML=Array.from(spots).toSorted().join('</div><div>');
-         spotsGrid.innerHTML="<div><strong>Spots of "+myCall+"</strong></div><div>"+tmpHTML+"</div>";
-      let tmpHTML="";
-      for (s in spots) {tmpHTML+=s +": "+ spots(s)+"<br>"}
-      spotsGrid.innerHTML="<div><strong>Spots of</strong></div><div>"+tmpHTML+"</div>";
-}
 
 </script>
