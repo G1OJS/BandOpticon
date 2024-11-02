@@ -61,8 +61,14 @@ a:visited {color: blue;}
      </div>
    </div>
    <div id="innerScreen">
-     <div class="innerPanel" id="spotsContainer" style="display:inline-block;">
-	    <div id='spotsGrid' class='anyGrid' style='grid-template-columns: auto;'>
+     <div class="innerPanel" id="wrapper" style="display:inline-block; float:left;">
+	    <div id='spots'>
+         <!-- written by script -->
+	    </div>
+      <div id='txcalls'>
+         <!-- written by script -->
+	    </div>
+      <div id='rxcalls'>
          <!-- written by script -->
 	    </div>
      </div> 
@@ -385,14 +391,24 @@ function updateDisplays(){
         if (!(rl2 in rxCalls)) {rxCalls[rl2]=new Set()}
         rxCalls[rl2].add(c.rc);
       }
+      
       let routesArr=new Array();
       for (const [rt,rtInfo] of Object.entries(routes)) {
 //         routesArr.push(rt +": "+ rtInfo[0]+": " +Array.from(rtInfo[1]).toSorted().join(' '));
            routesArr.push(rt +": "+ rtInfo[0]+": ");
       }
       routesArr.sort((a,b) => { return parseInt(b.split(':')[1])-parseInt(a.split(':')[1]) });
-      let spotsGrid=document.getElementById("spotsGrid");
-      spotsGrid.innerHTML="<div><strong>Spots </strong></div><div>"+routesArr.join('<br>')+"</div>";
+      let spots=document.getElementById("spots");
+      spots.innerHTML="<div><strong>Spots </strong></div><div>"+routesArr.join('<br>')+"</div>";
+      
+      
+      let txCallsArr=new Array();
+      for (const [sq,txCallsList] of Object.entries(txCalls)) {
+         txCallsArr.push(sq +": "+Array.from(txCallsArr).toSorted().join(' '));
+      }
+      txCallsArr.sort((a,b) => { return b.split(':')[0]-a.split(':')[0] });
+      let txcalls=document.getElementById("txcalls");
+      txcalls.innerHTML="<div><strong>Tx Calls </strong></div><div>"+txCallsArr.join('<br>')+"</div>";
 }
  
 </script>
