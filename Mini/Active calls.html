@@ -370,14 +370,16 @@ return ((Math.trunc((secs+7.5)/15) %2)==1);
 
 function updateDisplays(){
 
-      let spots={};
+      let routes={};
       for (id in connections) {
         let c=connections[id];
-            let route = c.sl.slice(0,2).toUpperCase()+"-"+c.rl.slice(0,2).toUpperCase();
-          if (route in spots) {spots[route]+=1} else {spots[route]=1}
-          }
+        let route = c.sl.slice(0,2).toUpperCase()+"-"+c.rl.slice(0,2).toUpperCase();
+        if (route in routes) {routes[route][0]+=1; routes[route][1].add(c.sc); } else {routes[route]=[1,new Set()]; routes[route][1].add(c.sc);}
+      }
       let routesArr=new Array();
-      for (const [s,n] of Object.entries(spots)) {routesArr.push(s +": "+ n)}
+      for (const [rt,rtInfo] of Object.entries(routes)) {
+         routesArr.push(rt +": "+ rtInfo[0]+": " +Array.from(rtInfo[1]).toSorted().join(' '))
+      }
       routesArr.sort((a,b) => { return parseInt(b.split(':')[1])-parseInt(a.split(':')[1]) });
       let spotsGrid=document.getElementById("spotsGrid");
       spotsGrid.innerHTML="<div><strong>Spots </strong></div><div>"+routesArr.join('<br>')+"</div>";
