@@ -14,14 +14,14 @@
 </tr>
 
 <tr>
-  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/BandOpticon Mini.html'>Temp</a></td>
+  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/BandOpticon Minimal.html'>Minimal</a></td>
   <td>
     Experimental minimal version 
   </td>
 </tr>
 
 <tr>
-  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/Active calls.html'>Temp</a></td>
+  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/Active calls.html'>Global activity</a></td>
   <td>
     Experimental minimal version 
   </td>
