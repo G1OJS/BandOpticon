@@ -7,24 +7,6 @@
 </tr>
 
 <tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Mini/BandOpticon%20Minimal'>BandOpticon Minimal V1.0.0</a></td>
-  <td>
-    <ol>
-      <li>experimental minimised version targetted at mobile use</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
-  <td>in progress</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V3/BandOpticon%20V3.0.0'>V3.0.0</a></td>
-  <td>
-    <ol>
-      <li>experimental - replace band tiles by rows in a grid</li>
-    </ol>
-  </td>
-</tr>
-
-<tr>
   <td>26-10-2024</td><td><a href='https://g1ojs.github.io/BandOpticon/Archive/V2/BandOpticon%20V2.0.0'>V2.0.0</a></td>
   <td>
     <ol>
