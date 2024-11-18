@@ -28,7 +28,8 @@ fieldset > div >* {vertical-align:middle;}
 
 .anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
 .anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
-.cellHighlight {background-color:yellow;}
+.anyGrid > div .Hl  {background-color:yellow;}
+
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
@@ -61,13 +62,13 @@ a:visited {color: blue;}
    <div id="innerScreen">
      <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
        <div class='title' id='spotsListTitle'> 
-         Waiting for spots of own callsign
+         <!-- written by script --> 
        </div>
        <div id='callsHeader' class='anyGrid' style='grid-template-columns: auto auto;'>
-         <div><strong>Tx Calls</strong></div><div><strong>Rx Calls</strong></div>
+         <div class='Highlight'><strong>Tx Calls</strong></div><div><strong>Rx Calls</strong></div>
        </div>
        <div id='callsGrid' class='anyGrid' style='grid-template-columns: auto auto;'>
-           <!-- written by script --> 
+         <!-- written by script --> 
        </div>
      </div> 
   </div>
@@ -102,6 +103,8 @@ a:visited {color: blue;}
   setInterval(purgeSpots, 15000);
 
   connectToFeed();
+  
+  document.getElementById("spotsListTitle").innerHTML="Waiting for spots of (or by) "+myCall;
 
   // connect to MQTT feed  
    function connectToFeed(){
@@ -416,13 +419,12 @@ a:visited {color: blue;}
    let rh="";
    for (i=0;i<Math.max(nTx,nRx);i++){
      let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
-     let lhClass=(lh[0]==myCall)? 'cellHighlight':''
+     let lhClass=(lh[0]==myCall)? 'Hl':''
      let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
-     let rhClass=(rh[0]==myCall)? 'cellHighlight':''
+     let rhClass=(rh[0]==myCall)? 'Hl':''
      g.innerHTML+="<div class='"+lhClass+"'>"+lh[0]+" "+lh[1]+" </div>"+"<div class='"+rhClass+"'>"+rh[0]+" "+rh[1]+" </div>"   
    }
  }
-
 
 </script>
 
