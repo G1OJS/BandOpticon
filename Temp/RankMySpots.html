@@ -393,18 +393,20 @@ a:visited {color: blue;}
      let c=connections[id];
      if(c.b==activeBand) {
        if(c.sd=="home") {
-         if(c.sc in txCalls) {txCalls[c.sc]+=1} else {txCalls[c.sc]=0}
+         txCalls[c.sc] = (txCalls[c.sc]+1) || 1 
        }
        if(c.rd=="home") {
-         if(c.rc in rxCalls) {rxCalls[c.rc]+=1} else {rxCalls[c.rc]=0}
+         rxCalls[c.rc] = (rxCalls[c.rc]+1) || 1
        }
      }
    }
-   console.log(txCalls);
-   console.log(rxCalls);
+
+   let txCallsRankedArr = Object.entries(txCalls).sort(([, a], [, b]) => b - a);
+   let rxCallsRankedArr = Object.entries(rxCalls).sort(([, a], [, b]) => b - a);
+
 
    let spotsGrid=document.getElementById("spotsGrid");
-   let tmpHTML=Array.from(txCalls).toSorted().join('</div><div>');
+   let tmpHTML=txCallsRankedArr.join('</div><div>');
    spotsGrid.innerHTML="<div><strong>Tx Calls</strong></div><div>"+tmpHTML+"</div>";
    
  }
