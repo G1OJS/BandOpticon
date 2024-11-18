@@ -414,10 +414,10 @@ a:visited {color: blue;}
    let nRx=rxCallsRankedArr.length;
    for (i=0;i<Math.max(nTx,nRx);i++){
      let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
-     lh[1]=(lh[1]>0)? (" ("+lh[1]+")") : "";
+     lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
      let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
      let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
-     rh[1]=(rh[1]>0)? (" ("+rh[1]+")") : "";
+     rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
      let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
      g.innerHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
    }
