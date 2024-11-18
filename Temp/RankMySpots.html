@@ -374,29 +374,35 @@ a:visited {color: blue;}
   
  function updateDisplays(){
    // find the band I'm currently using
+   let activeBand="";
    var e=0;
    for (id in connections) {
      let c=connections[id];
-     if (c.sc==myCall || c.rc==myCall) && c.t>e) {
+     if ((c.sc==myCall || c.rc==myCall) && c.t>e) {
 	   activeBand=c.b;
 	   e=c.t;
      }
    }
+   
+   if(activeBand=="") return;
+   console.log(activeBand);
 	 
    // find the transmitting and receiving calls on this band in my home squares
    let txCalls={};
    let rxCalls={};
    for (id in connections) {
      let c=connections[id];
-     if(c.sc in txCalls) {txCalls[c.sc]+=1} else {txCalls.[c.sc]=0)}
-     if(c.rc in rxCalls) {rxCalls[c.rc]+=1} else {rxCalls.[r.sc]=0)}
+     if(c.b==activeBand) {
+       if(c.sc in txCalls) {txCalls[c.sc]+=1} else {txCalls[c.sc]=0}
+       if(c.rc in rxCalls) {rxCalls[c.rc]+=1} else {rxCalls[c.rc]=0}
+     }
    }
 
    let spotsGrid=document.getElementById("spotsGrid");
    let tmpHTML=Array.from(txCalls).toSorted().join('</div><div>');
    spotsGrid.innerHTML="<div><strong>Tx Calls</strong></div><div>"+tmpHTML+"</div>";
    
- 	
+ }
 </script>
 
 </body>
