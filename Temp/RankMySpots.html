@@ -58,15 +58,17 @@ a:visited {color: blue;}
      </div>
    </div>
    <div id="innerScreen">
-     <div class="innerPanel" id="bandGridContainer" style="display:inline-block;">
-	     <div id='bandGrid' class='anyGrid' style='grid-template-columns: max-content max-content max-content max-content max-content auto;'>
-         <!-- written by script -->
-	     </div>
-     </div> 
-     <div class="innerPanel" id="spotsContainer" style="display:inline-block;">
-	    <div id='spotsGrid' class='anyGrid' style='grid-template-columns: auto;'>
-         <!-- written by script -->
-	    </div>
+     <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
+       <div class='anyGrid' id="listsContainer" style='grid-template-columns: auto auto;'>
+         <div id='txCallsGrid' class='anyGrid' style='grid-template-columns: auto;'>
+           Tx Calls
+           <!-- written by script -->
+	       </div>
+         <div id='rxCallsGrid' class='anyGrid' style='grid-template-columns: auto;'>
+           Rx Calls
+           <!-- written by script -->
+	       </div>
+       </div>
      </div> 
   </div>
 </div> 
@@ -403,11 +405,9 @@ a:visited {color: blue;}
 
    let txCallsRankedArr = Object.entries(txCalls).sort(([, a], [, b]) => b - a);
    let rxCallsRankedArr = Object.entries(rxCalls).sort(([, a], [, b]) => b - a);
-
-
-   let spotsGrid=document.getElementById("spotsGrid");
-   let tmpHTML=txCallsRankedArr.join('</div><div>');
-   spotsGrid.innerHTML="<div><strong>Tx Calls</strong></div><div>"+tmpHTML+"</div>";
+   
+   document.getElementById("txCallsGrid").innerHTML=txCallsRankedArr.join('</div><div>');
+   document.getElementById("rxCallsGrid").innerHTML=rxCallsRankedArr.join('</div><div>');
    
  }
 </script>
