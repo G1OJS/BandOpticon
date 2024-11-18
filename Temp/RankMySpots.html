@@ -59,6 +59,12 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
+       <div class='title' id='spotsListTitle'> 
+         Waiting for spots of own callsign
+       </div>
+       <div id='callsHeader' class='anyGrid' style='grid-template-columns: auto auto;'>
+         <div><strong>Tx Calls</strong></div><div><strong>Rx Calls</strong></div>
+       </div>
        <div id='callsGrid' class='anyGrid' style='grid-template-columns: auto auto;'>
            <!-- written by script --> 
        </div>
@@ -399,11 +405,16 @@ a:visited {color: blue;}
    let txCallsRankedArr = Object.entries(txCalls).sort(([, a], [, b]) => b - a);
    let rxCallsRankedArr = Object.entries(rxCalls).sort(([, a], [, b]) => b - a);
    
+   document.getElementById("spotsListTitle").innerHTML=myCall+" on "+activeBand;
+   
    let g=document.getElementById("callsGrid")
+   g.innerHTML+="";
    let nTx=txCallsRankedArr.length;
    let nRx=rxCallsRankedArr.length;
    for (i=0;i<Math.max(nTx,nRx);i++){
-     g.innerHTML+="<div>"+(i<nTx)? txCallsRankedArr[i]:"" +" </div>"+"<div>"+(i<nRx)? rxCallsRankedArr[i]:"" +" </div>"
+     let lh=(i<nTx)? txCallsRankedArr[i]:"";
+     let rh=(i<nRx)? rxCallsRankedArr[i]:"";
+     g.innerHTML+="<div>"+lh+" </div>"+"<div>"+rh+" </div>"
      
    }
  }
