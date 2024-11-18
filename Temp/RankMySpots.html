@@ -389,7 +389,7 @@ a:visited {color: blue;}
      }
    }
    
-   if(activeBand=="") return;
+//   if(activeBand=="") return;
 	 
    // find the transmitting and receiving calls on this band in my home squares
    let txCalls={};
@@ -412,16 +412,16 @@ a:visited {color: blue;}
    document.getElementById("spotsListTitle").innerHTML=myCall+" on "+activeBand;
    
    let g=document.getElementById("callsGrid")
-   g.innerHTML="";
+   g.innerHTML="<div class=''>test</div><div class='Hl'>test</div>";
    let nTx=txCallsRankedArr.length;
    let nRx=rxCallsRankedArr.length;
    let lh="";
    let rh="";
    for (i=0;i<Math.max(nTx,nRx);i++){
      let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
-     let lhClass=(lh[0]==myCall)? 'Hl':''
+     let lhClass=(lh[0]==myCall)? "Hl":" ";
      let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
-     let rhClass=(rh[0]==myCall)? 'Hl':''
+     let rhClass=(rh[0]==myCall)? "Hl":" ";
      g.innerHTML+="<div class='"+lhClass+"'>"+lh[0]+" "+lh[1]+" </div>"+"<div class='"+rhClass+"'>"+rh[0]+" "+rh[1]+" </div>"   
    }
  }
