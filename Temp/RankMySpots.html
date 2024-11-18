@@ -383,10 +383,13 @@ a:visited {color: blue;}
      }
    }
 	 
-   // find the transmitting calls on this band in my home squares
-   
+   // find the transmitting and receiving calls on this band in my home squares
+   let txCalls=new Set();
+   let rxCalls=new Set();
    for (id in connections) {
      let c=connections[id];
+     txCalls.add(c.sc);
+     rxCalls.add(c.rc);
    }
    
  	
