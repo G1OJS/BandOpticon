@@ -28,6 +28,7 @@ fieldset > div >* {vertical-align:middle;}
 
 .anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
 .anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
+.cellHighlight {background-color:yellow;}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
@@ -408,14 +409,17 @@ a:visited {color: blue;}
    document.getElementById("spotsListTitle").innerHTML=myCall+" on "+activeBand;
    
    let g=document.getElementById("callsGrid")
-   g.innerHTML+="";
+   g.innerHTML="";
    let nTx=txCallsRankedArr.length;
    let nRx=rxCallsRankedArr.length;
+   let lh="";
+   let rh="";
    for (i=0;i<Math.max(nTx,nRx);i++){
-     let lh=(i<nTx)? txCallsRankedArr[i]:"";
-     let rh=(i<nRx)? rxCallsRankedArr[i]:"";
-     g.innerHTML+="<div>"+lh+" </div>"+"<div>"+rh+" </div>"
-     
+     let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
+     let lhClass=(lh[0]==myCall)? 'cellHighlight':''
+     let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
+     let rhClass=(rh[0]==myCall)? 'cellHighlight':''
+     g.innerHTML+="<div class="+lhClass+">"+lh[0]+" "+lh[1]+" </div>"+"<div class="+rhClass+">"+rh[0]+" "+rh[1]+" </div>"   
    }
  }
 
