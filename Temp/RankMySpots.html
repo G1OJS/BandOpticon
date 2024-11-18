@@ -384,13 +384,17 @@ a:visited {color: blue;}
    }
 	 
    // find the transmitting and receiving calls on this band in my home squares
-   let txCalls=new Set();
-   let rxCalls=new Set();
+   let txCalls={};
+   let rxCalls={};
    for (id in connections) {
      let c=connections[id];
-     txCalls.add(c.sc);
-     rxCalls.add(c.rc);
+     if(c.sc in txCalls) {txCalls[c.sc]+=1} else {txCalls.[c.sc]=0)}
+     if(c.rc in rxCalls) {rxCalls[c.rc]+=1} else {rxCalls.[r.sc]=0)}
    }
+
+   let spotsGrid=document.getElementById("spotsGrid");
+   let tmpHTML=Array.from(txCalls).toSorted().join('</div><div>');
+   spotsGrid.innerHTML="<div><strong>Tx Calls</strong></div><div>"+tmpHTML+"</div>";
    
  	
 </script>
