@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon Minimal V1.0.0</title>
+<title>Rank My Spots V1.0.0</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -44,7 +44,7 @@ a:visited {color: blue;}
 </head>
 <body>
 <div id="app">
-    <div id='appTitle'>BandOpticon Minimal</div>
+    <div id='appTitle'>Rank My Spots</div>
     <div id="appTop">
       <div>
       <output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
@@ -101,7 +101,7 @@ a:visited {color: blue;}
 
   connectToFeed();
   
-  document.getElementById("spotsListTitle").innerHTML="Waiting for spots of (or by) "+myCall;
+  document.getElementById("spotsListTitle").innerHTML="Waiting for " + myCall + " spots";
 
   // connect to MQTT feed  
    function connectToFeed(){
@@ -412,14 +412,12 @@ a:visited {color: blue;}
    g.innerHTML="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
    let nTx=txCallsRankedArr.length;
    let nRx=rxCallsRankedArr.length;
-   let lh="";
-   let rh="";
    for (i=0;i<Math.max(nTx,nRx);i++){
      let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
      let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
      let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
      let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-     g.innerHTML+=lhdiv+lh[0]+" "+lh[1]+" </div>"+rhdiv+rh[0]+" "+rh[1]+" </div><div></div>";  
+     g.innerHTML+=lhdiv+lh[0]+" ("+lh[1]+")</div>"+rhdiv+rh[0]+" ("+rh[1]+")</div><div></div>";  
    }
  }
 
