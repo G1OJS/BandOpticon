@@ -61,12 +61,6 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
-       <div class='title' id='spotsListTitle'> 
-         <!-- written by script --> 
-       </div>
-       <div id='callsGrid' class='anyGrid' style='grid-template-columns: max-content max-content auto;'>
-         <!-- written by script --> 
-       </div>
      </div> 
   </div>
 </div> 
@@ -392,13 +386,15 @@ a:visited {color: blue;}
 		}
    }
    
-   document.getElementById("spotsListTitle").innerHTML="All calls using "+activeMode;
-   let g=document.getElementById("callsGrid")
-   g.innerHTML="";
+   let g=document.getElementById("spotsContainer")
+   g.innerHTML="<div class='title' id='spotsListTitle'>All calls using "+activeMode+"</div>";
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     g.innerHTML+="<div><strong>"+activeBand+"</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
+     let bandHTML="";
+     bandHTML+="<div><strong>"+activeBand+"</strong></div>";
+     bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content max-content auto;'>";
+     bandHTML+="</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
      let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      let rxCallsRankedArr=Object.entries(rxCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      txCallsRankedArr.sort(([,a],[,b]) => b-a);
@@ -417,8 +413,10 @@ a:visited {color: blue;}
          rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
          let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
          
-         g.innerHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
+         bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
        }
+       bandHTML+="</div>"
+       g.innerHTML+=bandHTML;
     });
  }
 
