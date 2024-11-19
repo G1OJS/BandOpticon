@@ -376,54 +376,45 @@ a:visited {color: blue;}
   
  function updateDisplays(){
 	 
-   // find the band I'm currently using
-   let activeBand="";
-   let activeMode="";
-   var e=0;
-   for (id in connections) {
-     let c=connections[id];
-     if ((c.sc==myCall || c.rc==myCall) && c.t>e) {
-	     activeBand=c.b;
-	     activeMode=c.md;
-	     e=c.t;
-     }
-   }
-   
-   if(activeBand=="") return;
-	 
-   // find the transmitting and receiving calls on this band and mode in my home squares
+   var activeMode="FT8";
+
+   // find the transmitting and receiving calls on this mode in my home squares
    let txCalls={};
    let rxCalls={};
+   let activeBands=new Set();
    for (id in connections) {
      let c=connections[id];
-     if(c.b==activeBand && c.md==activeMode) {
-       if(c.sd=="home") {
-         txCalls[c.sc] = (txCalls[c.sc]+1) || 1 
-       }
-       if(c.rd=="home") {
-         rxCalls[c.rc] = (rxCalls[c.rc]+1) || 1
-       }
-     }
+     let bandCall="";
+     if(c.md==activeMode) {
+       if(c.sd=="home") {bandCall=c.b+"_"+c.sc; txCalls[bandCall] = (txCalls[bandCall]+1) || 1;}
+       if(c.rd=="home") {bandCall=c.b+"_"+c.rc; rxCalls[bandCall] = (rxCalls[bandCall]+1) || 1;}
+       if(bandCall!="") {activeBands.add(c.b)}
+		}
    }
 
-   let txCallsRankedArr = Object.entries(txCalls).sort(([, a], [, b]) => b - a);
-   let rxCallsRankedArr = Object.entries(rxCalls).sort(([, a], [, b]) => b - a);
+   let txCallsArr = Object.entries(txCalls).sort(([a, c], [b, d]) => wavelength(b) - wavelength(a) + (b==a)? (d-c):0);
+   let rxCallsArr = Object.entries(rxCalls).sort(([a, c], [b, d]) => wavelength(b) - wavelength(a) + (b==a)? (d-c):0);
    
-   document.getElementById("spotsListTitle").innerHTML=myCall+" ranking on "+activeBand +" "+activeMode;
+   document.getElementById("spotsListTitle").innerHTML="All calls using "+activeMode;
    
    let g=document.getElementById("callsGrid")
-   g.innerHTML="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
-   let nTx=txCallsRankedArr.length;
-   let nRx=rxCallsRankedArr.length;
-   for (i=0;i<Math.max(nTx,nRx);i++){
-     let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
-     lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
-     let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-     let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
-     rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
-     let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-     g.innerHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
-   }
+   g.innerHTML="";
+   Array.from(activeBands).forEach( (activeBand) => {
+     g.innerHTML+="<div><strong>"+activeBand+"</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
+     let txCallsRankedArr=txCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
+     let rxCallsRankedArr=rxCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
+     let nTx=txCallsRankedArr.length;
+     let nRx=rxCallsRankedArr.length;
+       for (i=0;i<Math.max(nTx,nRx);i++){
+         let lh=(i<nTx)? txCallsRankedArr[i].split("_")[1]:["",""];
+         lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
+         let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
+         let rh=(i<nRx)? rxCallsRankedArr[i].split("_")[1]:["",""];
+         rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
+         let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
+         g.innerHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
+       }
+    });
  }
 
 </script>
