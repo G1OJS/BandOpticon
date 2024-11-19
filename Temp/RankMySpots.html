@@ -391,7 +391,8 @@ a:visited {color: blue;}
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     let bandHTML="<br><div><strong>"+activeBand+"</strong></div>";
+     let bandHTML="<div style='display:inline-block;'>";
+     bandHTML+="<div><strong>"+activeBand+"</strong></div>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content max-content auto;'>";
      bandHTML+="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div style='background-color:var(--main-paper-color)'></div>"; 
      let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
@@ -413,7 +414,7 @@ a:visited {color: blue;}
          bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div>"
          bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
        }
-       bandHTML+="</div>"
+       bandHTML+="</div></div>"
        g.innerHTML+=bandHTML;
     });
  }
