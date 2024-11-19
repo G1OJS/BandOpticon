@@ -392,14 +392,20 @@ a:visited {color: blue;}
 		}
    }
 
-   let txCallsArr = Object.entries(txCalls).sort(([a, c], [b, d]) => wavelength(b) - wavelength(a) + (b==a)? (d-c):0);
-   let rxCallsArr = Object.entries(rxCalls).sort(([a, c], [b, d]) => wavelength(b) - wavelength(a) + (b==a)? (d-c):0);
+   let txCallsArr = Object.entries(txCalls);
+   console.log(txCallsArr);
+   txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
+   console.log(txCallsArr);
+   let rxCallsArr = Object.entries(rxCalls);
+   txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
    
    document.getElementById("spotsListTitle").innerHTML="All calls using "+activeMode;
    
    let g=document.getElementById("callsGrid")
    g.innerHTML="";
-   Array.from(activeBands).forEach( (activeBand) => {
+   let activeBandsArr=Array.from(activeBands)
+   activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
+   activeBandsArr.forEach( (activeBand) => {
      g.innerHTML+="<div><strong>"+activeBand+"</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
      let txCallsRankedArr=txCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
      let rxCallsRankedArr=rxCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
