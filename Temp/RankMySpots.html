@@ -391,10 +391,9 @@ a:visited {color: blue;}
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     let bandHTML="";
-     bandHTML+="<div><strong>"+activeBand+"</strong></div>";
+     let bandHTML="<br><div><strong>"+activeBand+"</strong></div>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content max-content auto;'>";
-     bandHTML+="</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
+     bandHTML+="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div style='background-color:var(--main-paper-color)'></div>"; 
      let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      let rxCallsRankedArr=Object.entries(rxCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      txCallsRankedArr.sort(([,a],[,b]) => b-a);
@@ -402,18 +401,17 @@ a:visited {color: blue;}
      let nTx=txCallsRankedArr.length;
      let nRx=rxCallsRankedArr.length;
        for (i=0;i<Math.max(nTx,nRx);i++){
-         
          let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
          lh[0]=(lh[0]!="")? lh[0].split("_")[1] : "";
          lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
          let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-         
          let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
          rh[0]=(rh[0]!="")? rh[0].split("_")[1] : "";
          rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
          let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
          
-         bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
+         bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div>"
+         bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
        }
        bandHTML+="</div>"
        g.innerHTML+=bandHTML;
