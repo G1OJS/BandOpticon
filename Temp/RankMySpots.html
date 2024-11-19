@@ -101,8 +101,8 @@ a:visited {color: blue;}
 
   connectToFeed();
   
-  document.getElementById("spotsListTitle").innerHTML="Waiting for " + myCall + " spots";
-
+  document.getElementById("spotsListTitle").innerHTML="Waiting for spots";
+  
   // connect to MQTT feed  
    function connectToFeed(){
   //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
@@ -391,22 +391,18 @@ a:visited {color: blue;}
        if(bandCall!="") {activeBands.add(c.b)}
 		}
    }
-
-   let txCallsArr = Object.entries(txCalls);
-   txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
-   let rxCallsArr = Object.entries(rxCalls);
-   txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
    
    document.getElementById("spotsListTitle").innerHTML="All calls using "+activeMode;
-   
    let g=document.getElementById("callsGrid")
    g.innerHTML="";
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
      g.innerHTML+="<div><strong>"+activeBand+"</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
-     let txCallsRankedArr=txCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
-     let rxCallsRankedArr=rxCallsArr.filter((rec) => rec[0].split("_")[0]==activeBand);
+     let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
+     let rxCallsRankedArr=Object.entries(rxCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
+     txCallsRankedArr.sort(([,a],[,b]) => b-a);
+     rxCallsRankedArr.sort(([,a],[,b]) => b-a);
      let nTx=txCallsRankedArr.length;
      let nRx=rxCallsRankedArr.length;
        for (i=0;i<Math.max(nTx,nRx);i++){
