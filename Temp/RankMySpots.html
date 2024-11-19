@@ -393,9 +393,7 @@ a:visited {color: blue;}
    }
 
    let txCallsArr = Object.entries(txCalls);
-   console.log(txCallsArr);
    txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
-   console.log(txCallsArr);
    let rxCallsArr = Object.entries(rxCalls);
    txCallsArr.sort(([a, c], [b, d]) => wavelength(b.split('_')[0]) - wavelength(a.split('_')[0]) + (b==a)? (d-c):0);
    
