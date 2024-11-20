@@ -5,7 +5,7 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
- 
+
 <style>
 :root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; --tx-color:red; --rx-color:green; }
 div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
@@ -61,12 +61,6 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
-       <div class='title' id='spotsListTitle'> 
-         <!-- written by script --> 
-       </div>
-       <div id='callsGrid' class='anyGrid' style='grid-template-columns: max-content max-content auto;'>
-         <!-- written by script --> 
-       </div>
      </div> 
   </div>
 </div> 
@@ -392,13 +386,15 @@ a:visited {color: blue;}
 		}
    }
    
-   document.getElementById("spotsListTitle").innerHTML="All calls using "+activeMode;
-   let g=document.getElementById("callsGrid")
-   g.innerHTML="";
+   let g=document.getElementById("spotsContainer")
+   g.innerHTML="<div class='title' id='spotsListTitle'>All calls using "+activeMode+"</div>";
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     g.innerHTML+="<div><strong>"+activeBand+"</strong></div><div></div><div></div>"+"<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div></div>";
+     let bandHTML="<div style='display:inline-block;'>";
+     bandHTML+="<div><strong>"+activeBand+"</strong></div>";
+     bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content max-content auto;'>";
+     bandHTML+="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div style='background-color:var(--main-paper-color)'></div>"; 
      let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      let rxCallsRankedArr=Object.entries(rxCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
      txCallsRankedArr.sort(([,a],[,b]) => b-a);
@@ -406,19 +402,20 @@ a:visited {color: blue;}
      let nTx=txCallsRankedArr.length;
      let nRx=rxCallsRankedArr.length;
        for (i=0;i<Math.max(nTx,nRx);i++){
-         
          let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
          lh[0]=(lh[0]!="")? lh[0].split("_")[1] : "";
          lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
          let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-         
          let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
          rh[0]=(rh[0]!="")? rh[0].split("_")[1] : "";
          rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
          let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
          
-         g.innerHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div><div></div>";  
+         bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div>"
+         bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
        }
+       bandHTML+="</div></div>"
+       g.innerHTML+=bandHTML;
     });
  }
 
