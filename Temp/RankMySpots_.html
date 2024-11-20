@@ -60,7 +60,7 @@ a:visited {color: blue;}
      </div>
    </div>
    <div id="innerScreen">
-     <div class="innerPanel" id="spotsContainer" style="display:inline-block; float:left;">
+     <div class="innerPanel" id="spotsContainer">
      </div> 
   </div>
 </div> 
@@ -391,8 +391,7 @@ a:visited {color: blue;}
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     let bandHTML="<div style='display:inline-block;'>";
-     bandHTML+="<div><strong>"+activeBand+"</strong></div>";
+     let bandHTML="<details><summary><strong>"+activeBand+"</strong></summary>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content auto;'>";
      let callsRankedArr=Object.entries(calls).filter((rec) => rec[1].band==activeBand);
      callsRankedArr.sort(([,a],[,b]) =>  b.txrx-a.txrx || b.nSpots-a.nSpots);
@@ -404,7 +403,7 @@ a:visited {color: blue;}
        bandHTML+="<div style='"+style+"'>"+cr.callsign+" ("+cr.nSpots+")</div>"                  
        bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
      });
-     bandHTML+="</div></div>"
+     bandHTML+="</div></details>"
      g.innerHTML+=bandHTML;
     });
  }
