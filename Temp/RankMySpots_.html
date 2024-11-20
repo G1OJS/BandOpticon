@@ -386,12 +386,18 @@ a:visited {color: blue;}
    }
   
    
-   let g=document.getElementById("spotsContainer")
+   let accordion=document.querySelectorAll("details.bandDetails");
+   let accordion_state={};
+   accordion.forEach((bandAcc) => {
+     accordion_state[bandAcc.id]=bandAcc.open;
+   });
+   let g=document.getElementById("spotsContainer");
    g.innerHTML="<div class='title' id='spotsListTitle'>All calls using "+activeMode+"</div>";
    let activeBandsArr=Array.from(activeBands)
    activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
    activeBandsArr.forEach( (activeBand) => {
-     let bandHTML="<details><summary><strong>"+activeBand+"</strong></summary>";
+     let bandHTML="<details id='"+activeBand+"' class='bandDetails'" + ((accordion_state[activeBand])? "open":"closed") + ">"
+     bandHTML+="<summary><strong>"+activeBand+"</strong></summary>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content auto;'>";
      let callsRankedArr=Object.entries(calls).filter((rec) => rec[1].band==activeBand);
      callsRankedArr.sort(([,a],[,b]) =>  b.txrx-a.txrx || b.nSpots-a.nSpots);
