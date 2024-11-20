@@ -399,14 +399,16 @@ a:visited {color: blue;}
    activeBandsArr.forEach( (activeBand) => {
      let bandHTML="<details id='"+activeBand+"' class='bandDetails'" + ((accordion_state[activeBand])? "open":"closed") + ">"
      bandHTML+="<summary><strong>"+activeBand+"</strong></summary>";
+     bandHTML+="<strong>Transmitters</strong><br>";
+     let txBlock=true;
      let callsRankedArr=Object.entries(calls).filter((rec) => rec[1].band==activeBand);
      callsRankedArr.sort(([,a],[,b]) =>  b.txrx-a.txrx || b.nSpots-a.nSpots);
      callsRankedArr.forEach( (callRec) => {
        let cr=callRec[1];
-       let style="background-color:var(--light-paper-color);";
+       let style="background-color:var(--main-paper-color);";
        if(cr.callsign==myCall) style+="background-color:yellow;"
-       if(cr.txrx==1) style+=" font-weight:bold;"
-       bandHTML+=" <span style='"+style+"'>"+cr.callsign+" ("+cr.nSpots+")</span>"                  
+       if(cr.txrx==0 && txBlock) {bandHTML+="<br><strong>Receivers</strong><br>"; txBlock=false;}
+       bandHTML+="<span style='"+style+"'>"+cr.callsign+":"+cr.nSpots+", </span>"                 
      });
      bandHTML+="</details>"
      g.innerHTML+=bandHTML;
