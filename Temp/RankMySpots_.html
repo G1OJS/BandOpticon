@@ -373,18 +373,18 @@ a:visited {color: blue;}
    var activeMode="FT8";
 
    // find the transmitting and receiving calls on this mode in my home squares
-   let txCalls={};
-   let rxCalls={};
+   let calls={};
    let activeBands=new Set();
    for (id in connections) {
      let c=connections[id];
      let bandCall="";
      if(c.md==activeMode) {
-       if(c.sd=="home") {bandCall=c.b+"_"+c.sc; txCalls[bandCall] = (txCalls[bandCall]+1) || 1;}
-       if(c.rd=="home") {bandCall=c.b+"_"+c.rc; rxCalls[bandCall] = (rxCalls[bandCall]+1) || 1;}
+       if(c.sd=="home") {bandCall=c.b+"tx_"+c.sc; calls[bandCall] = {"band":c.b,"callsign":c.sc,"txrx":1,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1};}
+       if(c.rd=="home") {bandCall=c.b+"rx_"+c.rc; calls[bandCall] = {"band":c.b,"callsign":c.rc,"txrx":0,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1};}
        if(bandCall!="") {activeBands.add(c.b)}
 		}
    }
+  
    
    let g=document.getElementById("spotsContainer")
    g.innerHTML="<div class='title' id='spotsListTitle'>All calls using "+activeMode+"</div>";
@@ -393,29 +393,19 @@ a:visited {color: blue;}
    activeBandsArr.forEach( (activeBand) => {
      let bandHTML="<div style='display:inline-block;'>";
      bandHTML+="<div><strong>"+activeBand+"</strong></div>";
-     bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content max-content auto;'>";
-     bandHTML+="<div><strong>Transmitting</strong></div><div><strong>Receiving</strong></div><div style='background-color:var(--main-paper-color)'></div>"; 
-     let txCallsRankedArr=Object.entries(txCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
-     let rxCallsRankedArr=Object.entries(rxCalls).filter((rec) => rec[0].split("_")[0]==activeBand);
-     txCallsRankedArr.sort(([,a],[,b]) => b-a);
-     rxCallsRankedArr.sort(([,a],[,b]) => b-a);
-     let nTx=txCallsRankedArr.length;
-     let nRx=rxCallsRankedArr.length;
-       for (i=0;i<Math.max(nTx,nRx);i++){
-         let lh=(i<nTx)? txCallsRankedArr[i]:["",""];
-         lh[0]=(lh[0]!="")? lh[0].split("_")[1] : "";
-         lh[1]=(lh[1]>0)? " ("+lh[1]+")" : "";
-         let lhdiv="<div " + ((lh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-         let rh=(i<nRx)? rxCallsRankedArr[i]:["",""];
-         rh[0]=(rh[0]!="")? rh[0].split("_")[1] : "";
-         rh[1]=(rh[1]>0)? " ("+rh[1]+")" : "";
-         let rhdiv="<div " + ((rh[0]==myCall)? "style='background-color:yellow;'":" ") +">";
-         
-         bandHTML+=lhdiv+lh[0]+lh[1]+"</div>"+rhdiv+rh[0]+rh[1]+"</div>"
-         bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
-       }
-       bandHTML+="</div></div>"
-       g.innerHTML+=bandHTML;
+     bandHTML+="<div class='anyGrid' style='grid-template-columns: max-content auto;'>";
+     let callsRankedArr=Object.entries(calls).filter((rec) => rec[1].band==activeBand);
+     callsRankedArr.sort(([,a],[,b]) =>  b.txrx-a.txrx || b.nSpots-a.nSpots);
+     callsRankedArr.forEach( (callRec) => {
+       let cr=callRec[1];
+       let style="";
+       if(cr.callsign==myCall) style="background-color:yellow;"
+       if(cr.txrx==1) style+=" font-weight:bold;"
+       bandHTML+="<div style='"+style+"'>"+cr.callsign+" ("+cr.nSpots+")</div>"                  
+       bandHTML+="<div style='background-color:var(--main-paper-color)'></div>";  
+     });
+     bandHTML+="</div></div>"
+     g.innerHTML+=bandHTML;
     });
  }
 
