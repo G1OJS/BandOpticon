@@ -376,6 +376,7 @@ a:visited {color: blue;}
      if(c.sc==myCall || c.rc==myCall) {myActivity.add(c.b+"_"+c.md)}
 	 }
    let myActivityArr=Array.from(myActivity);
+   if (myActivityArr.length==0) {return};
 
    // find the transmitting and receiving calls on this mode in my home squares
    let calls={};
@@ -389,7 +390,7 @@ a:visited {color: blue;}
          };
        if(c.sd=="home") addConnection("tx_",c.sc);
        if(c.rd=="home") addConnection("rx_",c.rc);
-		}
+     }
    }
  
 //   let accordion=document.querySelectorAll("details.bandDetails");
