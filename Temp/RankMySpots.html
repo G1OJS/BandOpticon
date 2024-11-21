@@ -392,14 +392,14 @@ a:visited {color: blue;}
 		}
    }
  
-   let accordion=document.querySelectorAll("details.bandDetails");
-   let accordion_state={};
-   accordion.forEach((bandAcc) => {
-     accordion_state[bandAcc.id]=bandAcc.open;
-   });
+//   let accordion=document.querySelectorAll("details.bandDetails");
+//   let accordion_state={};
+//   accordion.forEach((bandAcc) => {
+//     accordion_state[bandAcc.id]=bandAcc.open;
+//   });
    
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<div class='title' id='spotsListTitle'>Title</div>";
+   g.innerHTML="<div class='title' id='spotsListTitle'>"+myCall+" vs others in home squares</div>";
    
    myActivityArr.forEach( (bandMode) => {
      let callsArr=Object.entries(calls).filter((rec) => rec[1].bandMode==bandMode);
@@ -417,13 +417,15 @@ a:visited {color: blue;}
        i++;
      }
     
-     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" + ((accordion_state[bandMode])? "open":"closed") + ">"
-     bandHTML+="<summary><strong>"+bandMode+"</strong></summary>";
+//     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" + ((accordion_state[bandMode] || )? "open":"closed") + ">"
+//     bandHTML+="<summary><strong>"+bandMode+"</strong></summary>";
+     let bandHTML+="<h2>"+bandMode+"</h2>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: repeat(4,max-content) auto'>";
      bandHTML+="<div class='TopRow'>Tx by spots</div><div class='TopRow'>Tx by km</div><div class='TopRow'>Rx by spots</div><div class='TopRow'>Rx by km</div><div></div>";
      bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div></div>").join('');
-     bandHTML+="</div></details>"
-     g.innerHTML+=bandHTML.replace("<div>"+myCall,"<div class='Hl'>"+myCall);
+//     bandHTML+="</div></details>";
+     bandHTML+="</div>";	   
+     g.innerHTML+=bandHTML.replaceAll("<div>"+myCall,"<div class='Hl'>"+myCall);
    });
  }
 
