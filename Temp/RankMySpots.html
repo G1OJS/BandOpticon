@@ -28,8 +28,8 @@ fieldset > div >* {vertical-align:middle;}
 
 .anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
 .anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
-.anyGrid > div .Hl  {background-color:yellow;}
-
+.anyGrid > .TopRow  {background-color:light-grey; font-weight:bold;}
+.anyGrid > .Hl  {background-color:yellow;}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
@@ -77,7 +77,7 @@ a:visited {color: blue;}
   let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
   var squaresList=""; // the human-firendly list of squares to watch
   var refresh_mSeconds=5000;
-  var purgeMinutes=15;
+  var purgeMinutes=5;
   let myCall="G1OJS";
   var mqttClient=null;	
   var tStart=Date.now(); // software start time
@@ -369,51 +369,62 @@ a:visited {color: blue;}
  }
   
  function updateDisplays(){
-	 
-   var activeMode="FT8";
+
+   let myActivity=new Set();
+   for (id in connections) {
+     let c=connections[id];
+     if(c.sc==myCall || c.rc==myCall) {myActivity.add(c.b+"_"+c.md)}
+	 }
+   let myActivityArr=Array.from(myActivity);
 
    // find the transmitting and receiving calls on this mode in my home squares
    let calls={};
-   let activeBands=new Set();
-   let myActiveBands=new Set();
    for (id in connections) {
      let c=connections[id];
-     let bandCall="";
-     if(c.md==activeMode) {
-       if(c.sd=="home") {bandCall=c.b+"tx_"+c.sc; calls[bandCall] = {"band":c.b,"callsign":c.sc,"txrx":1,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1};}
-       if(c.rd=="home") {bandCall=c.b+"rx_"+c.rc; calls[bandCall] = {"band":c.b,"callsign":c.rc,"txrx":0,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1};}
-       if(bandCall!="") {activeBands.add(c.b)}
-       if(c.sc==myCall || c.rc==myCall) {myActiveBands.add(c.b)}
+     if(myActivityArr.includes(c.b+"_"+c.md)) {
+       const addConnection=function(txrx,callsign) {
+         let bandCall=c.b+txrx+callsign;
+         let itxrx=(txrx=="tx_")? 1:0;
+         calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":itxrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+         };
+       if(c.sd=="home") addConnection("tx_",c.sc);
+       if(c.rd=="home") addConnection("rx_",c.rc);
 		}
    }
  
    let accordion=document.querySelectorAll("details.bandDetails");
    let accordion_state={};
    accordion.forEach((bandAcc) => {
-     accordion_state[bandAcc.id]=bandAcc.open || myActiveBands.has(bandAcc.id);
+     accordion_state[bandAcc.id]=bandAcc.open;
    });
    
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<div class='title' id='spotsListTitle'>All calls using "+activeMode+"</div>";
-   let activeBandsArr=Array.from(activeBands)
-   activeBandsArr.sort((a,b) => wavelength(b)-wavelength(a));
-   activeBandsArr.forEach( (activeBand) => {
-     let bandHTML="<details id='"+activeBand+"' class='bandDetails'" + ((accordion_state[activeBand])? "open":"closed") + ">"
-     bandHTML+="<summary><strong>"+activeBand+"</strong></summary>";
-     bandHTML+="<strong>Transmitters</strong><br>";
-     let txBlock=true;
-     let callsRankedArr=Object.entries(calls).filter((rec) => rec[1].band==activeBand);
-     callsRankedArr.sort(([,a],[,b]) =>  b.txrx-a.txrx || b.nSpots-a.nSpots);
-     callsRankedArr.forEach( (callRec) => {
-       let cr=callRec[1];
-       let style="display:inline-block; background-color:var(--light-paper-color); width:14ch; margin:2px; padding:1px;";
-       if(cr.callsign==myCall) style+="background-color:yellow;"
-       if(cr.txrx==0 && txBlock) {bandHTML+="<br><strong>Receivers</strong><br>"; txBlock=false;}
-       bandHTML+="<span style='"+style+"'>"+cr.callsign+":"+cr.nSpots+"</span>"                 
-     });
-     bandHTML+="</details>"
-     g.innerHTML+=bandHTML;
-    });
+   g.innerHTML="<div class='title' id='spotsListTitle'>Title</div>";
+   
+   myActivityArr.forEach( (bandMode) => {
+     let callsArr=Object.entries(calls).filter((rec) => rec[1].bandMode==bandMode);
+     let txD=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax)
+     let rxD=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
+     let txN=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
+     let rxN=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);  
+     txD=txD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
+     rxD=rxD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
+     txN=txN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
+     rxN=rxN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
+     var tblArr = [], i = 0;
+     while ( txN[i] || rxN[i] ) { 
+       tblArr.push( [txN[i] || "", txD[i] || "", rxN[i] || "", rxD[i] || ""] );
+       i++;
+     }
+    
+     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" + ((accordion_state[bandMode])? "open":"closed") + ">"
+     bandHTML+="<summary><strong>"+bandMode+"</strong></summary>";
+     bandHTML+="<div class='anyGrid' style='grid-template-columns: repeat(4,max-content) auto'>";
+     bandHTML+="<div class='TopRow'>Tx by spots</div><div class='TopRow'>Tx by km</div><div class='TopRow'>Rx by spots</div><div class='TopRow'>Rx by km</div><div></div>";
+     bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div></div>").join('');
+     bandHTML+="</div></details>"
+     g.innerHTML+=bandHTML.replace("<div>"+myCall,"<div class='Hl'>"+myCall);
+   });
  }
 
 </script>
