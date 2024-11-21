@@ -61,6 +61,7 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div class="innerPanel" id="spotsContainer">
+	<div class='title'>Loading ...</div>
      </div> 
   </div>
 </div> 
@@ -94,8 +95,6 @@ a:visited {color: blue;}
   setInterval(purgeSpots, 15000);
 
   connectToFeed();
-  
-  document.getElementById("spotsListTitle").innerHTML="Waiting for spots";
   
   // connect to MQTT feed  
    function connectToFeed(){
