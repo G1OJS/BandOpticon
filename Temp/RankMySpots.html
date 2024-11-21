@@ -54,7 +54,8 @@ a:visited {color: blue;}
      <fieldset>
         <legend>Settings</legend>
 	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
-	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
+	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button>
+           <button type='button' class='button-tiny' onclick='purgeAllSpots(); updateDisplays();'>Purge All Now</button><br>
 	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
         </fieldset>
      </div>
@@ -166,6 +167,12 @@ a:visited {color: blue;}
          connectionsPurged+=1;
        }
      }
+   }
+   
+   function purgeAllSpots(){
+     connections = {};
+     connectionsAdded=0;
+     connectionsPurged=0;
    }
   
   function validSquaresListEntry(locator){
@@ -375,35 +382,38 @@ a:visited {color: blue;}
      if(c.sc==myCall || c.rc==myCall) {myActivity.add(c.b+"_"+c.md)}
 	 }
    let myActivityArr=Array.from(myActivity);
-   if (myActivityArr.length==0) {return};
+//   if (myActivityArr.length==0) {return};
 
-   // find the transmitting and receiving calls on this mode in my home squares
+   let allActivity=new Set();
    let calls={};
    for (id in connections) {
      let c=connections[id];
-     if(myActivityArr.includes(c.b+"_"+c.md)) {
+     allActivity.add(c.b+"_"+c.md);
+ //    if(myActivityArr.includes(c.b+"_"+c.md)) {
        const addConnection=function(txrx,callsign) {
-         let bandCall=c.b+txrx+callsign;
-         let itxrx=(txrx=="tx_")? 1:0;
-         calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":itxrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
-         };
-       if(c.sd=="home") addConnection("tx_",c.sc);
-       if(c.rd=="home") addConnection("rx_",c.rc);
-     }
+         let bandCall=c.b+"_"+txrx+"_"+callsign;
+         calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":txrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+       };
+       if(c.sd=="home") addConnection(1,c.sc);
+       if(c.rd=="home") addConnection(0,c.rc);
+  //   }
    }
+   // sort the activity array we are to iterate later. Add a 2nd level to sort on mode too?
+   let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
  
-//   let accordion=document.querySelectorAll("details.bandDetails");
-//   let accordion_state={};
-//   accordion.forEach((bandAcc) => {
-//     accordion_state[bandAcc.id]=bandAcc.open;
-//   });
+   let accordion=document.querySelectorAll("details.bandDetails");
+   let accordion_state={};
+   accordion.forEach((bandAcc) => {
+     accordion_state[bandAcc.id]=bandAcc.open;
+   });
    
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<div class='title' id='spotsListTitle'>"+myCall+" vs others in home squares</div>";
+   g.innerHTML="<div class='title' id='spotsListTitle'>All activity in home squares</div>";
+   g.innerHTML+="<div>Click arrows for details. Sections open automatically where "+myCall+" is transmitting or receiving.</div>";
    
-   myActivityArr.forEach( (bandMode) => {
+   allActivityArr.forEach( (bandMode) => {
      let callsArr=Object.entries(calls).filter((rec) => rec[1].bandMode==bandMode);
-     let txD=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax)
+     let txD=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
      let rxD=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
      let txN=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
      let rxN=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);  
@@ -416,15 +426,18 @@ a:visited {color: blue;}
        tblArr.push( [txN[i] || "", txD[i] || "", rxN[i] || "", rxD[i] || ""] );
        i++;
      }
+
+     let bandModeSummary="<span style='display:inline-block; width:15ch;'>"+bandMode+"</span>"
+                         +"<span style='display:inline-block; width:8ch;'>Tx:"+txN.length+"</span>"
+                         +"<span style='display:inline-block; width:8ch;'>Rx:"+rxN.length+"</span>"
     
-//     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" + ((accordion_state[bandMode] || )? "open":"closed") + ">"
-//     bandHTML+="<summary><strong>"+bandMode+"</strong></summary>";
-     let bandHTML="<h2>"+bandMode+"</h2>";
+     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" 
+                  + ( (accordion_state[bandMode] || myActivityArr.includes(bandMode) )? "open":"closed") + ">"
+     bandHTML+="<summary><strong>"+bandModeSummary+"</strong></summary>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: repeat(4,max-content) auto'>";
      bandHTML+="<div class='TopRow'>Tx by spots</div><div class='TopRow'>Tx by km</div><div class='TopRow'>Rx by spots</div><div class='TopRow'>Rx by km</div><div></div>";
      bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div></div>").join('');
-//     bandHTML+="</div></details>";
-     bandHTML+="</div>";	   
+     bandHTML+="</div></details>";  
      g.innerHTML+=bandHTML.replaceAll("<div>"+myCall,"<div class='Hl'>"+myCall);
    });
  }
