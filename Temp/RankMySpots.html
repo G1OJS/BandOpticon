@@ -419,7 +419,7 @@ a:visited {color: blue;}
     
 //     let bandHTML="<details id='"+bandMode+"' class='bandDetails'" + ((accordion_state[bandMode] || )? "open":"closed") + ">"
 //     bandHTML+="<summary><strong>"+bandMode+"</strong></summary>";
-     let bandHTML+="<h2>"+bandMode+"</h2>";
+     let bandHTML="<h2>"+bandMode+"</h2>";
      bandHTML+="<div class='anyGrid' style='grid-template-columns: repeat(4,max-content) auto'>";
      bandHTML+="<div class='TopRow'>Tx by spots</div><div class='TopRow'>Tx by km</div><div class='TopRow'>Rx by spots</div><div class='TopRow'>Rx by km</div><div></div>";
      bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div></div>").join('');
