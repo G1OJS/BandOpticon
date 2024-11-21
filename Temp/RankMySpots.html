@@ -28,8 +28,9 @@ fieldset > div >* {vertical-align:middle;}
 
 .anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
 .anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
-.anyGrid > .TopRow  {background-color:light-grey; font-weight:bold;}
+.anyGrid > .TopRow  {background-color:lightgrey; font-weight:bold;}
 .anyGrid > .Hl  {background-color:yellow;}
+.anyGrid > .pad  {background-color:var(--main-paper-color)}
 
 .hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
 .notesText {font-weight:normal; font-size: 1rem;}
@@ -433,14 +434,16 @@ a:visited {color: blue;}
 
      let bandModeSummary="<span style='display:inline-block; width:15ch;'>"+bandMode+"</span>"
                          +"<span style='display:inline-block; width:8ch;'>Tx:"+txN.length+"</span>"
-                         +"<span style='display:inline-block; width:8ch;'>Rx:"+rxN.length+"</span>"
+                         +"<span style='display:inline-block; width:8ch;'>Rx:"+rxN.length+"</span>";
     
      let bandHTML="<details id='"+bandMode+"' class='bandDetails'" 
-                  + ( (accordion_state[bandMode] || myActivityArr.includes(bandMode) )? "open":"closed") + ">"
-     bandHTML+="<summary><strong>"+bandModeSummary+"</strong></summary>";
-     bandHTML+="<div class='anyGrid' style='grid-template-columns: repeat(4,max-content) auto'>";
-     bandHTML+="<div class='TopRow'>Tx by spots</div><div class='TopRow'>Tx by km</div><div class='TopRow'>Rx by spots</div><div class='TopRow'>Rx by km</div><div></div>";
-     bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div></div>").join('');
+                  + ( (accordion_state[bandMode] || myActivityArr.includes(bandMode) )? "open":"closed") + ">";
+     bandHTML+="<summary style='margin-top:5px;'><strong>"+bandModeSummary+"</strong></summary>";
+     bandHTML+="<div class='anyGrid' style='margin:5px; grid-template-columns: repeat(4,max-content) auto'>";
+     bandHTML+="<div class='TopRow' style='grid-column: span 2 / span 2;'>Active Transmitters</div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Receivers</div><div class='pad'></div>";
+     let innerHeads="<div class='TopRow'>&#x25BC;(# spots)</div><div class='TopRow'>&#x25BC;(max km)</div>";
+     bandHTML+=innerHeads+innerHeads+"<div class='pad'></div>";
+     bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div class='pad'></div>").join('');
      bandHTML+="</div></details>";  
      g.innerHTML+=bandHTML.replaceAll("<div>"+myCall,"<div class='Hl'>"+myCall);
    });
