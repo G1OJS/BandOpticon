@@ -389,15 +389,15 @@ a:visited {color: blue;}
    for (id in connections) {
      let c=connections[id];
      allActivity.add(c.b+"_"+c.md);
- //    if(myActivityArr.includes(c.b+"_"+c.md)) {
-       const addConnection=function(txrx,callsign) {
-         let bandCall=c.b+"_"+txrx+"_"+callsign;
-         calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":txrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
-       };
-       if(c.sd=="home") addConnection(1,c.sc);
-       if(c.rd=="home") addConnection(0,c.rc);
-  //   }
+     const addConnection=function(txrx,callsign) {
+       let bandCall=c.b+"_"+txrx+"_"+callsign;
+       calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":txrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+     };
+     if(c.sd=="home") addConnection(1,c.sc);
+     if(c.rd=="home") addConnection(0,c.rc);
    }
+   if (allActivity.size==0) {return}; // we can have a few connections that aren't relevant, so do this whilst loading initially
+	 
    // sort the activity array we are to iterate later. Add a 2nd level to sort on mode too?
    let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
  
