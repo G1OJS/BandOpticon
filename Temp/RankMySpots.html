@@ -23,7 +23,7 @@ fieldset > div {float:left; padding-left:0px;}
 fieldset > div >* {vertical-align:middle;}
 .button {font-size:0.7rem; color:#404040; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 4px solid grey; cursor: pointer;}
 .button.active {border: 2px solid black; color:blue; font-weight:bold;}
-.button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
+.button-tiny {font-size:0.6rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
 .button-tiny.active {border: 2px solid black;}
 
 .anyGrid {padding:1px; display: grid; grid-template-rows: auto; }
@@ -81,6 +81,7 @@ a:visited {color: blue;}
   var refresh_mSeconds=5000;
   var purgeMinutes=5;
   let myCall="G1OJS";
+  var nL4sq=0;
   var mqttClient=null;	
   var tStart=Date.now(); // software start time
   var connections = {};
@@ -114,6 +115,7 @@ a:visited {color: blue;}
     let subs=new Set;
     for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
     let subsArr=Array.from(subs);
+    nL4sq=subsArr.length;
     
     // now subscribe to the level 4 squares
     subsArr.forEach((sq) => {
@@ -386,6 +388,7 @@ a:visited {color: blue;}
 
    let allActivity=new Set();
    let calls={};
+   let allCallsigns=new Set();
    for (id in connections) {
      let c=connections[id];
      allActivity.add(c.b+"_"+c.md);
@@ -393,8 +396,8 @@ a:visited {color: blue;}
        let bandCall=c.b+"_"+txrx+"_"+callsign;
        calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":txrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
      };
-     if(c.sd=="home") addConnection(1,c.sc);
-     if(c.rd=="home") addConnection(0,c.rc);
+     if(c.sd=="home") {addConnection(1,c.sc); allCallsigns.add(c.sc);}
+     if(c.rd=="home") {addConnection(0,c.rc); allCallsigns.add(c.rc);}
    }
    if (allActivity.size==0) {return}; // we can have a few connections that aren't relevant, so do this whilst loading initially
 	 
@@ -410,6 +413,7 @@ a:visited {color: blue;}
    let g=document.getElementById("spotsContainer");
    g.innerHTML="<div class='title' id='spotsListTitle'>All activity in home squares</div>";
    g.innerHTML+="<div>Click arrows for details. Sections open automatically where "+myCall+" is transmitting or receiving.</div>";
+   g.innerHTML+="<div>Home definition covers "+nL4sq+" level four squares (" +(nL4sq/100).toFixed(2) +" level 2 squares), containing total of "+ allCallsigns.size+" active callsigns.<br><br>";
    
    allActivityArr.forEach( (bandMode) => {
      let callsArr=Object.entries(calls).filter((rec) => rec[1].bandMode==bandMode);
