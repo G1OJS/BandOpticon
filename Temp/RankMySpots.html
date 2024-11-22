@@ -275,7 +275,6 @@ a:visited {color: blue;}
       console.log("Saved myCallsignsList: "+myCallsignsList);
       localStorage.setItem('purgeMinutes', purgeMinutes);
       console.log("Saved purgeMinutes: "+purgeMinutes);
-	  alert("Saved callsigns list" + myCallsignsList );
   }
   
   function loadConfig(){
@@ -296,7 +295,6 @@ a:visited {color: blue;}
       myCallsignsList=JSON.parse(localStorage.getItem('myCallsignsList'));
       document.getElementById("myCallsigns").value=myCallsignsList; 
       console.log("Loaded callsigns list");
-	    alert("Loaded callsigns list" + myCallsignsList );
     } else {
       console.log("No local config data found for callsigns list: defaults applied.");
       myCallsignsList="G1OJS";
@@ -318,9 +316,9 @@ a:visited {color: blue;}
   function editMyCallsigns(){
     var resp=prompt("Enter a comma-separated list of callsigns to highlight",myCallsigns);
     if(resp==null){return}
-    myCallsigns=resp.toUpperCase().split(',');
+    myCallsignsList=resp.toUpperCase().split(',');
     saveConfig();
-    document.getElementById("myCallsigns").value=myCallsigns.join(', '); 
+    document.getElementById("myCallsigns").value=myCallsignsList.join(', '); 
   }
   
   function editPurgeMins(){
