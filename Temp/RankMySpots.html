@@ -278,8 +278,10 @@ a:visited {color: blue;}
   }
   
   function loadConfig(){
+    console.log("Loading config data");
     if(localStorage.getItem('squaresList')){
       squaresList=JSON.parse(localStorage.getItem('squaresList'));
+      console.log("Loaded squares list");
     } else {
       squaresList=defaultSquaresList;
       console.log("No local config data found for squares list: defaults applied.");
@@ -292,6 +294,7 @@ a:visited {color: blue;}
     if(localStorage.getItem('myCallsignsList')){
       myCallsignsList=JSON.parse(localStorage.getItem('myCallsignsList'));
       document.getElementById("myCallsigns").value=myCallsignsList; 
+      console.log("Loaded callsigns list");
     } else {
       console.log("No local config data found for callsigns list: defaults applied.");
       myCallsignsList="G1OJS";
@@ -301,7 +304,8 @@ a:visited {color: blue;}
 	  
     if(localStorage.getItem('purgeMinutes')){
       purgeMinutes=localStorage.getItem('purgeMinutes');
-      document.getElementById("purgeMinutes").value=purgeMinutes; 
+      document.getElementById("purgeMinutes").value=purgeMinutes;
+      console.log("Loaded purge mins");
     } else {
       purgeMinutes=5;
       saveConfig();
