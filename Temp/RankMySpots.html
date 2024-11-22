@@ -293,6 +293,7 @@ a:visited {color: blue;}
       myCallsignsList=JSON.parse(localStorage.getItem('myCallsignsList'));
       document.getElementById("myCallsigns").value=myCallsignsList; 
     } else {
+      console.log("No local config data found for callsigns list: defaults applied.");
       myCallsignsList="G1OJS";
       saveConfig();
     }
@@ -312,8 +313,7 @@ a:visited {color: blue;}
     var resp=prompt("Enter a comma-separated list of callsigns to highlight",myCallsigns);
     if(resp==null){return}
     myCallsigns=resp.toUpperCase().split(',');
-    console.log(myCallsigns);
-    localStorage.setItem('myCallsigns',myCallsigns);
+    saveConfig();
     document.getElementById("myCallsigns").value=myCallsigns.join(', '); 
   }
   
@@ -323,7 +323,7 @@ a:visited {color: blue;}
     if(!Number.isNaN(parseInt(resp))){
       if(parseInt(resp)>0 && parseInt(resp)<60){
           purgeMinutes=parseInt(resp);
-          localStorage.setItem('purgeMinutes',purgeMinutes);
+          saveConfig();
           document.getElementById("purgeMinutes").value=purgeMinutes; 
           return
       } else {alert("Please enter a number between 1 and 59")}
@@ -344,7 +344,6 @@ a:visited {color: blue;}
       if(validSquaresListEntry(respArr[i])<4) squaresListValid=false;
     }
     if(squaresListValid){
-      console.clear();
       squaresList=resp; // potentially mixed case but that's OK
       console.log("Squares list updated to: "+resp);
       saveConfig();
