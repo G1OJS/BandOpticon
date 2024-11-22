@@ -429,7 +429,7 @@ a:visited {color: blue;}
            tblArr.push( [txN[i] || "", txD[i] || "", rxN[i] || "", rxD[i] || ""] );
            i++;
          }
-         let bandHTML="";
+         let bandHTML="<div style='float:left'>";
          bandHTML+="<h3>"+bandMode.split("_")[0]+" "+bandMode.split("_")[1]+"</h3>";
          bandHTML+="<div class='anyGrid' style='margin:5px; grid-template-columns: repeat(4,max-content) auto'>";
          bandHTML+="<div class='TopRow' style='grid-column: span 2 / span 2;'>Active Transmitters</div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Receivers</div><div class='pad'></div>";
@@ -440,6 +440,7 @@ a:visited {color: blue;}
          myCallsignsList.forEach((call) => {
            bandHTML=bandHTML.replaceAll("<div>"+call,"<div class='Hl'>"+call);
          });
+         bandHTML+="</div>";
          g.innerHTML+=bandHTML;
        }
      });
