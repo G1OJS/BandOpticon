@@ -313,7 +313,7 @@ a:visited {color: blue;}
  
     // needs validation code
   function editMyCallsigns(){
-    var resp=prompt("Enter a comma-separated list of callsigns to highlight",myCallsigns);
+    var resp=prompt("Enter a comma-separated list of callsigns to highlight",myCallsignsList);
     if(resp==null){return}
     myCallsignsList=resp.toUpperCase().split(',');
     saveConfig();
