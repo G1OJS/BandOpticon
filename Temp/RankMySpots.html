@@ -293,14 +293,13 @@ a:visited {color: blue;}
     
     if(localStorage.getItem('myCallsignsList')){
       myCallsignsList=JSON.parse(localStorage.getItem('myCallsignsList'));
-      document.getElementById("myCallsigns").value=myCallsignsList; 
-      console.log("Loaded callsigns list");
+      document.getElementById("myCallsigns").value=myCallsignsList.join(', '); 
+      console.log("Loaded callsigns list " + myCallsignsList);
     } else {
       console.log("No local config data found for callsigns list: defaults applied.");
-      myCallsignsList="G1OJS";
+      myCallsignsList="G1OJS,";
       saveConfig();
     }
-    myCallsigns=myCallsignsList.split(',');
 	  
     if(localStorage.getItem('purgeMinutes')){
       purgeMinutes=localStorage.getItem('purgeMinutes');
