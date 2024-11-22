@@ -295,6 +295,7 @@ a:visited {color: blue;}
       myCallsignsList=JSON.parse(localStorage.getItem('myCallsignsList'));
       document.getElementById("myCallsigns").value=myCallsignsList; 
       console.log("Loaded callsigns list");
+	    alert("Loaded callsigns list" + myCallsignsList );
     } else {
       console.log("No local config data found for callsigns list: defaults applied.");
       myCallsignsList="G1OJS";
