@@ -388,19 +388,20 @@ a:visited {color: blue;}
 //   if (myActivityArr.length==0) {return};
 
    let allActivity=new Set();
-   let calls={};
+   let callRecs={};
    let allCallsigns=new Set();
    for (id in connections) {
      let c=connections[id];
-     allActivity.add(c.b+"_"+c.md);
      const addConnection=function(txrx,callsign) {
-       let bandCall=c.b+"_"+txrx+"_"+callsign;
-       calls[bandCall] = {"bandMode":c.b+"_"+c.md,"callsign":callsign,"txrx":txrx,"nSpots":(calls[bandCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((calls[bandCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+       let bandMode=c.b+"_"+c.md;
+       let bandModeTxrxCall=bandMode+"_"+txrx+"_"+callsign;
+       callRecs[bandModeTxrxCall] = {"bandMode":bandMode,"callsign":callsign,"txrx":txrx,"nSpots":(callRecs[bandModeTxrxCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((callRecs[bandModeTxrxCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+       allActivity.add(bandMode);
+       allCallsigns.add(callsign);
      };
-     if(c.sd=="home") {addConnection(1,c.sc); allCallsigns.add(c.sc);}
-     if(c.rd=="home") {addConnection(0,c.rc); allCallsigns.add(c.rc);}
+     if(c.sd=="home") {addConnection(1,c.sc);}
+     if(c.rd=="home") {addConnection(0,c.rc);}
    }
-   if (allActivity.size==0) {return}; // we can have a few connections that aren't relevant, so do this whilst loading initially
 	 
    // sort the activity array we are to iterate later. Add a 2nd level to sort on mode too?
    let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
@@ -417,11 +418,11 @@ a:visited {color: blue;}
    g.innerHTML+="<div>Home definition covers "+nL4sq+" level four squares (" +(nL4sq/100).toFixed(2) +" level 2 squares), containing total of "+ allCallsigns.size+" active callsigns.<br><br>";
    
    allActivityArr.forEach( (bandMode) => {
-     let callsArr=Object.entries(calls).filter((rec) => rec[1].bandMode==bandMode);
-     let txD=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
-     let rxD=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
-     let txN=callsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
-     let rxN=callsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);  
+     let callRecsArr=Object.entries(callRecs).filter((rec) => rec[1].bandMode==bandMode);
+     let txD=callRecsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
+     let rxD=callRecsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
+     let txN=callRecsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
+     let rxN=callRecsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);  
      txD=txD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
      rxD=rxD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
      txN=txN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
