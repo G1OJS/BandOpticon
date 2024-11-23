@@ -424,7 +424,7 @@ a:visited {color: blue;}
       console.log(band,bandModes);
       let mode="FT8";
       let bandMode=band+"_"+mode;
-      if(leaderboardsList.has(bandMode)) {leaderboardsList.remove(bandMode)} else {leaderboardsList.add(bandMode)}
+      if(leaderboardsList.has(bandMode)) {leaderboardsList.delete(bandMode)} else {leaderboardsList.add(bandMode)}
       refreshDisplays();
     }
   
