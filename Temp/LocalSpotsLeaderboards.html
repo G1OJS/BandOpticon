@@ -92,6 +92,8 @@ a:visited {color: blue;}
   var connections = {};
   var connectionsAdded=0;
   var connectionsPurged=0;
+  var leaderboardsList=new Set();
+
 
   loadConfig();
   refreshDisplays();
@@ -404,12 +406,16 @@ a:visited {color: blue;}
    let g=document.getElementById("bandsContainer");
    g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode on each band."
 	         +"<br>Highlighting shows where calls on call watch list are active.<br>";
+   const toggleVisibility=function(bandMode){
+     console.log(bandMode);
+     //if(leaderboardsList.has(bandMode)) {leaderboardsList.remove(bandMode)} else {leaderboardsList.add(bandMode)}
+     };
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
      let myCallsAreRx=bandRecArr[1].rxCalls.intersection(new Set(myCallsignsList)).size>0;
      g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
-     + "<div class='TopRow'>"+bandRecArr[0]+"</div>"
+     + "<div class='TopRow' onClick='toggleVisibility("+bandRecArr[0]+"_FT8"+")'>"+bandRecArr[0]+"</div>"
      + "<div"+(myCallsAreTx? " class='Hl'>":">")+bandRecArr[1].txCalls.size+"tx </div>"
      + "<div"+(myCallsAreRx? " class='Hl'>":">")+bandRecArr[1].rxCalls.size+"rx </div>"
      + "</div></div>";
@@ -424,41 +430,43 @@ a:visited {color: blue;}
    let allCallsigns=new Set();
    for (id in connections) {
      let c=connections[id];
-     const addConnection=function(txrx,callsign) {
+     const addSpot=function(txrx,callsign) {
        let bandMode=c.b+"_"+c.md;
        let bandModeTxrxCall=bandMode+"_"+txrx+"_"+callsign;
-       callRecs[bandModeTxrxCall] = {"bandMode":bandMode,"callsign":callsign,"txrx":txrx,"nSpots":(callRecs[bandModeTxrxCall] || {"nSpots":0}).nSpots + 1,"kmMax":Math.max((callRecs[bandModeTxrxCall] || {"kmMax":0}).kmMax,c.kmDeg.km)};
+       if(!callRecs[bandModeTxrxCall]) {
+         callRecs[bandModeTxrxCall]= {"bandMode":bandMode,"callsign":callsign,"txrx":txrx,"nSpots":0,"kmMax":0} 
+       }
+       callRecs[bandModeTxrxCall].nSpots += 1;
+       callRecs[bandModeTxrxCall].kmMax=Math.max(callRecs[bandModeTxrxCall].kmMax,c.kmDeg.km);
        allActivity.add(bandMode);
        allCallsigns.add(callsign);
      };
-     if(c.sd=="home") {addConnection(1,c.sc);}
-     if(c.rd=="home") {addConnection(0,c.rc);}
+     if(c.sd=="home") {addSpot(1,c.sc);}
+     if(c.rd=="home") {addSpot(0,c.rc);}
    }
 	 
    // sort the activity array we are to iterate later. Add a 2nd level to sort on mode too?
    let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
 
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<h2>Watched Callsign Performance</h2>";
+   g.innerHTML="<h2>Leaderboards</h2>";
    g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode,"
 	      +"<br> ranked by number of spots and max distance. Tables are shown only if callsigns"
 	      +"<br> on the Callsign watch list are active on that band and mode.<br>";
    document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
    document.getElementById('nActiveCallsigns').value=allCallsigns.size;
-   
-   let callRecsArr=Object.entries(callRecs);
-   let bandModeCalls=new Set(callRecsArr.map((callRec) => callRec[1].callsign));
-   let myCallListFound=bandModeCalls.intersection(new Set(myCallsignsList)).size>0
-   
-   if (!myCallListFound) {
-     g.innerHTML+="<br><br>Waiting for spots involving callsigns on the Callsign watch list ...";
-   } else {   
-  
-     allActivityArr.forEach( (bandMode) => {
+    
+   allActivityArr.forEach( (bandMode) => {
+     let callRecsArr=Object.entries(callRecs).filter((rec) => rec[1].bandMode==bandMode);
+     let bandModeCalls=new Set(callRecsArr.map((callRec) => callRec[1].callsign));
+     let myCallListFoundOnBandMode=bandModeCalls.intersection(new Set(myCallsignsList)).size>0;   
+     if(myCallListFoundOnBandMode) {leaderboardsList.add(bandMode)};
+     if(leaderboardsList.has(bandMode)) {g.innerHTML+=bandTableHTML(bandMode,callRecs)};
+   });
+ }
+
+  function bandTableHTML(bandMode,callRecs){
        let callRecsArr=Object.entries(callRecs).filter((rec) => rec[1].bandMode==bandMode);
-       let bandModeCalls=new Set(callRecsArr.map((callRec) => callRec[1].callsign));
-       let myCallListFoundOnBandMode=bandModeCalls.intersection(new Set(myCallsignsList)).size>0
-       if (myCallListFoundOnBandMode) {     
          let txD=callRecsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
          let rxD=callRecsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
          let txN=callRecsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
@@ -484,11 +492,9 @@ a:visited {color: blue;}
            bandHTML=bandHTML.replaceAll("<div>"+call,"<div class='Hl'>"+call);
          });
          bandHTML+="</div>";
-         g.innerHTML+=bandHTML;
-       }
-     });
-   }
- }
+         
+         return bandHTML;
+     }
 
 </script>
 
