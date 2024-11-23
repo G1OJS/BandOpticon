@@ -403,11 +403,13 @@ a:visited {color: blue;}
    let g=document.getElementById("bandsContainer");
    g.innerHTML="<h2>Band Activity (all modes, home tx & rx)</h2>";
 
-   bandActivityArr.forEach((bandRecArr) => {
+   bandActivityArr.forEach((bandRecArr) => {     
+     let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
+     let myCallsAreRx=bandRecArr[1].rxCalls.intersection(new Set(myCallsignsList)).size>0;
      g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
      + "<div class='TopRow'>"+bandRecArr[0]+"</div>"
-     + "<div>"+bandRecArr[1].txCalls.size+"tx </div>"
-     + "<div>"+bandRecArr[1].rxCalls.size+"rx </div>"
+     + "<div"+(myCallsAreTx? " class='Hl'>":">")+bandRecArr[1].txCalls.size+"tx </div>"
+     + "<div"+(myCallsAreRx? " class='Hl'>":">")+bandRecArr[1].rxCalls.size+"rx </div>"
      + "</div></div>";
    });
 
