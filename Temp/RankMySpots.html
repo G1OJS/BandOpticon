@@ -401,7 +401,7 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
    
    let g=document.getElementById("bandsContainer");
-   g.innerHTML="<h2>Band Activity</h2>";
+   g.innerHTML="<h2>Band Activity (all modes, home tx & rx)</h2>";
 
    bandActivityArr.forEach((bandRecArr) => {
      g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
@@ -435,7 +435,7 @@ a:visited {color: blue;}
    let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
 
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<h2>Active transmitters and receivers in home squares</h2>";
+   g.innerHTML="<h2>Home tx & rx calls where watched calls are active</h2>";
    g.innerHTML+="Home definition covers "+nL4sq+" level four squares (" +(nL4sq/100).toFixed(2) +" level 2 squares), containing total of "+ allCallsigns.size+" active callsigns across all bands and modes.<br><br>Tables below show all home callsigns active on bands and modes in use by callsigns on the Highlight Callsigns list.<br>";
    
    let callRecsArr=Object.entries(callRecs);
@@ -461,16 +461,16 @@ a:visited {color: blue;}
          rxN=rxN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
          var tblArr = [], i = 0;
          while ( txN[i] || rxN[i] ) { 
-           tblArr.push( [txN[i] || "", txD[i] || "", rxN[i] || "", rxD[i] || ""] );
+           tblArr.push( [i+1, txN[i] || "", txD[i] || "", rxN[i] || "", rxD[i] || ""] );
            i++;
          }
          let bandHTML="<div style='float:left'>";
          bandHTML+="<h3>"+bandMode.split("_")[0]+" "+bandMode.split("_")[1]+"</h3>";
-         bandHTML+="<div class='anyGrid' style='margin:5px; grid-template-columns: repeat(4,max-content) auto'>";
-         bandHTML+="<div class='TopRow' style='grid-column: span 2 / span 2;'>Active Transmitters</div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Receivers</div><div class='pad'></div>";
+         bandHTML+="<div class='anyGrid' style='margin:5px; grid-template-columns: repeat(5,max-content) auto'>";
+         bandHTML+="<div class='pad'></div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Transmitters</div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Receivers</div><div class='pad'></div>";
          let innerHeads="<div class='TopRow'>&#x25BC;(# spots)</div><div class='TopRow'>&#x25BC;(max km)</div>";
-         bandHTML+=innerHeads+innerHeads+"<div class='pad'></div>";
-         bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div class='pad'></div>").join('');
+         bandHTML+="<div class='pad'></div>"+innerHeads+innerHeads+"<div class='pad'></div>";
+         bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div>"+row[4]+"</div><div class='pad'></div>").join('');
          bandHTML+="</div></details>";  
          myCallsignsList.forEach((call) => {
            bandHTML=bandHTML.replaceAll("<div>"+call,"<div class='Hl'>"+call);
