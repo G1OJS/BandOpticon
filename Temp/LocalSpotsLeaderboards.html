@@ -396,9 +396,10 @@ a:visited {color: blue;}
    let bandActivity={};
    for (id in connections) {
      let c=connections[id];
-     if(!bandActivity[c.b]) {bandActivity[c.b]={"txCalls":new Set(),"rxCalls":new Set()}}  
+     if(!bandActivity[c.b]) {bandActivity[c.b]={"txCalls":new Set(),"rxCalls":new Set(),"bandModes":new Set()}}  
      if(c.sd=="home"){bandActivity[c.b].txCalls.add(c.sc)}; 
      if(c.rd=="home"){bandActivity[c.b].rxCalls.add(c.rc)}; 
+     bandActivity[c.b].bandModes.add(c.md);
    }
    let bandActivityArr= Object.entries(bandActivity);
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
@@ -411,7 +412,7 @@ a:visited {color: blue;}
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
      let myCallsAreRx=bandRecArr[1].rxCalls.intersection(new Set(myCallsignsList)).size>0;
      g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
-     + "<div class='TopRow' onClick='toggleVisibility(&quot;"+bandRecArr[0]+"_FT8&quot;);'>"+bandRecArr[0]+"</div>"
+     + "<div class='TopRow' onClick='toggleVisibility(&quot;"+bandRecArr[0]+"&quot;"+Array.from(bandRecArr[1].bandModes).join('","')+"&quot;)'>"+bandRecArr[0]+"</div>"
      + "<div"+(myCallsAreTx? " class='Hl'>":">")+bandRecArr[1].txCalls.size+"tx </div>"
      + "<div"+(myCallsAreRx? " class='Hl'>":">")+bandRecArr[1].rxCalls.size+"rx </div>"
      + "</div></div>";
@@ -419,8 +420,10 @@ a:visited {color: blue;}
 
  }
  
-    function toggleVisibility(bandMode){
-      console.log(bandMode);
+    function toggleVisibility(band,bandModes){
+      console.log(band,bandModes);
+      let mode="FT8";
+      let bandMode=band+"_"+mode;
       if(leaderboardsList.has(bandMode)) {leaderboardsList.remove(bandMode)} else {leaderboardsList.add(bandMode)}
       refreshDisplays();
     }
