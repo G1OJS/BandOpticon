@@ -52,21 +52,22 @@ a:visited {color: blue;}
       <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
      </div>
      <div>               
-     <fieldset>
+        <fieldset>
         <legend>Settings</legend>
 	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
-          <p class='hanging20'>Highlight Callsigns: <output id='myCallsignsList'></output> <button type='button' class='button-tiny' onclick='editMyCallsigns();'>edit</button></p>
+          <p class='hanging20'>Callsign watch list: <output id='myCallsignsList'></output> <button type='button' class='button-tiny' onclick='editMyCallsigns();'>edit</button></p>
           Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button>
            <button type='button' class='button-tiny' onclick='purgeAllSpots(); refreshDisplays();'>Purge All Now</button><br>
         </fieldset>
      </div>
    </div>
    <div id="innerScreen">
+     <div>
+     Home definition covers <output id='nL2sq'></output> top level squares, containing total of <output id='nActiveCallsigns'></output> active callsigns across all bands and modes.
+     </div>
      <div class="innerPanel" id="bandsContainer">
-       <h2>Band Activity</h2>
      </div> 
      <div class="innerPanel" id="spotsContainer">
-       <h2>Active transmitters and receivers in home squares</h2>
      </div> 
    </div>
 </div> 
@@ -401,7 +402,7 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
    
    let g=document.getElementById("bandsContainer");
-   g.innerHTML="<h2>Band Activity (all modes, home tx & rx)</h2>";
+   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving callsigns (using any mode) in home squares on each band. Highlighting shows where calls on call watch list are active.<br>";
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
@@ -437,15 +438,17 @@ a:visited {color: blue;}
    let allActivityArr=Array.from(allActivity).sort((a,b) =>  wavelength(b.split("_")[0])-wavelength(a.split("_")[0]));
 
    let g=document.getElementById("spotsContainer");
-   g.innerHTML="<h2>Home tx & rx calls where watched calls are active</h2>";
-   g.innerHTML+="Home definition covers "+nL4sq+" level four squares (" +(nL4sq/100).toFixed(2) +" level 2 squares), containing total of "+ allCallsigns.size+" active callsigns across all bands and modes.<br><br>Tables below show all home callsigns active on bands and modes in use by callsigns on the Highlight Callsigns list.<br>";
+   g.innerHTML="<h2>Watched Callsign Performance</h2>";
+   g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode, ranked by number of spots and max distance. Tables are shown only if callsigns on the Callsign watch list are active on that band and mode.<br>";
+   document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
+   document.getElementById('nActiveCallsigns').value=allCallsigns.size;
    
    let callRecsArr=Object.entries(callRecs);
    let bandModeCalls=new Set(callRecsArr.map((callRec) => callRec[1].callsign));
    let myCallListFound=bandModeCalls.intersection(new Set(myCallsignsList)).size>0
    
    if (!myCallListFound) {
-     g.innerHTML+="<br><br>Waiting for spots involving callsigns on the Highlight Callsigns list ...";
+     g.innerHTML+="<br><br>Waiting for spots involving callsigns on the Callsign watch list ...";
    } else {   
   
      allActivityArr.forEach( (bandMode) => {
