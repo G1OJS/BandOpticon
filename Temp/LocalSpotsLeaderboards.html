@@ -411,8 +411,9 @@ a:visited {color: blue;}
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
      let myCallsAreRx=bandRecArr[1].rxCalls.intersection(new Set(myCallsignsList)).size>0;
-     g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
-     + "<div class='TopRow' onClick='toggleVisibility(&quot;"+bandRecArr[0]+"&quot;)'>"+bandRecArr[0]+"</div>"
+     let active=leaderboardsList.has(bandRecArr[0]) || leaderboardsList.has(bandMode.split('_')[0]+"_*");
+    g.innerHTML+="<div style='float:left'><div class='anyGrid' style='grid-template-columns:max-content; grid-template-rows: auto auto auto;'>"
+     + "<div class='TopRow"+(active? " active":"")+"onClick='toggleVisibility(&quot;"+bandRecArr[0]+"&quot;)'>"+bandRecArr[0]+"</div>"
      + "<div"+(myCallsAreTx? " class='Hl'>":">")+bandRecArr[1].txCalls.size+"tx </div>"
      + "<div"+(myCallsAreRx? " class='Hl'>":">")+bandRecArr[1].rxCalls.size+"rx </div>"
      + "</div></div>";
@@ -420,11 +421,11 @@ a:visited {color: blue;}
 
  }
  
-    function toggleVisibility(band){
-      let bandMode=band+"_*";
-      if(leaderboardsList.has(bandMode)) {leaderboardsList.delete(bandMode)} else {leaderboardsList.add(bandMode)}
-      refreshDisplays();
-    }
+ function toggleVisibility(band){
+   let bandMode=band+"_*";
+   if(leaderboardsList.has(bandMode)) {leaderboardsList.delete(bandMode)} else {leaderboardsList.add(bandMode)}
+   refreshDisplays();
+ }
   
  function displayActiveCalls(){
 
