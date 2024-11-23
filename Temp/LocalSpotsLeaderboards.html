@@ -30,6 +30,7 @@ fieldset > div >* {vertical-align:middle;}
 .anyGrid > div {background-color:var(--light-paper-color); margin: 1px;  padding-left: 5px; padding-right: 5px; font-size: 1rem; min-height:10px; }
 .anyGrid > .TopRow  {background-color:lightgrey; font-weight:bold;}
 .anyGrid > .active  {background-color:yellow;}
+.anyGrid > .even  {text-decoration:underline blue 2px;}
 .anyGrid > .Hl  {background-color:yellow;}
 .anyGrid > .pad  {background-color:var(--main-paper-color)}
 
@@ -386,7 +387,8 @@ a:visited {color: blue;}
    if (band.search("cm")>0) {return wl/100} else {return wl}
  }
 	
- function isEven(epoch){
+ function isEven(epoch,mode){
+   if(mode!="FT8") {return false}   // this function is only designed for FT8 at the moment
    let secs=(new Date(epoch * 1000)).getSeconds();
    // note that even Tx spots will be timestamped around the beginning of the odd Rx cycle and vice versa
    return ((Math.trunc((secs+7.5)/15) %2)==1);
@@ -407,7 +409,8 @@ a:visited {color: blue;}
    
    let g=document.getElementById("bandsContainer");
    g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode on each band."
-	         +"<br>Highlighting shows where calls on call watch list are active.<br>";
+	         +"<br>Highlighting shows where calls on the Callsign watch list are active or band has been"
+           +"<br>manually selected (see below).<br>";
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
@@ -439,10 +442,11 @@ a:visited {color: blue;}
        let bandMode=c.b+"_"+c.md;
        let bandModeTxrxCall=bandMode+"_"+txrx+"_"+callsign;
        if(!callRecs[bandModeTxrxCall]) {
-         callRecs[bandModeTxrxCall]= {"bandMode":bandMode,"callsign":callsign,"txrx":txrx,"nSpots":0,"kmMax":0} 
+         callRecs[bandModeTxrxCall]= {"bandMode":bandMode,"callsign":callsign,"txrx":txrx,"nSpots":0,"kmMax":0,"isEven":false} 
        }
        callRecs[bandModeTxrxCall].nSpots += 1;
        callRecs[bandModeTxrxCall].kmMax=Math.max(callRecs[bandModeTxrxCall].kmMax,c.kmDeg.km);
+       if(txrx==1) {callRecs[bandModeTxrxCall].isEven=isEven(c.t,c.md)};
        allActivity.add(bandMode);
        allCallsigns.add(callsign);
      };
@@ -456,9 +460,10 @@ a:visited {color: blue;}
    let g=document.getElementById("spotsContainer");
    g.innerHTML="<h2>Leaderboards</h2>";
    g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode,"
-	      +"<br> ranked by number of spots and max distance. Tables are shown only if callsigns"
-	      +"<br> on the Callsign watch list are active on that band and mode."
-        +"<br> (You can also click on a band name above to show / hide the band's tables)<br>";
+	      +"<br> ranked by number of spots and max distance. Tables are shown automatically if callsigns"
+	      +"<br> on the Callsign watch list are active on that band and mode. Clicking on the band"
+        +"<br>name above shows / hides the band's tables for all modes. For FT8 only, calls transmitting"
+        +"<br>on the even cycle are underlined in blue.<br>";
    document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
    document.getElementById('nActiveCallsigns').value=allCallsigns.size;
     
@@ -477,9 +482,9 @@ a:visited {color: blue;}
          let rxD=callRecsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.kmMax-a.kmMax);
          let txN=callRecsArr.filter((rec) => rec[1].txrx==1).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);
          let rxN=callRecsArr.filter((rec) => rec[1].txrx==0).sort(([,a],[,b]) =>  b.nSpots-a.nSpots);  
-         txD=txD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
+         txD=txD.map((callRec) => (callRec[1].isEven? "~":"")+callRec[1].callsign+" ("+callRec[1].kmMax+")");
          rxD=rxD.map((callRec) => callRec[1].callsign+" ("+callRec[1].kmMax+")");
-         txN=txN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
+         txN=txN.map((callRec) => (callRec[1].isEven? "~":"")+callRec[1].callsign+" ("+callRec[1].nSpots+")");
          rxN=rxN.map((callRec) => callRec[1].callsign+" ("+callRec[1].nSpots+")");
          var tblArr = [], i = 0;
          while ( txN[i] || rxN[i] ) { 
@@ -492,7 +497,12 @@ a:visited {color: blue;}
          bandHTML+="<div class='pad'></div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Transmitters</div><div class='TopRow' style='grid-column: span 2 / span 2;'>Active Receivers</div><div class='pad'></div>";
          let innerHeads="<div class='TopRow'>&#x25BC;(# spots)</div><div class='TopRow'>&#x25BC;(max km)</div>";
          bandHTML+="<div class='pad'></div>"+innerHeads+innerHeads+"<div class='pad'></div>";
-         bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div><div>"+row[1]+"</div><div>"+row[2]+"</div><div>"+row[3]+"</div><div>"+row[4]+"</div><div class='pad'></div>").join('');
+         bandHTML+=tblArr.map((row) => "<div>"+row[0]+"</div>"
+            +"<div"+((row[1].charAt(0)=="~")? " class='even'>":">")+row[1].replace("~","")+"</div>"
+            +"<div"+((row[2].charAt(0)=="~")? " class='even'>":">")+row[2].replace("~","")+"</div>"
+            +"<div>"+row[3]+"</div>"
+            +"<div>"+row[4]+"</div>"
+            +"<div class='pad'></div>").join('');
          bandHTML+="</div></details>";  
          myCallsignsList.forEach((call) => {
            bandHTML=bandHTML.replaceAll("<div>"+call,"<div class='Hl'>"+call);
