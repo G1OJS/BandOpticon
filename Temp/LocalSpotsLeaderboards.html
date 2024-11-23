@@ -321,9 +321,8 @@ a:visited {color: blue;}
     }
   }
  
-    // needs validation code
   function editMyCallsigns(){
-    var resp=prompt("Enter a comma-separated list of callsigns to highlight",myCallsignsList);
+    var resp=prompt("Enter a comma-separated list of callsigns to highlight\n\nNOTE that callsigns outside of 'Home' are not meaningful\nand will never show",myCallsignsList);
     if(resp==null){return}
     myCallsignsList=resp.toUpperCase().split(',');
     saveConfig();
