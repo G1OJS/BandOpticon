@@ -447,8 +447,12 @@ a:visited {color: blue;}
        }
        callRecs[bandModeTxrxCall].nSpots += 1;
        callRecs[bandModeTxrxCall].kmMax=Math.max(callRecs[bandModeTxrxCall].kmMax,c.kmDeg.km);
+       // note that the following line is not 100% reliable because it only remembers the 
+       // last report received, which could be erroneous or received a long time after 
+       // the transmission (callsign could have change cycle since then). 
+       // An algorithm with memory may be better (but slower to react).
        if(txrx==1) {callRecs[bandModeTxrxCall].isEven=isEven(c.t,c.md)};
-       if(callsign=="G1OJS") {let secs=(new Date(c.t *1000)).getSeconds(); console.log(c.t,isEven(c.t,c.md))};
+       if(txrx==1 && callsign=="G1OJS") {let secs=(new Date(c.t *1000)).getSeconds(); console.log(c.t,secs,isEven(c.t,c.md))};
        allActivity.add(bandMode);
        allCallsigns.add(callsign);
      };
@@ -464,7 +468,7 @@ a:visited {color: blue;}
    g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode, "
 	      +"ranked by number of spots and max distance. Tables are shown automatically if callsigns "
 	      +"on the Callsign watch list are active on that band and mode. Clicking on the band "
-        +"name above shows / hides the band's tables for all modes. For FT8 only, calls transmitting "
+        +"name above shows / hides the band's tables for all modes. For FT8 only, calls where the last received report identifies the call as transmitting "
         +"on the even cycle are underlined in blue.<br>";
    document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
    document.getElementById('nActiveCallsigns').value=allCallsigns.size;
