@@ -28,7 +28,7 @@
 </tr>
 
 <tr>
-  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/RankMySpots.html'>Rank My Spots</a></td>
+  <td>Temporary</td><td><a href='https://g1ojs.github.io/BandOpticon/Temp/LocalSpotsLeaderboards.html'>Rank My Spots</a></td>
   <td>
     Experimental minimal version 
   </td>
