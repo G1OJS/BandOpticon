@@ -402,7 +402,8 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
    
    let g=document.getElementById("bandsContainer");
-   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving callsigns (using any mode) in home squares on each band. Highlighting shows where calls on call watch list are active.<br>";
+   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode"
+	         +" on each band. Highlighting shows where calls on call watch list are active.<br>";
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
@@ -439,7 +440,9 @@ a:visited {color: blue;}
 
    let g=document.getElementById("spotsContainer");
    g.innerHTML="<h2>Watched Callsign Performance</h2>";
-   g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode, ranked by number of spots and max distance. Tables are shown only if callsigns on the Callsign watch list are active on that band and mode.<br>";
+   g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode,"
+	      +"<br> ranked by number of spots and max distance. Tables are shown only if callsigns"
+	      +"<br> on the Callsign watch list are active on that band and mode.<br>";
    document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
    document.getElementById('nActiveCallsigns').value=allCallsigns.size;
    
