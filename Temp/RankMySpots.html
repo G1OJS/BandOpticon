@@ -402,8 +402,8 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
    
    let g=document.getElementById("bandsContainer");
-   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode"
-	         +" on each band. Highlighting shows where calls on call watch list are active.<br>";
+   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode on each band."
+	         +"<br>Highlighting shows where calls on call watch list are active.<br>";
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
