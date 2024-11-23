@@ -65,7 +65,7 @@ a:visited {color: blue;}
    </div>
    <div id="innerScreen">
      <div>
-     Home definition covers <output id='nL2sq'></output> top level squares,<br>containing total of <output id='nActiveCallsigns'></output> active callsigns across all bands and modes.
+     Home definition covers <output id='nL2sq'></output> top level squares, containing total of <output id='nActiveCallsigns'></output> active callsigns across all bands and modes.
      </div>
      <div class="innerPanel" id="bandsContainer">
      </div> 
@@ -408,9 +408,10 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
    
    let g=document.getElementById("bandsContainer");
-   g.innerHTML="<h2>Band Activity</h2>Number of transmitting and receiving home callsigns active on any mode on each band."
-	         +"<br>Highlighting shows where calls on the Callsign watch list are active or band has been"
-           +"<br>manually selected (see below).<br>";
+   g.innerHTML="<h2>Band Activity</h2>"
+           +"Number of transmitting and receiving home callsigns active on any mode on each band. "
+	         +"Highlighting shows where calls on the Callsign watch list are active or the band has been "
+           +"manually selected (see below).<br>";
 
    bandActivityArr.forEach((bandRecArr) => {     
      let myCallsAreTx=bandRecArr[1].txCalls.intersection(new Set(myCallsignsList)).size>0;
@@ -447,6 +448,7 @@ a:visited {color: blue;}
        callRecs[bandModeTxrxCall].nSpots += 1;
        callRecs[bandModeTxrxCall].kmMax=Math.max(callRecs[bandModeTxrxCall].kmMax,c.kmDeg.km);
        if(txrx==1) {callRecs[bandModeTxrxCall].isEven=isEven(c.t,c.md)};
+       if(callsign=="G1OJS") {let secs=(new Date(c.t *1000)).getSeconds(); console.log(c.t,isEven(c.t,c.md))};
        allActivity.add(bandMode);
        allCallsigns.add(callsign);
      };
@@ -459,11 +461,11 @@ a:visited {color: blue;}
 
    let g=document.getElementById("spotsContainer");
    g.innerHTML="<h2>Leaderboards</h2>";
-   g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode,"
-	      +"<br> ranked by number of spots and max distance. Tables are shown automatically if callsigns"
-	      +"<br> on the Callsign watch list are active on that band and mode. Clicking on the band"
-        +"<br>name above shows / hides the band's tables for all modes. For FT8 only, calls transmitting"
-        +"<br>on the even cycle are underlined in blue.<br>";
+   g.innerHTML+="Tables show active transmitters and receivers in home squares on each band and mode, "
+	      +"ranked by number of spots and max distance. Tables are shown automatically if callsigns "
+	      +"on the Callsign watch list are active on that band and mode. Clicking on the band "
+        +"name above shows / hides the band's tables for all modes. For FT8 only, calls transmitting "
+        +"on the even cycle are underlined in blue.<br>";
    document.getElementById('nL2sq').value=(nL4sq/100).toFixed(2);
    document.getElementById('nActiveCallsigns').value=allCallsigns.size;
     
@@ -506,6 +508,7 @@ a:visited {color: blue;}
          bandHTML+="</div></details>";  
          myCallsignsList.forEach((call) => {
            bandHTML=bandHTML.replaceAll("<div>"+call,"<div class='Hl'>"+call);
+           bandHTML=bandHTML.replaceAll("<div class='even'>"+call,"<div class='even Hl'>"+call);
          });
          bandHTML+="</div>";
          
