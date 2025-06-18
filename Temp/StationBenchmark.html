@@ -307,9 +307,10 @@ a:visited {color: blue;}
     if(localStorage.getItem('myCall')){
       myCall=JSON.parse(localStorage.getItem('myCall'));
       console.log("Loaded myCall " + myCall);
+      document.getElementById("myCall").value=myCall;
     } else {
       console.log("No local config data found for my callsign: defaults applied.");
-      myCall="G1OJS,";
+      myCall="G1OJS";
       saveConfig();
     }
 	  
