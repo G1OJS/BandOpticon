@@ -420,8 +420,11 @@ a:visited {color: blue;}
  function displayBandActivity(){
 
    let bandActivity={};
+   let allCalls = new Set();
    for (id in connections) {
      let c=connections[id];
+     allCalls.add(c.rc);
+     allCalls.add(c.sc);
      if(!bandActivity[c.b]) {bandActivity[c.b]={"txCalls":new Set(),"rxCalls":new Set(), 
                         		        "homeRxBy":new Set(), "homeRxing":new Set(),
 			     			"meRxBy":new Set(), "meRxing":new Set(),
@@ -442,7 +445,7 @@ a:visited {color: blue;}
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
 
 
-   document.getElementById('nActiveCallsigns').value=txCalls.union(rxCalls).size;
+   document.getElementById('nActiveCallsigns').value=allCalls.size;
 	 
    let g=document.getElementById("bandsContainer");
    g.innerHTML="<h2>Connectivity by band</h2><br>";
