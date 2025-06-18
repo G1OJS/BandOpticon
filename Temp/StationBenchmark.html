@@ -440,7 +440,10 @@ a:visited {color: blue;}
 
    let bandActivityArr= Object.entries(bandActivity);
    bandActivityArr.sort(([a,],[b,]) => wavelength(b)-wavelength(a));
-   
+
+
+   document.getElementById('nActiveCallsigns').value=txCalls.union(rxCalls).size;
+	 
    let g=document.getElementById("bandsContainer");
    g.innerHTML="<h2>Connectivity by band</h2><br>";
    
