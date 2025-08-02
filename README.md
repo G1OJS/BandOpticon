@@ -31,7 +31,7 @@ The software runs in Javascript on your machine and requires no downloads. Just 
 [Current Version](https://g1ojs.github.io/BandOpticon/BandOpticon)
 
 ### A mention in The Communicator
-Thanks to John Schouten VE7TI for a mention in the March/April 2025 issue of [The Communicator - the magazine for Canada's Surrey Amateur Radio Society (SARC)](https://www.ve7sar.net/communicator). I've bookmarked this magazine & encourage you to check it out; free, readable online, packed with really good & succinct articles!
+Thanks to Editor John Schouten VE7TI [communicator@VE7SAR.net](communicator@VE7SAR.net) for a mention in the March/April 2025 issue of [The Communicator - the magazine for Canada's Surrey Amateur Radio Society (SARC)](https://www.ve7sar.net/communicator). I've bookmarked this magazine & encourage you to check it out; free, readable online, packed with really good & succinct articles!
 
 <!--
 
