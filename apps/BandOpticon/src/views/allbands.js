@@ -7,25 +7,46 @@ var currentMode = null;
 var DOMcontainer = null;
 let registerActiveModes = () => {};  // fallback to no-op
 let getMode = () => "FT8";
+let refresh = () => null;
 
-export function init(container, opts = {}) {
-  DOMcontainer = container;
-  if (opts.registerActiveModes) {
-    registerActiveModes = opts.registerActiveModes;
-  }
-  if (opts.getWatchedMode) {
-    getMode = opts.getWatchedMode;
-  }
-  refresh();
-}
+export const Overview = {
+	init(container, opts = {}) {
+		DOMcontainer = container;
+		registerActiveModes = opts.registerActiveModes;
+		getMode = opts.getWatchedMode;
+		refresh();
+	},
 
-export function refresh(){
-  currentMode = getMode();
-  let HTML = '<h2>Bands Overview</h2>';
-  HTML += html_forStatsForAllBands();
-  DOMcontainer.innerHTML = HTML;
-  registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
-}
+	refresh(){
+		currentMode = getMode();
+		let HTML = '<h2>Bands Overview</h2>';
+		HTML += html_forStatsForAllBands();
+		DOMcontainer.innerHTML = HTML;
+		registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
+	}
+};
+
+export const Benchmark = {
+	init(container, opts = {}) {
+	  DOMcontainer = container;
+	  if (opts.registerActiveModes) {
+		registerActiveModes = opts.registerActiveModes;
+	  }
+	  if (opts.getWatchedMode) {
+		getMode = opts.getWatchedMode;
+	  }
+	  refresh();
+	},
+
+	refresh(){
+	  currentMode = getMode();
+	  let HTML = '<h2>Benchmarking</h2>';
+	  HTML += html_forStatsForAllBands();
+	  DOMcontainer.innerHTML = HTML;
+	  registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
+	}
+};
+
 
 function wavelength(band) {
     let wl = parseInt(band.split("m")[0]);

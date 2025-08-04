@@ -1,7 +1,6 @@
 var tStart = Date.now(); // software start time
 
 import * as STORAGE from '../app/store-cfg.js';
-import * as UI from '../../test/StationBenchmark/src/ui.js';
 import {countAllTimestamps} from '../live-data/conns-data.js'
 
 // ribbon HTML elements expected:

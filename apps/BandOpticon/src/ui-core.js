@@ -2,7 +2,7 @@
 
 import Ribbon from '/src/app/ribbon.js';
 
-import * as Benchmark from './views/benchmark.js';
+import { Benchmark, Overview } from './views/allbands.js';
 import * as Connectivity from './views/connectivity.js';
 
 
@@ -25,7 +25,11 @@ export function loadView(viewName, options = {}) {
   }
 
   switch (viewName) {
-    case 'benchmark':
+    case 'overview':
+      currentView = Overview;
+      currentViewName = viewName;
+      break;
+	case 'benchmark':
       currentView = Benchmark;
       currentViewName = viewName;
       break;
