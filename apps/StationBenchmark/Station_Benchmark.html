@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Station Benchmark V1.1.0 (HSL)</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../styles/style.css" /> 
+
+</head>
+<body>
+<div id="app" class="paper-primary">
+    <h1>Station Benchmark</h1>
+    <div id="ribbon" class="text-sm">
+		<fieldset>
+		<legend>Info</legend>
+		  <output id="clock" class='clock'></output><br>
+		  <span>Running for <output id="runningMins"></output> minutes</span><br>
+		  <span><output id="connectionsIn"></output> connections in database</span>
+		</fieldset>
+		<fieldset id='settingsBox' class="text-sm" >
+		<legend>Settings</legend>
+			<div class = 'settings-label'>My Callsign</div>
+			<div><input class = 'settings-input' id='myCallInput' type="text" title='Your callsign'></div>
+			<div><label class = 'settings-label'>Home Square(s)</label></div>
+			<div><input class = 'settings-input' id='homeSquaresInput' type="text" 
+						 title ='The grid squares containing the other stations you want to benchmark against.'
+						 +'&#10;Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></div>
+			<div><label class = 'settings-label'>Purge minutes</label></div>
+			<div><input class = 'settings-input' id='purgeMinutesInput' type="number" min="1" max="60"
+						 title = 'Number of minutes after which spots are deleted from database'></div>
+		</fieldset>
+		<fieldset id='modeSelectBox' class="text-sm" >
+		<legend>Mode</legend>
+			<!-- written by script -->
+		</fieldset>
+   </div>
+   
+   <div id="mainContent" class="paper" >
+   </div>
+
+   <div id="footer" class="text-muted text-xsm">
+        <div>
+            	Javascript & HTML developed by Alan Robinson:<br>
+            	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            	<a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+		<a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+	</div>
+   <div>
+            Thanks to:<br>
+            Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
+            Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
+            <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+		</div>
+		<div>
+	  Powered by <a href = 'https://github.com/G1OJS/HamStatsLib/tree/main'>HamStatsLib</a>
+          License: <a href='https://github.com/G1OJS/HamStatsLib/blob/main/LICENSE'>MIT license</a><br>
+          GitHub: <a href='https://github.com/G1OJS/HamStatsLib/tree/main/apps/StationBenchmark'>Station Benchmark</a><br>
+		</div>
+    </div>
+	
+</div> 
+
+<script type='module' src='./src/main.js'></script>
+
+
+</body>
+</html>
