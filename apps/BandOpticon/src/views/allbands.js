@@ -134,7 +134,8 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     }
 
     HTML += "<div><div class='outputColumn'>";
-    HTML += "<div class='topRow' data-band='"+band+"'>" + band + "</div>";
+//    HTML += "<div class='topRow' data-band='"+band+"'>" + band + "</div>";
+    HTML += "<div class = 'topRowButtonContainer'> <button style = 'margin:1px; padding:2px;' data-band='"+band+"'>" + band + "</button></div>";
     HTML += "<div>" + nActive + "</div>";
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
 	if(details_level>0){
