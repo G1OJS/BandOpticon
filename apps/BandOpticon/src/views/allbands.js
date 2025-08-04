@@ -6,18 +6,19 @@ var activeModes = new Set(); // updated to be relevant to the current view and t
 var currentMode = null;
 var DOMcontainer = null;
 let registerActiveModes = () => {};  // fallback to no-op
-let getMode = () => "FT8";
+let getMode = () => null;
 let refresh = () => null;
 
-export const Overview = {
+export const Overview = {						// defines the Overview view
 	init(container, opts = {}) {
+		console.log("init home");
 		DOMcontainer = container;
 		registerActiveModes = opts.registerActiveModes;
 		getMode = opts.getWatchedMode;
-		refresh();
 	},
 
 	refresh(){
+		console.log("refresh home");
 		currentMode = getMode();
 		let HTML = '<h2>Bands Overview</h2>';
 		HTML += html_forStatsForAllBands();
@@ -26,7 +27,7 @@ export const Overview = {
 	}
 };
 
-export const Benchmark = {
+export const Benchmark = {						// defines the Benchmark view
 	init(container, opts = {}) {
 	  DOMcontainer = container;
 	  if (opts.registerActiveModes) {
@@ -35,7 +36,6 @@ export const Benchmark = {
 	  if (opts.getWatchedMode) {
 		getMode = opts.getWatchedMode;
 	  }
-	  refresh();
 	},
 
 	refresh(){
@@ -78,13 +78,6 @@ function html_forStatsForAllBands() {
     HTML += html_forStatsRowLabels();
     activeBands.forEach(band => HTML += html_forStatsForThisBand(band, currentMode, "Rx"));
     HTML += "</div>";
-	
-    document.getElementById("mainContent").innerHTML = HTML;
-	document.querySelectorAll("div").forEach(div => {
-      if (div.innerText.trim() === "0") {
-        div.classList.add("zero");
-      }
-    });
 	
 	return HTML;
 }

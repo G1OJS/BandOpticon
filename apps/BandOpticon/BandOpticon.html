@@ -37,12 +37,21 @@
 		<legend>Mode</legend>
 			<!-- written by script -->
 		</fieldset>
-		<button id="backButton" disabled>Back</button>
+		<button id="homeButton">Home</button>
 
    </div>
-   
-   <div id="mainContent" class="paper" >
-   </div>
+
+    <div id="mainView" class="paper" >   
+	    <div id="overviewContainer" class="paper" >
+	    </div>
+		<div id="tabInterface" style="display: none;">
+			<div id="tabBar">
+			  <button class="tab" data-view="connectivity">Connectivity</button>
+			  <button class="tab" data-view="other">Other</button>
+			</div>
+			<div id="tabContent"></div>
+	    </div>
+	</div>
 
    <div id="footer" class="text-muted text-xsm">
         <div>

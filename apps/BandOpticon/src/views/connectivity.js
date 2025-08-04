@@ -12,7 +12,7 @@ let mode = null;
 
 export function init(container, opts = {}) {
   DOMcontainer = container;
-  band = opts.band;
+  band = opts.band || band;  // if opts.band is null, leave band alone
   console.log("Connectivity for band = ",band);
   if (opts.getWatchedMode) {
     getMode = opts.getWatchedMode;
@@ -21,20 +21,17 @@ export function init(container, opts = {}) {
   if (opts.registerActiveModes) {
     registerActiveModes = opts.registerActiveModes;
   }
-
-  refresh();
 }
 
 export function refresh(){
-
 	// Update activeModes for all modes found on this band ONLY
 	const bandData = CONNSDATA.connectivity_Band_Mode_HomeCall[band];
 	for (const md in bandData) {
         activeModes.add(md);
 	}
-	registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
-
+	registerActiveModes(activeModes);	
 	mode = getMode();
+	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>*HOME* Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += html_for_ModeConnectivity(mode)
 	DOMcontainer.innerHTML = HTML;
