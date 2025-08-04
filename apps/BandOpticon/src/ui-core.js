@@ -3,7 +3,7 @@
 import Ribbon from '/src/app/ribbon.js';
 
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
-import { Benchmark, Overview } from './views/allbands.js'; 
+import * as Overview from './views/allbands.js'; 
 import * as Connectivity from './views/connectivity.js';
 import * as Other from './views/other.js';
 
@@ -31,11 +31,6 @@ export function loadView(viewName, options = {}) {
 	  currentView = Overview;			// the view API function name imported above
 	  currentViewName = viewName;		// the view's string (human readable) name
 	  viewType = "flat";				// determines which bit of HTML is activated (display:block or none)
-	  break;
-	case 'benchmark':
-	  currentView = Benchmark;
-	  currentViewName = viewName;
-	  viewType = "flat";
 	  break;
 	case 'connectivity':
 		currentView = Connectivity;
@@ -115,3 +110,4 @@ const homeButton = document.getElementById('homeButton');
 homeButton.addEventListener('click', () => {
 	loadView('overview');
 });
+

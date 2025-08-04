@@ -7,46 +7,30 @@ var currentMode = null;
 var DOMcontainer = null;
 let registerActiveModes = () => {};  // fallback to no-op
 let getMode = () => null;
-let refresh = () => null;
+let details_level = 0;
 
-export const Overview = {						// defines the Overview view
-	init(container, opts = {}) {
-		console.log("init home");
-		DOMcontainer = container;
-		registerActiveModes = opts.registerActiveModes;
-		getMode = opts.getWatchedMode;
-	},
+export function init(container, opts = {}) {
+	console.log("init home");
+	DOMcontainer = container;
+	registerActiveModes = opts.registerActiveModes;
+	getMode = opts.getWatchedMode;
+}
 
-	refresh(){
-		console.log("refresh home");
-		currentMode = getMode();
-		let HTML = '<h2>Bands Overview</h2>';
-		HTML += html_forStatsForAllBands();
-		DOMcontainer.innerHTML = HTML;
-		registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
-	}
-};
-
-export const Benchmark = {						// defines the Benchmark view
-	init(container, opts = {}) {
-	  DOMcontainer = container;
-	  if (opts.registerActiveModes) {
-		registerActiveModes = opts.registerActiveModes;
-	  }
-	  if (opts.getWatchedMode) {
-		getMode = opts.getWatchedMode;
-	  }
-	},
-
-	refresh(){
-	  currentMode = getMode();
-	  let HTML = '<h2>Benchmarking</h2>';
-	  HTML += html_forStatsForAllBands();
-	  DOMcontainer.innerHTML = HTML;
-	  registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
-	}
-};
-
+export function refresh(){
+	console.log("refresh home");
+	currentMode = getMode();
+	let HTML = '<h2>Bands Overview</h2>';
+	HTML += html_forStatsForAllBands();
+	let details_text = details_level ? "Hide benchmarking stats":"Show benchmarking stats";
+	HTML += "<button id='details_toggle'>"+details_text+"</button>";
+	DOMcontainer.innerHTML = HTML;
+	registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
+	const detailsButton = document.getElementById('details_toggle');
+	detailsButton.addEventListener('click', () => {
+		details_level = 1-details_level;
+		refresh();
+	});
+}
 
 function wavelength(band) {
     let wl = parseInt(band.split("m")[0]);
@@ -83,13 +67,17 @@ function html_forStatsForAllBands() {
 }
 
 function html_forStatsRowLabels() {
-    return "<div class = 'outputColumn'>"
-     + "<div class = 'firstColumn topRow' title = 'Band'>Band</div>"
-     + "<div class = 'firstColumn' title = 'Number of callsigns active in home squares'>Home calls</div>"
-     + "<div class = 'firstColumn' title = 'Number of spots generated worldwide by all callsigns in home, as a group'>Total spots</div>"
-     + "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>"
-     + "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + STORAGE.myCall + " spots</div>"
-     + "</div>";
+	let HTML = "<div class = 'outputColumn'>"
+    HTML +="<div class = 'firstColumn topRow' title = 'Band: click for band details views'>Band</div>";
+    HTML +="<div class = 'firstColumn' title = 'Number of callsigns active in home squares'>Home calls</div>";
+    HTML +="<div class = 'firstColumn' title = 'Number of spots generated worldwide by all callsigns in home, as a group'>Total spots</div>";
+	 if(details_level>0){
+		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>";
+		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + STORAGE.myCall + " spots</div>";
+	 }
+     HTML += "</div>";
+	
+	return HTML;
 }
 
 function html_forStatsForThisBand(band, mode, RxTx) {
@@ -145,13 +133,15 @@ function html_forStatsForThisBand(band, mode, RxTx) {
         }
     }
 
-    HTML += "<div><div class='outputColumn'>"
-     + "<div class='topRow' data-band='"+band+"'>" + band + "</div>"
-     + "<div>" + nActive + "</div>"
-     + "<div>" + otherEndCallsAggregate.size + "</div>"
-     + "<div title='" + winner + "'>" + nMax + "</div>"
-     + "<div title='" + STORAGE.myCall + "'>" + nMe + "</div>"
-     + "</div></div>";
+    HTML += "<div><div class='outputColumn'>";
+    HTML += "<div class='topRow' data-band='"+band+"'>" + band + "</div>";
+    HTML += "<div>" + nActive + "</div>";
+    HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
+	if(details_level>0){
+		HTML += "<div title='" + winner + "'>" + nMax + "</div>";
+		HTML += "<div title='" + STORAGE.myCall + "'>" + nMe + "</div>";
+	}
+    HTML += "</div></div>";
 	 
 	 return HTML;
 }
