@@ -10,6 +10,7 @@ let getMode = () => null;
 let band = null;
 let mode = null;
 let entityType = 'L4';
+let includeRemote = false;
 
 export function init(container, opts = {}) {
   DOMcontainer = container;
@@ -52,7 +53,6 @@ export function refresh(){
 		console.log(v);
 		if("CSL2L4L6".search(v)>=0){
 			entityType=v;
-			refresh();
 		}
 	  }
 	});
@@ -77,6 +77,28 @@ function html_for_ModeConnectivity(mode){
 			}
 		}	
 	}
+	
+	if (includeRemote) {
+		for (const ctx in bandModeData.Tx){
+			let etx = getEntity(ctx, entityType);
+			for (const c in bandModeData.Tx[ctx]){
+				let erx = getEntity(c, entityType);
+				entitiesSet.add(erx);
+				if(!entityConns[etx]) entityConns[etx]={};
+				entityConns[etx][erx]=1; 
+			}
+		}	
+		for (const crx in bandModeData.Rx){
+			let erx = getEntity(crx, entityType);
+			for (const c in bandModeData.Rx[crx]){
+				let etx = getEntity(c, entityType);
+				entitiesSet.add(etx);
+				if(!entityConns[erx]) entityConns[erx]={};
+				entityConns[erx][etx]=1; 
+			}
+		}	
+	}
+	
   
     let entities=Array.from(entitiesSet).toSorted();
 	if(entities.length < 1) {return ""};
@@ -96,10 +118,10 @@ function html_for_ModeConnectivity(mode){
 		// Row Headers
 		HTML += `<tr><th>${er}</th>`;
 		// Cells 
-		let txt = "";
-		let f=0;
-		let r=0;
 		for (const et of entities) {
+		  let txt = "";
+		  let f=0;
+		  let r=0;
 		  if( entityConns[et] ){
 			f = entityConns[et][er];
 		  }
