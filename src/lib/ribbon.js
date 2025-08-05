@@ -42,7 +42,7 @@ export default class Ribbon {
 		this.activeModes.forEach((md) => {
 			const modeBtn = document.createElement("button");
 			modeBtn.type = "button";
-			modeBtn.className = "modeSelectBtn";
+			modeBtn.className = "button--mode";
 			modeBtn.id = md;
 			modeBtn.textContent = md;
 			modeBtn.addEventListener('click', () => this.setMode(md));

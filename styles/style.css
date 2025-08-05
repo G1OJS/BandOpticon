@@ -61,7 +61,7 @@ fieldset {
 
 legend {
   padding: 0 var(--spacing-sm);
-  font-weight: bold;
+  font-weight: 600;
   color: var(--main-font-color);
   font-size: var(--font-size-sm);
 }
@@ -120,33 +120,29 @@ button {
   transition: border-color 0.3s, color 0.3s;	
 }
 
+button.active {
+  border-width: 1px;
+  font-weight: 600;
+  color: var(--controls-color);
+}
+
 button:hover:not(.active) {
   border-color: var(--main-paper-color);
   color: var(--controls-color);
 }
 
-
-.modeSelectBtn {
-  font-size: var(--font-size-sm);
-  color: var(--text-dark);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius);
-  background-color: var(--light-paper-color);
-  border: 2px solid var(--border-color);
-  cursor: pointer;
-  transition: border-color 0.3s, color 0.3s;
+.button--table {
+  margin:1px; padding:2px; font-weight: 600;
 }
 
-.modeSelectBtn.active {
-  border-width:1px;
+.button--tab {
+
+}
+
+.button--tab.active {
+  border-bottom: 2px solid var(--controls-color);
   font-weight: 600;
-  color:var(--controls-color);
 }
-.modeSelectBtn:hover:not(.active) {
-  border-color: var(--main-paper-color);
-  color: var(--controls-color);
-}
-
 
 #mainContent { display: grid; grid-template-columns:  1fr; grid-template-rows: 1fr; }
 
