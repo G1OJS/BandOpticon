@@ -70,7 +70,7 @@ function html_for_ModeConnectivity(mode){
 	
 	// Row Headers
 	for (const erx of entities) {
-    let vt = [...erx].map(c => `<span>${c}</span>);
+    let vt = [...erx].map(c => '<span>${c}</span>');
 		HTML += `<tr><th class='receive'>${vt}</th>`;
 		// Cells 
 		let txt = "";
