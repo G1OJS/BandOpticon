@@ -77,11 +77,18 @@ function html_for_ModeConnectivity(mode){
 		HTML += `<tr><th class='receive'>${erx}</th>`;
 		// Cells 
 		let txt = "";
+    let f=0;
+    let r=0;
 		for (const etx of entities) {
       if(entityConns[etx]){
-  			if(entityConns[etx][erx]){
-  				txt = "x"; 
-  			}
+        f=entityConns[etx][erx]
+      }
+      if(entityConns[erx]{
+        r=entityConns[erx][etx]
+      }
+  		if(f && r){txt='X'};
+  		if(f && !r){txt='/'};
+      if(r && !f){txt='\'};
       }
 			HTML += "<td class = 'cell'>"+txt+"</td>";
 		}
