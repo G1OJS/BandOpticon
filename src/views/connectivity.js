@@ -62,7 +62,8 @@ function html_for_ModeConnectivity(mode){
 	// Column headers
 	HTML += "<thead><tr><th></th>";
 	for (const etx of entities) {
-		HTML += `<th class = 'transmit'>${etx}</th>`;
+    let vt = [...etx].map(c => '<span>'+c+'<span><br>');
+		HTML += `<th class = 'transmit'>${vt}</th>`;
 	}
 	HTML += "</tr></thead><tbody>";
 	
@@ -70,8 +71,8 @@ function html_for_ModeConnectivity(mode){
 	
 	// Row Headers
 	for (const erx of entities) {
-    let vt = [...erx].map(c => '<span>${c}</span>');
-		HTML += `<tr><th class='receive'>${vt}</th>`;
+    
+		HTML += `<tr><th class='receive'>${erx}</th>`;
 		// Cells 
 		let txt = "";
 		for (const etx of entities) {
