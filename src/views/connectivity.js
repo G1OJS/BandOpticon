@@ -70,7 +70,8 @@ function html_for_ModeConnectivity(mode){
 	
 	// Row Headers
 	for (const erx of entities) {
-		HTML += `<tr><th class='receive'>${erx}</th>`;
+    let vt = [...erx].map(c => `<span>${c}</span>);
+		HTML += `<tr><th class='receive'>${vt}</th>`;
 		// Cells 
 		let txt = "";
 		for (const etx of entities) {
@@ -100,4 +101,8 @@ function getEntity(call,entityType){
 //  }
   if(entityType=="L2"){return square.substring(0,2)}
   if(entityType=="L4"){return square.substring(0,4)} 
+}
+
+function setVerticalText(el, text) {
+  el.innerHTML = [...text].map(c => `<span>${c}</span>`).join('<br>');
 }
