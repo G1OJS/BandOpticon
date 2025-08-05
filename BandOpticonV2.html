@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>BandOpticon V2.0.0</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+<style>
+:root {background-color: #91FCFE; --main-paper-color:#cce5ff; --light-paper-color:#eff7ff; text-align: left; color:#4e4e4e; }
+div {background-color:var(--main-paper-color); margin: 0px;  padding: 5px;}
+#title {background-color: #91FCFE; text-align: center; font-size: 5rem;}
+#subtitle {background-color: #91FCFE; text-align: center; font-size: 1.5rem; margin-bottom:10px;}
+
+/* everything but the titles and credits. Padding sets the outer blue border */
+#app {margin:0px; padding:5px; background-color:blue;} 
+
+/* holds the divs for the clock & counters, and info / controls */
+#appTop { display: grid; background-color:var(--main-paper-color); grid-template-columns:  minmax(min-content,30%) auto; grid-template-rows: auto;}
+
+#clock {display:inline-block;  padding:5px; background-color:lightblue; font-size:2rem;}
+
+#recordButton {background-color: red; color:red; border: none; padding: 5px; text-align: center;display: inline-block;font-size: 2px; margin: 0px 0px;cursor: pointer; border-radius: 10px; vertical-align:middle;}
+
+#controls {display: grid; grid-template-columns:1fr; grid-template-rows: auto; }
+#controls {border-bottom: solid blue 2px}
+#controls > div {float:left}
+#controls > div > div {display:inline-block;}
+
+/* area above band tiles grid used for detailed output */
+#innerScreen { display: grid; grid-template-columns:  auto; grid-template-rows: auto; }
+
+.innerPanel {border: solid grey 2px}
+.innerPanel .title {font-size:2rem; font-weight:bold;}
+
+fieldset {transform:scale(100%); padding-left:5px; font-size:1rem; width:fit-content;}
+  fieldset > div {float:left; padding-left:0px;}
+  fieldset > div >* {vertical-align:middle;}
+.button {font-size:0.7rem; color:#404040; padding: 0.2em 0.3em; border-radius: 0.5em; background-color: silver; border: 4px solid grey; cursor: pointer;}
+.button.active {border: 2px solid black; color:blue; font-weight:bold;}
+.button-tiny {font-size:0.5rem; padding: 0.1em 0.1em; border-radius: 0.2em; background-color: silver; border: 1px solid grey; cursor: pointer;  vertical-align:middle;}
+.button-tiny.active {border: 2px solid black;}
+
+#bandDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: 20% min-content auto; grid-template-rows: auto; }
+#bandDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+
+#homeCallsDetailsGrid {background-color:grey; padding:1px; display: grid; grid-template-columns: max-content auto; grid-template-rows: auto; }
+#homeCallsDetailsGrid > div {background-color:var(--light-paper-color); margin: 0px; border-bottom:solid; border-right:solid; border-color:grey; border-width:1px; margin-bottom:0px; padding-left: 5px; padding-right: 5px; padding-bottom:1px; font-size: 1rem; min-height:10px; }
+
+#bandTilesBlock {  display: grid; grid-auto-flow: row; column-gap: 2px; row-gap: 2px; 
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-rows: repeat(auto-fill, 1fr);}
+.bandTile {display:none; width:fit-content(250px); height:fit-content; background-color: grey; margin: 1px; padding: 5px; }
+.bandTile.active >* {background-color:var(--light-paper-color);}
+.tileTitle {font-weight:bold; font-size:2rem;}
+
+.bandTileStatsGrid {display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; grid-template-rows: auto;  }
+.bandTileStatsGrid .RowHeading {text-align:left; vertical-align:bottom; font-weight:bold; border-bottom:solid; border-width:1px;}
+.bandTileStatsGrid .ColumnHeading {text-align:center;  margin-right:5px;  padding-top:8px;}
+.bandTileStatsGrid .Stats {text-align:center; font-weight:bold; border-bottom:solid; border-width:1px; font-size:1.5rem;}
+
+.bandTile .tileModes {font-size:1rem;}
+.bandTile .tileCalls {font-size:0.7rem; padding-top:0px;margin-top:0px}
+	
+.hanging20 {text-indent:-20px; padding-left:20px; margin-top: 0px; margin-bottom: 0px;}
+.notesText {font-weight:normal; font-size: 1rem;}
+.hidden {display: none;}
+.HomeEntity {color:blue; }
+.DxEntity {color:#ed49ef; }
+.txrx {color:purple;font-weight:bold}
+.tx {color:red}
+.rx {color:green}
+.HighlightMatch {background-color:#d1d1e0;} 
+.HighlightExclusive {background-color:#ffff00;} 
+a:link {color: blue;}
+a:visited {color: blue;}
+.textAnchorButton {font-size:1rem;}
+.filterLink{float:right;}
+
+.loading{font-size:2rem;}
+
+#creditsGrid { font-size: 0.8em; display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto;}
+#creditsGrid > * {background-color: #91FCFE;}
+
+</style>
+</head>
+<body>
+<div id="title">BandOpticon</div>
+<div id="subtitle"> Live <a href='https://pskreporter.info/'>Pskreporter</a> statistics for all bands between Home and DX</div>
+
+<div id="app">
+	
+    <div id="appTop">
+      <div><output id='clock'></output><br><span class='notesText'>Running for <output id='runningMins'></output> minutes</span>
+      <br><span class='notesText'><output id='connectionsIn'></output> connections in database </span>
+  <br> <!--    <span class='notesText'><output id='connectionsAdded'></output> added <output id='connectionsPurged'></output> purged<br></span> -->
+      <label for='recordButton'><button type='button' id="recordButton"   onclick='startRecording();'>O</button> record</label>
+      
+      </div>   
+      <div>
+
+      <button type="button" class="button" style='float:right;' onclick='document.getElementById("instructions").style="display:inline-block;";'>BandOpticon Overview</button>
+      <br><br>
+            <button type="button" class="button" style='float:right;' onclick='document.getElementById("homeCallsDetails").style="display:inline-block;";'>Show Home Call Activity</button>
+          <fieldset>
+          <legend>Settings</legend>
+	        My call = <output id='myCall'></output> <button type='button' class='button-tiny' onclick='editMyCall();'>edit</button><br>
+	        Spots purged if older than <output id='purgeMinutes'></output> mins <button type='button' class='button-tiny' onclick='editPurgeMins();'>edit</button><br>
+	        <p class='hanging20'>Home = <output id='squaresListDisplay'></output> <button type='button' class='button-tiny' onclick='editSquaresList();'>edit</button></p>
+        </fieldset>
+      </div>
+    </div>
+    
+    <div id='controls'>
+       <div>
+	      <div>
+          <fieldset>
+           <legend>Sort band tiles by</legend>
+           <button  type="button" class="button" name="bandTileSortKey" id="BandName" onclick='setSort(&quot;BandName&quot;)'>Band Name</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHH" onclick='setSort(&quot;nHH&quot;)'>H→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nHD" onclick='setSort(&quot;nHD&quot;)'>H→DX</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nDH" onclick='setSort(&quot;nDH&quot;)'>DX→H</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTx" onclick='setSort(&quot;nTx&quot;)'>Tx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nRx" onclick='setSort(&quot;nRx&quot;)'>Rx</button>
+           <button  type="button" class="button" name="bandTileSortKey" id="nTxRx" onclick='setSort(&quot;nTxRx&quot;)'>TxRx</button>
+           </fieldset>
+         </div>
+        
+        <div>
+          <fieldset id=modeSelect >
+            <legend>Mode to watch</legend>
+            <!-- written by script -->
+            </fieldset>
+        </div>
+      </div>
+
+   </div>
+   
+   <div id="innerScreen">
+      <div class="innerPanel" id="instructions" style="display:none;">
+      <span class="title">Overview</span><a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("instructions").style="display:none;";'>close</a>
+      <br>BandOpticon has two main displays. 1) A grid of tiles showing band usage information for each active band on the currently-selected mode (select via 'Mode to watch' buttons) and 2) a 'band details' grid showing who is spotting whom on a single selected band. To activate the band details display, click on the band name and mode in any band tile, or on a mode at the bottom of the band tile.
+      <br><br>
+      On both displays, BandOpticon shows connections between callsigns in the 'Home' squares and DX callsigns, as well as Home to Home connections.
+      <br><br>
+      A 'record' button under the clock starts a new window that records the statistics shown in the band tiles. This can be used to monitor band activity over a long period for later analysis using your own preferred analysis methods.
+      <br><br>
+      <strong>Band Tiles</strong>
+      <br>
+      Each band tile shows the number of connections from home to home, home to DX and DX to home, plus the number of active home transmitters, home receivers, and home transmitter-receivers. Band tiles can be sorted in order of any of these quantitties, or by band name.
+      <br><br>
+      Band tiles are dimmed when the band is active but not on the currently watched mode.
+      <br><br>
+      <strong>Band Details</strong>
+      <br>
+      The band details grid shows active callsigns in the 'Home' squares on the left, and calls they are spotting or being spotted by on the right. Colour coding on the right hand side differentiates Home-Home connections from Home-DX connections.
+      <br><br>
+      Home calls can be listed individually, or grouped into active transmitters, active receivers and active transmitter-receivers. The latter group, home callsigns spotting anyone and being spotted by anyone, can be shown in isolation to reduce screen clutter on busy bands. Note that transmitter-receivers may appear on the left with no connected callsigns on the right. This is because a transmitter-receiver is defined as a home callsign spotting *anyone* and being spotted by *anyone*, whilst transmitter-receiver connections on the right indicate remote entities being spotted by and spotting the *same* home callsign.
+      <br><br>
+      When listed individually, home callsigns can be filtered to a single call plus your own callsign. This can be used to see how your own transmit and receive performance compares to another callsign's. If you have a second callsign (e.g. web SDR) you can compare performance of your own station with itself. Highlighting shows when the same callsign or square (select under 'Far Entities') appears in two or more lists.
+      <br><br>
+      <strong>Highlighting</strong> works for two use cases. "Peer performance" highlights calls appearing both in your receive list and other home calls' receive lists, and likewise transmit lists and transmit-receive lists.
+	      "QSO potential" highlights calls in your receive list that have spotted other home calls, and calls in your transmit list that other home calls have spotted, indicating that conditions may be favourable for a QSO with those highlighted callsigns.
+      
+      </div>
+
+      <div class="innerPanel" id="homeCallsDetails" style="display:none;">
+         <div>
+            <span class="homeCallsDetails title">Home Calls Activity (experimental)</span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='document.getElementById("homeCallsDetails").style="display:none;";'>close</a>
+            <br><br>The following callsigns in the Home squares are actively reporting on the bands and modes below, either <span class='txrx'>transmitting and receiving</span>, <span class='tx'>transmitting only</span>, or <span class='rx'>receiving only</span>.
+         </div>
+         <br>
+        <div style="clear:both"></div>
+        <div id="homeCallsDetailsGrid">
+           <!-- written by script -->
+        </div>
+      </div>
+	   
+      <div class="innerPanel" id="bandDetails" style="float:left;">
+         <div>
+            <span class="bandDetails title">Details for <output id='detailsBand'></output> <output id='watchedMode'></output></span>
+            <a class='textAnchorButton' style='float:right;' href='#' onclick='detailsWanted=""; updateDisplays();'>close</a>
+         </div>
+         <br>
+         <div style="display:inline-block">
+            <fieldset>
+              <legend><span class='HomeEntity'>Home</span> Callsigns</legend>
+              <div><label for="groupHomeEntities"><input type="checkbox" onchange="updateDisplays();" id="groupHomeEntities" name="groupHomeEntities" checked />Group into Tx, Rx and TxRx</label></div>
+              <div><label for="txRxOnly"><input  type="checkbox" onchange="updateDisplays();" id="txRxOnly" name="txRxOnly" />Just TxRx</label></div>
+            </fieldset>
+        </div>
+        <div style="display:inline-block">
+            <fieldset>
+              <legend>Far Entities (<span class='HomeEntity'>Home</span> & <span class='DxEntity'>DX</span>)</legend>
+              <div><label for="showCallsigns"><input type="radio" onchange="updateDisplays();" id="showCallsigns" name="farEntitiesShow" checked />Callsigns</label></div>
+              <div><label for="showL2sq"><input type="radio" onchange="updateDisplays();" id="showL2sq" name="farEntitiesShow" />L2 squares</label></div>
+              <div><label for="showL4sq"><input type="radio" onchange="updateDisplays();" id="showL4sq" name="farEntitiesShow" />L4 squares</label></div>
+              <div><label for="showL6sq"><input type="radio" onchange="updateDisplays();" id="showL6sq" name="farEntitiesShow" />L6 squares</label></div>
+            </fieldset>
+        </div>
+        <div style="display:inline-block">
+           <fieldset>
+             <legend>Highlighting</legend>
+                <div><label for="forward"><input type="radio" onchange="updateDisplays();" id="forward" name="highlighting"  />Peer performance</label></div>
+                <div><label for="reverse"><input type="radio" onchange="updateDisplays();" id="reverse" name="highlighting" checked />QSO potential</label></div>
+           </fieldset>
+        </div>
+        <div style="clear:both">
+        
+        </div>
+
+        <div id="listFilterClearDiv"><a  style='visibility:hidden;' href='#' class='textAnchorButton' id='listFilterClear' onclick='listFilter=""; updateDisplays();'>clear filter</a></div>
+        <div id="bandDetailsGrid">
+           <!-- written by script -->
+        </div>
+        
+     </div>
+  </div>
+       
+
+     
+    <div id="bandTilesBlock">
+      <div class='loading' id='loading'>Loading ...</div>
+      <!-- written by script -->
+    </div>
+
+    <div id="creditsGrid">
+        <div>
+            Javascript & HTML developed by Alan Robinson:<br>
+            <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+           <a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+       </div>
+       <div>
+            Thanks to:<br>
+            Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
+            Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
+            <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+       </div>
+       <div>
+          License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+          Readme: <a href='https://g1ojs.github.io/BandOpticon/'>g1ojs.github.io/BandOpticon</a><br>
+          GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+        </div>
+    </div>
+    
+</div>
+
+
+<!--Get the library for MQTT functions -->
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+
+<!-- BandOpticon script -->
+<script>
+
+ // initialisation and functions to load and save configuration
+  var bandsArr=new Array();
+  const defaultSquaresList="IO50:99,JO01,JO02,JO03"; // used if squaresList value can't be set from localstorage
+  let squaresArr=[]; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
+  var squaresList=""; // the human-firendly list of squares to watch
+  var watchedMode="FT8";
+  var modesAcrossAllBandsArr=["FT4","FT8","CW","WSPR"];
+  var detailsBand=bandsArr[0];
+  var bandTilesSortKey="BandName";
+  var refresh_mSeconds=5000;
+  var purgeMinutes=15;
+  var detailsWanted="";
+  var entityDisplayType;
+  var squaresDisplayLevel;
+  let myCall="G1OJS";
+  let listFilter="";
+  var mqttClient=null;	
+  var tStart=Date.now(); // software start time
+  const RIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8680</span>";
+  const LEFTARROW="<span style='text-align:center; font-size:1rem;'>&#8678</span>";
+  const LEFTRIGHTARROW="<span style='text-align:center; font-size:1rem;'>&#8660</span>";
+  var dataForRecord="";
+  var newWindow=null;
+  var dataWriteSeconds=15;
+  var connections = {};
+  var reciprocals=new Set;
+  var connectionsAdded=0;
+  var connectionsPurged=0;
+  const maxTiles=20;
+
+  loadConfig();
+  document.getElementById("bandDetails").style="display:none;";
+  setSort("BandName");
+  makeModeButtons();
+  setMode("FT8");  
+  initBandTiles();
+  updateDisplays();
+
+  setInterval(updateAppTop,1000);
+  setInterval(updateDisplays, refresh_mSeconds);
+  setInterval(purgeSpots, 15000);
+  setInterval(writeData, 1000*dataWriteSeconds);
+
+  connectToFeed();
+ // connectToTestData();
+  
+  // ***********************************
+  // * End of main: Functions below    *
+  // ***********************************
+
+  function connectToTestData(){
+    onMessage('"sq":50539271468,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"KV4CW","rl":"EM96WE","sa":223,"ra":291,"b":"40m"');
+    onMessage('"sq":50539271469,"f":7074548,"md":"FT8","rp":-24,"t":2729117484,"sc":"G8KHF","sl":"IO92KG","rc":"G1OJS","rl":"IO90KU","sa":223,"ra":291,"b":"40m"');
+  }
+
+  // connect to MQTT feed  
+   function connectToFeed(){
+  //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    // the following works but ideally we need to verify disconnection and spots set to zero before reconnecting. 
+    // Should also alert the user that this will happen and give chance not to edit the squares.
+    // if already connected, disconnect (happens if user edits squares list)
+    try{mqttClient.end(); console.log("Asked to end mqtt stream");} catch {}
+    // now connect and subscribe on success
+    mqttClient=mqtt.connect("wss://mqtt.pskreporter.info:1886");
+    mqttClient.onSuccess=subscribe();
+    mqttClient.on("message", (filter,message) => {onMessage(message.toString());}  );
+  }
+
+  // subscribe to needed squares
+  function subscribe(){
+    //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/
+    //{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
+    
+    // find the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
+    let subs=new Set;
+    for(let i=0;i<squaresArr.length;i++){subs.add(squaresArr[i].substring(0,4));}
+    let subsArr=Array.from(subs);
+    
+    // now subscribe to the level 4 squares
+    subsArr.forEach((sq) => {
+      var topic='pskr/filter/v2/+/+/+/+/'+sq+'/+/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+      var topic='pskr/filter/v2/+/+/+/+/+/'+sq+'/+/#';
+      console.log("Subscribe to "+topic);
+      mqttClient.subscribe(topic, (error) => {if (error) {
+              console.error('subscription failed to '+topic, error)}});
+    } );
+  }
+
+  // process MQTT messages
+  function onMessage(msg){
+    // message format:
+    // sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
+    // sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
+    // first, build conn object for this msg using same keys as PSKR MQTT:
+    const conn={};
+    msg.slice(1, -1).replaceAll('"','').split(',')
+         .forEach(function(v) {
+           let kvp=v.split(":");
+           conn[kvp[0]]=kvp[1];
+         });
+	  
+    conn.sl=(conn.sl).toUpperCase();
+    conn.rl=(conn.rl).toUpperCase();
+			
+    // add sender and receiver domain (home/dx)
+    if(squareIsInHome(conn.sl)){conn["sd"]="home"} else {conn["sd"]="dx"}
+    if(squareIsInHome(conn.rl)){conn["rd"]="home"} else {conn["rd"]="dx"}
+    
+    // now add this connection to the connections object using sequence ID as key:
+    if(conn.rd=="home" || conn.sd=="home") {
+      connections[conn.sq]=conn
+      connectionsAdded+=1;
+    }
+  }
+  
+   function purgeSpots(){
+   // get rid of spots older than purgeMinutes  
+     for (id in connections) {
+       let tConn=parseInt(connections[id].t);
+       let connAge=((Date.now()/1000-tConn))/60
+       if(connAge > purgeMinutes) {
+         delete connections[id];
+         connectionsPurged+=1;
+       }
+     }
+   }
+  
+  function HL(item,pattern,hlClass1="HighlightMatch",hlClass2=""){
+    // returns highlighted text using class hlClass1 (default HighlightMatch) if either item==pattern or pattern==true
+    // otherwise, returns item unless hlClass2 is specified in which case returns highlighted text using class HighlightExclusive
+  if (item==", ") {return item} // don't highlight comma-spaces
+  if(item==pattern || pattern==true){
+        return "<span class="+hlClass1+">"+item+"</span>";
+    } else {
+	    if(hlClass2==""){
+	      return item;
+	    } else {
+	      return "<span class="+hlClass2+">"+item+"</span>";
+	    }
+    }
+  }
+  
+  function validSquaresListEntry(locator){
+    // if a valid level 4,6,8 or 10 square, return the level else return 0
+    // odd numbers represent the xxxxxxxYY:ZZ version of the n-1 type
+    if(RegExp("^[A-R]{2}[0-9]{2}$").test(locator)) {return 4};
+    if(RegExp("^[A-R]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 5};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 6};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 7};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}$").test(locator)) {return 8};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}:[0-9]{2}$").test(locator)) {return 9};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}$").test(locator)) {return 10};
+    if(RegExp("^[A-R]{2}[0-9]{2}[A-X]{2}[0-9]{2}[A-X]{2}:[A-X]{2}$").test(locator)) {return 11};
+    return 0;
+  }
+
+  function squareIsInHome(sq){
+    // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+    return (squaresArr.includes(sq.substring(0,4)) || squaresArr.includes(sq.substring(0,6)) || squaresArr.includes(sq.substring(0,8)) || squaresArr.includes(sq.substring(0,10)));
+  }
+
+  function parseSquares(sqsList){
+    // returns uppercase squares, expanded if necessary
+    var outputSqsArr=new Array();
+    var inputSqs=sqsList.toUpperCase().split(','); // internally we work with uppercase squares
+    console.log("Parsing squares list "+inputSqs);
+    for(i=0;i<inputSqs.length;i++){
+      let sq=inputSqs[i];
+      let cln=sq.search(":");
+      if(cln<0){
+        outputSqsArr.push(sq)
+      } else {
+        let root=sq.substring(0,cln-2);
+        for(let x=sq.charCodeAt(cln-2);x<sq.charCodeAt(cln+1)+1;x++){
+          for(let y=sq.charCodeAt(cln-1);y<sq.charCodeAt(cln+2)+1;y++){
+            outputSqsArr.push(root+String.fromCharCode(x)+String.fromCharCode(y))
+          }
+        }
+      }   
+    }
+    console.log("Parsed squares result "+outputSqsArr);
+    return outputSqsArr;
+  }
+   	
+   function get_utc_timestamp(){ 
+    var t=new Date;
+    return t.getUTCDate()+"/"+(t.getUTCMonth()+1)+"/"+t.getUTCFullYear()+" "
+       +("0"+t.getUTCHours()).slice(-2)+":"
+       +("0"+t.getUTCMinutes()).slice(-2)+":"
+       +("0"+t.getUTCSeconds()).slice(-2)+" UTC";
+  }
+
+  function startRecording(){
+    newWindow = window.open("", "newWindow", "width=1800, height=300");
+    let htmlTmp="BandOpticon recording data once every "+dataWriteSeconds+" seconds."
+    +"'Home' = "+squaresList
+    +"<br><strong>Time (UTC), Mode, n times [Band, nSpots Home-Home, nSpots Home->DX, nSpots DX->Home, n(callsigns transmitting in Home), n(callsigns receiving in Home), n(callsigns transmitting and receiving in home)]</strong><BR> ";
+  	  newWindow.document.write(htmlTmp);
+  }
+  
+  function writeData(){
+    if(newWindow==null){return}
+    var data_html="<br>"+get_utc_timestamp()+", "+dataForRecord.slice(0,-2);
+    newWindow.document.write(data_html);
+  }
+	
+  function saveConfig(){
+      console.log("Saving config:");
+      localStorage.setItem('squaresList', JSON.stringify(squaresList));
+      console.log("Saved Squares List: "+squaresList);
+      localStorage.setItem('myCall', myCall);
+      console.log("Saved myCall: "+myCall);
+      localStorage.setItem('purgeMinutes', purgeMinutes);
+      console.log("Saved purgeMinutes: "+purgeMinutes);
+  }
+  
+  function loadConfig(){
+    if(localStorage.getItem('squaresList')){
+      squaresList=JSON.parse(localStorage.getItem('squaresList'));
+    } else {
+      squaresList=defaultSquaresList;
+      console.log("No local config data found for squares list: defaults applied.");
+      saveConfig();
+    }
+    let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+    document.getElementById("squaresListDisplay").innerHTML=squaresListDisplay; 
+    squaresArr=parseSquares(squaresList); // returns uppercase squares, expanded if necessary
+    
+    if(localStorage.getItem('myCall')){
+      myCall=localStorage.getItem('myCall');
+      document.getElementById("myCall").value=myCall; 
+    } else {
+      myCall="G1OJS";
+      saveConfig();
+    }
+	  
+    if(localStorage.getItem('purgeMinutes')){
+      purgeMinutes=localStorage.getItem('purgeMinutes');
+      document.getElementById("purgeMinutes").value=purgeMinutes; 
+    } else {
+      purgeMinutes=5;
+      saveConfig();
+    }
+  }
+ 
+    // needs validation code
+  function editMyCall(){
+    var resp=prompt("Enter your callsign",myCall);
+    if(resp==null){return}
+    myCall=resp.toUpperCase();
+    localStorage.setItem('myCall',myCall);
+    document.getElementById("myCall").value=myCall; 
+  }
+  
+  function editPurgeMins(){
+    var resp=prompt("Enter minutes for spot expiry",purgeMinutes);
+    if(resp==null){return}
+    if(!Number.isNaN(parseInt(resp))){
+      if(parseInt(resp)>0 && parseInt(resp)<60){
+          purgeMinutes=parseInt(resp);
+          localStorage.setItem('purgeMinutes',purgeMinutes);
+          document.getElementById("purgeMinutes").value=purgeMinutes; 
+          return
+      } else {alert("Please enter a number between 1 and 59")}
+    } else  {alert("Please enter a number between 1 and 59")}
+  }
+  
+  // function to allow the user to edit the home squares list
+  function editSquaresList(){
+    var resp=prompt("Please enter a list of squares (level 4,6,8 or 10) separated by commas.\n\n"
+		   +"To specify a rectangle within a larger square, use a colon to \n"
+		   +"separate the 'lower left' and 'top right' corners.g. IO50:85, IO50ab:pq\n\n"
+		   +"Input example: IO50:85,JO01,JO03ku,JO80:87\n"
+		   +"\n NOTE: connections will gather from ~now~ for any ~new~ squares",squaresList);
+    if(resp==null){return}
+    let respArr=resp.toUpperCase().split(','); // validSquaresListEntry() requires uppercase even though we allow squaresList to be mixed case
+    squaresListValid=true;
+    for (let i=0;i<respArr.length;i++){
+      if(validSquaresListEntry(respArr[i])<4) squaresListValid=false;
+    }
+    if(squaresListValid){
+      console.clear();
+      squaresList=resp; // potentially mixed case but that's OK
+      console.log("Squares list updated to: "+resp);
+      saveConfig();
+      squaresArr=parseSquares(resp); // returns uppercase squares, expanded if necessary
+      connectToFeed();
+      updateDisplays();
+      let squaresListDisplay=squaresList.replaceAll(',',', '); // add spaces to give an opportunity for linebreaks
+      document.getElementById("squaresListDisplay").value=squaresListDisplay; 
+    } else {
+      alert("Please enter a comma-separated list of valid squares LLNN or smaller.\n\nYou entered "+resp);
+    }
+  }
+ 
+  function resizeGridColumns(){
+  
+    // find the largest counts of characters in the LH and RH columns
+    const farEntities=document.querySelectorAll('[class$="_farEntities"]');
+    const homeCalls=document.querySelectorAll('[class$="_homeCalls"]');
+    
+    let groupHomeEntities=document.getElementById("groupHomeEntities").checked
+    
+     // redistribute grid columns
+    let gridDiv=document.getElementById('bandDetailsGrid');
+    if (groupHomeEntities) {
+      let lhCharsCount=0;   
+      let rhCharsCount=0;
+      if (homeCalls[0]!=undefined && farEntities[0]!=undefined){
+        Array.from(homeCalls).forEach((cell) => {lhCharsCount=Math.max(lhCharsCount,cell.innerText.length)});
+        Array.from(farEntities).forEach((cell) => {rhCharsCount=Math.max(rhCharsCount,cell.innerText.length)});
+      }
+      let centreColumnNominalChars=7;
+      let p1=Math.round(100*Math.min(Math.max(lhCharsCount/(lhCharsCount+rhCharsCount+centreColumnNominalChars),0.1),0.5));
+      gridDiv.style.gridTemplateColumns = "minmax(min-content,"+p1+"%) min-content auto";
+   //   console.log("Resize grid ",lhCharsCount,":",rhCharsCount);
+    } else {
+      gridDiv.style.gridTemplateColumns = "max-content min-content auto";
+    }
+  }
+  
+function makeModeButtons(){
+  let el=document.getElementById("modeSelect");
+  el.innerHTML="<legend>Mode to watch</legend>";
+  modesAcrossAllBandsArr.forEach((md) => {
+    el.innerHTML+="<button type='button' class='button' name='modeSelect' id='"+md+"' onclick='setMode(&quot;"+md+"&quot;)'> "+md+" </button> "
+  });
+  setMode(watchedMode);
+}
+  
+function initBandTiles(){
+  let bandTilesGrid=document.getElementById("bandTilesBlock");
+  for (let i=0;i<maxTiles;i++){
+  bandTilesGrid.innerHTML+="<div class='bandTile' id='tile_"+i+"'>"
+     +"<div class='tileTitle' id='tileTitle_"+i+"'></div>"
+     +"<div class='bandTileStatsGrid'>"
+       +"<span></span>"
+       +"<span class='ColumnHeading'>H→H</span>"
+       +"<span class='ColumnHeading'>H→DX</span>"
+       +"<span class='ColumnHeading'>DX→H</span>"  
+       +"<span class='RowHeading'>Spots</span>"
+       +"<output class='Stats' id='nH2H_"+i+"'></output>"
+       +"<output class='Stats' id='nH2DX_"+i+"'></output>"
+       +"<output class='Stats' id='nDX2H_"+i+"'></output>"
+       +"<span></span>"
+       +"<span class='ColumnHeading'>Tx</span>"
+       +"<span class='ColumnHeading'>Rx</span>"
+       +"<span class='ColumnHeading'>TxRx</span>"
+       +"<span class='RowHeading'>Calls</span>"
+       +"<output class='Stats' id='nTx_"+i+"'></output>"
+       +"<output class='Stats' id='nRx_"+i+"'></output>"
+       +"<output class='Stats' id='nTxRx_"+i+"'></output>"
+     +"</div>"
+     +"<div class='tileModes' id='modes_"+i+"'></div>"
+     +"<div class='tileCalls' id='tileCalls_"+i+"'></div>"
+     +"</div> ";
+  }
+}
+
+ function setMode(mode){
+   watchedMode=mode;
+   let pressedButton=document.getElementById(mode);
+   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+   pressedButton.classList.add('active');
+   updateDisplays();
+ } 
+
+  
+ function setSort(sortKey){
+   bandTilesSortKey=sortKey;
+   let pressedButton=document.getElementById(sortKey);
+   for (const child of pressedButton.parentElement.children){child.classList.remove('active')}
+   pressedButton.classList.add('active');
+   updateDisplays();
+ } 
+ 
+ function updateAppTop(){
+     
+    var now = new Date;
+    var utc_timestamp=get_utc_timestamp(now);
+    var runningmins=Math.trunc(((now-tStart)/1000) / 60);
+
+    // update the top banner  
+    document.getElementById("clock").innerHTML=utc_timestamp.split(" ")[1]+"&nbsp;"+utc_timestamp.split(" ")[2];
+    document.getElementById("runningMins").value=runningmins;
+    document.getElementById("connectionsIn").value=connectionsAdded-connectionsPurged;
+//    document.getElementById("connectionsAdded").value=connectionsAdded;
+//    document.getElementById("connectionsPurged").value=connectionsPurged;
+    
+ }
+
+
+
+ function updateHomeCallsDetails(){
+      let homeCallsInfo={};
+
+      for (id in connections) {
+        let c=connections[id];
+        if (c.sd=="home") {
+          if (c.sc in homeCallsInfo) {
+            homeCallsInfo[c.sc].tx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.sc]={"tx":new Set().add(c.b+"-"+c.md),"rx":new Set()};
+          }
+        }
+        if (c.rd=="home") {
+          if (c.rc in homeCallsInfo) {
+            homeCallsInfo[c.rc].rx.add(c.b+"-"+c.md)
+            } else {
+            homeCallsInfo[c.rc]={"tx":new Set(),"rx":new Set().add(c.b+"-"+c.md)};
+          }
+        }
+      }
+      el=document.getElementById("homeCallsDetailsGrid");
+      el.innerHTML="";
+      Object.keys(homeCallsInfo).toSorted().forEach( (call) => {
+        let rx=homeCallsInfo[call].rx; let tx=homeCallsInfo[call].tx; 
+        let txrx=rx.intersection(tx);
+        let txOnly=tx.difference(txrx);
+        let rxOnly=rx.difference(txrx);
+        el.innerHTML+="<div>"+call+"</div><div><span class='txrx'>"+Array.from(txrx).toSorted().join(', ')+"</span> <span class='tx'>"+Array.from(txOnly).toSorted().join(', ')+"</span> <span class='rx'>"+Array.from(rxOnly).toSorted().join(', ')+"</span></div>";
+      });
+  
+  }
+    
+ function updateDisplays(){
+
+    if (document.getElementById("homeCallsDetails").style.display=="inline-block") {updateHomeCallsDetails();} 
+	  
+    if(detailsWanted==""){document.getElementById("bandDetails").style="display:none;"}
+    if(detailsWanted=="BandDetails"){document.getElementById("bandDetails").style="display:inline-block;"}
+
+    // Write the <div>s for each band summary tile in the bandTilesGrid area
+    var bandsHeard=new Set();
+    for (id in connections) {bandsHeard.add(connections[id].b)}
+    bandsArr=Array.from(bandsHeard);
+    
+    let loadScr=document.getElementById('loading');
+    if(loadScr.innerHTML!="" && bandsHeard.size>0) {
+      loadScr.innerHTML="";
+      loadScr.style="display:none;";
+    }
+ 	  
+    // get the band stats for each band. if detailsBand, call showBandDetails 
+    // can this be done more compactly?
+    let bandsDataArr=new Array();
+    dataForRecord="Mode="+watchedMode+", ";
+    bandsArr.forEach((band,index) => {
+      let nSpotsHH=0;
+      let nSpotsHD=0;
+      let nSpotsDH=0;
+      let txCalls=new Set;
+      let rxCalls=new Set;
+      let bandModes=new Set;
+      for (id in connections) {
+        let c=connections[id];
+        if (c.b==band) {bandModes.add(c.md)}
+        if (c.b==band && c.md==watchedMode) {
+          if(c.sd=="home") {txCalls.add(c.sc)}
+          if(c.rd=="home") {rxCalls.add(c.rc)}
+          if(c.sd=="home" && c.rd=="home") {nSpotsHH+=1}
+          if(c.sd=="home" && c.rd=="dx") {nSpotsHD+=1} 
+          if(c.sd=="dx" && c.rd=="home") {nSpotsDH+=1} 
+        }
+      }
+      let txRxCalls=txCalls.intersection(rxCalls);
+      let bandData=[band,nSpotsHH,nSpotsHD,nSpotsDH,txCalls.size,rxCalls.size,txRxCalls.size,Array.from(bandModes),txCalls,rxCalls];
+      bandsDataArr.push(bandData);  // accumulate the band data to the bandsDataArr for use below  
+      dataForRecord+=bandData.slice(0,7)+", "; // save the stats from above to the recording string
+     
+      
+     
+      let modesAcrossAllBandsArrNew=Array.from((new Set(modesAcrossAllBandsArr)).union(bandModes));
+      if(modesAcrossAllBandsArrNew.length>modesAcrossAllBandsArr.length){
+        modesAcrossAllBandsArr=modesAcrossAllBandsArrNew;
+        makeModeButtons();
+      } 
+      
+      if(detailsWanted=="BandDetails" && band==detailsBand) {showBandDetails(txCalls,rxCalls,txRxCalls,bandData);} // if we hit the detailsBand, call showBandDetails
+    });
+    
+    // get the band tile sort order
+    let criteria=new Array();
+    let indexArr=new Array();
+    bandsArr.forEach((band,index) => {
+      indexArr.push(index);
+      if (bandTilesSortKey=="BandName") {
+        const metres = (b) => {if(b.includes("cm")){return 0.01*parseFloat(b.slice(0,-2))} else {return parseFloat(b.slice(0,-1))}};
+        criteria.push(metres(band));
+      } else {
+        criteria.push(bandsDataArr[index][["","nHH","nHD","nDH","nTx","nRx","nTxRx"].indexOf(bandTilesSortKey)]);
+      }
+    });    
+    indexArr.sort(function(a,b){if(criteria[a]>criteria[b]){return -1} else {return 1}});
+
+    // populate the band tile outputs in the sorted order
+    indexArr.forEach((bandIndex,index) => {
+       let bandData=bandsDataArr[bandIndex];
+       document.getElementById("tileTitle_"+index).innerHTML="<a href='#'"
+         +" onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; "
+         +"updateDisplays();'>"+bandData[0]+" "+watchedMode+"</a>";
+       document.getElementById("nH2H_"+index).value=bandData[1];
+       document.getElementById("nH2DX_"+index).value=bandData[2];
+       document.getElementById("nDX2H_"+index).value=bandData[3];
+       document.getElementById("nTx_"+index).value=bandData[4];
+       document.getElementById("nRx_"+index).value=bandData[5];
+       document.getElementById("nTxRx_"+index).value=bandData[6];
+       
+       document.getElementById("modes_"+index).innerHTML="";
+       let modesThisBandArr=bandData.slice(7);
+       modesThisBandArr[0].forEach((md) =>{
+         document.getElementById("modes_"+index).innerHTML
+         +="<a href='#' onclick='detailsBand=\&quot;"+bandData[0]+"\&quot;; detailsWanted=\&quot;BandDetails\&quot;; setMode(\&quot;"+md+"\&quot;); updateDisplays()'>"+md+"</a> "; });
+         
+  //     let tileCallsHTML=Array.from(bandData[8]).toSorted().map((e) => ("<strong>"+e+"</strong>")).join(', ');
+  //     tileCallsHTML+=" "+Array.from(bandData[9].difference(bandData[8])).toSorted().join(', ');
+  //     document.getElementById("tileCalls_"+index).innerHTML=tileCallsHTML;
+       
+       document.getElementById("tile_"+index).style="display:inline-block";
+       document.getElementById("tile_"+index).className=( ((bandData[4]+bandData[5])>0) ? "bandTile active":"bandTile");
+
+    });
+    
+    // hide unused band tiles
+    if(indexArr.length>0){
+    for (let i=indexArr.length;i<maxTiles;i++){
+      document.getElementById("tile_"+i).style="display:none;"
+    }}
+    
+}
+ 
+  function showBandDetails(txCalls, rxCalls, txRxCalls,bandData){
+
+    detailsWanted="BandDetails";
+    document.getElementById("bandDetails").style="display:inline-block;"
+    document.getElementById("detailsBand").innerHTML=detailsBand;
+    document.getElementById("watchedMode").innerHTML=watchedMode;
+ 
+       // get copy of connections for just this band and mode
+       let cons={};
+       for (id in connections) {
+         let c=connections[id];
+         if (c.b==detailsBand && c.md==watchedMode) {cons[id]=connections[id]}
+      }
+
+      let myCallIsTx=txCalls.has(myCall);
+      let myCallIsRx=rxCalls.has(myCall);
+      let myCallIsTxRx=txRxCalls.has(myCall);
+	
+       // if listFilter isn't empty, filter the active Tx, Rx & TxRx calls lists
+     //  document.getElementById("homeDomain").value="Home";
+       if(document.getElementById("txRxOnly").checked) {txCalls.clear();rxCalls.clear();}
+       if(listFilter!=""){
+	   // filter specific callsign plus myCall
+	       let callsFilter=new Set();
+	       callsFilter.add(myCall);
+	       callsFilter.add(listFilter);
+	       txCalls=txCalls.intersection(callsFilter); rxCalls=rxCalls.intersection(callsFilter); txRxCalls=txRxCalls.intersection(callsFilter);
+       }
+       if(listFilter!=""){
+         document.getElementById("listFilterClear").style="visibility:visible;";
+         document.getElementById("listFilterClearDiv").style="padding:0px; padding-left:5px; margin:0px;";
+       } else {
+         document.getElementById("listFilterClear").style="visibility:hidden;";
+         document.getElementById("listFilterClearDiv").style="height:0px; padding:0px; margin:0px;";
+       }
+
+       if(document.getElementById("showCallsigns").checked) {entityDisplayType="Call"} else {entityDisplayType="Square"}
+       if(document.getElementById("showL2sq").checked) {squaresDisplayLevel=2} 
+       if(document.getElementById("showL4sq").checked) {squaresDisplayLevel=4} 
+       if(document.getElementById("showL6sq").checked) {squaresDisplayLevel=6} 
+              
+       // get home call data and HTML for all calls except myCall, then myCall only, then compare to highlight
+       let setMyCall=new Set().add(myCall);
+       let el=document.getElementById("bandDetailsGrid");
+       // all except myCall:
+       el.innerHTML=getBandbandDetailsGridHTML(cons,txCalls.difference(setMyCall),"Tx","othersTx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,rxCalls.difference(setMyCall),"Rx","othersRx");
+       el.innerHTML+=getBandbandDetailsGridHTML(cons,txRxCalls.difference(setMyCall),"TxRx","othersTxRx");
+       // just myCall (don't show if not active)
+       if(myCallIsTx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Tx","myCallTx");}
+       if(myCallIsRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"Rx","myCallRx");}
+       if(myCallIsTxRx) {el.innerHTML+=getBandbandDetailsGridHTML(cons,setMyCall,"TxRx","myCallTxRx");}   
+
+       // do the highlighting 	
+       if(document.getElementById("forward").checked) {
+         highlightEntitiesList("myCallTx_farEntities","othersTx_farEntities");
+         highlightEntitiesList("myCallRx_farEntities","othersRx_farEntities");
+         highlightEntitiesList("myCallTxRx_farEntities","othersTxRx_farEntities");
+       } else {
+         highlightEntitiesList("myCallTx_farEntities","othersRx_farEntities");
+	       highlightEntitiesList("myCallRx_farEntities","othersTx_farEntities");
+	       
+	       highlightEntitiesList("myCallRx_farEntities","othersTxRx_farEntities");
+	       highlightEntitiesList("myCallTx_farEntities","othersTxRx_farEntities");
+	       
+         highlightEntitiesList("othersTx_farEntities","othersRx_farEntities");
+       }
+     
+       resizeGridColumns();
+     
+       
+}	
+
+
+function getBandbandDetailsGridHTML(cons,homeCalls,TxRx,rowClassPrefix){
+	
+  if(homeCalls.size==0) {return ""};
+  
+  let farEntitiesGrouped=new Set();
+  let gridHTML="";
+  let Arrow="";
+  if (TxRx=="Tx"){Arrow=RIGHTARROW}
+  if (TxRx=="Rx"){Arrow=LEFTARROW}
+  if (TxRx=="TxRx"){Arrow=LEFTRIGHTARROW}
+  
+  let groupHomeEntities=document.getElementById("groupHomeEntities").checked
+  
+  let homeCallsArr=Array.from(homeCalls).toSorted();
+  homeCallsArr.forEach( (homeCall) => {
+    if (!groupHomeEntities){
+      gridHTML+="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCall+"</span>";
+      if(listFilter=="") {gridHTML+="<span class='filterLink'>&nbsp;<a href='#' onclick='groupHomeEntities=false; listFilter=\&quot;"+homeCall+"\&quot;; updateDisplays();'>filter</a></span>"}
+      gridHTML+="</div><div class='detail_c'>"+Arrow+"</div>";
+    }
+    let far=new Set(); // home call has reached
+    if(TxRx=="TxRx"){
+      for (id in cons) {
+        let c=cons[id];
+        if (c.sc==homeCall) {far.add(c.rc)}
+      }
+    }
+    let farEntities=new Set();
+    for (id in cons) {
+      let c=cons[id]; 
+      let farEntity="";
+      if (TxRx=="Tx" && c.sc==homeCall) {farEntity=((c.rd=="dx") ? "d":"h")+getEntity(c.rc,c.rl)}
+      if (TxRx=="Rx" && c.rc==homeCall) {farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
+      if (TxRx=="TxRx" && c.rc==homeCall && far.has(c.sc)) {
+                                           farEntity=((c.sd=="dx") ? "d":"h")+getEntity(c.sc,c.sl,c.sd)}
+      if(farEntity!=""){
+        farEntities.add(farEntity);
+        farEntitiesGrouped.add(farEntity);
+      }
+    }
+    if (!groupHomeEntities){
+      let farEntitiesHomeArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+      let farEntitiesDxArr=Array.from(farEntities).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+      gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>";
+      gridHTML+=(farEntitiesHomeArr.length>0) ? ("<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"):"";  
+      gridHTML+=((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
+      gridHTML+=(farEntitiesDxArr.length>0) ? ("<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"):""; 
+      gridHTML+="</div>";
+    }
+  });
+  if (groupHomeEntities){
+    gridHTML="<div class='"+rowClassPrefix+"_homeCalls'><span class='HomeEntity'>"+homeCallsArr.toSorted().join(', ')+"</span></div><div class='detail_c'>"+Arrow+"</div>";
+    let farEntitiesHomeArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="h").map((c) => c.slice(1));
+    let farEntitiesDxArr=Array.from(farEntitiesGrouped).toSorted().filter((c) => c.slice(0,1)=="d").map((c) => c.slice(1));
+    gridHTML+="<div class='"+rowClassPrefix+"_farEntities'>"; 
+    gridHTML+=(farEntitiesHomeArr.length>0) ? ("<span class='HomeEntity'>"+farEntitiesHomeArr.join(', ')+"</span>"):"";  
+    gridHTML+=((farEntitiesHomeArr.length>0 && farEntitiesDxArr.length>0) ? ", ":"")       
+    gridHTML+=(farEntitiesDxArr.length>0) ? ("<span class='DxEntity'>"+farEntitiesDxArr.join(', ')+"</span>"):""; 
+    gridHTML+="</div>";
+  }
+  return gridHTML;
+}
+
+  function getEntity(call,square,domain){
+    if(entityDisplayType=="Call"){return call}
+    if(entityDisplayType=="Square"){return square.substring(0,squaresDisplayLevel)}
+    if(entityDisplayType=="CallSquare"){return call+"-"+square.substring(0,squaresDisplayLevel)} 
+  }
+
+function highlightEntitiesList(rowClassPrefix1,rowClassPrefix2){
+  const entities1=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix1);  
+  const entities2=document.getElementById("bandDetailsGrid").getElementsByClassName(rowClassPrefix2);
+  let myMatches=new Set();
+  if (entities1[0]!=undefined && entities2[0]!=undefined){
+    for (let i=0;i<entities1.length;i++){
+         let entities1TxtArr=entities1[i].innerText.split(', ');
+         let e1set=new Set(entities1TxtArr);
+         for (let j=0;j<entities2.length;j++){
+           let entities2TxtArr=entities2[j].innerText.split(', ');
+           let e2set=new Set(entities2TxtArr);
+           myMatches=myMatches.union(e1set.intersection(e2set));
+         }  
+    }
+    
+    if(myMatches.size>0){
+        Array.from(myMatches).forEach(entity => {
+        for (let i=0;i<entities1.length;i++){
+          entities1[i].innerHTML=entities1[i].innerHTML.replaceAll(entity,HL(entity,true));
+        }
+        for (let j=0;j<entities2.length;j++){
+          entities2[j].innerHTML=entities2[j].innerHTML.replaceAll(entity,HL(entity,true));
+        }
+      });
+    }
+  }
+}
+	
+</script>
+
+	
+</body>
+</html>
