@@ -3,9 +3,9 @@
 import Ribbon from '/src/lib/ribbon.js';
 
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
-import * as Overview from '/src/views/allbands.js'; 
-import * as Connectivity from '/src/views/connectivity.js';
-import * as CallsActivity from '/src/views/calls_activity.js';
+import * as Overview from './src/views/allbands.js'; 
+import * as Connectivity from './src/views/connectivity.js';
+import * as CallsActivity from './src/views/calls_activity.js';
 
 const ribbon = new Ribbon({
   onModeChange: refreshCurrentView,

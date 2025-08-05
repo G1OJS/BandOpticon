@@ -1,6 +1,6 @@
 
-import * as CONNSDATA from '/src/lib/conns-data.js';
-import * as STORAGE from '/src/lib/store-cfg.js';
+import * as CONNSDATA from './src/lib/conns-data.js';
+import * as STORAGE from './src/lib/store-cfg.js';
 
 var activeModes = new Set(); // updated to be relevant to the current view and then passed back to ribbon
 let registerActiveModes = () => {};  // fallback to no-op
