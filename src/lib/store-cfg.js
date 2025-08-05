@@ -6,9 +6,9 @@ export var squaresList = ""; // the human-firendly list of squares to watch
 export var purgeMinutes;
 export var myCall;
 
-import {parseSquares} from './src/lib/geo.js';
-import {purgeConnections} from './src/lib/conns-data.js';
-import {connectToFeed} from './src/lib/mqtt.js';
+import {parseSquares} from './geo.js';
+import {purgeConnections} from './conns-data.js';
+import {connectToFeed} from './mqtt.js';
 
 export function updateMyCall(event) {
     myCall = document.getElementById('myCallInput').value;
