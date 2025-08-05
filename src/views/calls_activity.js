@@ -36,6 +36,9 @@ export function refresh(){
 	let HTML = "";
 	HTML += "<button data-action='home'>🏠 Home</button>"
 	HTML += "<h2>Home callsign activity</h2>";
+	HTML += "<h3>Transmitting Callsigns</h3>";
+	HTML += html_for_callsActivity('Tx');
+	HTML += "<h3>Receiving Callsigns</h3>";
 	HTML += html_for_callsActivity('Rx');
 	DOMcontainer.innerHTML = HTML;
 }
@@ -50,11 +53,13 @@ function html_for_callsActivity(RxTx){
 		return a.localeCompare(b); // sorts by the callsign string
 	});
 	
+	
+	const classtxt = (RxTx == 'Rx')? "receive":"transmit";
 	let HTML = "<table>";
 	HTML += "<thead><tr><th>Callsign</th><th>Last Band</th><th>Last Mode</th></thead>"
 	for (const [cs, info] of sortedEntries) {
-		if(info.inHome){
-			HTML += `<tr><th class='receive'>${cs}</th><td>`+info.lastBand+'</td><td>'+info.lastMode+'</td></tr>';
+		if(info.inHome && info.RxTx == RxTx){
+			HTML += `<tr><th class='${classtxt}'>${cs}</th><td>`+info.lastBand+'</td><td>'+info.lastMode+'</td></tr>';
 		}
 	}
 	HTML += "</tbody></table>";

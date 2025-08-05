@@ -146,6 +146,10 @@ button:hover:not(.active) {
 
 #mainContent { display: grid; grid-template-columns:  1fr; grid-template-rows: 1fr; }
 
+.transmit {background-color: var(--background-color-transmit);}
+.receive  {background-color: var(--background-color-receive);}
+
+
 .connectivityTable{}
 .connectivityTable .transmit {
   writing-mode: vertical-lr;

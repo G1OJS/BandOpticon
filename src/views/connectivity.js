@@ -32,7 +32,9 @@ export function refresh(){
 	registerActiveModes(activeModes);	
 	mode = getMode();
 	console.log("Connectivity for ",band, mode);
-	let HTML = '<h2>*HOME* Connectivity for ' + band + ' ' + mode +'</h2>';
+	let HTML = '<h2>HOME Connectivity for ' + band + ' ' + mode +'</h2>';
+	HTML += "<span class = 'transmit' style = 'font-weight:600;'>Transmitting</span><br>";
+	HTML += "<span class = 'receive' style = 'font-weight:600;'>Receiving</span><br><br>";
 	HTML += html_for_ModeConnectivity(mode)
 	DOMcontainer.innerHTML = HTML;
 }
@@ -55,8 +57,6 @@ function html_for_ModeConnectivity(mode){
 			}
 		}	
 	}
-
-	console.log(entityConns);
 
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
