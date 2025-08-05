@@ -42,7 +42,7 @@ export function refresh(){
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
     if (!bandModeData) return;
-	// need to sort entities after this block
+	// update this to show assymmetry - heard but not hearing etc
 	let entityType = 'L4'; // obvs needs UI field
 	let entityConns = {};
 	let entities = new Set();
