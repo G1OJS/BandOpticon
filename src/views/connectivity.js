@@ -23,6 +23,14 @@ export function init(container, opts = {}) {
   if (opts.registerActiveModes) {
     registerActiveModes = opts.registerActiveModes;
   }
+  DOMcontainer.addEventListener('click', (e) => {
+	  const v = e.target?.dataset?.value;
+	  if (v && "CSL2L4L6".includes(v)) {
+		entityType = v;
+		refresh();
+	  }
+  });
+
 }
 
 export function refresh(){
@@ -36,27 +44,15 @@ export function refresh(){
 	mode = getMode();
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>HOME Connectivity for ' + band + ' ' + mode +'</h2>';
-	HTML += "cr = column to row, rc = row to column, * = both<br>";
-	HTML += "<button id='CS' data-value = 'CS' >CS</button>";
+	HTML += "cr = column to row, rc = row to column, * = both<br><br>";
 	HTML += "<button id='L2' data-value = 'L2' >L2</button>";
 	HTML += "<button id='L4' data-value = 'L4' >L4</button>";
 	HTML += "<button id='L6' data-value = 'L6' >L6</button>";
+	HTML += "<button id='CS' data-value = 'CS' >CS</button>";
 	HTML += "<br>";
 	HTML += html_for_ModeConnectivity(mode)
 	DOMcontainer.innerHTML = HTML;
 	document.getElementById(entityType).classList.add('active');
-	
-	// buttons to set entityType
-	document.addEventListener('click', (e) => {
-	  let v = e.target.dataset.value;
-	  if(v){
-		console.log(v);
-		if("CSL2L4L6".search(v)>=0){
-			entityType=v;
-		}
-	  }
-	});
-
 }
 
 function html_for_ModeConnectivity(mode){
