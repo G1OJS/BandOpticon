@@ -152,23 +152,11 @@ button:hover:not(.active) {
 .receive  {background-color: var(--background-color-receive);}
 
 
-.connectivityTable{}
-.connectivityTable .transmit {
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
-  background-color: var(--background-color-transmit);
+.connectivityTable .cell{
+	border: 1px dotted gray;
+	text-align: center;
+	width: 2em;
 }
-.connectivityTable .receive {
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
-  background-color: var(--background-color-receive);
-}
-.connectivityTable .cell {
-  writing-mode: horizontal-tb;
-  text-orientation: mixed;
-  text-align:center;
-}
-
 
 .outputContainer {display: flex; flex-wrap: wrap; gap: var(--spacing-xs); max-width: 100%;  width:fit-content; 
                   padding: var(--spacing-xs); margin-bottom:var(--spacing); }

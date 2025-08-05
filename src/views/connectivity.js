@@ -9,6 +9,7 @@ var DOMcontainer = null;
 let getMode = () => null;
 let band = null;
 let mode = null;
+let entityType = 'L4';
 
 export function init(container, opts = {}) {
   DOMcontainer = container;
@@ -29,68 +30,85 @@ export function refresh(){
 	for (const md in bandData) {
         activeModes.add(md);
 	}
+	// need to add a mode sweep here
 	registerActiveModes(activeModes);	
 	mode = getMode();
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>HOME Connectivity for ' + band + ' ' + mode +'</h2>';
-	HTML += "<span class = 'transmit' style = 'font-weight:600;'>Transmitting</span><br>";
-	HTML += "<span class = 'receive' style = 'font-weight:600;'>Receiving</span><br><br>";
+	HTML += "<button id='CS' data-value = 'CS' >CS</button>";
+	HTML += "<button id='L2' data-value = 'L2' >L2</button>";
+	HTML += "<button id='L4' data-value = 'L4' >L4</button>";
+	HTML += "<button id='L6' data-value = 'L6' >L6</button>";
+	HTML += "<br>";
 	HTML += html_for_ModeConnectivity(mode)
 	DOMcontainer.innerHTML = HTML;
+	document.getElementById(entityType).classList.add('active');
+	
+	// buttons to set entityType
+	document.addEventListener('click', (e) => {
+	  let v = e.target.dataset.value;
+	  if(v){
+		console.log(v);
+		if("CSL2L4L6".search(v)>=0){
+			entityType=v;
+			refresh();
+		}
+	  }
+	});
+
 }
 
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
-    if (!bandModeData) return;
-	// update this to show assymmetry - heard but not hearing etc
-	let entityType = 'L4'; // obvs needs UI field
+    if (!bandModeData) return "";
+
 	let entityConns = {};
-	let entities = new Set();
+	let entitiesSet = new Set();
 	for (const ctx in bandModeData.Tx){
 		let etx = getEntity(ctx, entityType);
-		entities.add(etx);
+		entitiesSet.add(etx);
 		if(!entityConns[etx]) {entityConns[etx]={};}
 		for (const crx in bandModeData.Rx) {
 			let erx = getEntity(crx, entityType);
+			entitiesSet.add(erx);
 			if(crx in bandModeData.Tx[ctx]){
 				entityConns[etx][erx]=1;  
 			}
 		}	
 	}
   
-  entities=Array.from(entities).toSorted();
+    let entities=Array.from(entitiesSet).toSorted();
+	if(entities.length < 1) {return ""};
+  
   
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
 	HTML += "<thead><tr><th></th>";
-	for (const etx of entities) {
-    let vt = [...etx].map(c => '<span>'+c+'<span>').join('<br>');
-		HTML += `<th class = 'transmit'>${vt}</th>`;
+	for (const etx of entities) { // (vertical text fussy on mobile so fake it)
+		let vt = [...etx].map(c => '<span>'+c+'<span>').join('<br>');
+		HTML += `<th>${vt}</th>`;
 	}
-	HTML += "</tr></thead><tbody>";
+	HTML += "</tr></thead>"
 	
-	// need to build the structure first and then do the table ...
-	
-	// Row Headers
-	for (const erx of entities) {
-    
-		HTML += `<tr><th class='receive'>${erx}</th>`;
+	HTML += "<tbody>";	
+	for (const er of entities) {
+		// Row Headers
+		HTML += `<tr><th>${er}</th>`;
 		// Cells 
 		let txt = "";
-    let f=0;
-    let r=0;
-		for (const etx of entities) {
-      if(entityConns[etx]){
-        f=entityConns[etx][erx]
-      }
-      if(entityConns[erx]{
-        r=entityConns[erx][etx]
-      }
-  		if(f && r){txt='X'};
-  		if(f && !r){txt='/'};
-      if(r && !f){txt='\'};
-      }
-			HTML += "<td class = 'cell'>"+txt+"</td>";
+		let f=0;
+		let r=0;
+		for (const et of entities) {
+		  if( entityConns[et] ){
+			f = entityConns[et][er];
+		  }
+		  if( entityConns[er] ){
+			r = entityConns[er][et];
+		  }
+		  if(f && r){txt='FR';}
+		  if(f && !r){txt='f';}
+		  if(r && !f){txt='r';}
+		  HTML += "<td class = 'cell'>"+txt+"</td>";
 		}
 		HTML += "</tr>";
 	}
@@ -101,18 +119,12 @@ function html_for_ModeConnectivity(mode){
 
 }
 
+
 function getEntity(call,entityType){
   const callsigns_info = CONNSDATA.callsigns_info;
-  if(entityType=="Call"){return call}
-//  if (!callsigns_info){
-//	let square = 'xxxxxxxx';
-//  } else {
-	let square = callsigns_info[call].sq;
-//  }
-  if(entityType=="L2"){return square.substring(0,2)}
-  if(entityType=="L4"){return square.substring(0,4)} 
-}
-
-function setVerticalText(el, text) {
-  el.innerHTML = [...text].map(c => `<span>${c}</span>`).join('<br>');
+  if(entityType=="CS"){return call;}
+  let square = callsigns_info[call].sq;
+  if(entityType=="L2"){return square.substring(0,2);}
+  if(entityType=="L4"){return square.substring(0,4);} 
+  if(entityType=="L6"){return square.substring(0,6);} 
 }
