@@ -1,7 +1,7 @@
 var mqttClient = null;
 
-import {squaresArr} from './src/lib/store-cfg.js';
-import {addSpotToConnectivityMap} from '/src/lib/conns-data.js';
+import {squaresArr} from './store-cfg.js';
+import {addSpotToConnectivityMap} from './conns-data.js';
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
 export function connectToFeed() {
