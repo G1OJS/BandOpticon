@@ -155,8 +155,8 @@ button:hover:not(.active) {
 
 .connectivityTable{}
 .connectivityTable .transmit {
-  writing-mode: vertical-rl;
-  text-orientation: upright;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
   background-color: var(--background-color-transmit);
 }
 .connectivityTable .receive {
