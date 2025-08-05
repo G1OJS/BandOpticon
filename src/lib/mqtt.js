@@ -1,6 +1,6 @@
 var mqttClient = null;
 
-import {squaresArr} from '/src/lib/store-cfg.js';
+import {squaresArr} from './src/lib/store-cfg.js';
 import {addSpotToConnectivityMap} from '/src/lib/conns-data.js';
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
