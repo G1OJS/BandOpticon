@@ -62,7 +62,7 @@ function html_for_ModeConnectivity(mode){
 	// Column headers
 	HTML += "<thead><tr><th></th>";
 	for (const etx of entities) {
-    let vt = [...etx].map(c => '<span>'+c+'<span><br>');
+    let vt = [...etx].map(c => '<span>'+c+'<span>').join('<br>');
 		HTML += `<th class = 'transmit'>${vt}</th>`;
 	}
 	HTML += "</tr></thead><tbody>";
