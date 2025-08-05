@@ -35,6 +35,7 @@ export function refresh(){
 	mode = getMode();
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>HOME Connectivity for ' + band + ' ' + mode +'</h2>';
+	HTML += "cr = column to row, rc = row to column, * = both<br>";
 	HTML += "<button id='CS' data-value = 'CS' >CS</button>";
 	HTML += "<button id='L2' data-value = 'L2' >L2</button>";
 	HTML += "<button id='L4' data-value = 'L4' >L4</button>";
@@ -105,9 +106,9 @@ function html_for_ModeConnectivity(mode){
 		  if( entityConns[er] ){
 			r = entityConns[er][et];
 		  }
-		  if(f && r){txt='FR';}
-		  if(f && !r){txt='f';}
-		  if(r && !f){txt='r';}
+		  if(f && r){txt='*';}
+		  if(f && !r){txt='cr';}
+		  if(r && !f){txt='rc';}
 		  HTML += "<td class = 'cell'>"+txt+"</td>";
 		}
 		HTML += "</tr>";
