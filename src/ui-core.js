@@ -1,6 +1,6 @@
 // ui-core.js
 
-import Ribbon from '/src/lib/ribbon.js';
+import Ribbon from './BandOpticon/src/lib/ribbon.js';
 
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
 import * as Overview from './src/views/allbands.js'; 

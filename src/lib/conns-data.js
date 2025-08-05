@@ -2,8 +2,8 @@
 export var connectivity_Band_Mode_HomeCall = {};
 export var callsigns_info={};
 
-import {squareIsInHome} from './src/lib/geo.js';
-import {purgeMinutes} from './src/lib/store-cfg.js';
+import {squareIsInHome} from './BandOpticon/src/lib/geo.js';
+import {purgeMinutes} from './BandOpticon/src/lib/store-cfg.js';
 
 
 export function addSpotToConnectivityMap(spot){
