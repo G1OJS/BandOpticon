@@ -74,9 +74,11 @@ function html_for_ModeConnectivity(mode){
 		// Cells 
 		let txt = "";
 		for (const etx of entities) {
-			if(entityConns[etx][erx]){
-				txt = "x"; 
-			}
+      if(entityConns[etx]){
+  			if(entityConns[etx][erx]){
+  				txt = "x"; 
+  			}
+      }
 			HTML += "<td class = 'cell'>"+txt+"</td>";
 		}
 		HTML += "</tr>";
