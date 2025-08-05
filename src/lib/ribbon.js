@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import * as STORAGE from '/src/lib/store-cfg.js';
-import {countAllTimestamps} from '/src/lib/conns-data.js'
+import * as STORAGE from './store-cfg.js';
+import {countAllTimestamps} from './conns-data.js'
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
