@@ -36,22 +36,25 @@ export function refresh(){
 	let HTML = "";
 	HTML += "<button data-action='home'>🏠 Home</button>"
 	HTML += "<h2>Home callsign activity</h2>";
-	HTML += html_for_callsActivity();
+	HTML += html_for_callsActivity('Rx');
 	DOMcontainer.innerHTML = HTML;
 }
 
-function html_for_callsActivity(){
-	const data = CONNSDATA.connectivity_Band_Mode_HomeCall;
-	const calls = CONNSDATA.callsigns_info;
-    if (!data || !calls) return;
+function html_for_callsActivity(RxTx){
+//	  const data = CONNSDATA.connectivity_Band_Mode_HomeCall;
+//    if (!data) return;
+	const callsigns_info = CONNSDATA.callsigns_info;
+    if (!callsigns_info) return;
 	
-	console.log(calls);
+	const sortedEntries = Object.entries(callsigns_info).sort(([a], [b]) => {
+		return a.localeCompare(b); // sorts by the callsign string
+	});
 	
 	let HTML = "<table>";
-
-	for (const c in calls) {
-		if(calls[c].inHome){
-			HTML += `<tr><th class='receive'>${c}</th>`;
+	HTML += "<thead><tr><th>Callsign</th><th>Last Band</th><th>Last Mode</th></thead>"
+	for (const [cs, info] of sortedEntries) {
+		if(info.inHome){
+			HTML += `<tr><th class='receive'>${cs}</th><td>`+info.lastBand+'</td><td>'+info.lastMode+'</td></tr>';
 		}
 	}
 	HTML += "</tbody></table>";

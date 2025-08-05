@@ -15,8 +15,8 @@ export function addSpotToConnectivityMap(spot){
         return; // Bail out ASAP if neither end is in home
 	
 	 // Update callsignInfo
-	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh};
-	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh};
+	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md};
+	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md};
 
     // start and maintain a structure associating 'far end' entities with each home call for both home transmit and home receive
     // the structure is connectivity_Band_Mode_HomeCall[band][Tx|Rx][homeCall][otherCall] = timestamp
