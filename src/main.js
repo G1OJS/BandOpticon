@@ -1,8 +1,8 @@
 
-import * as STORAGE from './BandOpticon/src/lib/store-cfg.js';
-import * as CONNSDATA from './BandOpticon/src/lib/conns-data.js';
-import * as MQTT from './BandOpticon/src/lib/mqtt.js';
-import * as UI from './BandOpticon/src/ui-core.js';
+import * as STORAGE from './lib/store-cfg.js';
+import * as CONNSDATA from './lib/conns-data.js';
+import * as MQTT from './src/lib/mqtt.js';
+import * as UI from './src/ui-core.js';
 
 STORAGE.loadConfig();
 MQTT.connectToFeed();
