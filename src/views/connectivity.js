@@ -42,8 +42,8 @@ export function refresh(){
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
     if (!bandModeData) return;
-	
-	let entityType = 'L4';
+	// need to sort entities after this block
+	let entityType = 'L4'; // obvs needs UI field
 	let entityConns = {};
 	let entities = new Set();
 	for (const ctx in bandModeData.Tx){
