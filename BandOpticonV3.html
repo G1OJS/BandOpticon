@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>BandOpticon V3.0.0</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./styles/style.css" /> 
+
+</head>
+<body>
+<div id="app" class="paper-primary">
+    <h1 style = 'margin-bottom:2px;'>BandOpticon V3 MVP</h1>
+	<div class="text-sm" style = 'margin-bottom:8px;'>BandOpticon incorporating Station Benchmark, restyled, simplified and rewritten to allow different views to be added in future versions. <a href='./BandOpticonV2.html'>Switch to V2</a></div>
+    <div id="ribbon" class="text-sm">
+		<fieldset>
+		<legend>Info</legend>
+		  <output id="clock" class='clock'></output><br>
+		  <span>Running for <output id="runningMins"></output> minutes</span><br>
+		  <span><output id="connectionsIn"></output> connections in database</span>
+		</fieldset>
+		<fieldset id='settingsBox' class="text-sm" >
+		<legend>Settings</legend>
+			<div class = 'settings-label'>My Callsign</div>
+			<div><input class = 'settings-input' id='myCallInput' type="text" title='Your callsign'></div>
+			<div><label class = 'settings-label'>Home Square(s)</label></div>
+			<div><input class = 'settings-input' id='homeSquaresInput' type="text" 
+						 title ='The grid squares containing the other stations you want to benchmark against.'
+						 +'&#10;Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></div>
+			<div><label class = 'settings-label'>Purge minutes</label></div>
+			<div><input class = 'settings-input' id='purgeMinutesInput' type="number" min="1" max="60"
+						 title = 'Number of minutes after which spots are deleted from database'></div>
+		</fieldset>
+		<fieldset id='modeSelectBox' class="text-sm" >
+		<legend>Mode</legend>
+			<!-- written by script -->
+		</fieldset>
+
+   </div>
+
+    <div id="mainView" class="paper" >   
+	    <div id="overviewContainer" class="paper" >
+	    </div>
+		<div id="tabInterface" style="display: none;">
+	    </div>
+	</div>
+
+   <div id="footer" class="text-muted text-xsm">
+        <div>
+            	Javascript & HTML developed by Alan Robinson:<br>
+            	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            	<a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+		<a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+	</div>
+   <div>
+            Thanks to:<br>
+            Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
+            Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
+            <a href='https://www.unpkg.com/browse/mqtt@5.10.1/README.md'>www.unpkg.com</a> for the cdn MQTT library used here <a href='https://www.unpkg.com/browse/mqtt@5.10.1/LICENSE.md'>MIT license</a>
+		</div>
+		<div>
+          License: <a href='https://github.com/G1OJS/BandOpticon/blob/main/LICENSE'>MIT license</a><br>
+          GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
+		</div>
+    </div>
+	
+</div> 
+
+<script type='module' src='./src/main.js'></script>
+
+
+</body>
+</html>
