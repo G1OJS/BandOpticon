@@ -1,17 +1,22 @@
 
 export var connectivity_Band_Mode_HomeCall = {};
+export var callsigns_info={};
 
-import * as GEO from '../analysis/geo.js';
-import {purgeMinutes} from '../app/store-cfg.js';
+import {squareIsInHome} from '/src/lib/geo.js';
+import {purgeMinutes} from '/src/lib/store-cfg.js';
 
 
 export function addSpotToConnectivityMap(spot){
     // find sender and receiver domain (home / not home)
-    let sh = (GEO.squareIsInHome(spot.sl));
-    let rh = (GEO.squareIsInHome(spot.rl));
+    let sh = squareIsInHome(spot.sl);
+    let rh = squareIsInHome(spot.rl);
 
     if (!(sh || rh))
         return; // Bail out ASAP if neither end is in home
+	
+	 // Update callsignInfo
+	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, RxTx:'Tx'};
+	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, RxTx:'Rx'};
 
     // start and maintain a structure associating 'far end' entities with each home call for both home transmit and home receive
     // the structure is connectivity_Band_Mode_HomeCall[band][Tx|Rx][homeCall][otherCall] = timestamp

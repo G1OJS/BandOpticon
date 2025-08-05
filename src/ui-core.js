@@ -1,11 +1,11 @@
 // ui-core.js
 
-import Ribbon from '/src/app/ribbon.js';
+import Ribbon from '/src/lib/ribbon.js';
 
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
-import * as Overview from './views/allbands.js'; 
-import * as Connectivity from './views/connectivity.js';
-import * as Other from './views/other.js';
+import * as Overview from '/src/views/allbands.js'; 
+import * as Connectivity from '/src/views/connectivity.js';
+import * as CallsActivity from '/src/views/calls_activity.js';
 
 const ribbon = new Ribbon({
   onModeChange: refreshCurrentView,
@@ -16,11 +16,11 @@ setInterval(() => ribbon.writeModeButtons(), 5000);
 setInterval(() => refreshCurrentView(), 5000);
 
 let currentView = null;
-let currentViewName = null;
 const DOMcontainer_flat = document.getElementById("overviewContainer")
 const DOMcontainer_tabbed = document.getElementById("tabInterface");
-const DOMcontainer_tabbed_content = document.getElementById("tabContent");
 let DOMcontainer = DOMcontainer_flat;
+
+const VIEWS = [{v:'overview',s:'flat',l:'Home', i:'🏠'},{v:'connectivity',s:'tabbed', l:'Connectivity', i:''},{v:'callsactivity',s:'tabbed', l:'Callsign Activity', i:''}]
 
 // flat views for all band views, click a band for a tabbed selection of single-band views 
 export function loadView(viewName, options = {}) {
@@ -29,18 +29,15 @@ export function loadView(viewName, options = {}) {
   switch (viewName) {					// the name of the view e.g. passed by a click handler
 	case 'overview':
 	  currentView = Overview;			// the view API function name imported above
-	  currentViewName = viewName;		// the view's string (human readable) name
 	  viewType = "flat";				// determines which bit of HTML is activated (display:block or none)
 	  break;
 	case 'connectivity':
 		currentView = Connectivity;
-		currentViewName = viewName;
 		viewType = "tabbed";
 	break;
-	case 'other':
-		currentView = Other;
-		currentViewName = viewName;
-		viewType = "tabbed";
+	case 'callsactivity':
+		currentView = CallsActivity;
+		viewType = "flat";
 	break;
 	default:
 	  console.warn(`Unknown view: ${viewName}`);
@@ -52,7 +49,6 @@ export function loadView(viewName, options = {}) {
   if(viewType == "flat"){
 		DOMcontainer_flat.style.display = "block";
 		DOMcontainer_tabbed.style.display = "none";
-		DOMcontainer_tabbed_content.style.display = "none";
 		DOMcontainer = DOMcontainer_flat;
 		// identify the view's clickable band elements & attach method
 		DOMcontainer_flat.addEventListener('click', (e) => {
@@ -65,8 +61,11 @@ export function loadView(viewName, options = {}) {
   } else {
 	  DOMcontainer_flat.style.display = "none";
 	  DOMcontainer_tabbed.style.display = "block";
-	  DOMcontainer_tabbed_content.style.display = "block";
-	  DOMcontainer = DOMcontainer_tabbed_content;
+	  DOMcontainer_tabbed.innerHTML = "<div id='tabBar'> \
+				<button class='tab' data-action='home'>🏠 Home</button> \
+			</div> \
+			<div id='tabContent'></div>";
+	  DOMcontainer = document.getElementById("tabContent");
   }
   DOMcontainer.innerHTML = ''; 
   currentView.init(DOMcontainer, {
@@ -104,10 +103,21 @@ function updateTabHighlight(activeView) {
   });
 }
 
-// home button handler (this can be moved into the tab view, as it's only needed there?)
-// provided there's a way to activate the benchmark view (currently there isn't, and the benchmark view is replicated on the overview view)
-const homeButton = document.getElementById('homeButton');
-homeButton.addEventListener('click', () => {
-	loadView('overview');
-});
 
+// for actions buttons including view tabs
+document.addEventListener('click', (e) => {
+  const action = e.target.dataset.action;
+  if (!action) return;
+
+  if (action === 'connectivity') {
+    loadView('connectivity');
+  }
+  if (action === 'home') {
+    loadView('overview');
+  }
+
+  if (action === 'callsactivity') {
+    loadView('callsactivity');
+  }
+
+});

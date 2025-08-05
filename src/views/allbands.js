@@ -1,6 +1,6 @@
 
-import * as CONNSDATA from '/src/live-data/conns-data.js';
-import * as STORAGE from '/src/app/store-cfg.js';
+import * as CONNSDATA from '/src/lib/conns-data.js';
+import * as STORAGE from '/src/lib/store-cfg.js';
 
 var activeModes = new Set(); // updated to be relevant to the current view and then passed back to ribbon
 var currentMode = null;
@@ -69,7 +69,7 @@ function html_forStatsForAllBands() {
 function html_forStatsRowLabels() {
 	let HTML = "<div class = 'outputColumn'>"
     HTML +="<div class = 'firstColumn topRow' title = 'Band: click for band details views'>Band</div>";
-    HTML +="<div class = 'firstColumn' title = 'Number of callsigns active in home squares'>Home calls</div>";
+    HTML +="<div class = 'firstColumn' title = 'Number of callsigns active in home squares'><button class='button button--table' data-action='callsactivity'>Home calls</button></div>";
     HTML +="<div class = 'firstColumn' title = 'Number of spots generated worldwide by all callsigns in home, as a group'>Total spots</div>";
 	 if(details_level>0){
 		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>";
@@ -135,7 +135,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 
     HTML += "<div><div class='outputColumn'>";
 //    HTML += "<div class='topRow' data-band='"+band+"'>" + band + "</div>";
-    HTML += "<div class = 'topRowButtonContainer'> <button style = 'margin:1px; padding:2px;' data-band='"+band+"'>" + band + "</button></div>";
+    HTML += "<div class = 'topRowButtonContainer'><button class='button button--table' data-band='"+band+"'>" + band + "</button></div>";
     HTML += "<div>" + nActive + "</div>";
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
 	if(details_level>0){

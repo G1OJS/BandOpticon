@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import * as STORAGE from '../app/store-cfg.js';
-import {countAllTimestamps} from '../live-data/conns-data.js'
+import * as STORAGE from '/src/lib/store-cfg.js';
+import {countAllTimestamps} from '/src/lib/conns-data.js'
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -42,7 +42,7 @@ export default class Ribbon {
 		this.activeModes.forEach((md) => {
 			const modeBtn = document.createElement("button");
 			modeBtn.type = "button";
-			modeBtn.className = "modeSelectBtn";
+			modeBtn.className = "button--mode";
 			modeBtn.id = md;
 			modeBtn.textContent = md;
 			modeBtn.addEventListener('click', () => this.setMode(md));
