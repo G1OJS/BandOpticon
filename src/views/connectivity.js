@@ -57,7 +57,9 @@ function html_for_ModeConnectivity(mode){
 			}
 		}	
 	}
-
+  
+  entities=Array.from(entities).toSorted();
+  
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
 	HTML += "<thead><tr><th></th>";
