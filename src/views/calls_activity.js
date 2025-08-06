@@ -58,9 +58,9 @@ function html_for_callsActivity(RxTx){
 	HTML += "<thead><tr><th>Callsign</th><th>Last Band</th><th>Last Mode</th></thead>"
 	for (const [cs, info] of sortedEntries) {
 		if(info.inHome && info.RxTx == RxTx){
-			HTML += "<tr><th class='${classtxt}' style = 'text-align:right;'>${cs}</th> \
-			<td style = 'text-align:center;'>"+info.lastBand+"</td> \
-			<td style = 'text-align:center;'>"+info.lastMode+"</td></tr>";
+			HTML += "<tr><th class='"+classtxt+"' style = 'text-align:right;'>"+cs+"</th>"
+			HTML += "<td style = 'text-align:center;'>"+info.lastBand+"</td>"
+			HTML += "<td style = 'text-align:center;'>"+info.lastMode+"</td></tr>";
 		}
 	}
 	HTML += "</tbody></table>";

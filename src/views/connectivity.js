@@ -60,7 +60,9 @@ export function refresh(){
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
-	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity <u>to/from/within HOME</u>.<br>";
+	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity <u>to/from/within HOME</u>."
+	HTML += "<br><b>NOTE</b>: this view is being developed. Next steps include highlighting cells in HOME and potentially "
+	HTML += "allowing different entity types for HOME and remote. Large tables can result for fine-grained entities!<br>";
 	HTML += "<br><div style = 'width:fit-content;'>";
 	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
 	HTML += "<legend>Entity type</legend>"
