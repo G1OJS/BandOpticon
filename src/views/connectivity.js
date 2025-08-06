@@ -49,7 +49,6 @@ export function refresh(){
 	let reach = includeRemote? 'to/from/':' ';
 	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
 	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity "+reach+"within HOME.<br>";
-	HTML += "'⇦' = column to row, '⇧' = row to column, 'X' = both<br><br>";
 	HTML += "<div style = 'width:fit-content;'>";
 	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
 	HTML += "<legend>Entity type</legend>"
