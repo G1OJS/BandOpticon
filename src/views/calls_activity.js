@@ -53,13 +53,14 @@ function html_for_callsActivity(RxTx){
 		return a.localeCompare(b); // sorts by the callsign string
 	});
 	
-	
 	const classtxt = (RxTx == 'Rx')? "receive":"transmit";
 	let HTML = "<table>";
 	HTML += "<thead><tr><th>Callsign</th><th>Last Band</th><th>Last Mode</th></thead>"
 	for (const [cs, info] of sortedEntries) {
 		if(info.inHome && info.RxTx == RxTx){
-			HTML += `<tr><th class='${classtxt}'>${cs}</th><td>`+info.lastBand+'</td><td>'+info.lastMode+'</td></tr>';
+			HTML += "<tr><th class='${classtxt}' style = 'text-align:right;'>${cs}</th> \
+			<td style = 'text-align:center;'>"+info.lastBand+"</td> \
+			<td style = 'text-align:center;'>"+info.lastMode+"</td></tr>";
 		}
 	}
 	HTML += "</tbody></table>";
