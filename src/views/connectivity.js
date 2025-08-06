@@ -46,7 +46,6 @@ export function init(container, opts = {}) {
 	  if (val && "CSL2L4L6".includes(val)) {
 		if(grp == "Home_Entity_Type"){entityTypeHome = val;}
 		if(grp == "Remote_Entity_Type"){entityTypeRemote = val;}
-		console.log(entityTypeHome, entityTypeRemote);
 		refresh();
 	  }
   });
@@ -81,9 +80,11 @@ export function refresh(){
 	 
 	const table = document.getElementById('connectivityTable');
     const wrapper = document.getElementById('connectivityTableWrapper');
-	const scale = wrapper.clientWidth / table.scrollWidth;
+	console.log(wrapper.clientWidth , table.scrollWidth);
+	const scale = wrapper.clientWidth / (table.scrollWidth + 50);
     const finalScale = Math.min(1, Math.max(0.1, scale));
     table.style.transform = `scale(${finalScale})`;
+	wrapper.height = table.height *finalScale;
 		
 }
 
@@ -102,44 +103,37 @@ function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text =
 
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
+	const callsigns_info = CONNSDATA.callsigns_info;
     if (!bandModeData) return "";
 
-	let tx_entitiesSet = new Set();
-	let rx_entitiesSet = new Set();
-	let entityConns = {};
-	// add home tx and rx
+	// list all active tx and rx calls
+	let tx_callsSet = new Set();
+	let rx_callsSet = new Set();
 	for (const ctx in bandModeData.Tx){
-		let etx = getEntity(ctx, entityTypeHome);
-		tx_entitiesSet.add(etx);
+		tx_callsSet.add(ctx);
+		for (const crx in bandModeData.Tx[ctx]) {rx_callsSet.add(crx);}
 	}
 	for (const crx in bandModeData.Rx){
-		let erx = getEntity(crx, entityTypeHome);
-		rx_entitiesSet.add(erx);
+		rx_callsSet.add(crx);
+		for (const ctx in bandModeData.Rx[crx]) {tx_callsSet.add(ctx);}
 	}
 	
-	// add non-Home tx and rx, checking first if the entity 
-	// is already represented using the entityTypeHome bucket. However,
-	// this filter isn't preventing spots appearing under both home and remote buckets - not sure if that matters ..
-	for (const ctx in bandModeData.Tx){
-		let etx = getEntity(ctx, entityTypeHome);
-		if(!tx_entitiesSet[etx]){
-			for (const rem in bandModeData.Tx[ctx]) {
-				let rem_entity = getEntity(rem, entityTypeRemote);
-				rx_entitiesSet.add(rem_entity);
-				if(!entityConns[etx]) {entityConns[etx]={};}
-				entityConns[etx][rem_entity]=1;
-			}
-		}
-	}
-	for (const crx in bandModeData.Rx){
-		let erx = getEntity(crx, entityTypeHome);
-		if(!rx_entitiesSet[erx]){
-			for (const rem in bandModeData.Rx[crx]) {
-				let rem_entity = getEntity(rem, entityTypeRemote);
-				tx_entitiesSet.add(rem_entity);
-				if(!entityConns[rem_entity]) {entityConns[rem_entity]={};}
-				entityConns[rem_entity][erx]=1;
-			}
+	// convert calls to entities and add connectivity
+	let tx_entitiesSet = new Set();
+	let rx_entitiesSet = new Set();
+	let entityConns = new Set();	
+
+	for (const ctx of tx_callsSet){
+		let entityType = (callsigns_info[ctx].inHome)? entityTypeHome:entityTypeRemote;
+		let etx = getEntity(ctx,entityType);
+		console.log(ctx, entityType, etx);
+		tx_entitiesSet.add(etx);
+		for (const crx of rx_callsSet){
+			let entityType = (callsigns_info[crx].inHome)? entityTypeHome:entityTypeRemote;
+			let erx = getEntity(crx,entityType);
+			rx_entitiesSet.add(erx);
+			if(bandModeData.Tx[ctx]) {if( bandModeData.Tx[ctx][crx]) {entityConns.add(etx+"-"+erx);} }
+			if(bandModeData.Rx[crx]) {if( bandModeData.Rx[crx][ctx]) {entityConns.add(etx+"-"+erx);} }
 		}
 	}
 	
@@ -167,9 +161,7 @@ function html_for_ModeConnectivity(mode){
 			let txt = '';
 			let cellStyle = (homeRow && homeColumn)? "background-color: lightgrey;": "";
 			cellStyle += (homeRow || homeColumn)? " border: 1px dotted gray; ": "";
-			if( entityConns[etx] ){
-				txt = (entityConns[etx][erx])? 'X':'';
-		    }
+			txt = entityConns.has(etx+"-"+erx)? 'X':'';
 		    HTML += "<td style='" + cellStyle + "'>" + txt + "</td>" ;
 		}
 		HTML += "</tr>";
