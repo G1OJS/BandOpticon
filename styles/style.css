@@ -5,6 +5,7 @@
   --main-paper-color: #eeeeee;
   --light-paper-color: #ffffff;
   --border-color: #ccc;
+  --background-color-shade: #f7f9fc;
   --background-color-transmit: #ffebe6;
   --background-color-receive: #e6ffe6;
   
@@ -141,6 +142,12 @@ button:hover:not(.active) {
 
 }
 
+table{}
+topRow{vertical-align:bottom;}
+firstColumn{text-align:right;}
+td{text-align: center;}
+
+
 .button--tab.active {
   border-bottom: 2px solid var(--controls-color);
   font-weight: 600;
@@ -152,10 +159,6 @@ button:hover:not(.active) {
 .receive  {background-color: var(--background-color-receive);}
 
 
-.connectivityTable .cell{
-	border: 1px dotted gray;
-	text-align: center;
-}
 
 .outputContainer {display: flex; flex-wrap: wrap; gap: var(--spacing-xs); max-width: 100%;  width:fit-content; 
                   padding: var(--spacing-xs); margin-bottom:var(--spacing); }

@@ -1,6 +1,7 @@
 
 import * as CONNSDATA from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
+import {squareIsInHome} from '../lib/geo.js';
 
 var activeModes = new Set(); // updated to be relevant to the current view and then passed back to ribbon
 let registerActiveModes = () => {};  // fallback to no-op
@@ -59,11 +60,13 @@ export function refresh(){
 	mode = getMode();
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
+	HTML += "<div class = 'text-sm'>";
 	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
-	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity <u>to/from/within HOME</u>."
-	HTML += "<br><b>NOTE</b>: this view is being developed. Next steps include highlighting cells in HOME and potentially "
+	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity. "
+	HTML += "Dotted borders surround cells where at least one *entity* is in HOME (BandOpticon does not gather data unless this is true). ";
+	HTML += "Cells are coloured grey if *both* row and column *entities* are in HOME.<br><b>NOTE</b>: this view is being developed. Next steps include potentially "
 	HTML += "allowing different entity types for HOME and remote. Large tables can result for fine-grained entities!<br>";
-	HTML += "<br><div style = 'width:fit-content;'>";
+	HTML += "</div><br><div style = 'width:fit-content;'>";
 	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
 	HTML += "<legend>Entity type</legend>"
 	HTML += "<button id='L2' data-value = 'L2' >L2sq</button>";
@@ -133,22 +136,26 @@ function html_for_ModeConnectivity(mode){
 	// Column headers
 	HTML += "<thead><tr><th></th>";
 	for (const etx of tx_entities) { // (vertical text fussy on mobile so fake it)
-		let vt = [...etx].map(c => '<div style = "margin:0px; padding:0px;">'+c+'</div>').join('');
-		HTML += `<th class = 'transmit' style = 'vertical-align:bottom;'>${vt}</th>`;
+		let vt = [...etx].map(c => '<div>'+c+'</div>').join('');
+		HTML += "<th class = 'transmit' >"+vt+"</th>";
 	}
 	HTML += "</tr></thead>"
 	
 	HTML += "<tbody>";	
 	for (const erx of rx_entities) {
+		let homeRow = entityInHome(erx);
 		// Row Headers
-		HTML += `<tr><th class = 'receive' style = 'text-align:right;'>${erx}</th>`;
+		HTML += "<tr><th class = 'receive' >"+erx+"</th>";
 		// Cells 
 		for (const etx of tx_entities) {
+			let homeColumn =  entityInHome(etx);
 			let txt = '';
+			let cellStyle = (homeRow && homeColumn)? "background-color: lightgrey;": "";
+			cellStyle += (homeRow || homeColumn)? " border: 1px dotted gray; ": "";
 			if( entityConns[etx] ){
 				txt = (entityConns[etx][erx])? 'X':'';
 		    }
-		    HTML += "<td class='cell'>"+txt+"</td>";
+		    HTML += "<td style='" + cellStyle + "'>" + txt + "</td>" ;
 		}
 		HTML += "</tr>";
 	}
@@ -159,6 +166,14 @@ function html_for_ModeConnectivity(mode){
 
 }
 
+function entityInHome(entity){
+	if(entityType == "CS"){
+		const callsigns_info = CONNSDATA.callsigns_info;
+		return callsigns_info[entity].inHome;
+	} else {
+		return squareIsInHome(entity);
+	}
+}
 
 function getEntity(call,entityType){
   const callsigns_info = CONNSDATA.callsigns_info;
