@@ -155,7 +155,6 @@ button:hover:not(.active) {
 .connectivityTable .cell{
 	border: 1px dotted gray;
 	text-align: center;
-	width: 2em;
 }
 
 .outputContainer {display: flex; flex-wrap: wrap; gap: var(--spacing-xs); max-width: 100%;  width:fit-content; 

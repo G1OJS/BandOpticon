@@ -10,12 +10,27 @@ let getMode = () => null;
 let band = null;
 let mode = null;
 let entityType = 'L4';
-let includeRemote = false;
+
+// duplicated from allbands.js but should not be needed when separate entity types available for home/remote
+function wavelength(band) {
+    let wl = parseInt(band.split("m")[0]);
+    if (band.search("cm") > 0) {
+        return wl / 100
+    } else {
+        return wl
+    }
+}
 
 export function init(container, opts = {}) {
-  DOMcontainer = container;
   band = opts.band || band;  // if opts.band is null, leave band alone
-  console.log("Connectivity for band = ",band);
+  
+
+  // heuristic to manage *initial* table size until separate entity types available for home/remote
+  let wl = parseInt(wavelength(band));
+  console.log("Connectivity for band = ",band, "wl=",wl);
+  if(wl>10 && wl<80){ entityType = 'L2' ;}
+  // -----------------------------------------
+  DOMcontainer = container;
   if (opts.getWatchedMode) {
     getMode = opts.getWatchedMode;
 	mode = getMode();
@@ -42,15 +57,11 @@ export function refresh(){
 	// need to add a mode sweep here
 	registerActiveModes(activeModes);	
 	mode = getMode();
-//	includeRemote = (entityType == "L2")
 	console.log("Connectivity for ",band, mode);
-	let domain = includeRemote? '':'HOME ';
-	let HTML = '<h2>'+domain+'Connectivity for ' + band + ' ' + mode +'</h2>';
-	let reach = includeRemote? 'to/from/':' ';
+	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
-	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity "+reach+"within HOME.<br>";
-	HTML += "'⇦' = column to row, '⇧' = row to column, 'X' = both<br><br>";
-	HTML += "<div style = 'width:fit-content;'>";
+	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity <u>to/from/within HOME</u>.<br>";
+	HTML += "<br><div style = 'width:fit-content;'>";
 	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
 	HTML += "<legend>Entity type</legend>"
 	HTML += "<button id='L2' data-value = 'L2' >L2sq</button>";
@@ -69,7 +80,7 @@ export function refresh(){
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
     if (!bandModeData) return "";
-
+	let includeRemote = true;
 
 	let tx_entitiesSet = new Set();
 	let rx_entitiesSet = new Set();
@@ -101,15 +112,21 @@ function html_for_ModeConnectivity(mode){
   	let entityConns = {};
 	for (const ctx in bandModeData.Tx){
 		let etx = getEntity(ctx, entityType);
-		for (const crx in bandModeData.Rx){
-			if(bandModeData.Tx[ctx][crx]) {
-				let erx = getEntity(crx, entityType);
-				if(!entityConns[etx]) {entityConns[etx]={};}
-				entityConns[etx][erx]=1;
-			}
+		for (const crx in bandModeData.Tx[ctx]) {
+			let erx = getEntity(crx, entityType);
+			if(!entityConns[etx]) {entityConns[etx]={};}
+			entityConns[etx][erx]=1;
 		}
 	}
-  
+	for (const crx in bandModeData.Rx){
+		let erx = getEntity(crx, entityType);
+		for (const ctx in bandModeData.Rx[crx]) {
+			let etx = getEntity(ctx, entityType);
+			if(!entityConns[etx]) {entityConns[etx]={};}
+			entityConns[etx][erx]=1;
+		}
+	}
+
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
 	HTML += "<thead><tr><th></th>";
