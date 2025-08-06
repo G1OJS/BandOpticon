@@ -142,11 +142,20 @@ button:hover:not(.active) {
   margin:1px; padding:2px; font-weight: 600;
 }
 
-.button--tab {
-
+.table-wrapper {
+  display: block;
+  max-width: 100%;
+  max-height:1000px;
+  overflow-x:hidden;
+  overflow-y:hidden;
 }
 
-table{}
+.scalingTable {
+  transform-origin: top left;
+  overflow-x:hidden;
+  overflow-y:hidden;
+}
+
 topRow{vertical-align:bottom;}
 firstColumn{text-align:right;}
 td{text-align: center;}

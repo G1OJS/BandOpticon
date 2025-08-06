@@ -78,6 +78,12 @@ export function refresh(){
 	DOMcontainer.innerHTML = HTML;
 	document.getElementById("Home_Entity_Type."+entityTypeHome).classList.add('active');
 	document.getElementById("Remote_Entity_Type."+entityTypeRemote).classList.add('active');
+	 
+	const table = document.getElementById('connectivityTable');
+    const wrapper = document.getElementById('connectivityTableWrapper');
+	const scale = wrapper.clientWidth / table.scrollWidth;
+    const finalScale = Math.min(1, Math.max(0.1, scale));
+    table.style.transform = `scale(${finalScale})`;
 		
 }
 
@@ -101,33 +107,52 @@ function html_for_ModeConnectivity(mode){
 	let tx_entitiesSet = new Set();
 	let rx_entitiesSet = new Set();
 	let entityConns = {};
+	// add home tx and rx
 	for (const ctx in bandModeData.Tx){
 		let etx = getEntity(ctx, entityTypeHome);
 		tx_entitiesSet.add(etx);
-		for (const rem in bandModeData.Tx[ctx]) {
-			let rem_entity = getEntity(rem, entityTypeRemote);
-			rx_entitiesSet.add(rem_entity);
-			if(!entityConns[etx]) {entityConns[etx]={};}
-			entityConns[etx][rem_entity]=1;
-		}
 	}
 	for (const crx in bandModeData.Rx){
 		let erx = getEntity(crx, entityTypeHome);
 		rx_entitiesSet.add(erx);
-		for (const rem in bandModeData.Rx[crx]) {
-			let rem_entity = getEntity(rem, entityTypeRemote);
-			tx_entitiesSet.add(rem_entity);
-			if(!entityConns[rem_entity]) {entityConns[rem_entity]={};}
-			entityConns[rem_entity][erx]=1;
+	}
+	
+	// add non-Home tx and rx, checking first if the entity 
+	// is already represented using the entityTypeHome bucket
+	
+	// the above filter isn't preventing spots appearing under both home and remote buckets with only one appearing in home
+	
+	for (const ctx in bandModeData.Tx){
+		let etx = getEntity(ctx, entityTypeHome);
+		if(!tx_entitiesSet[etx]){
+			for (const rem in bandModeData.Tx[ctx]) {
+				let rem_entity = getEntity(rem, entityTypeRemote);
+				rx_entitiesSet.add(rem_entity);
+				if(!entityConns[etx]) {entityConns[etx]={};}
+				entityConns[etx][rem_entity]=1;
+			}
 		}
 	}
+	for (const crx in bandModeData.Rx){
+		let erx = getEntity(crx, entityTypeHome);
+		if(!rx_entitiesSet[erx]){
+			for (const rem in bandModeData.Rx[crx]) {
+				let rem_entity = getEntity(rem, entityTypeRemote);
+				tx_entitiesSet.add(rem_entity);
+				if(!entityConns[rem_entity]) {entityConns[rem_entity]={};}
+				entityConns[rem_entity][erx]=1;
+			}
+		}
+	}
+	
+	
 	
     let rx_entities=Array.from(rx_entitiesSet).toSorted();
     let tx_entities=Array.from(tx_entitiesSet).toSorted();
 	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
   
 
-	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
+	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='connectivityTable' class='scalingTable' >";
 	// Column headers
 	HTML += "<thead><tr><th></th>";
 	for (const etx of tx_entities) { // (vertical text fussy on mobile so fake it)
@@ -155,7 +180,7 @@ function html_for_ModeConnectivity(mode){
 		HTML += "</tr>";
 	}
 
-	HTML += "</tbody></table>";
+	HTML += "</tbody></table></div>";
 
 	return HTML;
 
