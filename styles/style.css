@@ -44,8 +44,9 @@ body {
   padding: var(--spacing);
 }
 
-h1 {margin-top: var(--spacing); margin-bottom: var(--spacing-sm);}
-h3 {margin-top: var(--spacing-sm); margin-bottom: var(--spacing-sm);}
+h1 {margin-top: var(--spacing-sm); margin-bottom: var(--spacing-xsm);}
+h2 {margin-top: var(--spacing-sm); margin-bottom: var(--spacing-xsm);}
+h3 {margin-top: var(--spacing-sm); margin-bottom: var(--spacing-xsm);}
 
 p {
   margin: 0 0 var(--spacing) 0;
@@ -56,11 +57,14 @@ fieldset {
   border-radius: var(--border-radius);
   padding: var(--spacing-sm);
   margin-bottom: var(--spacing);
-  min-height:100px;
+  font-size: var(--font-size-sm); 
   max-width:100%;
   border-color:var(--controls-color);
   box-shadow: var(--box-shadow);
 }
+
+.float_left { float:left; }
+.ribbonBox {min-height:100px;}
 
 legend {
   padding: 0 var(--spacing-sm);

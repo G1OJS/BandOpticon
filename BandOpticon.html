@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V3.2.1</title>
+<title>BandOpticon V3.2.2</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -13,16 +13,16 @@
 </head>
 <body>
 <div id="app" class="paper-primary">
-    <h1 style = 'margin-bottom:2px;'>BandOpticon V3 MVP</h1>
+    <h1'>BandOpticon V3</h1>
 	<div class="text-sm" style = 'margin-bottom:8px;'>BandOpticon incorporating Station Benchmark, restyled, simplified and rewritten to allow different views to be added in future versions. <a href='./BandOpticonV2.html'>Switch to V2</a></div>
     <div id="ribbon" class="text-sm">
-		<fieldset>
+		<fieldset class="ribbonBox">
 		<legend>Info</legend>
 		  <output id="clock" class='clock'></output><br>
 		  <span>Running for <output id="runningMins"></output> minutes</span><br>
 		  <span><output id="connectionsIn"></output> connections in database</span>
 		</fieldset>
-		<fieldset id='settingsBox' class="text-sm" >
+		<fieldset id='settingsBox' class="ribbonBox" >
 		<legend>Settings</legend>
 			<div class = 'settings-label'>My Callsign</div>
 			<div><input class = 'settings-input' id='myCallInput' type="text" title='Your callsign'></div>
@@ -34,7 +34,7 @@
 			<div><input class = 'settings-input' id='purgeMinutesInput' type="number" min="1" max="60"
 						 title = 'Number of minutes after which spots are deleted from database'></div>
 		</fieldset>
-		<fieldset id='modeSelectBox' class="text-sm" >
+		<fieldset id='modeSelectBox' class="ribbonBox" >
 		<legend>Mode</legend>
 			<!-- written by script -->
 		</fieldset>

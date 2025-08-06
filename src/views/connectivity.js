@@ -10,7 +10,8 @@ var DOMcontainer = null;
 let getMode = () => null;
 let band = null;
 let mode = null;
-let entityType = 'L4';
+let entityTypeHome = 'L4';
+let entityTypeRemote = 'L4';
 
 // duplicated from allbands.js but should not be needed when separate entity types available for home/remote
 function wavelength(band) {
@@ -25,11 +26,10 @@ function wavelength(band) {
 export function init(container, opts = {}) {
   band = opts.band || band;  // if opts.band is null, leave band alone
   
-
   // heuristic to manage *initial* table size until separate entity types available for home/remote
   let wl = parseInt(wavelength(band));
   console.log("Connectivity for band = ",band, "wl=",wl);
-  if(wl>10 && wl<80){ entityType = 'L2' ;}
+  if(wl>10 && wl<80){ entityTypeRemote = 'L2' ;}
   // -----------------------------------------
   DOMcontainer = container;
   if (opts.getWatchedMode) {
@@ -40,9 +40,13 @@ export function init(container, opts = {}) {
     registerActiveModes = opts.registerActiveModes;
   }
   DOMcontainer.addEventListener('click', (e) => {
-	  const v = e.target?.dataset?.value;
-	  if (v && "CSL2L4L6".includes(v)) {
-		entityType = v;
+	  const id = e.target.id;
+	  let grp = id.split('.')[0];
+	  let val = id.split('.')[1];
+	  if (val && "CSL2L4L6".includes(val)) {
+		if(grp == "Home_Entity_Type"){entityTypeHome = val;}
+		if(grp == "Remote_Entity_Type"){entityTypeRemote = val;}
+		console.log(entityTypeHome, entityTypeRemote);
 		refresh();
 	  }
   });
@@ -61,52 +65,60 @@ export function refresh(){
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
-	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
+	HTML += "Table headings show active <span class = 'transmit'>transmitting</span>"
 	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity. "
-	HTML += "Dotted borders surround cells where at least one *entity* is in HOME (BandOpticon does not gather data unless this is true). ";
-	HTML += "Cells are coloured grey if *both* row and column *entities* are in HOME.<br><b>NOTE</b>: this view is being developed. Next steps include potentially "
-	HTML += "allowing different entity types for HOME and remote. Large tables can result for fine-grained entities!<br>";
-	HTML += "</div><br><div style = 'width:fit-content;'>";
-	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
-	HTML += "<legend>Entity type</legend>"
-	HTML += "<button id='L2' data-value = 'L2' >L2sq</button>";
-	HTML += "<button id='L4' data-value = 'L4' >L4sq</button>";
-	HTML += "<button id='L6' data-value = 'L6' >L6sq</button>";
-	HTML += "<button id='CS' data-value = 'CS' >Call</button>";
-	HTML += "</fieldset>"
+	HTML += "Dotted borders surround cells where at least one entity is in HOME (BandOpticon does not gather data unless this is true). ";
+	HTML += "Cells are coloured grey if *both* row and column entities are in HOME."
+	HTML += "<br><br><b>NOTE</b>: Large tables can result for fine-grained entities!<br>";
+	HTML += "</div><br><div style = 'width:max-content;'>";
+	HTML += html_buttonGroup('Home Entity Type','float_left',['L2','L4','L6','CS'],['L2sq','L4sq','L6sq','Call']);
+	HTML += html_buttonGroup('Remote Entity Type','',['L2','L4','L6','CS'],['L2sq','L4sq','L6sq','Call']);
 	HTML += "</div>";
-	HTML += html_for_ModeConnectivity(mode)
+	HTML += html_for_ModeConnectivity(mode);
 	DOMcontainer.innerHTML = HTML;
-	document.getElementById(entityType).classList.add('active');
-	
-	
+	document.getElementById("Home_Entity_Type."+entityTypeHome).classList.add('active');
+	document.getElementById("Remote_Entity_Type."+entityTypeRemote).classList.add('active');
+		
 }
+
+function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text = button_ids, 
+	fieldset_id = legend_text.replaceAll(' ','_')){
+	let HTML = "";
+	HTML += "<fieldset id='"+fieldset_id+"' class='"+fieldset_class+"'>";
+	HTML += "<legend>"+legend_text+"</legend>"
+	for (const idx in button_ids) {
+		HTML += "<button id='"+fieldset_id+"."+button_ids[idx].replaceAll(' ','_')+"' >"+button_text[idx]+"</button>";
+	}
+	HTML += "</fieldset>"	
+	return HTML
+}
+
 
 function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
     if (!bandModeData) return "";
-	let includeRemote = true;
 
 	let tx_entitiesSet = new Set();
 	let rx_entitiesSet = new Set();
+	let entityConns = {};
 	for (const ctx in bandModeData.Tx){
-		let etx = getEntity(ctx, entityType);
+		let etx = getEntity(ctx, entityTypeHome);
 		tx_entitiesSet.add(etx);
-		if(includeRemote){
-			for (const rem in bandModeData.Tx[ctx]) {
-				let rem_entity = getEntity(rem, entityType);
-				rx_entitiesSet.add(rem_entity);
-			}
+		for (const rem in bandModeData.Tx[ctx]) {
+			let rem_entity = getEntity(rem, entityTypeRemote);
+			rx_entitiesSet.add(rem_entity);
+			if(!entityConns[etx]) {entityConns[etx]={};}
+			entityConns[etx][rem_entity]=1;
 		}
 	}
 	for (const crx in bandModeData.Rx){
-		let erx = getEntity(crx, entityType);
+		let erx = getEntity(crx, entityTypeHome);
 		rx_entitiesSet.add(erx);
-		if(includeRemote){
-			for (const rem in bandModeData.Rx[crx]) {
-				let rem_entity = getEntity(rem, entityType);
-				tx_entitiesSet.add(rem_entity);
-			}
+		for (const rem in bandModeData.Rx[crx]) {
+			let rem_entity = getEntity(rem, entityTypeRemote);
+			tx_entitiesSet.add(rem_entity);
+			if(!entityConns[rem_entity]) {entityConns[rem_entity]={};}
+			entityConns[rem_entity][erx]=1;
 		}
 	}
 	
@@ -114,23 +126,6 @@ function html_for_ModeConnectivity(mode){
     let tx_entities=Array.from(tx_entitiesSet).toSorted();
 	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
   
-  	let entityConns = {};
-	for (const ctx in bandModeData.Tx){
-		let etx = getEntity(ctx, entityType);
-		for (const crx in bandModeData.Tx[ctx]) {
-			let erx = getEntity(crx, entityType);
-			if(!entityConns[etx]) {entityConns[etx]={};}
-			entityConns[etx][erx]=1;
-		}
-	}
-	for (const crx in bandModeData.Rx){
-		let erx = getEntity(crx, entityType);
-		for (const ctx in bandModeData.Rx[crx]) {
-			let etx = getEntity(ctx, entityType);
-			if(!entityConns[etx]) {entityConns[etx]={};}
-			entityConns[etx][erx]=1;
-		}
-	}
 
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
@@ -167,8 +162,11 @@ function html_for_ModeConnectivity(mode){
 }
 
 function entityInHome(entity){
-	if(entityType == "CS"){
+	// entity is either a square (string) or a callsign_info record with a .inHome flag 
+	if(entityTypeHome == "CS"){
 		const callsigns_info = CONNSDATA.callsigns_info;
+		// if we get here and the entity is not a callsign_info record with 'entity' in it, it must be remote
+		if(!callsigns_info[entity]) {return false}
 		return callsigns_info[entity].inHome;
 	} else {
 		return squareIsInHome(entity);
