@@ -42,12 +42,13 @@ export function refresh(){
 	// need to add a mode sweep here
 	registerActiveModes(activeModes);	
 	mode = getMode();
-	includeRemote = (entityType == "L2")
+//	includeRemote = (entityType == "L2")
 	console.log("Connectivity for ",band, mode);
 	let domain = includeRemote? '':'HOME ';
 	let HTML = '<h2>'+domain+'Connectivity for ' + band + ' ' + mode +'</h2>';
 	let reach = includeRemote? 'to/from/':' ';
-	HTML += "Grid axes show active entities, cells show connectivity "+reach+"within HOME.<br>";
+	HTML += "Grid axes show active <span class = 'transmit'>transmitting</span>"
+	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity "+reach+"within HOME.<br>";
 	HTML += "'⇦' = column to row, '⇧' = row to column, 'X' = both<br><br>";
 	HTML += "<div style = 'width:fit-content;'>";
 	HTML += "<fieldset id='connectivityEntitySelect' class='text-sm'>";
@@ -69,75 +70,66 @@ function html_for_ModeConnectivity(mode){
 	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
     if (!bandModeData) return "";
 
-	let entityConns = {};
-	let entitiesSet = new Set();
+
+	let tx_entitiesSet = new Set();
+	let rx_entitiesSet = new Set();
 	for (const ctx in bandModeData.Tx){
 		let etx = getEntity(ctx, entityType);
-		entitiesSet.add(etx);
-		if(!entityConns[etx]) {entityConns[etx]={};}
-		for (const crx in bandModeData.Rx) {
-			let erx = getEntity(crx, entityType);
-			entitiesSet.add(erx);
-			if(crx in bandModeData.Tx[ctx]){
-				entityConns[etx][erx]=1;  
+		tx_entitiesSet.add(etx);
+		if(includeRemote){
+			for (const rem in bandModeData.Tx[ctx]) {
+				let rem_entity = getEntity(rem, entityType);
+				rx_entitiesSet.add(rem_entity);
 			}
-		}	
+		}
+	}
+	for (const crx in bandModeData.Rx){
+		let erx = getEntity(crx, entityType);
+		rx_entitiesSet.add(erx);
+		if(includeRemote){
+			for (const rem in bandModeData.Rx[crx]) {
+				let rem_entity = getEntity(rem, entityType);
+				tx_entitiesSet.add(rem_entity);
+			}
+		}
 	}
 	
-	if (includeRemote) {
-		for (const ctx in bandModeData.Tx){
-			let etx = getEntity(ctx, entityType);
-			for (const c in bandModeData.Tx[ctx]){
-				let erx = getEntity(c, entityType);
-				entitiesSet.add(erx);
-				if(!entityConns[etx]) entityConns[etx]={};
-				entityConns[etx][erx]=1; 
-			}
-		}	
+    let rx_entities=Array.from(rx_entitiesSet).toSorted();
+    let tx_entities=Array.from(tx_entitiesSet).toSorted();
+	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
+  
+  	let entityConns = {};
+	for (const ctx in bandModeData.Tx){
+		let etx = getEntity(ctx, entityType);
 		for (const crx in bandModeData.Rx){
-			let erx = getEntity(crx, entityType);
-			for (const c in bandModeData.Rx[crx]){
-				let etx = getEntity(c, entityType);
-				entitiesSet.add(etx);
-				if(!entityConns[erx]) entityConns[erx]={};
-				entityConns[erx][etx]=1; 
+			if(bandModeData.Tx[ctx][crx]) {
+				let erx = getEntity(crx, entityType);
+				if(!entityConns[etx]) {entityConns[etx]={};}
+				entityConns[etx][erx]=1;
 			}
-		}	
+		}
 	}
-	
-  
-    let entities=Array.from(entitiesSet).toSorted();
-	if(entities.length < 1) {return ""};
-  
   
 	let HTML = "<table id='connectivityTable' class='connectivityTable' >";
 	// Column headers
 	HTML += "<thead><tr><th></th>";
-	for (const etx of entities) { // (vertical text fussy on mobile so fake it)
+	for (const etx of tx_entities) { // (vertical text fussy on mobile so fake it)
 		let vt = [...etx].map(c => '<div style = "margin:0px; padding:0px;">'+c+'</div>').join('');
-		HTML += `<th style = 'vertical-align:bottom;'>${vt}</th>`;
+		HTML += `<th class = 'transmit' style = 'vertical-align:bottom;'>${vt}</th>`;
 	}
 	HTML += "</tr></thead>"
 	
 	HTML += "<tbody>";	
-	for (const er of entities) {
+	for (const erx of rx_entities) {
 		// Row Headers
-		HTML += `<tr><th style = 'text-align:right;'>${er}</th>`;
+		HTML += `<tr><th class = 'receive' style = 'text-align:right;'>${erx}</th>`;
 		// Cells 
-		for (const et of entities) {
-		  let txt = "";
-		  let f=0;
-		  let r=0;
-		  if( entityConns[et] ){
-			f = entityConns[et][er];
-		  }
-		  if( entityConns[er] ){
-			r = entityConns[er][et];
-		  }
-		  if(f && r){txt='X';}
-		  if(f && !r){txt='⇦';}
-		  if(r && !f){txt='⇧';}
-		  HTML += "<td class = 'cell'>"+txt+"</td>";
+		for (const etx of tx_entities) {
+			let txt = '';
+			if( entityConns[etx] ){
+				txt = (entityConns[etx][erx])? 'X':'';
+		    }
+		    HTML += "<td class='cell'>"+txt+"</td>";
 		}
 		HTML += "</tr>";
 	}
