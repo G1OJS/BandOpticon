@@ -80,12 +80,9 @@ export function refresh(){
 	 
 	const table = document.getElementById('connectivityTable');
     const wrapper = document.getElementById('connectivityTableWrapper');
-	console.log(wrapper.clientWidth , table.scrollWidth);
 	const scale = wrapper.clientWidth / (table.scrollWidth + 50);
     const finalScale = Math.min(1, Math.max(0.1, scale));
-    table.style.transform = `scale(${finalScale})`;
-	wrapper.height = table.height *finalScale;
-		
+    table.style.transform = `scale(${finalScale})`;	
 }
 
 function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text = button_ids, 
@@ -126,7 +123,6 @@ function html_for_ModeConnectivity(mode){
 	for (const ctx of tx_callsSet){
 		let entityType = (callsigns_info[ctx].inHome)? entityTypeHome:entityTypeRemote;
 		let etx = getEntity(ctx,entityType);
-		console.log(ctx, entityType, etx);
 		tx_entitiesSet.add(etx);
 		for (const crx of rx_callsSet){
 			let entityType = (callsigns_info[crx].inHome)? entityTypeHome:entityTypeRemote;
