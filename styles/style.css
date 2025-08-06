@@ -150,15 +150,17 @@ button:hover:not(.active) {
   overflow-y:hidden;
 }
 
+thead{vertical-align:bottom;}
+.rhead{text-align:right;}
+td{text-align: center;}
+
 .scalingTable {
   transform-origin: top left;
   overflow-x:hidden;
   overflow-y:hidden;
 }
 
-topRow{vertical-align:bottom;}
-firstColumn{text-align:right;}
-td{text-align: center;}
+
 
 
 .button--tab.active {

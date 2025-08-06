@@ -118,10 +118,8 @@ function html_for_ModeConnectivity(mode){
 	}
 	
 	// add non-Home tx and rx, checking first if the entity 
-	// is already represented using the entityTypeHome bucket
-	
-	// the above filter isn't preventing spots appearing under both home and remote buckets with only one appearing in home
-	
+	// is already represented using the entityTypeHome bucket. However,
+	// this filter isn't preventing spots appearing under both home and remote buckets - not sure if that matters ..
 	for (const ctx in bandModeData.Tx){
 		let etx = getEntity(ctx, entityTypeHome);
 		if(!tx_entitiesSet[etx]){
@@ -145,27 +143,24 @@ function html_for_ModeConnectivity(mode){
 		}
 	}
 	
-	
-	
     let rx_entities=Array.from(rx_entitiesSet).toSorted();
     let tx_entities=Array.from(tx_entitiesSet).toSorted();
 	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
   
-
 	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='connectivityTable' class='scalingTable' >";
 	// Column headers
-	HTML += "<thead><tr><th></th>";
+	HTML += "<thead><th></th>";
 	for (const etx of tx_entities) { // (vertical text fussy on mobile so fake it)
 		let vt = [...etx].map(c => '<div>'+c+'</div>').join('');
 		HTML += "<th class = 'transmit' >"+vt+"</th>";
 	}
-	HTML += "</tr></thead>"
+	HTML += "</thead>"
 	
 	HTML += "<tbody>";	
 	for (const erx of rx_entities) {
 		let homeRow = entityInHome(erx);
 		// Row Headers
-		HTML += "<tr><th class = 'receive' >"+erx+"</th>";
+		HTML += "<tr><th class = 'receive rhead' >"+erx+"</th>";
 		// Cells 
 		for (const etx of tx_entities) {
 			let homeColumn =  entityInHome(etx);
@@ -188,14 +183,15 @@ function html_for_ModeConnectivity(mode){
 
 function entityInHome(entity){
 	// entity is either a square (string) or a callsign_info record with a .inHome flag 
-	if(entityTypeHome == "CS"){
-		const callsigns_info = CONNSDATA.callsigns_info;
-		// if we get here and the entity is not a callsign_info record with 'entity' in it, it must be remote
-		if(!callsigns_info[entity]) {return false}
-		return callsigns_info[entity].inHome;
-	} else {
-		return squareIsInHome(entity);
+	const callsigns_info = CONNSDATA.callsigns_info;
+	let inHome = false;
+
+	if(callsigns_info[entity]) {
+		inHome = inHome || callsigns_info[entity].inHome;
 	}
+	inHome = inHome || squareIsInHome(entity);
+	
+	return inHome
 }
 
 function getEntity(call,entityType){
