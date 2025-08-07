@@ -80,9 +80,11 @@ export function refresh(){
 	 
 	const table = document.getElementById('connectivityTable');
     const wrapper = document.getElementById('connectivityTableWrapper');
-	const scale = wrapper.clientWidth / (table.scrollWidth + 50);
-    const finalScale = Math.min(1, Math.max(0.1, scale));
-    table.style.transform = `scale(${finalScale})`;	
+	if(table){
+		const scale = wrapper.clientWidth / (table.scrollWidth + 50);
+		const finalScale = Math.min(1, Math.max(0.1, scale));
+		table.style.transform = `scale(${finalScale})`;	
+	}
 }
 
 function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text = button_ids, 
@@ -115,6 +117,26 @@ function html_for_ModeConnectivity(mode){
 		for (const ctx in bandModeData.Rx[crx]) {tx_callsSet.add(ctx);}
 	}
 	
+// experimental "filter home calls to myCalls list" - not looking useful so far
+	if(false){
+	let myCalls = ['G1OJS','GE1OJS'];
+		let todelete = new Set();
+		for (const c of rx_callsSet){
+			if(callsigns_info[c].inHome){
+				if(!(myCalls.includes(c.trim()))) todelete.add(c);
+			}
+		}
+		for (const c of todelete) rx_callsSet.delete(c);
+		todelete.clear();
+		for (const c of tx_callsSet){		
+			if(callsigns_info[c].inHome){
+				if(!(myCalls.includes(c.trim()))) todelete.add(c);
+			}			
+		}
+		for (const c of todelete) tx_callsSet.delete(c);
+		console.log(rx_callsSet);
+	}
+		
 	// convert calls to entities and add connectivity
 	let tx_entitiesSet = new Set();
 	let rx_entitiesSet = new Set();

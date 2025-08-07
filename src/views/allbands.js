@@ -73,7 +73,9 @@ function html_forStatsRowLabels() {
     HTML +="<div class = 'firstColumn' title = 'Number of spots generated worldwide by all callsigns in home, as a group'>Total spots</div>";
 	 if(details_level>0){
 		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>";
-		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + STORAGE.myCall + " spots</div>";
+		for (const myCall of STORAGE.myCall.split(',')){
+			HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + myCall.trim() + " spots</div>";
+		}
 	 }
      HTML += "</div>";
 	
@@ -82,6 +84,7 @@ function html_forStatsRowLabels() {
 
 function html_forStatsForThisBand(band, mode, RxTx) {
 //	console.log("Writing stats for " + band + RxTx);
+
     const bandData = CONNSDATA.connectivity_Band_Mode_HomeCall[band];
     if (!bandData) return "";
 	
@@ -103,13 +106,15 @@ function html_forStatsForThisBand(band, mode, RxTx) {
         const otherData = bandData[mode]?.[otherDir];
         if (!otherData || Object.keys(otherData).length === 0) return "";
     }
-
-    let nMe = 0,
-    nMax = 0,
-    winner = "";
-    let nActive = 0;
+	
+    let nMax = 0, winner = "", nActive = 0;
     const otherEndCallsAggregate = new Set();
 
+	let myCalls = {};
+	for (const c of STORAGE.myCall.split(",")){
+		myCalls[c.trim()]=0;
+	}
+	
     for (const homeCall in bandModeData) {
         const peerMap = bandModeData[homeCall];
         const otherSet = new Set();
@@ -128,9 +133,10 @@ function html_forStatsForThisBand(band, mode, RxTx) {
             winner = homeCall;
         }
 
-        if (homeCall === STORAGE.myCall) {
-            nMe = count;
+		if (homeCall.trim() in myCalls){
+			myCalls[homeCall.trim()] = count;
         }
+		
     }
 
     HTML += "<div><div class='outputColumn'>";
@@ -139,7 +145,9 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
 	if(details_level>0){
 		HTML += "<div title='" + winner + "'>" + nMax + "</div>";
-		HTML += "<div title='" + STORAGE.myCall + "'>" + nMe + "</div>";
+		for (const myCall in myCalls){
+			HTML += "<div title='" + myCall + "'>" + myCalls[myCall] + "</div>";
+		}
 	}
     HTML += "</div></div>";
 	 
