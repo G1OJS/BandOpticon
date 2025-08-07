@@ -133,8 +133,16 @@ function html_for_ModeConnectivity(mode){
 		}
 	}
 	
-    let rx_entities=Array.from(rx_entitiesSet).toSorted();
-    let tx_entities=Array.from(tx_entitiesSet).toSorted();
+	function sortfunc(a,b){
+		const aInHome = entityInHome(a);
+		const bInHome = entityInHome(b);
+		if (aInHome !== bInHome) return aInHome ? -1 : 1;
+		return a.localeCompare(b);
+	}
+
+	let rx_entities = Array.from(rx_entitiesSet).toSorted((a, b) => sortfunc(a, b));                                              
+	let tx_entities = Array.from(tx_entitiesSet).toSorted((a, b) => sortfunc(a, b));                                
+	
 	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
   
 	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='connectivityTable' class='scalingTable' >";
