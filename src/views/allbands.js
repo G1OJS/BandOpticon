@@ -23,6 +23,9 @@ export function refresh(){
 	HTML += html_forStatsForAllBands();
 	let details_text = details_level ? "Hide benchmarking stats":"Show benchmarking stats";
 	HTML += "<button id='details_toggle'>"+details_text+"</button>";
+	
+	HTML += "<button id='btn_benchmarkingView' data-action = 'benchmarkRx'>Rx Benchmarking View</button>";
+	
 	DOMcontainer.innerHTML = HTML;
 	registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
 	const detailsButton = document.getElementById('details_toggle');
@@ -30,6 +33,7 @@ export function refresh(){
 		details_level = 1-details_level;
 		refresh();
 	});
+
 }
 
 function wavelength(band) {
@@ -110,9 +114,9 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     let nMax = 0, winner = "", nActive = 0;
     const otherEndCallsAggregate = new Set();
 
-	let myCalls = {};
+	let myCalls_counts = {};
 	for (const c of STORAGE.myCall.split(",")){
-		myCalls[c.trim()]=0;
+		myCalls_counts[c.trim()]=0;
 	}
 	
     for (const homeCall in bandModeData) {
@@ -133,8 +137,8 @@ function html_forStatsForThisBand(band, mode, RxTx) {
             winner = homeCall;
         }
 
-		if (homeCall.trim() in myCalls){
-			myCalls[homeCall.trim()] = count;
+		if (homeCall.trim() in myCalls_counts){
+			myCalls_counts[homeCall.trim()] = count;
         }
 		
     }
@@ -145,8 +149,8 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
 	if(details_level>0){
 		HTML += "<div title='" + winner + "'>" + nMax + "</div>";
-		for (const myCall in myCalls){
-			HTML += "<div title='" + myCall + "'>" + myCalls[myCall] + "</div>";
+		for (const myCall in myCalls_counts){
+			HTML += "<div title='" + myCall + "'>" + myCalls_counts[myCall] + "</div>";
 		}
 	}
     HTML += "</div></div>";
