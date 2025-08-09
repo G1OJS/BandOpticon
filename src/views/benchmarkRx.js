@@ -28,25 +28,24 @@ export function init(container, opts = {}) {
   function handleFiles() {
     const fileList = document.getElementById('allFileChooser').files;
 	console.log(fileList[0]);
-	const reader = new FileReader();
-	reader.onload = () => {
-		console.log(reader.result);
-		// message format:
-		// sq:sequence number b:band f:frequency md:mode rp:report (snr) t:seconds since 1970-01-01
-		// sc/rc:sender call/receiver call sl/rl:sender locator/receiver locator sa/ra:sender ADIF/receiver ADIF
-		// first, build spot object for this msg using same keys as PSKR MQTT:
-		
-		
-		
-		//addSpotToConnectivityMap(spot);
-	};
-	reader.onerror = () => {
+	  // Read the file and add spots
+	  const reader = new FileReader();
+	  reader.onload = () => {
+		let rr = reader.result;
+		var lines = rr.split(/[\r\n]+/g);
+		const m = STORAGE.myCall.split(",")[0];
+		for (const l of lines) {
+			let s = l.split();
+			let spot = {'sc':s[8],'rc':m,'sl':'','rl':'IO90JU','b':'20m','md':s[3],'t':1000000000000};
+			CONNSDATA.addSpotToConnectivityMap(spot);
+			console.log(spot);
+		}
+	  };
+	  reader.onerror = () => {
 		showMessage("Error reading the file. Please try again.", "error");
-	};
-	reader.readAsText(fileList[0]);
+	  };
+	  reader.readAsText(fileList[0]);
   }
-
-
 
 
 export function refresh(){
