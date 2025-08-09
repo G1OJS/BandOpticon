@@ -35,10 +35,12 @@ export function init(container, opts = {}) {
 		var lines = rr.split(/[\r\n]+/g);
 		const m = STORAGE.myCall.split(",")[0];
 		for (const l of lines) {
-			let s = l.split();
-			let spot = {'sc':s[8],'rc':m,'sl':'','rl':'IO90JU','b':'20m','md':s[3],'t':1000000000000};
+			let s = l.trim().split(" ");
+//			console.log("8",s[8], "15",s[15]);
+			let spot = {'sc':s[15],'rc':m,'sl':s[16],'rl':'IO90JU','b':'20m','md':s[6],'t':1000000000000};
+//			let spot = {'sc':s[8],'rc':m,'sl':s[9],'rl':'IO90JU','b':'20m','md':s[3],'t':1000000000000};
 			CONNSDATA.addSpotToConnectivityMap(spot);
-			console.log(spot);
+		//	console.log(spot);
 		}
 	  };
 	  reader.onerror = () => {
@@ -66,7 +68,7 @@ export function refresh(){
 	HTML += "<div class = 'text-sm'>";
 	HTML += "This is a new view showing the number of times a pskreporter report was made for each transmitting callsign. "
 	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot."
-	HTML += '<br><label>Import ALL.txt </label><input type="file" class = "button" id="allFileChooser" accept="*.txt" />'
+	HTML += '<br><label class = "allFileChooser">Import ALL.txt </label><input type="file" class = "button allFileChooser" id="allFileChooser" accept="*.txt" />'
 	HTML += "</div><br>";
 	HTML += html_for_benchmarking(mode);
 	DOMcontainer.innerHTML = HTML;

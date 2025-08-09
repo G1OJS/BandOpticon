@@ -3,6 +3,8 @@ import {squaresArr} from './store-cfg.js';
 
 export function squareIsInHome(sqm) {
     // return true if the level 4, 6, 8 or 10 square sq is in the home squares array
+	if(!sqm) {return false}
+	
     let sq = sqm.toUpperCase();
     if (squaresArr.includes(sq.substring(0, 4)))
         return true;

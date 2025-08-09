@@ -135,6 +135,8 @@ button.active {
   color: var(--controls-color);
 }
 
+.allFileChooser{display:none;}
+
 button:hover:not(.active) {
   border-color: var(--main-paper-color);
   color: var(--controls-color);
