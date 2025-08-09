@@ -75,6 +75,8 @@ legend {
 
 input {border:none;}
 
+label {font-size: var(--font-size-sm); }
+
 /* Typography utility classes */
 .text-xsm   { font-size: var(--font-size-xsm); }
 .text-sm   { font-size: var(--font-size-sm); }
