@@ -41,9 +41,9 @@ export function refresh(){
 	let HTML = ""
 	HTML +=  '<h2>Rx Benchmarking for ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
-	HTML += "This is a new view showing the number of times a pskreporter report was made for each transmitting callsign. "
-	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot."
-	HTML += " The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
+	HTML += "This is a new view showing the latest report from each of 'My Callsigns' for each transmitting callsign heard. "
+	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot. "
+	HTML += "The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
 	HTML += "</div><br>";
 	HTML += html_for_benchmarking(mode);
 	DOMcontainer.innerHTML = HTML;
@@ -56,7 +56,7 @@ function html_for_benchmarking(mode){
 	const callsigns_info = CONNSDATA.callsigns_info;
     if (!bandModeData) return "";
 	
-	let myCalls_counts = {};
+	let myCalls_rpts = {};
     let otherCalls = new Set();
 	for (const mc of STORAGE.myCall.split(",")){
 		let m = mc.trim();
@@ -66,8 +66,11 @@ function html_for_benchmarking(mode){
 					for (const otherCall in bandModeData[band][mode].Rx[m]) {
 						let ocb = band+": "+otherCall;
 						otherCalls.add(ocb);
-						if(!myCalls_counts[ocb]) { myCalls_counts[ocb]={} }
-						if(!myCalls_counts[ocb][m]) {myCalls_counts[ocb][m] = 1} else {myCalls_counts[ocb][m] += 1} 
+						if(!myCalls_rpts[ocb]){myCalls_rpts[ocb]={}}
+						if(!myCalls_rpts[ocb][m]) {myCalls_rpts[ocb][m]=-30}
+						let rp = bandModeData[band][mode].Rx[m][otherCall].rp;
+						let last = myCalls_rpts[ocb][m]
+						myCalls_rpts[ocb][m] = (rp>last)? rp:last;
 					}
 				}
 			}
@@ -85,19 +88,18 @@ function html_for_benchmarking(mode){
 	HTML += "</thead>"
 
 	HTML += "<tbody>";	
+	
 	let otherCallsArr = Array.from(otherCalls).toSorted((a, b) => a.localeCompare(b))
 	for (const ocb of otherCallsArr) {
 		// Row Headers
 		HTML += "<tr><th class = 'transmit rhead' >"+ocb+"</th>";
 		// Cells 
-		let txt =""
-		if(myCalls_counts[ocb]){
-			for (const mc of STORAGE.myCall.split(",")){
-				let m = mc.trim();
-				let cnt = myCalls_counts[ocb][m];
-				if(cnt) {txt=cnt} else {txt = ""}
-				HTML += "<td >" + txt + "</td>" ;
-			}
+		for (const mc of STORAGE.myCall.split(",")){
+			let m = mc.trim();
+			let txt = "";
+			let rp = myCalls_rpts[ocb][m];
+			if(rp){txt = rp}
+			HTML += "<td>" +txt + "</td>";
 		}
 		HTML += "</tr>";
 	}
