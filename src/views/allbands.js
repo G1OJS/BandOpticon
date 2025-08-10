@@ -25,7 +25,7 @@ export function refresh(){
 	HTML += "<button id='details_toggle'>"+details_text+"</button>";
 	
 	HTML += "<button id='btn_benchmarkingView' data-action = 'benchmarkRx'>Rx Benchmarking View</button>";
-	HTML += "<button id='btn_allFileAnalysis' class = 'hideme' data-action = 'allFileAnalysis'>WSJT ALL analysis</button>";
+	HTML += "<button id='btn_allFileAnalysis' data-action = 'allFileAnalysis'>WSJT ALL analysis</button>";
 	
 	DOMcontainer.innerHTML = HTML;
 	registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon

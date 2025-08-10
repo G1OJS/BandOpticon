@@ -24,70 +24,6 @@ export function init(container, opts = {}) {
   }
   refresh();
 }
-  function getBand(MHz){
-	let fMHz = parseFloat(MHz);
-	let i = [1.8,3.5,5,7,10,14,17,21,24,28,50,70,144,430].findIndex(f => f > MHz);  
-	return [false,"160m","80m","60m","40m","30m","20m","18m","15m","12m","10m","6m","4m","2m","70cm"][i];
-  }
-  
-  function getEpoch(dt_str_utc){
-	let d = dt_str_utc;
-	let dt = new Date(Date.UTC("20"+d.slice(0,2),d.slice(2,4)-1,d.slice(4,6),d.slice(7,9),d.slice(9,11),d.slice(11,13)));
-	let epoch_from_utc = dt.valueOf() / 1000
-	return epoch_from_utc;  
-  }
-  
-  function getSquare(sq){
-	// get square from the last entry of the ALL.txt row (which is either an L4 square or RR73, RRR, 73 or R+nn or R-nn)  
-	if(sq.length !=4 || sq == "RR73") {return false}
-	if(sq[1]=="+" ||sq[1]=="-") {return false}
-	return sq.trim()+"MM";  // make into L6 at centre of L4 square
-  }
-
-  function load_ALL_file(rr, call) {
-		var lines = rr.split(/[\r\n]+/g);
-		// receiver callsign
-		const rc = STORAGE.myCall.split(",")[0];
-		const rl = STORAGE.squaresList.split(",")[0]; // need user to make sure the first square is associated with the callsign
-		
-		let nSpots = 0;
-		for (const l of lines) {
-			let s = l.trim().match(/\S+/g);
-			if(s){
-				if(s.length == 10 && s[2] == "Rx"){
-					let sc = s[8].trim().replace('<','').replace('>','');
-					let sl = getSquare(s[9]);
-					let rp = s[4].trim();
-					let md = s[3].trim();
-					let b = getBand(s[1]);
-					let t = getEpoch(s[0]);
-					if(sc!="" && sl && md!="" && b && t){	// ignore unknown bands etc (some caused by zero MHz in ALL.txt)
-						const cutoff = Date.now() / 1000 - 60 * STORAGE.purgeMinutes;
-						if(t > cutoff){
-							let spot = {'sc':sc,'rc':rc,'sl':sl,'rl':rl,'rp':rp,'b':b,'md':md,'t':t};
-							CONNSDATA.addSpotToConnectivityMap(spot);
-							nSpots +=1;
-						}
-					}
-				}
-			}
-		//	console.log(spot);
-		}
-	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");
-	}
-
-function handleFileSelection(event){
-	const fileList = event.target.files;
-	const id = event.target.id;
-	const reader = new FileReader();
-	reader.onload = () => {
-		let rr = reader.result;
-		load_ALL_file(rr,id.split('_')[1]);
-	}
-	console.log(fileList[0]);
-	reader.readAsText(fileList[0]);
-}
-
 
 export function refresh(){
 	// Update activeModes for all modes found on this band ONLY
@@ -108,20 +44,10 @@ export function refresh(){
 	HTML += "This is a new view showing the number of times a pskreporter report was made for each transmitting callsign. "
 	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot."
 	HTML += " The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
-	
-	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
-	for (const rc of STORAGE.myCall.split(",")){
-		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
-	}
-	HTML += "<br>Currently of limited use but may support future all file analysis including SNR data. Note that spots must be within the purge window time to count."
 	HTML += "</div><br>";
 	HTML += html_for_benchmarking(mode);
 	DOMcontainer.innerHTML = HTML;
-	
-	for (const rc of STORAGE.myCall.split(",")){
-		const inputElement = document.getElementById('allFileChooser_'+rc.trim());
-		inputElement.addEventListener("change", handleFileSelection);
-	}
+
 }
 
 function html_for_benchmarking(mode){

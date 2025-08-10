@@ -11,6 +11,7 @@ var DOMcontainer = null;
 let getMode = () => null;
 let mode = null;
 
+
 export function init(container, opts = {}) {
   console.log("Connectivity for ", mode);
 
@@ -22,8 +23,89 @@ export function init(container, opts = {}) {
   if (opts.registerActiveModes) {
     registerActiveModes = opts.registerActiveModes;
   }
-  refresh();
+  internal_refresh();
 }
+
+export function refresh(){
+
+}
+
+function internal_refresh(){
+  	// Update activeModes for all modes found on this band ONLY
+	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall;
+	if(!bandModeData){return}
+
+	for (const band in bandModeData){
+		for (const md in bandModeData[band]) {
+			activeModes.add(md);
+		}
+	}
+	registerActiveModes(activeModes);	
+	mode = getMode();
+	let HTML = ""
+	HTML +=  '<h2>WSJT-X ALL File Analysis for ' + mode +'</h2>';
+	HTML += "<div class = 'text-sm'>";
+	HTML += ""
+	HTML += ""
+	HTML += ""
+	
+	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
+	for (const rc of STORAGE.myCall.split(",")){
+		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
+	}
+	HTML += "<br>(Currently of limited use but may support future all file analysis including SNR data.)"
+	HTML += "</div><br>";
+	HTML += html_for_benchmarking(mode);
+	DOMcontainer.innerHTML = HTML;
+	
+	for (const rc of STORAGE.myCall.split(",")){
+		const inputElement = document.getElementById('allFileChooser_'+rc.trim());
+		inputElement.addEventListener("change", handleFileSelection);
+	}	
+}
+function html_for_benchmarking(mode){
+	
+	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall;
+	const callsigns_info = CONNSDATA.callsigns_info;
+    if (!bandModeData) return "";
+	
+	let myCalls_rpts = {};
+    let otherCalls = new Set();
+	for (const mc of STORAGE.myCall.split(",")){
+		let m = mc.trim();
+		for (const band in bandModeData){
+			if(bandModeData[band][mode]){
+				if(bandModeData[band][mode].Rx[m]) {
+					for (const otherCall in bandModeData[band][mode].Rx[m]) {
+						let ocb = band+": "+otherCall;
+						otherCalls.add(ocb);
+						if(!myCalls_rpts[ocb]){myCalls_rpts[ocb]={}}
+						if(!myCalls_rpts[ocb][m]) {myCalls_rpts[ocb][m]=-30}
+						let rp = bandModeData[band][mode].Rx[m][otherCall].rp;
+						console.log(rp);
+						let last = myCalls_rpts[ocb][m]
+						myCalls_rpts[ocb][m] = (rp>last)? rp:last;
+					}
+				}
+			}
+		}
+	}
+
+	let HTML = "";
+	let otherCallsArr = Array.from(otherCalls).toSorted((a, b) => a.localeCompare(b))
+	for (const ocb of otherCallsArr) {
+		HTML += "<br>" + ocb+ " ";
+		for (const mc of STORAGE.myCall.split(",")){
+			let m = mc.trim();
+			let rp = myCalls_rpts[ocb][m];
+			HTML += " " + rp? rp: "n/a";
+		}
+	}
+
+	return HTML;
+
+}
+
   function getBand(MHz){
 	let fMHz = parseFloat(MHz);
 	let i = [1.8,3.5,5,7,10,14,17,21,24,28,50,70,144,430].findIndex(f => f > MHz);  
@@ -44,10 +126,11 @@ export function init(container, opts = {}) {
 	return sq.trim()+"MM";  // make into L6 at centre of L4 square
   }
 
-  function load_ALL_file(rr) {
+  function load_ALL_file(rr, call) {
 		var lines = rr.split(/[\r\n]+/g);
 		// receiver callsign
-		const rc = STORAGE.myCall.split(",")[0];
+		const rc = call;
+		//******************************************need to change this next line to use storred params
 		const rl = STORAGE.squaresList.split(",")[0]; // need user to make sure the first square is associated with the callsign
 		
 		let nSpots = 0;
@@ -74,111 +157,18 @@ export function init(container, opts = {}) {
 		//	console.log(spot);
 		}
 	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");
+	  internal_refresh();
 	}
 
 function handleFileSelection(event){
 	const fileList = event.target.files;
-	const id = event.target;
+	const id = event.target.id;
 	console.log(id);
 	const reader = new FileReader();
 	reader.onload = () => {
 		let rr = reader.result;
-		load_ALL_file(rr,id);
+		load_ALL_file(rr,id.split("_")[1]);
 	}
 	console.log(fileList[0]);
 	reader.readAsText(fileList[0]);
-}
-
-
-export function refresh(){
-	// Update activeModes for all modes found on this band ONLY
-	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall;
-	if(!bandModeData){return}
-
-	for (const band in bandModeData){
-		for (const md in bandModeData[band]) {
-			activeModes.add(md);
-		}
-	}
-	registerActiveModes(activeModes);	
-	mode = getMode();
-	console.log("Rx Benchmarking for ", mode);
-	let HTML = ""
-	HTML +=  '<h2>Rx Benchmarking for ' + mode +'</h2>';
-	HTML += "<div class = 'text-sm'>";
-	HTML += "This is a new view showing the number of times a pskreporter report was made for each transmitting callsign. "
-	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot."
-	HTML += " The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
-	
-	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
-	for (const rc of STORAGE.myCall.split(",")){
-		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser'+rc+'" accept="*.txt" />'
-	}
-	HTML += "<br>(Currently of limited use but may support future all file analysis including SNR data.)"
-	HTML += "</div><br>";
-	HTML += html_for_benchmarking(mode);
-	DOMcontainer.innerHTML = HTML;
-	
-	for (const rc of STORAGE.myCall.split(",")){
-		const inputElement = document.getElementById('allFileChooser'+rc);
-		inputElement.addEventListener("change", handleFileSelection);
-	}
-}
-
-function html_for_benchmarking(mode){
-	
-	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall;
-	const callsigns_info = CONNSDATA.callsigns_info;
-    if (!bandModeData) return "";
-	
-	let myCalls_counts = {};
-    let otherCalls = new Set();
-	for (const mc of STORAGE.myCall.split(",")){
-		let m = mc.trim();
-		for (const band in bandModeData){
-			if(bandModeData[band][mode]){
-				if(bandModeData[band][mode].Rx[m]) {
-					for (const otherCall in bandModeData[band][mode].Rx[m]) {
-						let ocb = band+": "+otherCall;
-						otherCalls.add(ocb);
-						if(!myCalls_counts[ocb]) { myCalls_counts[ocb]={} }
-						if(!myCalls_counts[ocb][m]) {myCalls_counts[ocb][m] = 1} else {myCalls_counts[ocb][m] += 1} 
-					}
-				}
-			}
-		}
-	}
-
-	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='benchmarkTable' class='scalingTable' >";
-	// Column headers
-	HTML += "<thead><th></th>";
-	for (const m of STORAGE.myCall.split(",")) {
-		// (vertical text fussy on mobile so fake it)
-		let vt = [...m].map(m => '<div>'+m+'</div>').join('').trim();
-		HTML += "<th class = 'receive rhead' >"+vt+"</th>";
-	}
-	HTML += "</thead>"
-
-	HTML += "<tbody>";	
-	let otherCallsArr = Array.from(otherCalls).toSorted((a, b) => a.localeCompare(b))
-	for (const ocb of otherCallsArr) {
-		// Row Headers
-		HTML += "<tr><th class = 'transmit rhead' >"+ocb+"</th>";
-		// Cells 
-		let txt =""
-		if(myCalls_counts[ocb]){
-			for (const mc of STORAGE.myCall.split(",")){
-				let m = mc.trim();
-				let cnt = myCalls_counts[ocb][m];
-				if(cnt) {txt=cnt} else {txt = ""}
-				HTML += "<td >" + txt + "</td>" ;
-			}
-		}
-		HTML += "</tr>";
-	}
-
-	HTML += "</tbody></table></div>";
-
-	return HTML;
-
 }

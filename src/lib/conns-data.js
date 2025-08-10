@@ -24,6 +24,7 @@ export function addSpotToConnectivityMap(spot){
     const band = String(spot.b);
     const mode = String(spot.md);
     const t = parseInt(spot.t);
+	const rp = spot.rp;
     // create band entry if it doesn't exist
     if (!connectivity_Band_Mode_HomeCall[band])
         connectivity_Band_Mode_HomeCall[band] = {}
@@ -35,7 +36,7 @@ export function addSpotToConnectivityMap(spot){
         o = spot.rc;
         if (!connectivity_Band_Mode_HomeCall[band][mode].Tx[h])
             connectivity_Band_Mode_HomeCall[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
-        connectivity_Band_Mode_HomeCall[band][mode].Tx[h][o] = t; // overwrite with most recent
+        connectivity_Band_Mode_HomeCall[band][mode].Tx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
 //		console.log("Added connection " + h + " rxby " + o + " at " + t);
     }
     if (rh) {
@@ -43,7 +44,7 @@ export function addSpotToConnectivityMap(spot){
         o = spot.sc;
         if (!connectivity_Band_Mode_HomeCall[band][mode].Rx[h])
             connectivity_Band_Mode_HomeCall[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
-        connectivity_Band_Mode_HomeCall[band][mode].Rx[h][o] = t; // overwrite with most recent
+        connectivity_Band_Mode_HomeCall[band][mode].Rx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
 //		console.log("Added connection " + h + " rxing " + o + " at " + t);
     }
 
@@ -67,7 +68,7 @@ export function purgeConnections() {
 					const toDelete = [];
 					for (const otherCall in others) {
 						const cutoff = Date.now() / 1000 - 60 * purgeMinutes;
-						if (others[otherCall] < cutoff) {
+						if (others[otherCall].t < cutoff) {
 							toDelete.push(otherCall);
 						}
 					}
