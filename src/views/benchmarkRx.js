@@ -48,21 +48,8 @@ export function init(container, opts = {}) {
 		var lines = rr.split(/[\r\n]+/g);
 		// receiver callsign
 		const rc = STORAGE.myCall.split(",")[0];
-		// get receiver L4 square from All file (needed for distance calcs if I put in analysis needing distance / bearing)
-		// Rx-only stations / ALL files won't have this, so will need a setting for it
-		let rl = ''
-		for (const l of lines) {
-			let s = l.trim().match(/\S+/g);
-			if(s){
-				if(s.length == 10){
-					let Rx = s[2];
-					if(Rx == "Tx" && s[9].trim() != "RR73"){
-						rl = s[9].trim()+"MM"; // make into L6 at centre of L4 square
-						break;
-					}
-				}
-			}
-		}
+		const rl = STORAGE.squaresList.split(",")[0]; // need user to make sure the first square is associated with the callsign
+		
 		let nSpots = 0;
 		for (const l of lines) {
 			let s = l.trim().match(/\S+/g);
@@ -91,10 +78,12 @@ export function init(container, opts = {}) {
 
 function handleFileSelection(event){
 	const fileList = event.target.files;
+	const id = event.target;
+	console.log(id);
 	const reader = new FileReader();
 	reader.onload = () => {
 		let rr = reader.result;
-		load_ALL_file(rr);
+		load_ALL_file(rr,id);
 	}
 	console.log(fileList[0]);
 	reader.readAsText(fileList[0]);
@@ -119,15 +108,21 @@ export function refresh(){
 	HTML += "<div class = 'text-sm'>";
 	HTML += "This is a new view showing the number of times a pskreporter report was made for each transmitting callsign. "
 	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot."
-	HTML += '<br><br>Experimental - import Rx spots from a WSJT-X ALL.txt file: '
-	HTML += '<input type="file" id="allFileChooser" accept="*.txt" />'
-	HTML += "<br>(Currently of limited use but may support future all file analysis.)"
+	HTML += " The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
+	
+	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
+	for (const rc of STORAGE.myCall.split(",")){
+		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser'+rc+'" accept="*.txt" />'
+	}
+	HTML += "<br>(Currently of limited use but may support future all file analysis including SNR data.)"
 	HTML += "</div><br>";
 	HTML += html_for_benchmarking(mode);
 	DOMcontainer.innerHTML = HTML;
 	
-	const inputElement = document.getElementById('allFileChooser');
-    inputElement.addEventListener("change", handleFileSelection);
+	for (const rc of STORAGE.myCall.split(",")){
+		const inputElement = document.getElementById('allFileChooser'+rc);
+		inputElement.addEventListener("change", handleFileSelection);
+	}
 }
 
 function html_for_benchmarking(mode){
