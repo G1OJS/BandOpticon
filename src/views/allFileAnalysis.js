@@ -44,7 +44,7 @@ export function init(container, opts = {}) {
 	return sq.trim()+"MM";  // make into L6 at centre of L4 square
   }
 
-  function load_ALL_file(rr, call) {
+  function load_ALL_file(rr) {
 		var lines = rr.split(/[\r\n]+/g);
 		// receiver callsign
 		const rc = STORAGE.myCall.split(",")[0];
@@ -78,11 +78,12 @@ export function init(container, opts = {}) {
 
 function handleFileSelection(event){
 	const fileList = event.target.files;
-	const id = event.target.id;
+	const id = event.target;
+	console.log(id);
 	const reader = new FileReader();
 	reader.onload = () => {
 		let rr = reader.result;
-		load_ALL_file(rr,id.split('_')[1]);
+		load_ALL_file(rr,id);
 	}
 	console.log(fileList[0]);
 	reader.readAsText(fileList[0]);
@@ -111,15 +112,15 @@ export function refresh(){
 	
 	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
 	for (const rc of STORAGE.myCall.split(",")){
-		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
+		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser'+rc+'" accept="*.txt" />'
 	}
-	HTML += "<br>Currently of limited use but may support future all file analysis including SNR data. Note that spots must be within the purge window time to count."
+	HTML += "<br>(Currently of limited use but may support future all file analysis including SNR data.)"
 	HTML += "</div><br>";
 	HTML += html_for_benchmarking(mode);
 	DOMcontainer.innerHTML = HTML;
 	
 	for (const rc of STORAGE.myCall.split(",")){
-		const inputElement = document.getElementById('allFileChooser_'+rc.trim());
+		const inputElement = document.getElementById('allFileChooser'+rc);
 		inputElement.addEventListener("change", handleFileSelection);
 	}
 }

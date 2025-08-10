@@ -135,7 +135,7 @@ button.active {
   color: var(--controls-color);
 }
 
-.allFileChooser1{display:none;}
+.hideme{display:none;}
 
 button:hover:not(.active) {
   border-color: var(--main-paper-color);

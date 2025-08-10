@@ -7,6 +7,7 @@ import * as Overview from './views/allbands.js';
 import * as Connectivity from './views/connectivity.js';
 import * as CallsActivity from './views/calls_activity.js';
 import * as BenchmarkRx from './views/benchmarkRx.js';
+import * as AllFileAnalysis from './views/allFileAnalysis.js';
 
 const ribbon = new Ribbon({
   onModeChange: refreshCurrentView,
@@ -23,25 +24,23 @@ const VIEWS = [{v:'overview',s:'flat',l:'Home', i:'🏠'},{v:'connectivity',s:'t
 
 
 export function loadView(viewName, options = {}) {
+	
+	const viewMap = {
+	  overview: Overview,
+	  connectivity: Connectivity,
+	  callsactivity: CallsActivity,
+	  benchmarkRx: BenchmarkRx,
+	  allFileAnalysis: AllFileAnalysis
+	};
 
-  switch (viewName) {					// the name of the view e.g. passed by a click handler
-	case 'overview':
-	  currentView = Overview;			// the view API function name imported above
-	  break;
-	case 'connectivity':
-		currentView = Connectivity;
-	break;
-	case 'callsactivity':
-		currentView = CallsActivity;
-	break;
-	case 'benchmarkRx':
-		currentView = BenchmarkRx;
-	break;
-	default:
+	const viewFn = viewMap[viewName];
+	if (viewFn) {
+	  currentView = viewFn;
+	} else {
 	  console.warn(`Unknown view: ${viewName}`);
 	  return;
-  }
-  
+	}
+
 	let DOMmainView = document.getElementById("mainView");
 
 	// identify the view's clickable band elements & attach method
@@ -54,7 +53,7 @@ export function loadView(viewName, options = {}) {
 	});
 
 	 DOMmainView.innerHTML = "<div id='tabBar'> \
-			<button class='tab' data-action='home'>🏠 Home</button> \
+			<button class='tab' data-action='overview'>🏠 Home</button> \
 			</div> \
 			<div id='mainViewContent'></div>";
 	 let DOMcontainer = document.getElementById("mainViewContent");
@@ -75,21 +74,9 @@ export function refreshCurrentView() {
   }
 }
 
-// for actions buttons 
+// for view select buttons 
 document.addEventListener('click', (e) => {
   const action = e.target.dataset.action;
   if (!action) return;
-  if (action === 'home') {
-    loadView('overview');
-  }
-  if (action === 'connectivity') {
-    loadView('connectivity');
-  }
-  if (action === 'benchmarkRx') {
-    loadView('benchmarkRx');
-  }
-  if (action === 'callsactivity') {
-    loadView('callsactivity');
-  }
-
+  loadView(action);
 });
