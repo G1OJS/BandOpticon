@@ -134,7 +134,6 @@ function html_for_ModeConnectivity(mode){
 			}			
 		}
 		for (const c of todelete) tx_callsSet.delete(c);
-		console.log(rx_callsSet);
 	}
 		
 	// convert calls to entities and add connectivity
