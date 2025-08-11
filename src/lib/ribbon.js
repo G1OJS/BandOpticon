@@ -1,7 +1,8 @@
 var tStart = Date.now(); // software start time
 
 import * as STORAGE from './store-cfg.js';
-import {connsData, countAllTimestamps} from './conns-data.js'
+
+import {liveConnsData, countAllTimestamps} from '../lib/conns-data.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -43,9 +44,9 @@ export default class Ribbon {
 	}
 
 	registerActiveModes() {
-		if(!connsData){return}
-		for (const band in connsData){
-			for (const md in connsData[band]) {
+		if(!liveConnsData){return}
+		for (const band in liveConnsData){
+			for (const md in liveConnsData[band]) {
 				this.activeModes.add(md);
 			}
 		}

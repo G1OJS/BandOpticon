@@ -1,7 +1,7 @@
 var mqttClient = null;
 
 import {squaresArr} from './store-cfg.js';
-import {addSpotToConnectivityMap} from './conns-data.js';
+import {liveConnsData, addSpotToConnectivityMap} from './conns-data.js';
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
 export function connectToFeed() {
@@ -57,5 +57,5 @@ function onMessage(msg) {
         spot[kvp[0]] = kvp[1];
     });
 
-	addSpotToConnectivityMap(spot);
+	addSpotToConnectivityMap(liveConnsData, spot);
 }

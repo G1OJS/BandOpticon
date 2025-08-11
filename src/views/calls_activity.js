@@ -1,5 +1,5 @@
 
-import * as CONNSDATA from '../lib/conns-data.js';
+import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 
 var DOMcontainer = null;
@@ -16,7 +16,7 @@ export function init(container, band, opts = {}) {
 
 export function refresh(){
 
-	const bandData = CONNSDATA.connsData[band];
+	const bandData = liveConnsData.liveConnsData[band];
 	mode = getMode();
 
 	let HTML = "";
@@ -30,9 +30,9 @@ export function refresh(){
 }
 
 function html_for_callsActivity(RxTx){
-//	  const data = CONNSDATA.connsData;
+//	  const data = liveConnsData.liveConnsData;
 //    if (!data) return;
-	const callsigns_info = CONNSDATA.callsigns_info;
+	const callsigns_info = liveConnsData.callsigns_info;
     if (!callsigns_info) return;
 	
 	const sortedEntries = Object.entries(callsigns_info).sort(([a], [b]) => {

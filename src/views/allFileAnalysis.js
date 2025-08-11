@@ -1,5 +1,4 @@
-
-import * as CONNSDATA from '../lib/conns-data.js';
+import {addSpotToConnectivityMap} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 import {graph1} from '../views/common.js';
@@ -7,6 +6,8 @@ import {graph1} from '../views/common.js';
 var DOMcontainer = null;
 let getMode = () => null;
 let mode = null;
+
+let historicConnsData = {}
 
 export function init(container, band, opts = {}) {
     DOMcontainer = container;
@@ -23,7 +24,7 @@ let dummyCallsigns = ['AllTXT1','AllTXT2'];
 
 function internal_refresh(){
 
-	const bandModeData = CONNSDATA.connsData;
+	const bandModeData = historicConnsData;
 	if(!bandModeData){return}
 	mode = getMode();
 
@@ -48,7 +49,7 @@ function internal_refresh(){
 	}	
 	
 
-	graph1('graph1', CONNSDATA.connsData, mode, dummyCallsigns);
+	graph1('graph1', historicConnsData, mode, dummyCallsigns);
 }
 
 
@@ -95,7 +96,7 @@ function internal_refresh(){
 					  //  const cutoff = Date.now() / 1000 - 60 * 72;	// 72 hours
 					//	if(t > cutoff){
 						let spot = {'sc':sc,'rc':rc,'sl':sl,'rl':rl,'rp':rp,'b':b,'md':md,'t':t};
-						CONNSDATA.addSpotToConnectivityMap(spot);
+						addSpotToConnectivityMap(historicConnsData, spot);
 						nSpots +=1;
 					//	}
 					}

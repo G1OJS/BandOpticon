@@ -9,4 +9,4 @@ MQTT.connectToFeed();
 UI.loadView('bandsOverview');  // default view
 
 
-setInterval(CONNSDATA.purgeConnections, 30000);
+setInterval(CONNSDATA.purgeLiveConnections, 30000);

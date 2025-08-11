@@ -7,7 +7,7 @@ export var purgeMinutes;
 export var myCall;
 
 import {parseSquares} from './geo.js';
-import {purgeConnections} from './conns-data.js';
+import {purgeLiveConnections} from './conns-data.js';
 import {connectToFeed} from './mqtt.js';
 
 export function updateMyCall(event) {

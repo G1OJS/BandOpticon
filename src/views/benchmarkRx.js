@@ -1,5 +1,5 @@
 
-import * as CONNSDATA from '../lib/conns-data.js';
+import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 import {graph1} from '../views/common.js';
@@ -32,7 +32,7 @@ export function init(container, band, opts = {}) {
 
 export function refresh(){
 
-	graph1('graph1', CONNSDATA.connsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
+	graph1('graph1', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
 
 }
 

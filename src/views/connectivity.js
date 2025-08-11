@@ -1,5 +1,6 @@
 
-import {connsData, callsigns_info} from '../lib/conns-data.js';
+
+import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 
@@ -51,7 +52,7 @@ export function init(container, newband, opts = {}) {
 
 export function refresh(){
 
-	const bandData = connsData[band];
+	const bandData = liveConnsData[band];
 	mode = getMode();
 	
 	console.log("Connectivity for ",band, mode);
@@ -95,7 +96,7 @@ function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text =
 
 function html_for_ModeConnectivity(mode){
 	console.log(band,mode);
-	const bandModeData = connsData[band][mode];
+	const bandModeData = liveConnsData[band][mode];
     if (!bandModeData) return "";
 
 	// list all active tx and rx calls

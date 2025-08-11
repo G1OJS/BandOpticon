@@ -1,12 +1,12 @@
 
-export var connsData = {};
+export var liveConnsData = {};
 export var callsigns_info={};
 
 import {squareIsInHome} from './geo.js';
 import {purgeMinutes} from './store-cfg.js';
 
 
-export function addSpotToConnectivityMap(spot){
+export function addSpotToConnectivityMap(connsData, spot){
     // find sender and receiver domain (home / not home)
     let sh = squareIsInHome(spot.sl);
     let rh = squareIsInHome(spot.rl);
@@ -57,12 +57,12 @@ export function addSpotToConnectivityMap(spot){
 }
 
 
-export function purgeConnections() {
+export function purgeLiveConnections() {
 //	console.log("Purging old connections");
-	for (const band in connsData) {
-		for (const mode in connsData[band]) {
+	for (const band in liveConnsData) {
+		for (const mode in liveConnsData[band]) {
 			for (const dir of["Tx", "Rx"]) {
-				const calls = connsData[band][mode][dir];
+				const calls = liveConnsData[band][mode][dir];
 				for (const homeCall in calls) {
 					const others = calls[homeCall];
 					const toDelete = [];
@@ -85,7 +85,7 @@ export function purgeConnections() {
 
 
 export function countAllTimestamps() {
-    return Object.values(connsData)
+    return Object.values(liveConnsData)
         .flatMap(modes => Object.values(modes))
         .flatMap(({ Tx, Rx }) => [Tx, Rx])
         .flatMap(homeCalls => Object.values(homeCalls))

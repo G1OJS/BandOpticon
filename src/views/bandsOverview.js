@@ -1,5 +1,5 @@
 
-import * as CONNSDATA from '../lib/conns-data.js';
+import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 
 
@@ -53,7 +53,7 @@ function safePercentage(numerator, denominator) {
 
 function html_forStatsForAllBands() {
 
-	const activeBands = Object.keys(CONNSDATA.connsData).sort((a, b) => wavelength(b) - wavelength(a));
+	const activeBands = Object.keys(liveConnsData).sort((a, b) => wavelength(b) - wavelength(a));
 //	console.log("bandsOverview found active bands: "+ activeBands);
 	var HTML = "";
  
@@ -88,7 +88,7 @@ function html_forStatsRowLabels() {
 
 function html_forStatsForThisBand(band, mode, RxTx) {
 
-    const bandData = CONNSDATA.connsData[band];
+    const bandData = liveConnsData[band];
     if (!bandData) return "";
 	
 	console.log("Writing stats for " + band + " " + mode);
