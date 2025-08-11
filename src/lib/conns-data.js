@@ -1,5 +1,5 @@
 
-export var connectivity_Band_Mode_HomeCall = {};
+export var connsData = {};
 export var callsigns_info={};
 
 import {squareIsInHome} from './geo.js';
@@ -19,32 +19,32 @@ export function addSpotToConnectivityMap(spot){
 	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, RxTx:'Rx'};
 
     // start and maintain a structure associating 'far end' entities with each home call for both home transmit and home receive
-    // the structure is connectivity_Band_Mode_HomeCall[band][Tx|Rx][homeCall][otherCall] = timestamp
+    // the structure is connsData[band][Tx|Rx][homeCall][otherCall] = timestamp
     // and we only keep the latest timestamp, which avoids duplicates
     const band = String(spot.b);
     const mode = String(spot.md);
     const t = parseInt(spot.t);
 	const rp = spot.rp;
     // create band entry if it doesn't exist
-    if (!connectivity_Band_Mode_HomeCall[band])
-        connectivity_Band_Mode_HomeCall[band] = {}
+    if (!connsData[band])
+        connsData[band] = {}
 	// create mode entry if it doesn't exist
-    if (!connectivity_Band_Mode_HomeCall[band][mode])
-        connectivity_Band_Mode_HomeCall[band][mode] = {Tx: {}, Rx: {} }; 
+    if (!connsData[band][mode])
+        connsData[band][mode] = {Tx: {}, Rx: {} }; 
     if (sh) {
         const h = spot.sc,
         o = spot.rc;
-        if (!connectivity_Band_Mode_HomeCall[band][mode].Tx[h])
-            connectivity_Band_Mode_HomeCall[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
-        connectivity_Band_Mode_HomeCall[band][mode].Tx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
+        if (!connsData[band][mode].Tx[h])
+            connsData[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
+        connsData[band][mode].Tx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
 //		console.log("Added connection " + h + " rxby " + o + " at " + t);
     }
     if (rh) {
         const h = spot.rc,
         o = spot.sc;
-        if (!connectivity_Band_Mode_HomeCall[band][mode].Rx[h])
-            connectivity_Band_Mode_HomeCall[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
-        connectivity_Band_Mode_HomeCall[band][mode].Rx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
+        if (!connsData[band][mode].Rx[h])
+            connsData[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
+        connsData[band][mode].Rx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
 //		console.log("Added connection " + h + " rxing " + o + " at " + t);
     }
 
@@ -59,10 +59,10 @@ export function addSpotToConnectivityMap(spot){
 
 export function purgeConnections() {
 //	console.log("Purging old connections");
-	for (const band in connectivity_Band_Mode_HomeCall) {
-		for (const mode in connectivity_Band_Mode_HomeCall[band]) {
+	for (const band in connsData) {
+		for (const mode in connsData[band]) {
 			for (const dir of["Tx", "Rx"]) {
-				const calls = connectivity_Band_Mode_HomeCall[band][mode][dir];
+				const calls = connsData[band][mode][dir];
 				for (const homeCall in calls) {
 					const others = calls[homeCall];
 					const toDelete = [];
@@ -85,7 +85,7 @@ export function purgeConnections() {
 
 
 export function countAllTimestamps() {
-    return Object.values(connectivity_Band_Mode_HomeCall)
+    return Object.values(connsData)
         .flatMap(modes => Object.values(modes))
         .flatMap(({ Tx, Rx }) => [Tx, Rx])
         .flatMap(homeCalls => Object.values(homeCalls))

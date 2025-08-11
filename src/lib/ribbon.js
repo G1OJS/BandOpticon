@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
 import * as STORAGE from './store-cfg.js';
-import {countAllTimestamps} from './conns-data.js'
+import {connsData, countAllTimestamps} from './conns-data.js'
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -18,13 +18,9 @@ export default class Ribbon {
 		this.onConfigChange = onConfigChange || (() => {});
 		this.tStart = Date.now();
 		this.watchedMode = "FT8";
-		this.activeModes = new Set(this.watchedMode);
+		this.activeModes = new Set();
 		this.attachInputHandlers();
 		setInterval(() => this.updateClock(), 1000);
-	}
-
-	getWatchedMode() {
-	  return this.watchedMode;
 	}
 	
 	updateClock() {
@@ -36,6 +32,27 @@ export default class Ribbon {
 		document.getElementById("connectionsIn").innerHTML = countAllTimestamps();
 	}
 
+	setMode(mode) {
+		this.watchedMode = mode;
+		this.onModeChange(this.watchedMode);
+		this.writeModeButtons();
+	}
+	
+	getWatchedMode() {
+	  return this.watchedMode;
+	}
+
+	registerActiveModes() {
+		if(!connsData){return}
+		for (const band in connsData){
+			for (const md in connsData[band]) {
+				this.activeModes.add(md);
+			}
+		}
+		console.log(this.activeModes);
+		this.writeModeButtons();
+	}
+	
 	writeModeButtons() {
 		const el = document.getElementById("modeSelectBox");
 		el.innerHTML = "<legend>Mode</legend>"; 
@@ -52,18 +69,6 @@ export default class Ribbon {
 				modeBtn.classList.add('active');
 			}
 		});
-	}
-
-	setMode(mode) {
-		this.watchedMode = mode;
-		this.onModeChange(this.watchedMode);
-		this.writeModeButtons();
-	}
-
-	registerActiveModes(modeList) {
-		this.activeModes = new Set(modeList);
-		this.writeModeButtons();
-		//console.log("ribbon: register active modes",this.activeModes);
 	}
 
 	attachInputHandlers() {

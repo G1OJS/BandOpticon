@@ -1,14 +1,12 @@
 
-import * as CONNSDATA from '../lib/conns-data.js';
+import {connsData, callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 
-var activeModes = new Set(); // updated to be relevant to the current view and then passed back to ribbon
-let registerActiveModes = () => {};  // fallback to no-op
 
 var DOMcontainer = null;
-let getMode = () => null;
 let band = null;
+let getMode = () => null;
 let mode = null;
 let entityTypeHome = 'L4';
 let entityTypeRemote = 'L4';
@@ -23,8 +21,11 @@ function wavelength(band) {
     }
 }
 
-export function init(container, opts = {}) {
-  band = opts.band || band;  // if opts.band is null, leave band alone
+export function init(container, newband, opts = {}) {
+
+	band = newband;
+  	getMode = opts.getWatchedMode;
+	mode = getMode();
   
   // heuristic to manage *initial* table size until separate entity types available for home/remote
   let wl = parseInt(wavelength(band));
@@ -32,13 +33,7 @@ export function init(container, opts = {}) {
   if(wl>10 && wl<80){ entityTypeRemote = 'L2' ;}
   // -----------------------------------------
   DOMcontainer = container;
-  if (opts.getWatchedMode) {
-    getMode = opts.getWatchedMode;
-	mode = getMode();
-  }
-  if (opts.registerActiveModes) {
-    registerActiveModes = opts.registerActiveModes;
-  }
+
   DOMcontainer.addEventListener('click', (e) => {
 	  const id = e.target.id;
 	  let grp = id.split('.')[0];
@@ -49,18 +44,16 @@ export function init(container, opts = {}) {
 		refresh();
 	  }
   });
+  
+  refresh(); // first display
 
 }
 
 export function refresh(){
-	// Update activeModes for all modes found on this band ONLY
-	const bandData = CONNSDATA.connectivity_Band_Mode_HomeCall[band];
-	for (const md in bandData) {
-        activeModes.add(md);
-	}
-	// need to add a mode sweep here
-	registerActiveModes(activeModes);	
+
+	const bandData = connsData[band];
 	mode = getMode();
+	
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
@@ -101,8 +94,8 @@ function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text =
 
 
 function html_for_ModeConnectivity(mode){
-	const bandModeData = CONNSDATA.connectivity_Band_Mode_HomeCall[band][mode];
-	const callsigns_info = CONNSDATA.callsigns_info;
+	console.log(band,mode);
+	const bandModeData = connsData[band][mode];
     if (!bandModeData) return "";
 
 	// list all active tx and rx calls
@@ -200,7 +193,6 @@ function html_for_ModeConnectivity(mode){
 
 function entityInHome(entity){
 	// entity is either a square (string) or a callsign_info record with a .inHome flag 
-	const callsigns_info = CONNSDATA.callsigns_info;
 	let inHome = false;
 
 	if(callsigns_info[entity]) {
@@ -212,7 +204,6 @@ function entityInHome(entity){
 }
 
 function getEntity(call,entityType){
-  const callsigns_info = CONNSDATA.callsigns_info;
   if(entityType=="CS"){return call;}
   let square = callsigns_info[call].sq;
   if(entityType=="L2"){return square.substring(0,2).toUpperCase();}

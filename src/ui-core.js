@@ -1,13 +1,14 @@
 // ui-core.js
 
-import Ribbon from './lib/ribbon.js';
-
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
-import * as Overview from './views/allbands.js'; 
+import * as BandsOverview from './views/bandsOverview.js'; 
 import * as Connectivity from './views/connectivity.js';
 import * as CallsActivity from './views/calls_activity.js';
 import * as BenchmarkRx from './views/benchmarkRx.js';
 import * as AllFileAnalysis from './views/allFileAnalysis.js';
+
+// Ribbon scrapes for active modes, has getter for watched mode, and calls here with changes
+import Ribbon from './lib/ribbon.js';
 
 const ribbon = new Ribbon({
   onModeChange: refreshCurrentView,
@@ -19,59 +20,52 @@ setInterval(() => refreshCurrentView(), 5000);
 
 let currentView = null;
 
-// VIEWS is not currently used
-const VIEWS = [{v:'overview',s:'flat',l:'Home', i:'🏠'},{v:'connectivity',s:'tabbed', l:'Connectivity', i:''},{v:'callsactivity',s:'tabbed', l:'Callsign Activity', i:''}]
+export function loadView(viewName, band = null) {
+	
+	// all views live in the 'mainView' div
+	let DOMmainView = document.getElementById("mainView");
 
-
-export function loadView(viewName, options = {}) {
+	// write common HTML for all views (home button and 'mainViewContent')
+	let HTML = "";
+	if(viewName != 'bandsOverview'){ 
+		HTML += "<div> <button class='tab' data-action='bandsOverview'>🏠 Home</button> </div>";
+	}
+	HTML += "<div id='mainViewContent'></div>";
+	DOMmainView.innerHTML = HTML;
+	
+	// clear 'mainViewContent' and load the view. DOMconatiner passed here incase new views
+	// need a specific structure
+	let DOMcontainer = document.getElementById("mainViewContent");
+    DOMcontainer.innerHTML = ''; 
+	
+	ribbon.registerActiveModes(); // just for visual loading the mode buttons
 	
 	const viewMap = {
-	  overview: Overview,
+	  bandsOverview: BandsOverview,
 	  connectivity: Connectivity,
-	  callsactivity: CallsActivity,
+	  callsActivity: CallsActivity,
 	  benchmarkRx: BenchmarkRx,
 	  allFileAnalysis: AllFileAnalysis
 	};
 
-	const viewFn = viewMap[viewName];
-	if (viewFn) {
-	  currentView = viewFn;
-	} else {
-	  console.warn(`Unknown view: ${viewName}`);
-	  return;
-	}
-
-	let DOMmainView = document.getElementById("mainView");
-
-	// identify the view's clickable band elements & attach method
+	currentView = viewMap[viewName];
+	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
+	
+	// event listeners for the clickable band buttons in bandsOverview
 	DOMmainView.addEventListener('click', (e) => {
 	  const bandElem = e.target.closest('[data-band]');
 	  if (bandElem) {
-		const band = bandElem.dataset.band;
-		loadView('connectivity', { band: band });
+		loadView('connectivity',  band = bandElem.dataset.band);
 	  }
 	});
 
-	 DOMmainView.innerHTML = "<div id='tabBar'> \
-			<button class='tab' data-action='overview'>🏠 Home</button> \
-			</div> \
-			<div id='mainViewContent'></div>";
-	 let DOMcontainer = document.getElementById("mainViewContent");
-  
-  DOMcontainer.innerHTML = ''; 
-  currentView.init(DOMcontainer, {
-	  registerActiveModes: ribbon?.registerActiveModes.bind(ribbon),
-	  getWatchedMode: ribbon?.getWatchedMode.bind(ribbon),
-	  ...options
-  });
-  
-	refreshCurrentView();
+	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
 
+
 export function refreshCurrentView() {
-  if (currentView && currentView.refresh) {
+	ribbon.registerActiveModes();
     currentView.refresh();
-  }
 }
 
 // for view select buttons 

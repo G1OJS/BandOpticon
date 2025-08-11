@@ -6,7 +6,7 @@ import * as UI from './ui-core.js';
 
 STORAGE.loadConfig();
 MQTT.connectToFeed();
-UI.loadView('overview');  // default view
+UI.loadView('bandsOverview');  // default view
 
 
 setInterval(CONNSDATA.purgeConnections, 30000);

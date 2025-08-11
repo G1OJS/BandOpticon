@@ -2,23 +2,22 @@
 import * as CONNSDATA from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 
-var activeModes = new Set(); // updated to be relevant to the current view and then passed back to ribbon
-var currentMode = null;
+
 var DOMcontainer = null;
-let registerActiveModes = () => {};  // fallback to no-op
 let getMode = () => null;
+let mode = null;
 let details_level = 0;
 
-export function init(container, opts = {}) {
-	console.log("init home");
+export function init(container, band, opts = {}) {
 	DOMcontainer = container;
-	registerActiveModes = opts.registerActiveModes;
 	getMode = opts.getWatchedMode;
+	mode = getMode();
+	refresh(); // first display
 }
 
 export function refresh(){
-	console.log("refresh home");
-	currentMode = getMode();
+	mode = getMode();
+
 	let HTML = '<h2>Bands Overview</h2>';
 	HTML += html_forStatsForAllBands();
 	let details_text = details_level ? "Hide benchmarking stats":"Show benchmarking stats";
@@ -28,7 +27,7 @@ export function refresh(){
 	HTML += "<button id='btn_allFileAnalysis' data-action = 'allFileAnalysis'>WSJT ALL analysis</button>";
 	
 	DOMcontainer.innerHTML = HTML;
-	registerActiveModes(activeModes);	// updated in html_forStatsForAllBands and now passed back to ribbon
+	
 	const detailsButton = document.getElementById('details_toggle');
 	detailsButton.addEventListener('click', () => {
 		details_level = 1-details_level;
@@ -54,18 +53,18 @@ function safePercentage(numerator, denominator) {
 
 function html_forStatsForAllBands() {
 
-	const activeBands = Object.keys(CONNSDATA.connectivity_Band_Mode_HomeCall).sort((a, b) => wavelength(b) - wavelength(a));
-	
+	const activeBands = Object.keys(CONNSDATA.connsData).sort((a, b) => wavelength(b) - wavelength(a));
+//	console.log("bandsOverview found active bands: "+ activeBands);
 	var HTML = "";
  
-    HTML = "<h3>Transmitting " + currentMode + "</h3><div class='outputContainer transmit'>";
+    HTML = "<h3>Transmitting " + mode + "</h3><div class='outputContainer transmit'>";
     HTML += html_forStatsRowLabels();
-    activeBands.forEach(band => HTML += html_forStatsForThisBand(band, currentMode, "Tx"));
+    activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Tx"));
     HTML += "</div>";
 	
-    HTML += "<h3>Receiving " + currentMode + "</h3><div class='outputContainer receive'>";
+    HTML += "<h3>Receiving " + mode + "</h3><div class='outputContainer receive'>";
     HTML += html_forStatsRowLabels();
-    activeBands.forEach(band => HTML += html_forStatsForThisBand(band, currentMode, "Rx"));
+    activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Rx"));
     HTML += "</div>";
 	
 	return HTML;
@@ -88,17 +87,12 @@ function html_forStatsRowLabels() {
 }
 
 function html_forStatsForThisBand(band, mode, RxTx) {
-//	console.log("Writing stats for " + band + RxTx);
 
-    const bandData = CONNSDATA.connectivity_Band_Mode_HomeCall[band];
+    const bandData = CONNSDATA.connsData[band];
     if (!bandData) return "";
 	
+	console.log("Writing stats for " + band + " " + mode);
 	var HTML = "";
-
-    // Update activeModes early for all modes found on this band
-    for (const md in bandData) {
-        activeModes.add(md);
-    }
 
     // Access the relevant direction of the watched mode
     const bandModeData = bandData[mode]?.[RxTx];
@@ -155,8 +149,8 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 		}
 	}
     HTML += "</div></div>";
-	 
-	 return HTML;
+
+	return HTML;
 }
 
 
