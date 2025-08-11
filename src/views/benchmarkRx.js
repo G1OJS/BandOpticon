@@ -14,6 +14,13 @@ export function init(container, band, opts = {}) {
 	mode = getMode();
 	mode = getMode();
 	
+	
+
+	
+    refresh(); // first display
+}
+
+export function refresh(){
 	let HTML = ""
 	HTML +=  '<h2>Rx Benchmarking for ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
@@ -22,17 +29,10 @@ export function init(container, band, opts = {}) {
 	HTML += "The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter."
 	HTML += "</div><br>";
 	
-	HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
+	HTML += "<canvas id='benchmarkGraph' style='width:100%;max-width:700px'></canvas>"
 	DOMcontainer.innerHTML = HTML;
-	
 
-	
-    refresh(); // first display
-}
-
-export function refresh(){
-
-	graph1('graph1', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
+	graph1('benchmarkGraph', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
 
 }
 
