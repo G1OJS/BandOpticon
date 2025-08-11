@@ -42,6 +42,8 @@
 			HTML += ' <span id = "timeinfo_'+rc+'"></span><button id = "delete_'+rc.trim()+'">Delete data</button>'
 		}
 		HTML += '</div><br><span id = "combined_info"></span>';
+		HTML += "<input class = 'settings-input' id='global_t0' type='datetime-local' title='from time'>"
+		HTML += "<input class = 'settings-input' id='global_tn' type='datetime-local' title='to time'>"
 		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
 		DOMcontainer.innerHTML = HTML;
 		
@@ -58,7 +60,13 @@
 				if(metadata[rc].tn < global_tn) {global_tn=metadata[rc].tn}
 			}
 		}	
-		document.getElementById("combined_info").innerHTML = "Combined (overlapping) time range "+global_t0.toLocaleString()+" to "+global_tn.toLocaleString();
+		// need to add the onchange event to redraw the chart .............
+		
+		
+	//	document.getElementById("combined_info").innerHTML = "Combined (overlapping) time range "+global_t0.toLocaleString()+" to "+global_tn.toLocaleString();
+	//	console.log(global_t0.toISOString())
+		document.getElementById("global_t0").value = global_t0.toISOString().slice(0, 16);
+		document.getElementById("global_tn").value = global_tn.toISOString().slice(0, 16);
 		
 		graph1('graph1', historicConnsData, mode, dummyCallsigns, global_t0/1000, global_tn/1000);
 	}
