@@ -1,5 +1,5 @@
 
-export function graph1(canvas, bandModeData, mode, myCalls, fromTime, toTime){
+export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, toTime_seconds){
 	
 	let otherCalls = new Set();
 	let rxObj={};
@@ -46,7 +46,9 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime, toTime){
 	for (const idx of x_sortdex){
 		let t_a = rpts_a[idx].t;
 		let t_b = rpts_b[idx].t;
-		let in_time_window = (t_a >= fromTime && t_a <= toTime) || (t_b >= fromTime && t_b <= toTime);
+	//	console.log("A "+fromTime_seconds, t_a, toTime_seconds);
+	//	console.log("B "+fromTime_seconds, t_b, toTime_seconds);
+		let in_time_window = (t_a >= fromTime_seconds && t_a <= toTime_seconds) || (t_b >= fromTime_seconds && t_b <= toTime_seconds);
 		if(in_time_window){
 			ser_a.push(rpts_a[idx].rp);
 			ser_b.push(rpts_b[idx].rp);

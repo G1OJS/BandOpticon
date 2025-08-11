@@ -8,27 +8,17 @@
 	let mode = null;
 
 	let historicConnsData = {};
-	let metadata = {};
+	let dummyCallsigns = ['AllTXT1','AllTXT2'];
+	
+	export function refresh(){
+	   // does nothing
+	}
 
 	export function init(container, band, opts = {}) {
 		DOMcontainer = container;
 		getMode = opts.getWatchedMode;
 		mode = getMode();
-		internal_refresh(); // keeps this away from the periodic refresh
-	}
-
-	export function refresh(){
-	   // does nothing
-	}
-
-	let dummyCallsigns = ['AllTXT1','AllTXT2'];
-
-	function internal_refresh(){
-
-		const bandModeData = historicConnsData;
-		if(!bandModeData){return}
-		mode = getMode();
-
+		
 		let HTML = ""
 		HTML +=  '<h2>WSJT-X ALL File Analysis for ' + mode +'</h2>';
 		HTML += "<div class = 'text-sm'>";
@@ -36,39 +26,62 @@
 		HTML += ""
 		HTML += ""
 		
+		//file chooser, info span and unload buttons for each ALL file
 		HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
 		for (const rc of dummyCallsigns){
 			HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
-			HTML += ' <span id = "timeinfo_'+rc+'"></span><button id = "delete_'+rc.trim()+'">Delete data</button>'
+			HTML += ' <span id = "timeinfo_'+rc+'"></span><button id = "delete_'+rc.trim()+'">Unload</button>'
 		}
-		HTML += '</div><br><span id = "combined_info"></span>';
-		HTML += "<input class = 'settings-input' id='global_t0' type='datetime-local' title='from time'>"
+		
+		// start time and end time choosers
+		HTML += "<br><br>Chart includes (UTC): <input class = 'settings-input' id='global_t0' type='datetime-local' title='from time'>"
 		HTML += "<input class = 'settings-input' id='global_tn' type='datetime-local' title='to time'>"
-		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
+
+		// container for refreshable parts
+		HTML += "<div id = 'allFileRefreshingContainer'></div>";
 		DOMcontainer.innerHTML = HTML;
 		
-		let global_tn = new Date("2100-12-17T03:24:00");
-		let global_t0 = new Date("1995-12-17T03:24:00");
+		// event listeners for file chooser and delete buttons
 		for (const rc of dummyCallsigns){
 			const inputElement = document.getElementById('allFileChooser_'+rc.trim());
 			inputElement.addEventListener("change", handleFileSelection);
 			const deleteButton = document.getElementById('delete_'+rc.trim());
 			deleteButton.addEventListener("click", handleDelete);
-			if(metadata[rc]){
-				document.getElementById("timeinfo_"+rc).innerHTML = "time range "+metadata[rc].t0.toLocaleString()+","+metadata[rc].tn.toLocaleString()+" ";
-				if(metadata[rc].t0 > global_t0) {global_t0=metadata[rc].t0}
-				if(metadata[rc].tn < global_tn) {global_tn=metadata[rc].tn}
-			}
 		}	
-		// need to add the onchange event to redraw the chart .............
 		
+		// event listeners for start and end time inputs
+		let t0_el = document.getElementById("global_t0");		
+		t0_el.addEventListener("input", internal_refresh);
+		let tn_el = document.getElementById("global_tn");
+		tn_el.addEventListener("input", internal_refresh);
 		
-	//	document.getElementById("combined_info").innerHTML = "Combined (overlapping) time range "+global_t0.toLocaleString()+" to "+global_tn.toLocaleString();
-	//	console.log(global_t0.toISOString())
-		document.getElementById("global_t0").value = global_t0.toISOString().slice(0, 16);
-		document.getElementById("global_tn").value = global_tn.toISOString().slice(0, 16);
+		// pre-set default values in time boxes if needed
+		console.log(new Date("2000-01-01 00:00"));
+		if (!t0_el.value) {t0_el.value = "2000-01-01 00:00"}
+		if (!tn_el.value) {tn_el.value = "2100-01-01 00:00"}
 		
-		graph1('graph1', historicConnsData, mode, dummyCallsigns, global_t0/1000, global_tn/1000);
+		internal_refresh(); 
+	}
+
+	function internal_refresh(){
+		console.log("Internal refresh");
+
+		const bandModeData = historicConnsData;
+		const container = document.getElementById("allFileRefreshingContainer");
+		if(!bandModeData){return}
+		mode = getMode();
+
+		let HTML = ""
+		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
+		container.innerHTML = HTML;
+		
+		let t0_el = document.getElementById("global_t0");
+		let tn_el = document.getElementById("global_tn");
+		let global_t0_sec = Math.floor(new Date(t0_el.value).getTime() / 1000);
+		let global_tn_sec = Math.floor(new Date(tn_el.value).getTime() / 1000);
+
+		console.log("From (seconds)", global_t0_sec, "To (seconds)", global_tn_sec);
+		graph1('graph1', historicConnsData, mode, dummyCallsigns, global_t0_sec, global_tn_sec);
 	}
 
 	function handleFileSelection(event){
@@ -78,10 +91,10 @@
 		const call = id.split("_")[1];
 		reader.onload = () => {
 			let rr = reader.result;
-			load_ALL_file(rr,call);
-		}
-		console.log(fileList[0]);		
+			load_ALL_file(rr,call); 
+		}	
 		reader.readAsText(fileList[0]);
+		
 	}
 
 	function handleDelete(event){
@@ -107,6 +120,7 @@
   }
   
   function getEpoch(dt_str_utc){
+	// returns epoch in milliseconds from the date time string at the start of each line in the all file
 	let d = dt_str_utc;
 	let dt = new Date(Date.UTC("20"+d.slice(0,2),d.slice(2,4)-1,d.slice(4,6),d.slice(7,9),d.slice(9,11),d.slice(11,13)));
 	let epoch_from_utc = dt;
@@ -142,24 +156,35 @@
 					let traw = getEpoch(s[0]);
 					let t = traw.valueOf() / 1000;
 					if(sc!="" && sl && md!="" && b && t){	// ignore unknown bands etc (some caused by zero MHz in ALL.txt)
-						//const cutoff = Date.now() / 1000 - 60 * STORAGE.purgeMinutes;
-					  //  const cutoff = Date.now() / 1000 - 60 * 72;	// 72 hours
-					//	if(t > cutoff){
 						let spot = {'sc':sc,'rc':rc,'sl':sl,'rl':rl,'rp':rp,'b':b,'md':md,'t':t};
 						addSpotToConnectivityMap(historicConnsData, spot);
 						nSpots +=1;
-					//	}
-						if(traw<t0){t0=traw};
-						if(traw>tn){tn=traw};
+						if(traw<t0){t0=traw}; // capture earliest time (first line)
+						if(traw>tn){tn=traw}; // capture latest time (last line)
 					}
 				}
 			}
-		//	console.log(spot);
 		}
-	  metadata[call]={'t0':t0, 'tn':tn}
-	  console.log(metadata[call]);
-	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");
+	  // t0 and tn are now the time range (in milliseconds epoch) of the input file
+	  // First write this to the info span:
+	  document.getElementById("timeinfo_"+call).innerHTML = t0.toLocaleString()+" to " + tn.toLocaleString() + " ";
+	  
+	  // Now update start and end time controls to the common overlap window
+	  // i.e. if this file starts later than the window, make the window start with this file, 
+	  // and if the file ends before the window make the window end with this file
+
+	  let t0Str = t0.toISOString().slice(0, 16);
+	  let tnStr = tn.toISOString().slice(0, 16);
+	  
+	  let t0_el = document.getElementById("global_t0");
+	  if(t0 > new Date(t0_el.value)) {t0_el.value = t0Str; } // if this file starts later ....
+	  
+	  let tn_el = document.getElementById("global_tn");
+	  if (tn < new Date(tn_el.value)  ) {tn_el.value = tnStr;} // if this file ends earlier ....
+	  
+	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");	  
 	  internal_refresh();
+
 	}
 
 
