@@ -1,56 +1,86 @@
-import {addSpotToConnectivityMap} from '../lib/conns-data.js';
-import * as STORAGE from '../lib/store-cfg.js';
-import {squareIsInHome} from '../lib/geo.js';
-import {graph1} from '../views/common.js';
+	import {addSpotToConnectivityMap} from '../lib/conns-data.js';
+	import * as STORAGE from '../lib/store-cfg.js';
+	import {squareIsInHome} from '../lib/geo.js';
+	import {graph1} from '../views/common.js';
 
-var DOMcontainer = null;
-let getMode = () => null;
-let mode = null;
+	var DOMcontainer = null;
+	let getMode = () => null;
+	let mode = null;
 
-let historicConnsData = {}
+	let historicConnsData = {}
 
-export function init(container, band, opts = {}) {
-    DOMcontainer = container;
- 	getMode = opts.getWatchedMode;
-	mode = getMode();
-    internal_refresh(); // keeps this away from the periodic refresh
-}
-
-export function refresh(){
-   // does nothing
-}
-
-let dummyCallsigns = ['AllTXT1','AllTXT2'];
-
-function internal_refresh(){
-
-	const bandModeData = historicConnsData;
-	if(!bandModeData){return}
-	mode = getMode();
-
-	let HTML = ""
-	HTML +=  '<h2>WSJT-X ALL File Analysis for ' + mode +'</h2>';
-	HTML += "<div class = 'text-sm'>";
-	HTML += "This is a new view (still being developed) "
-	HTML += ""
-	HTML += ""
-	
-	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
-	for (const rc of dummyCallsigns){
-		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
+	export function init(container, band, opts = {}) {
+		DOMcontainer = container;
+		getMode = opts.getWatchedMode;
+		mode = getMode();
+		internal_refresh(); // keeps this away from the periodic refresh
 	}
-	HTML += "</div><br>";
-	HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
-	DOMcontainer.innerHTML = HTML;
-	
-	for (const rc of dummyCallsigns){
-		const inputElement = document.getElementById('allFileChooser_'+rc.trim());
-		inputElement.addEventListener("change", handleFileSelection);
-	}	
-	
 
-	graph1('graph1', historicConnsData, mode, dummyCallsigns);
-}
+	export function refresh(){
+	   // does nothing
+	}
+
+	let dummyCallsigns = ['AllTXT1','AllTXT2'];
+
+	function internal_refresh(){
+
+		const bandModeData = historicConnsData;
+		if(!bandModeData){return}
+		mode = getMode();
+
+		let HTML = ""
+		HTML +=  '<h2>WSJT-X ALL File Analysis for ' + mode +'</h2>';
+		HTML += "<div class = 'text-sm'>";
+		HTML += "This is a new view (still being developed) "
+		HTML += ""
+		HTML += ""
+		
+		HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
+		for (const rc of dummyCallsigns){
+			HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
+			HTML += ' <button id = "delete_'+rc.trim()+'">Delete data</button>'
+		}
+		HTML += "</div><br>";
+		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
+		DOMcontainer.innerHTML = HTML;
+		
+		for (const rc of dummyCallsigns){
+			const inputElement = document.getElementById('allFileChooser_'+rc.trim());
+			inputElement.addEventListener("change", handleFileSelection);
+			const deleteButton = document.getElementById('delete_'+rc.trim());
+			deleteButton.addEventListener("click", handleDelete);
+		}	
+		
+
+		graph1('graph1', historicConnsData, mode, dummyCallsigns);
+	}
+
+	function handleFileSelection(event){
+		const fileList = event.target.files;
+		const id = event.target.id;
+		const reader = new FileReader();
+		reader.onload = () => {
+			let rr = reader.result;
+			load_ALL_file(rr,id.split("_")[1]);
+		}
+		console.log(fileList[0]);
+		reader.readAsText(fileList[0]);
+	}
+
+	function handleDelete(event){
+		const id = event.target.id;
+		let call = id.split("_")[1];
+		for (const band in historicConnsData) {
+			for (const mode in historicConnsData[band]) {
+				const Rx_calls = historicConnsData[band][mode].Rx;
+				const others = Rx_calls[call];
+				const toDelete = [];
+				for (const otherCall in others) { toDelete.push(otherCall)}
+				toDelete.forEach(otherCall => delete others[otherCall]);					
+			}
+		}
+		internal_refresh();
+	}
 
 
   function getBand(MHz){
@@ -108,15 +138,5 @@ function internal_refresh(){
 	  internal_refresh();
 	}
 
-function handleFileSelection(event){
-	const fileList = event.target.files;
-	const id = event.target.id;
-	const reader = new FileReader();
-	reader.onload = () => {
-		let rr = reader.result;
-		load_ALL_file(rr,id.split("_")[1]);
-	}
-	console.log(fileList[0]);
-	reader.readAsText(fileList[0]);
-}
+
 
