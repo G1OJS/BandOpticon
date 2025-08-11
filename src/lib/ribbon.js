@@ -50,7 +50,6 @@ export default class Ribbon {
 				this.activeModes.add(md);
 			}
 		}
-		console.log(this.activeModes);
 		this.writeModeButtons();
 	}
 	

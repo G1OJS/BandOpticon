@@ -1,5 +1,5 @@
 
-export function graph1(canvas, bandModeData, mode, myCalls){
+export function graph1(canvas, bandModeData, mode, myCalls, fromTime, toTime){
 	
 	let otherCalls = new Set();
 	let rxObj={};
@@ -30,39 +30,49 @@ export function graph1(canvas, bandModeData, mode, myCalls){
 	for (const idx in otherCalls){
 		let b = otherCalls[idx].split("-")[0];
 		let c = otherCalls[idx].split("-")[1];
-		rpts_a.push(bandModeData[b]?.[mode]?.Rx?.[myCalls[0]]?.[c]?.rp ?? -30);
-		rpts_b.push(bandModeData[b]?.[mode]?.Rx?.[myCalls[1]]?.[c]?.rp ?? -30);
+		let rec_a = bandModeData[b]?.[mode]?.Rx?.[myCalls[0]]?.[c]?? {t:0, rp:-30};
+		let rec_b = bandModeData[b]?.[mode]?.Rx?.[myCalls[1]]?.[c]?? {t:0, rp:-30};
+		rpts_a.push(rec_a);
+		rpts_b.push(rec_b);
 		x.push(idx);
 		x_sortdex.push(idx);
 	}
 	
 //	x_sortdex.sort((a,b)=>{return((rpts_a[a] > -30 && rpts_a[b] > - 30)? (rpts_a[b]-rpts_a[a]):(rpts_b[b]-rpts_b[a])) });
-	x_sortdex.sort((a,b)=>{return((rpts_a[b]-rpts_b[b])-(rpts_a[a]-rpts_b[a])) });
+	x_sortdex.sort((a,b)=>{return((rpts_a[b].rp - rpts_b[b].rp)-(rpts_a[a].rp - rpts_b[a].rp)) });
 	let ser_a=[];
 	let ser_b=[];
+	let xx = [];
 	for (const idx of x_sortdex){
-		ser_a.push(rpts_a[idx]);
-		ser_b.push(rpts_b[idx]);
+		let t_a = rpts_a[idx].t;
+		let t_b = rpts_b[idx].t;
+		let in_time_window = (t_a >= fromTime && t_a <= toTime) || (t_b >= fromTime && t_b <= toTime);
+		if(in_time_window){
+			ser_a.push(rpts_a[idx].rp);
+			ser_b.push(rpts_b[idx].rp);
+			xx.push(idx);
+		}
 	}
+	
 	
 	new Chart(canvas, {
 	  type: "line",
 	  data: {
-		labels: x,
+		labels: xx,
 		datasets: [{
 		  label:myCalls[0],
 		  fill: false,
 		  lineTension: 0,
 		  backgroundColor: "rgba(0,0,255,1.0)",
 		  borderColor: "rgba(0,0,255,0.1)",
-		  data: ser_a
+		  data: ser_a,
 		}, {
 		  label:myCalls[1],
 		  fill: false,
 		  lineTension: 0,
 		  backgroundColor: "rgba(0,200,100,1.0)",
 		  borderColor: "rgba(0,0,255,0.1)",
-		  data: ser_b
+		  data: ser_b,
 		}]
 	  },
 	  options: {

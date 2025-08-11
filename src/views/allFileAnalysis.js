@@ -7,7 +7,8 @@
 	let getMode = () => null;
 	let mode = null;
 
-	let historicConnsData = {}
+	let historicConnsData = {};
+	let metadata = {};
 
 	export function init(container, band, opts = {}) {
 		DOMcontainer = container;
@@ -38,32 +39,40 @@
 		HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
 		for (const rc of dummyCallsigns){
 			HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
-			HTML += ' <button id = "delete_'+rc.trim()+'">Delete data</button>'
+			HTML += ' <span id = "timeinfo_'+rc+'"></span><button id = "delete_'+rc.trim()+'">Delete data</button>'
 		}
-		HTML += "</div><br>";
+		HTML += '</div><br><span id = "combined_info"></span>';
 		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
 		DOMcontainer.innerHTML = HTML;
 		
+		let global_tn = new Date("2100-12-17T03:24:00");
+		let global_t0 = new Date("1995-12-17T03:24:00");
 		for (const rc of dummyCallsigns){
 			const inputElement = document.getElementById('allFileChooser_'+rc.trim());
 			inputElement.addEventListener("change", handleFileSelection);
 			const deleteButton = document.getElementById('delete_'+rc.trim());
 			deleteButton.addEventListener("click", handleDelete);
+			if(metadata[rc]){
+				document.getElementById("timeinfo_"+rc).innerHTML = "time range "+metadata[rc].t0.toLocaleString()+","+metadata[rc].tn.toLocaleString()+" ";
+				if(metadata[rc].t0 > global_t0) {global_t0=metadata[rc].t0}
+				if(metadata[rc].tn < global_tn) {global_tn=metadata[rc].tn}
+			}
 		}	
+		document.getElementById("combined_info").innerHTML = "Combined (overlapping) time range "+global_t0.toLocaleString()+" to "+global_tn.toLocaleString();
 		
-
-		graph1('graph1', historicConnsData, mode, dummyCallsigns);
+		graph1('graph1', historicConnsData, mode, dummyCallsigns, global_t0/1000, global_tn/1000);
 	}
 
 	function handleFileSelection(event){
 		const fileList = event.target.files;
 		const id = event.target.id;
 		const reader = new FileReader();
+		const call = id.split("_")[1];
 		reader.onload = () => {
 			let rr = reader.result;
-			load_ALL_file(rr,id.split("_")[1]);
+			load_ALL_file(rr,call);
 		}
-		console.log(fileList[0]);
+		console.log(fileList[0]);		
 		reader.readAsText(fileList[0]);
 	}
 
@@ -92,7 +101,7 @@
   function getEpoch(dt_str_utc){
 	let d = dt_str_utc;
 	let dt = new Date(Date.UTC("20"+d.slice(0,2),d.slice(2,4)-1,d.slice(4,6),d.slice(7,9),d.slice(9,11),d.slice(11,13)));
-	let epoch_from_utc = dt.valueOf() / 1000
+	let epoch_from_utc = dt;
 	return epoch_from_utc;  
   }
   
@@ -111,6 +120,8 @@
 		const rl = STORAGE.squaresList.split(",")[0]; // need user to make sure the first square is associated with the callsign
 		
 		let nSpots = 0;
+		let t0 = new Date("2100-12-17T03:24:00");
+		let tn = new Date("1995-12-17T03:24:00");
 		for (const l of lines) {
 			let s = l.trim().match(/\S+/g);
 			if(s){
@@ -120,7 +131,8 @@
 					let rp = s[4].trim();
 					let md = s[3].trim();
 					let b = getBand(s[1]);
-					let t = getEpoch(s[0]);
+					let traw = getEpoch(s[0]);
+					let t = traw.valueOf() / 1000;
 					if(sc!="" && sl && md!="" && b && t){	// ignore unknown bands etc (some caused by zero MHz in ALL.txt)
 						//const cutoff = Date.now() / 1000 - 60 * STORAGE.purgeMinutes;
 					  //  const cutoff = Date.now() / 1000 - 60 * 72;	// 72 hours
@@ -129,11 +141,15 @@
 						addSpotToConnectivityMap(historicConnsData, spot);
 						nSpots +=1;
 					//	}
+						if(traw<t0){t0=traw};
+						if(traw>tn){tn=traw};
 					}
 				}
 			}
 		//	console.log(spot);
 		}
+	  metadata[call]={'t0':t0, 'tn':tn}
+	  console.log(metadata[call]);
 	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");
 	  internal_refresh();
 	}

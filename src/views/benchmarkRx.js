@@ -14,9 +14,6 @@ export function init(container, band, opts = {}) {
 	mode = getMode();
 	mode = getMode();
 	
-	
-
-	
     refresh(); // first display
 }
 
@@ -32,7 +29,7 @@ export function refresh(){
 	HTML += "<canvas id='benchmarkGraph' style='width:100%;max-width:700px'></canvas>"
 	DOMcontainer.innerHTML = HTML;
 
-	graph1('benchmarkGraph', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
+	graph1('benchmarkGraph', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()),0,1e30);
 
 }
 
