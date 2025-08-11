@@ -50,12 +50,14 @@ export function graph1(canvas, bandModeData, mode, myCalls){
 	  data: {
 		labels: x,
 		datasets: [{
+		  label: myCalls[0],
 		  fill: false,
 		  lineTension: 0,
 		  backgroundColor: "rgba(0,0,255,1.0)",
 		  borderColor: "rgba(0,0,255,0.1)",
 		  data: ser_a
 		}, {
+		  label: myCalls[1],
 		  fill: false,
 		  lineTension: 0,
 		  backgroundColor: "rgba(0,200,100,1.0)",
@@ -64,8 +66,9 @@ export function graph1(canvas, bandModeData, mode, myCalls){
 		}]
 	  },
 	  options: {
-		legend: {display: false},
+		legend: {display: true},
 		scales: {
+		  x: {title:{display:true, text:'callsign number'}},
 		  yAxes: [{ticks: {min: -25, max:15}}],
 		}
 	  }

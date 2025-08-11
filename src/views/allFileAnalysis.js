@@ -19,6 +19,8 @@ export function refresh(){
    // does nothing
 }
 
+let dummyCallsigns = ['AllTXT1','AllTXT2'];
+
 function internal_refresh(){
 
 	const bandModeData = CONNSDATA.connsData;
@@ -33,19 +35,20 @@ function internal_refresh(){
 	HTML += ""
 	
 	HTML += '<br><br>Experimental - import Rx spots from WSJT-X ALL.txt files: '
-	for (const rc of STORAGE.myCall.split(",")){
+	for (const rc of dummyCallsigns){
 		HTML += '<br>ALL file for '+rc+' <input type="file" id="allFileChooser_'+rc.trim()+'" accept="*.txt" />'
 	}
 	HTML += "</div><br>";
 	HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
 	DOMcontainer.innerHTML = HTML;
 	
-	for (const rc of STORAGE.myCall.split(",")){
+	for (const rc of dummyCallsigns){
 		const inputElement = document.getElementById('allFileChooser_'+rc.trim());
 		inputElement.addEventListener("change", handleFileSelection);
 	}	
 	
-	graph1('graph1', CONNSDATA.connsData, mode, STORAGE.myCall.split(",").map(s => s.trim()));
+
+	graph1('graph1', CONNSDATA.connsData, mode, dummyCallsigns);
 }
 
 
@@ -89,12 +92,12 @@ function internal_refresh(){
 					let t = getEpoch(s[0]);
 					if(sc!="" && sl && md!="" && b && t){	// ignore unknown bands etc (some caused by zero MHz in ALL.txt)
 						//const cutoff = Date.now() / 1000 - 60 * STORAGE.purgeMinutes;
-					    const cutoff = Date.now() / 1000 - 60 * 24;	// 24 hours
-						if(t > cutoff){
-							let spot = {'sc':sc,'rc':rc,'sl':sl,'rl':rl,'rp':rp,'b':b,'md':md,'t':t};
-							CONNSDATA.addSpotToConnectivityMap(spot);
-							nSpots +=1;
-						}
+					  //  const cutoff = Date.now() / 1000 - 60 * 72;	// 72 hours
+					//	if(t > cutoff){
+						let spot = {'sc':sc,'rc':rc,'sl':sl,'rl':rl,'rp':rp,'b':b,'md':md,'t':t};
+						CONNSDATA.addSpotToConnectivityMap(spot);
+						nSpots +=1;
+					//	}
 					}
 				}
 			}
