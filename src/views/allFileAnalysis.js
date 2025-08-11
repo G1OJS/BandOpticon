@@ -72,7 +72,16 @@
 		mode = getMode();
 
 		let HTML = ""
-		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>"
+		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>";
+		
+		HTML += "<br><h3>To Do:</h3><ul>";
+		HTML += "<li>Highlight 'sessions' within file time window - & allow choice</li>";
+		HTML += "<li>Integrate mode buttons</li>";
+		HTML += "<li>Show band information</li>";
+		HTML += "<li>Show range of SNR not just max</li>";
+		HTML += "<li>Add distance / bearing / options</li>";
+		HTML += "</ul>";
+
 		container.innerHTML = HTML;
 		
 		let t0_el = document.getElementById("global_t0");

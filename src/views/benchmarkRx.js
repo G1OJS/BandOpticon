@@ -27,6 +27,13 @@ export function refresh(){
 	HTML += "</div><br>";
 	
 	HTML += "<canvas id='benchmarkGraph' style='width:100%;max-width:700px'></canvas>"
+	
+		HTML += "<br><h3>To Do:</h3><ul>";
+		HTML += "<li>Integrate mode buttons</li>";
+		HTML += "<li>Show band information</li>";
+		HTML += "<li>Show range of SNR not just max</li>";
+		HTML += "</ul>";
+	
 	DOMcontainer.innerHTML = HTML;
 
 	graph1('benchmarkGraph', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()),0,1e30);
