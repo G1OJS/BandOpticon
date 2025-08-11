@@ -48,7 +48,9 @@ export function loadView(viewName, band = null) {
 	  allFileAnalysis: AllFileAnalysis
 	};
 
+	console.log("Loading view ",viewName);
 	currentView = viewMap[viewName];
+	console.log(currentView);
 	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
 	
 	// event listeners for the clickable band buttons in bandsOverview

@@ -16,11 +16,10 @@ export function init(container, band, opts = {}) {
 
 export function refresh(){
 
-	const bandData = liveConnsData.liveConnsData[band];
+	const bandData = liveConnsData[band];
 	mode = getMode();
 
 	let HTML = "";
-	HTML += "<button data-action='home'>🏠 Home</button>"
 	HTML += "<h2>Home callsign activity</h2>";
 	HTML += "<h3>Transmitting Callsigns</h3>";
 	HTML += html_for_callsActivity('Tx');
@@ -30,9 +29,7 @@ export function refresh(){
 }
 
 function html_for_callsActivity(RxTx){
-//	  const data = liveConnsData.liveConnsData;
-//    if (!data) return;
-	const callsigns_info = liveConnsData.callsigns_info;
+
     if (!callsigns_info) return;
 	
 	const sortedEntries = Object.entries(callsigns_info).sort(([a], [b]) => {
