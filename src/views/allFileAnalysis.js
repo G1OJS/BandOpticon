@@ -12,6 +12,7 @@
 	
 	export function refresh(){
 	   // does nothing
+	   // if keeping this view, maybe allow mode changes to flow through here
 	}
 
 	export function init(container, band, opts = {}) {

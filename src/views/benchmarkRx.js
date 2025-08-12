@@ -23,7 +23,7 @@ export function refresh(){
 	HTML += "<div class = 'text-sm'>";
 	HTML += "This is a new view (still being developed) showing the latest report from each of 'My Callsigns' for each transmitting callsign heard. ";
 	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot. ";
-	HTML += "The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter.";
+	HTML += "The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter. ";
 	HTML += "<strong>To see comparisons, enter additional callsigns in the 'My Callsign(s)' box above - either another station's, or your callsign for a secondary Rx.</strong>";
 	HTML += "</div><br>";
 	
@@ -39,7 +39,7 @@ export function refresh(){
 	
 	DOMcontainer.innerHTML = HTML;
 	
-	graph1('benchmarkGraph', liveConnsData, mode, STORAGE.myCall.split(",").map(s => s.trim()),0,1e30);
+	graph1('benchmarkGraph', liveConnsData, getMode(), STORAGE.myCall.split(",").map(s => s.trim()),0,1e30);
 
 }
 

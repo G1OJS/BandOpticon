@@ -21,7 +21,6 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		}
 	}
 
-
     // look for concurrent SNR reports of the same callsign on the same band defined as 
 	// reports where both myCalls received the call within the concurrency window
 	// Also include reports from one of myCalls but not the other
@@ -77,40 +76,26 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 			return (a.range_1[1] - a.range_2[1]) - (b.range_1[1] - b.range_2[1]);   // sort on difference between max achieved SNRs
 		});
 
-    // assign each band-call a colour according to band	
-	let bc_colors = [];
-	let bands = reportsArr.map(row => row.label.split('-')[0]);
-	for (const band of bands){
-		let idx = [false,"160m","80m","60m","40m","30m","20m","18m","15m","12m","10m","6m","4m","2m","70cm"].findIndex(b => b == band); 
-		let cols = ['rgba(255, 99, 132, 0.5)','rgba(54, 162, 235, 0.5)','rgba(75, 192, 192, 0.5)'];
-		let col = cols[idx % 3];
-		bc_colors.push(col);
-	}
-
     // prep the data for the chart
 	let labels = reportsArr.map(row => row.label);
-	console.log(labels);
-	console.log(bc_colors);
-	console.log(reportsArr.map(row => row.range_1));
-	console.log(reportsArr.map(row => row.range_2));
-	
-	
+	let color_Rx1 = 'rgba(255, 99, 132, 0.5)';
+	let color_Rx2 = 'rgba(54, 162, 235, 0.5)';
 	const data = {
 	  labels,
 	  datasets: [
 		{
 		  label: myCalls[0],
 		  data: reportsArr.map(row => row.range_1),
-		  backgroundColor: bc_colors.map(c => c.replace('0.5', '0.7')),
-		  borderColor:bc_colors,
+		  backgroundColor: color_Rx1,
+		  borderColor:color_Rx1,
 		  barPercentage: 0.5,
 		  borderWidth: 1
 		},
 		{
 		  label: myCalls[1],
 		  data: reportsArr.map(row => row.range_2),
-		  backgroundColor: bc_colors.map(c => c.replace('0.5', '0.4')), 
-		  borderColor:bc_colors,
+		  backgroundColor: color_Rx2, 
+		  borderColor:color_Rx2,
 		  barPercentage: 0.85,
 		  borderWidth: 1
 		}
