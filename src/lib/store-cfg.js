@@ -39,7 +39,7 @@ export function updatePurgeMins(event) {
     purgeMinutes = document.getElementById('purgeMinutesInput').value;
     console.log("Purge mins updated to " + purgeMinutes);
     saveConfig();
-    purgeConnections();
+    purgeLiveConnections();
 }
 
 export function saveConfig() {

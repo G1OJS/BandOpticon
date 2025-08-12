@@ -34,18 +34,16 @@ export function addSpotToConnectivityMap(connsData, spot){
     if (sh) {
         const h = spot.sc,
         o = spot.rc;
-        if (!connsData[band][mode].Tx[h])
-            connsData[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
-        connsData[band][mode].Tx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
-//		console.log("Added connection " + h + " rxby " + o + " at " + t);
+        if (!connsData[band][mode].Tx[h]) connsData[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
+		if (!connsData[band][mode].Tx[h][o]) connsData[band][mode].Tx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
+		connsData[band][mode].Tx[h][o].push ({'t':t, 'rp':rp});
     }
     if (rh) {
         const h = spot.rc,
         o = spot.sc;
-        if (!connsData[band][mode].Rx[h])
-            connsData[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
-        connsData[band][mode].Rx[h][o] = {'t':t, 'rp':rp}; // overwrite with most recent
-//		console.log("Added connection " + h + " rxing " + o + " at " + t);
+		if (!connsData[band][mode].Rx[h]) connsData[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
+		if (!connsData[band][mode].Rx[h][o]) connsData[band][mode].Rx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
+		connsData[band][mode].Rx[h][o].push ({'t':t, 'rp':rp});
     }
 
     // old code but keep safe:
@@ -67,6 +65,7 @@ export function purgeLiveConnections() {
 					const others = calls[homeCall];
 					const toDelete = [];
 					for (const otherCall in others) {
+						
 						const cutoff = Date.now() / 1000 - 60 * purgeMinutes;
 						if (others[otherCall].t < cutoff) {
 							toDelete.push(otherCall);
