@@ -65,13 +65,13 @@ export function purgeLiveConnections() {
 					const others = calls[homeCall];
 					const toDelete = [];
 					for (const otherCall in others) {
-						
+						let latest = 0;
+						for (const rpt in otherCall){if(rpt.t > latest) {latest = rpt.t}}
 						const cutoff = Date.now() / 1000 - 60 * purgeMinutes;
-						if (others[otherCall].t < cutoff) {
-							toDelete.push(otherCall);
+						if (latest < cutoff) {
+						//	toDelete.push(otherCall);
 						}
 					}
-//					console.log("Deleting " + toDelete.length);
 					toDelete.forEach(otherCall => delete others[otherCall]);					
 					if (Object.keys(others).length === 0) {
 						delete calls[homeCall];

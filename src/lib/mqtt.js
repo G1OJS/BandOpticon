@@ -59,3 +59,21 @@ function onMessage(msg) {
 
 	addSpotToConnectivityMap(liveConnsData, spot);
 }
+
+
+export function connectToTest(){
+
+	
+	addSpotToConnectivityMap(liveConnsData, {'sc':'G1OJS','rc':'PA0RL','sl':'IO90','rl':'JO03','rp':-17,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'sc':'G1OJS','rc':'SA0PU','sl':'IO90','rl':'JO03','rp':-12,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'sc':'G1OJS','rc':'F3GGG','sl':'IO90','rl':'JO03','rp':-2,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'sc':'G1OJS','rc':'2E0IRL','sl':'IO90','rl':'JO03','rp':-20,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'sc':'G1OJS','rc':'K0EEE','sl':'IO90','rl':'JO03','rp':-17,'b':'20m','md':'FT8','t':1e30});
+	
+	addSpotToConnectivityMap(liveConnsData, {'rc':'G1OJS','sc':'PA0RL','sl':'IO90','rl':'JO03','rp':-7,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'rc':'G1OJS','sc':'SA0PU','sl':'IO90','rl':'JO03','rp':-2,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'rc':'G1OJS','sc':'F3GGG','sl':'IO90','rl':'JO03','rp':-12,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'rc':'G1OJS','sc':'2E0IRL','sl':'IO90','rl':'JO03','rp':-22,'b':'20m','md':'FT8','t':1e30});
+	addSpotToConnectivityMap(liveConnsData, {'rc':'G1OJS','sc':'K0EEE','sl':'IO90','rl':'JO03','rp':-13,'b':'20m','md':'FT8','t':1e30});	
+	
+}
