@@ -21,7 +21,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		}
 	}
 
-	let conc_sec = 90;
+	let conc_sec = 600;
     // look for concurrent SNR reports of the same callsign on the same band defined as 
 	// reports where both myCalls received the call within the concurrency window
 	// Also include reports from one of myCalls but not the other
@@ -87,16 +87,10 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 	  }
 	}
 	
-	var labels = Object.keys(conc_rpts).map((e) => e.trim());
-	var rx1Data = labels.map((bc, i) => ( [Math.min(...conc_rpts[bc].rp1), Math.max(...conc_rpts[bc].rp1)]));
-	var rx2Data = labels.map((bc, i) => ( [Math.min(...conc_rpts[bc].rp2), Math.max(...conc_rpts[bc].rp2)]));
+	const labels = Object.keys(conc_rpts).map((e) => e.trim()).slice(0, 300);
+	const rx1Data = labels.map((bc, i ) => ( [Math.min(...conc_rpts[bc].rp1), 1+Math.max(...conc_rpts[bc].rp1)]));
+	const rx2Data = labels.map((bc, i ) => ( [Math.min(...conc_rpts[bc].rp2), 1+Math.max(...conc_rpts[bc].rp2)]));
 
-	console.log(labels.length);
-
-	labels=labels.slice(0, 300);
-	rx1Data=rx1Data.slice(0, 300);
-	rx2Data=rx2Data.slice(0, 300);
-	
 	const bandColors = labels.map(getBandColor);
 
 	const data = {
@@ -120,7 +114,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 	};
 
 	const config = {
-	  type: 'line',
+	  type: 'bar',
 	  data,
 	  options: {
 		responsive: true,
