@@ -21,20 +21,27 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		}
 	}
 
-	let conc_sec = 600;
+
     // look for concurrent SNR reports of the same callsign on the same band defined as 
 	// reports where both myCalls received the call within the concurrency window
 	// Also include reports from one of myCalls but not the other
 	// output: conc_rpts[serial_idx] = {band-call, rpt_1, rpt_2} where rpt_x is -30dB if only the other myCall received 
-
-	let conc_rpts = {};  // concurrent reports to graph
-
-	function addReport(bc, r1, r2) {
-	  if (!conc_rpts[bc]) conc_rpts[bc] = { rp1: [], rp2: [] };
-	  conc_rpts[bc].rp1.push(r1);
-	  conc_rpts[bc].rp2.push(r2);
+	let conc_sec = 600;
+	let reports = {};
+	// function to add reports in a structure easy to manipulate later
+	function addReport(bc, rp1, rp2) {
+	  if (!reports[bc]) {
+		reports[bc] = {bc, rp1:rp1, rp2:rp2, label:bc, range_1:[rp1-0.5, rp1+0.5], range_2:[rp2-0.5, rp2+0.5]};
+	  } else {
+		if (rp1 > reports[bc].rp1) reports[bc].rp1 = rp1;   // 
+		if (rp2 > reports[bc].rp2) reports[bc].rp2 = rp2;
+		if (rp1 < reports[bc].range_1[0]) reports[bc].range_1[0] = rp1;
+		if (rp1 > reports[bc].range_1[1]) reports[bc].range_1[1] = rp1;
+		if (rp2 < reports[bc].range_2[0]) reports[bc].range_2[0] = rp2;
+		if (rp2 > reports[bc].range_2[1]) reports[bc].range_2[1] = rp2;
+	  }
 	}
-	
+	// loop over bandcalls and add reports to structure
 	for (const bc of band_calls){
 		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
 		if(rpts_1) {
@@ -62,52 +69,51 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 			}
 		}
 	}
+	
+	// sort by Tx band, then by SNR diff between the two Rx calls
+	let reportsArr = Object.values(reports);
+	reportsArr.sort((a, b) => {
+		    let a_band = a.bc.split("-")[0];
+		    let b_band = b.bc.split("-")[0];
+			if (a_band !== b_band) return a_band.localeCompare(b_band); // band-call sort
+			return (a.rx1_max - a.rx2_max) - (b.rx1_max - b.rx2_max);   // sort on difference between max achieved SNRs
+		});
 
-//	function s(a,b){
-//		// different band-calls: sort by band-call
-//		if(a.bc != b.bc) {return a.bc - b.bc}
-//		// sort by snr difference between rp1 and rp2 (two differences, one for a and one for b)	
-//		return (a.rp1-a.rp2) - (b.rp1-b.rp2)
-//	}
-	
-  //  conc_rpts.sort((a,b)=>s(a,b));
-	
-//	for (const rpt of conc_rpts){console.log(rpt)}
-	
-	// chart with colours identifying different bands (if more than one band in the dataset)
-	
-	// Map band to colour 
-	function getBandColor(bandCall) {
-	  const band = bandCall.split('-')[0]; // "20m", "40m", etc.
-	  switch (band) {
-		case '20m': return 'rgba(255, 99, 132, 0.5)'; // red-ish
-		case '40m': return 'rgba(54, 162, 235, 0.5)'; // blue-ish
-		case '80m': return 'rgba(75, 192, 192, 0.5)'; // teal-ish
-		default:    return 'rgba(201, 203, 207, 0.5)'; // grey
-	  }
+    // assign each band-call a colour according to band	
+	let bc_colors = [];
+	let bands = reportsArr.map(row => row.label.split('-')[0]);
+	for (const band of bands){
+		let idx = [false,"160m","80m","60m","40m","30m","20m","18m","15m","12m","10m","6m","4m","2m","70cm"].findIndex(b => b == band); 
+		let cols = ['rgba(255, 99, 132, 0.5)','rgba(54, 162, 235, 0.5)','rgba(75, 192, 192, 0.5)'];
+		let col = cols[idx % 3];
+		bc_colors.push(col);
 	}
+
+    // prep the data for the chart
+	let labels = reportsArr.map(row => row.label);
+	console.log(labels);
+	console.log(bc_colors);
+	console.log(reportsArr.map(row => row.range_1));
+	console.log(reportsArr.map(row => row.range_2));
 	
-	const labels = Object.keys(conc_rpts).map((e) => e.trim()).slice(0, 300);
-	const rx1Data = labels.map((bc, i ) => ( [Math.min(...conc_rpts[bc].rp1), 1+Math.max(...conc_rpts[bc].rp1)]));
-	const rx2Data = labels.map((bc, i ) => ( [Math.min(...conc_rpts[bc].rp2), 1+Math.max(...conc_rpts[bc].rp2)]));
-
-	const bandColors = labels.map(getBandColor);
-
+	
 	const data = {
 	  labels,
 	  datasets: [
 		{
 		  label: myCalls[0],
-		  data: rx1Data,
-		  backgroundColor: bandColors.map(c => c.replace('0.5', '0.7')),
-		  borderColor:bandColors,
+		  data: reportsArr.map(row => row.range_1),
+		  backgroundColor: bc_colors.map(c => c.replace('0.5', '0.7')),
+		  borderColor:bc_colors,
+		  barPercentage: 0.5,
 		  borderWidth: 1
 		},
 		{
 		  label: myCalls[1],
-		  data: rx2Data,
-		  backgroundColor: bandColors.map(c => c.replace('0.5', '0.4')), 
-		  borderColor:bandColors,
+		  data: reportsArr.map(row => row.range_2),
+		  backgroundColor: bc_colors.map(c => c.replace('0.5', '0.4')), 
+		  borderColor:bc_colors,
+		  barPercentage: 0.85,
 		  borderWidth: 1
 		}
 	  ]
@@ -120,7 +126,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		responsive: true,
 		scales: {
 		  y: {
-			beginAtZero: false, // allow negative SNR
+			beginAtZero: false,
 			title: {
 			  display: true,
 			  text: 'SNR (dB)'
@@ -134,7 +140,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		  }
 		},
     datasets: {
-      bar: { grouped: false } // overlay instead of side-by-side
+      bar: { grouped: false } 
     }  
 	  }
 	};
