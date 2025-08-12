@@ -31,10 +31,8 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 	// function to add reports in a structure easy to manipulate later
 	function addReport(bc, rp1, rp2) {
 	  if (!reports[bc]) {
-		reports[bc] = {bc, rp1:rp1, rp2:rp2, label:bc, range_1:[rp1-0.5, rp1+0.5], range_2:[rp2-0.5, rp2+0.5]};
+		reports[bc] = {bc, label:bc, range_1:[rp1-0.5, rp1+0.5], range_2:[rp2-0.5, rp2+0.5]};
 	  } else {
-		if (rp1 > reports[bc].rp1) reports[bc].rp1 = rp1;   // 
-		if (rp2 > reports[bc].rp2) reports[bc].rp2 = rp2;
 		if (rp1 < reports[bc].range_1[0]) reports[bc].range_1[0] = rp1;
 		if (rp1 > reports[bc].range_1[1]) reports[bc].range_1[1] = rp1;
 		if (rp2 < reports[bc].range_2[0]) reports[bc].range_2[0] = rp2;
@@ -76,7 +74,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		    let a_band = a.bc.split("-")[0];
 		    let b_band = b.bc.split("-")[0];
 			if (a_band !== b_band) return a_band.localeCompare(b_band); // band-call sort
-			return (a.rx1_max - a.rx2_max) - (b.rx1_max - b.rx2_max);   // sort on difference between max achieved SNRs
+			return (a.range_1[1] - a.range_2[1]) - (b.range_1[1] - b.range_2[1]);   // sort on difference between max achieved SNRs
 		});
 
     // assign each band-call a colour according to band	
