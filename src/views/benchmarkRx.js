@@ -31,9 +31,6 @@ export function refresh(){
 	
 		HTML += "<br><h3>To Do:</h3><ul>";
 		HTML += "<li>Integrate mode buttons</li>";
-		HTML += "<li>Show band information via legend</li>";
-		HTML += "<li>Make bar chart work</li>";
-		HTML += "<li>Reintegrate old sorting</li>";
 		HTML += "<li>Add distance / bearing / options</li>";
 		HTML += "</ul>";
 	
