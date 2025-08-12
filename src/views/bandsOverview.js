@@ -91,7 +91,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     const bandData = liveConnsData[band];
     if (!bandData) return "";
 	
-	console.log("Writing stats for " + band + " " + mode);
+//	console.log("Writing stats for " + band + " " + mode);
 	var HTML = "";
 
     // Access the relevant direction of the watched mode
