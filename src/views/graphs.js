@@ -36,7 +36,7 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	  
 	  let t1 = parseInt(rp1.t);
 	  let t2 = parseInt(rp2.t);
-	  if ( !in_time_window(t1) && !in_time_window(t2)) {return}	
+	  if ( !in_time_window(t1) || !in_time_window(t2)) {return}	
 	  let r1 = parseInt(rp1.rp);
 	  let r2 = parseInt(rp2.rp);
 	  

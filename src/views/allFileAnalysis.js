@@ -180,14 +180,24 @@
 	  
 	  // Update the end time control to the latest time in the common overlap window:
 	  // if the file ends before the window make the window end with this file
-	  let tnStr = tn.toISOString().slice(0, 16);
 	  let tn_el = document.getElementById("global_tn");
-	  if (tn < new Date(tn_el.value)  ) {tn_el.value = tnStr;} 
+	  if (tn < new Date(tn_el.value)  ) {
+		  tn_el.value = setpicker_local(tn);
+	  } 
 	  
 	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");	  
 	  internal_refresh();
 
 	}
 
+	function setpicker_local(dt_local) {
+	  let d = dt_local;
+	  const year = d.getFullYear();
+	  const month = (d.getMonth() + 1).toString().padStart(2, "0");
+	  const day = d.getDate().toString().padStart(2, "0");
+	  const hours = d.getHours().toString().padStart(2, "0");
+	  const minutes = d.getMinutes().toString().padStart(2, "0");
+	  return `${year}-${month}-${day}T${hours}:${minutes}`;
+	}
 
 
