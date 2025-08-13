@@ -16,7 +16,7 @@ const ribbon = new Ribbon({
   onConfigChange: refreshCurrentView,
 });
 
-setInterval(() => purgeLiveConnections(), 60000);
+setInterval(() => purgeLiveConnections(), 5000);
 setInterval(() => ribbon.writeModeButtons(), 5000);
 setInterval(() => refreshCurrentView(), 5000);
 

@@ -63,7 +63,7 @@ export function purgeLiveConnections() {
 	
 	const tNow = Math.round(Date.now() / 1000);
 	const cutoff = tNow - 60 * purgeMinutes;
-//	console.log("Purging old connections. tNow = " + tNow + " cutoff = "+ cutoff + " latest add = " + latestTimestamp );
+	//console.log("Purging old connections.\n tNow = " + tNow + "\n cutoff = "+ cutoff + "\n latest add = " + latestTimestamp );
 	
 	for (const band in liveConnsData) {
 		for (const mode in liveConnsData[band]) {
@@ -74,9 +74,14 @@ export function purgeLiveConnections() {
 					for (const otherCall in otherCalls) {
 						const reports = otherCalls[otherCall]
 						for (const rpt in reports){
-							if(reports[rpt].t < cutoff) {toDelete.push(rpt)}
+							if(reports[rpt].t < cutoff) {
+								toDelete.push(rpt)
+								//console.log("del "+reports[rpt].t );
+							}
 						}
-						toDelete.forEach(rpt => delete reports[rpt]);
+						toDelete.forEach(rpt => {
+							delete reports[rpt]
+						});
 						if (Object.keys(reports).length === 0) {
 						  delete otherCalls[otherCall];
 					    }
@@ -86,7 +91,6 @@ export function purgeLiveConnections() {
 		}
 	}
 }
-
 
 
 export function countAllConnections() {

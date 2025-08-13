@@ -1,7 +1,8 @@
 	import {addSpotToConnectivityMap} from '../lib/conns-data.js';
 	import * as STORAGE from '../lib/store-cfg.js';
 	import {squareIsInHome} from '../lib/geo.js';
-	import {graph1} from '../views/common.js';
+	import {graph} from '../views/graphs.js';
+	import {purgeMinutes} from '../lib/store-cfg.js';
 
 	var DOMcontainer = null;
 	let getMode = () => null;
@@ -12,7 +13,11 @@
 	
 	export function refresh(){
 	   // does nothing
-	   // if keeping this view, maybe allow mode changes to flow through here
+	   // except allow mode changes 
+	   if (getMode() != mode) {
+		   mode = getMode();
+		   internal_refresh();
+	   }
 	}
 
 	export function init(container, band, opts = {}) {
@@ -34,8 +39,8 @@
 			HTML += ' <span id = "timeinfo_'+rc+'"></span><button id = "delete_'+rc.trim()+'">Unload</button>'
 		}
 		
-		// start time and end time choosers
-		HTML += "<br><br>Chart includes (UTC): <input class = 'settings-input' id='global_t0' type='datetime-local' title='from time'>"
+		// end time chooser
+		HTML += "<br><br>Chart includes reports for the " + purgeMinutes + " minutes period before " 
 		HTML += "<input class = 'settings-input' id='global_tn' type='datetime-local' title='to time'>"
 
 		// container for refreshable parts
@@ -50,15 +55,12 @@
 			deleteButton.addEventListener("click", handleDelete);
 		}	
 		
-		// event listeners for start and end time inputs
-		let t0_el = document.getElementById("global_t0");		
-		t0_el.addEventListener("input", internal_refresh);
+		// event listeners for end time input
 		let tn_el = document.getElementById("global_tn");
 		tn_el.addEventListener("input", internal_refresh);
 		
 		// pre-set default values in time boxes if needed
 		console.log(new Date("2000-01-01 00:00"));
-		if (!t0_el.value) {t0_el.value = "2000-01-01 00:00"}
 		if (!tn_el.value) {tn_el.value = "2100-01-01 00:00"}
 		
 		internal_refresh(); 
@@ -70,26 +72,25 @@
 		const bandModeData = historicConnsData;
 		const container = document.getElementById("allFileRefreshingContainer");
 		if(!bandModeData){return}
-		mode = getMode();
 
 		let HTML = ""
 		HTML += "<canvas id='graph1' style='width:100%;max-width:700px'></canvas>";
 		
 		HTML += "<br><h3>To Do:</h3><ul>";
-		HTML += "<li>Highlight 'sessions' within file time window - & allow choice</li>";
-		HTML += "<li>Integrate mode buttons</li>";
+		HTML += "<li>Improve time navigation: 'sessions' within file</li>";
+		HTML += "<li>Integrate mode buttons (set from file not live)</li>";
 		HTML += "<li>Add distance / bearing / options</li>";
 		HTML += "</ul>";
 
 		container.innerHTML = HTML;
 		
-		let t0_el = document.getElementById("global_t0");
 		let tn_el = document.getElementById("global_tn");
-		let global_t0_sec = Math.floor(new Date(t0_el.value).getTime() / 1000);
 		let global_tn_sec = Math.floor(new Date(tn_el.value).getTime() / 1000);
+		let global_t0_sec = global_tn_sec - 60 * purgeMinutes
 
 		console.log("From (seconds)", global_t0_sec, "To (seconds)", global_tn_sec);
-		graph1('graph1', historicConnsData, mode, dummyCallsigns, global_t0_sec, global_tn_sec);
+		console.log("Secs now = "+ new Date() / 1000);
+		graph('graph1', historicConnsData, mode, dummyCallsigns, global_t0_sec, global_tn_sec);
 	}
 
 	function handleFileSelection(event){
@@ -177,18 +178,11 @@
 	  // First write this to the info span:
 	  document.getElementById("timeinfo_"+call).innerHTML = t0.toLocaleString()+" to " + tn.toLocaleString() + " ";
 	  
-	  // Now update start and end time controls to the common overlap window
-	  // i.e. if this file starts later than the window, make the window start with this file, 
-	  // and if the file ends before the window make the window end with this file
-
-	  let t0Str = t0.toISOString().slice(0, 16);
+	  // Update the end time control to the latest time in the common overlap window:
+	  // if the file ends before the window make the window end with this file
 	  let tnStr = tn.toISOString().slice(0, 16);
-	  
-	  let t0_el = document.getElementById("global_t0");
-	  if(t0 > new Date(t0_el.value)) {t0_el.value = t0Str; } // if this file starts later ....
-	  
 	  let tn_el = document.getElementById("global_tn");
-	  if (tn < new Date(tn_el.value)  ) {tn_el.value = tnStr;} // if this file ends earlier ....
+	  if (tn < new Date(tn_el.value)  ) {tn_el.value = tnStr;} 
 	  
 	  console.log("Added "+nSpots+" spots from ALL.txt file with "+lines.length+" lines");	  
 	  internal_refresh();

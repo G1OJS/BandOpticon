@@ -1,9 +1,14 @@
 
-export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, toTime_seconds){
+
+export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	
 	if(!bandModeData){return}
 	
-	// get all transmitting callsigns in the time window across all myCalls (works with any number but code below only works with first two)
+	let global_t0 = t0;
+	let global_tn = tn;
+	function in_time_window(t) {return(t>=global_t0 && t<=global_tn)}
+	
+	// get all transmitting callsigns across all myCalls (works with any number but code below only works with first two)
 	// as unique band-call combinations.  output: set(band-call) 
 	let band_calls = new Set();
 	for (const band in bandModeData) {
@@ -11,7 +16,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 			if(bandModeData[band][mode]?.Rx[mc]){
 				for (const oc in bandModeData[band][mode].Rx[mc]) {
 					for (const rpt of bandModeData[band][mode].Rx[mc][oc]){
-						if (rpt.t>= fromTime_seconds && rpt.t <= toTime_seconds){
+						if(in_time_window(parseInt(rpt.t))){
 							let bc = band +"-"+oc;
 							band_calls.add(bc);
 						}
@@ -21,25 +26,32 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		}
 	}
 
-    // look for concurrent SNR reports of the same callsign on the same band defined as 
-	// reports where both myCalls received the call within the concurrency window
+    // look for SNR reports of the same callsign on the same band 
 	// Also include reports from one of myCalls but not the other
-	// output: conc_rpts[serial_idx] = {band-call, rpt_1, rpt_2} where rpt_x is -30dB if only the other myCall received 
-	let conc_sec = 600;
 	let reports = {};
 	// function to add reports in a structure easy to manipulate later
 	function addReport(bc, rp1, rp2) {
+	  if(rp1 == null) {rp1 = {'t':rp2.t,'rp':-30} }
+	  if(rp2 == null) {rp2 = {'t':rp1.t,'rp':-30} }
+	  
+	  let t1 = parseInt(rp1.t);
+	  let t2 = parseInt(rp2.t);
+	  if ( !in_time_window(t1) && !in_time_window(t2)) {return}	
+	  let r1 = parseInt(rp1.rp);
+	  let r2 = parseInt(rp2.rp);
+	  
 	  if (!reports[bc]) {
-		reports[bc] = {bc, label:bc, range_1:[rp1-0.5, rp1+0.5], range_2:[rp2-0.5, rp2+0.5]};
+		reports[bc] = {bc, label:bc, range_1:[r1-0.5, r1+0.5], range_2:[r2-0.5, r2+0.5]}; // spread +/- 0.5 for graph visibility
 	  } else {
-		if (rp1 < reports[bc].range_1[0]) reports[bc].range_1[0] = rp1;
-		if (rp1 > reports[bc].range_1[1]) reports[bc].range_1[1] = rp1;
-		if (rp2 < reports[bc].range_2[0]) reports[bc].range_2[0] = rp2;
-		if (rp2 > reports[bc].range_2[1]) reports[bc].range_2[1] = rp2;
+		if ((r1 < reports[bc].range_1[0]) && in_time_window(t1)) reports[bc].range_1[0] = r1;
+		if ((r1 > reports[bc].range_1[1]) && in_time_window(t1)) reports[bc].range_1[1] = r1;
+		if ((r2 < reports[bc].range_2[0]) && in_time_window(t2)) reports[bc].range_2[0] = r2;
+		if ((r2 > reports[bc].range_2[1]) && in_time_window(t2)) reports[bc].range_2[1] = r2;
 	  }
+
 	}
 	// loop over bandcalls and add reports to structure
-	for (const bc of band_calls){
+	for (const bc of band_calls){  // Tx call is set here
 		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
 		if(rpts_1) {
 			for (const rpt_1 of rpts_1){
@@ -47,21 +59,19 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 				let also_in_2 = false;
 				if(rpts_2) {
 					for (const rpt_2 of rpts_2){
-						if(Math.abs(rpt_1.t - rpt_2.t) < conc_sec){
-							addReport(bc,parseInt(rpt_1.rp),parseInt(rpt_2.rp));
-							also_in_2 = true;
-						}
+						addReport(bc,rpt_1,rpt_2);
+						also_in_2 = true;
 					}
 				}
 				if(!also_in_2) {
-					addReport(bc,parseInt(rpt_1.rp),-30);
+					addReport(bc,rpt_1,null);
 				}
 			}
 		} else {
 			let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
 			if(rpts_2){
 				for (const rpt_2 of rpts_2){
-					addReport(bc,-30,parseInt(rpt_2.rp));
+					addReport(bc,null,rpt_2);
 				}
 			}
 		}
@@ -69,17 +79,23 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 	
 	// sort by Tx band, then by SNR diff between the two Rx calls
 	let reportsArr = Object.values(reports);
+
 	reportsArr.sort((a, b) => {
 		    let a_band = a.bc.split("-")[0];
 		    let b_band = b.bc.split("-")[0];
-			if (a_band !== b_band) return a_band.localeCompare(b_band); // band-call sort
-			return (a.range_1[1] - a.range_2[1]) - (b.range_1[1] - b.range_2[1]);   // sort on difference between max achieved SNRs
+			if (a_band !== b_band) return b_band.localeCompare(a_band); // band sort
+			let max1a = a.range_1[1];
+			let max1b = b.range_1[1];
+			let max2a = a.range_2[1];
+			let max2b = b.range_2[1];
+			if(max1b == max1a) return (max2a-max2b)  // rx1 has same rpt (likely -30): reverse sort on rx2
+			return (max1b - max1a) //  sort on Rx1 max
 		});
 
     // prep the data for the chart
 	let labels = reportsArr.map(row => row.label);
-	let color_Rx1 = 'rgba(255, 99, 132, 0.5)';
-	let color_Rx2 = 'rgba(54, 162, 235, 0.5)';
+	let color_Rx1 = 'rgba(255, 99, 132, 0.8)';
+	let color_Rx2 = 'rgba(54, 162, 235, 0.8)';
 	const data = {
 	  labels,
 	  datasets: [
@@ -101,7 +117,7 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 		}
 	  ]
 	};
-
+	
 	const config = {
 	  type: 'bar',
 	  data,
@@ -136,3 +152,4 @@ export function graph1(canvas, bandModeData, mode, myCalls, fromTime_seconds, to
 
 }
 	
+
