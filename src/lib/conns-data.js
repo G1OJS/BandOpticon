@@ -1,10 +1,12 @@
 
 export var liveConnsData = {};
 export var callsigns_info={};
+export var latestTimestamp = 0;
 
 import {squareIsInHome} from './geo.js';
 import {purgeMinutes} from './store-cfg.js';
 
+//setInterval(() => {console.log(liveConnsData)}, 20000);
 
 export function addSpotToConnectivityMap(connsData, spot){
     // find sender and receiver domain (home / not home)
@@ -24,6 +26,8 @@ export function addSpotToConnectivityMap(connsData, spot){
     const band = String(spot.b);
     const mode = String(spot.md);
     const t = parseInt(spot.t);
+	if(t > latestTimestamp) {latestTimestamp = t}
+	
 	const rp = spot.rp;
     // create band entry if it doesn't exist
     if (!connsData[band])
@@ -56,25 +60,26 @@ export function addSpotToConnectivityMap(connsData, spot){
 
 
 export function purgeLiveConnections() {
-//	console.log("Purging old connections");
+	
+	const tNow = Math.round(Date.now() / 1000);
+	const cutoff = tNow - 60 * purgeMinutes;
+//	console.log("Purging old connections. tNow = " + tNow + " cutoff = "+ cutoff + " latest add = " + latestTimestamp );
+	
 	for (const band in liveConnsData) {
 		for (const mode in liveConnsData[band]) {
 			for (const dir of["Tx", "Rx"]) {
-				const calls = liveConnsData[band][mode][dir];
-				for (const homeCall in calls) {
-					const others = calls[homeCall];
+				for (const homeCall in liveConnsData[band][mode][dir]) {
+					const otherCalls = liveConnsData[band][mode][dir][homeCall]     
 					const toDelete = [];
-					for (const otherCall in others) {
-						let latest = 0;
-						for (const rpt in otherCall){if(rpt.t > latest) {latest = rpt.t}}
-						const cutoff = Date.now() / 1000 - 60 * purgeMinutes;
-						if (latest < cutoff) {
-						//	toDelete.push(otherCall);
+					for (const otherCall in otherCalls) {
+						const reports = otherCalls[otherCall]
+						for (const rpt in reports){
+							if(reports[rpt].t < cutoff) {toDelete.push(rpt)}
 						}
-					}
-					toDelete.forEach(otherCall => delete others[otherCall]);					
-					if (Object.keys(others).length === 0) {
-						delete calls[homeCall];
+						toDelete.forEach(rpt => delete reports[rpt]);
+						if (Object.keys(reports).length === 0) {
+						  delete otherCalls[otherCall];
+					    }
 					}
 				}
 			}
@@ -83,10 +88,22 @@ export function purgeLiveConnections() {
 }
 
 
-export function countAllTimestamps() {
-    return Object.values(liveConnsData)
-        .flatMap(modes => Object.values(modes))
-        .flatMap(({ Tx, Rx }) => [Tx, Rx])
-        .flatMap(homeCalls => Object.values(homeCalls))
-        .reduce((sum, others) => sum + Object.keys(others).length, 0);
+
+export function countAllConnections() {
+  let nConns = 0;
+	for (const band in liveConnsData) {
+		for (const mode in liveConnsData[band]) {
+			for (const dir of["Tx", "Rx"]) {
+				for (const homeCall in liveConnsData[band][mode][dir]) {
+					const otherCalls = liveConnsData[band][mode][dir][homeCall]     
+					const toDelete = [];
+					for (const otherCall in otherCalls) {
+						nConns += 1;
+					}
+				}
+			}
+		}
+	}
+  return nConns;
 }
+

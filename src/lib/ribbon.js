@@ -2,7 +2,7 @@ var tStart = Date.now(); // software start time
 
 import * as STORAGE from './store-cfg.js';
 
-import {liveConnsData, countAllTimestamps} from '../lib/conns-data.js';
+import {liveConnsData, countAllConnections} from '../lib/conns-data.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -30,7 +30,7 @@ export default class Ribbon {
 		const runningmins = Math.trunc(((t - tStart) / 1000) / 60);
 		document.getElementById("clock").innerHTML = utc + " UTC";
 		document.getElementById("runningMins").innerHTML = runningmins;
-		document.getElementById("connectionsIn").innerHTML = countAllTimestamps();
+		document.getElementById("connectionsIn").innerHTML = countAllConnections();
 	}
 
 	setMode(mode) {

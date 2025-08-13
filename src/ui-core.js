@@ -6,7 +6,6 @@ import * as Connectivity from './views/connectivity.js';
 import * as CallsActivity from './views/calls_activity.js';
 import * as BenchmarkRx from './views/benchmarkRx.js';
 import * as AllFileAnalysis from './views/allFileAnalysis.js';
-import {purgeMinutes} from './lib/store-cfg.js';
 import {purgeLiveConnections} from './lib/conns-data.js';
 
 // Ribbon scrapes for active modes, has getter for watched mode, and calls here with changes
@@ -17,7 +16,7 @@ const ribbon = new Ribbon({
   onConfigChange: refreshCurrentView,
 });
 
-setInterval(purgeLiveConnections, purgeMinutes * 60000);
+setInterval(() => purgeLiveConnections(), 60000);
 setInterval(() => ribbon.writeModeButtons(), 5000);
 setInterval(() => refreshCurrentView(), 5000);
 
