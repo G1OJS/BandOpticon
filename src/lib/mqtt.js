@@ -1,4 +1,5 @@
 var mqttClient = null;
+var mqttClient2 = null;
 
 import {squaresArr} from './store-cfg.js';
 import {liveConnsData, addSpotToConnectivityMap} from './conns-data.js';
@@ -11,6 +12,24 @@ export function connectToFeed() {
     mqttClient.on("message", (filter, message) => {
         onMessage(message.toString());
     });
+
+  //  mqttClient2 = mqtt.connect("localhost:1886");
+ //   mqttClient2.onSuccess = subscribe_local();
+ //   mqttClient2.on("message", (filter, message) => {
+//		console.log("local ",message.toString())
+      //  onMessage(message.toString());
+  //  });
+
+}
+
+function subscribe_local(){
+	var topic = 'topic/all';
+	console.log("Subscribe to " + topic);
+	mqttClient2.subscribe(topic, (error) => {
+		if (error) {
+			console.error('subscription failed to ' + topic, error)
+		}
+	});
 }
 
 // subscribe to needed squares

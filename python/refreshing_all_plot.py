@@ -144,7 +144,7 @@ def merge_ab(decodes_by_call_a, decodes_by_call_b):
 def get_records():
     import time
     ut = time.time()
-    dt_first = ut - 600 - 3600
+    dt_first = ut - 600-3600
     decodes_by_call_a = read_ALLTXT(all_main, dt_first , home_square)
     decodes_by_call_b = read_ALLTXT(all_secondary, dt_first, home_square)
     records = merge_ab(decodes_by_call_a, decodes_by_call_b)
@@ -167,8 +167,7 @@ def refreshingPlot():
         df = pd.json_normalize(records)
         df = df.groupby("call").agg("max")
         df = df.sort_values(by = ["sn_a" , "sn_b"], ascending=[False, True])
-        df["km"].plot(ax=ax2, label="km", color="grey", alpha = 0.5)
-
+ 
         for art in list(ax1.lines):
            art.remove()
         for art in list(ax2.lines):
@@ -176,6 +175,8 @@ def refreshingPlot():
         
         df["sn_a"].plot(ax=ax1, label="snr A", color = "red", lw = 3)
         df["sn_b"].plot(ax=ax1, label="snr B", color = "blue", alpha = 0.5, lw = 2)
+        df["km"].plot(ax=ax2, label="km", color="grey", alpha = 0.5)
+        #df["deg"].plot(ax=ax2, label="deg", color="grey", alpha = 0.5)
         ax1.set_xticks(range(len(df)))
         ax1.set_xticklabels(df.index, rotation=90)
         ax1.set_xticklabels(ax1.get_xticklabels(), rotation=90, ha="right",  fontsize = 5)
