@@ -37,14 +37,14 @@ export function addSpotToConnectivityMap(connsData, spot){
         connsData[band][mode] = {Tx: {}, Rx: {} }; 
     if (sh) {
         const h = spot.sc,
-        o = spot.rc;
+        const o = spot.rc;
         if (!connsData[band][mode].Tx[h]) connsData[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
 		if (!connsData[band][mode].Tx[h][o]) connsData[band][mode].Tx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
 		connsData[band][mode].Tx[h][o].push ({'t':t, 'rp':rp});
     }
     if (rh) {
         const h = spot.rc,
-        o = spot.sc;
+        const o = spot.sc;
 		if (!connsData[band][mode].Rx[h]) connsData[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
 		if (!connsData[band][mode].Rx[h][o]) connsData[band][mode].Rx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
 		connsData[band][mode].Rx[h][o].push ({'t':t, 'rp':rp});

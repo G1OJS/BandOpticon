@@ -16,9 +16,11 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 			if(bandModeData[band][mode]?.Rx[mc]){
 				for (const oc in bandModeData[band][mode].Rx[mc]) {
 					for (const rpt of bandModeData[band][mode].Rx[mc][oc]){
-						if(in_time_window(parseInt(rpt.t))){
-							let bc = band +"-"+oc;
-							band_calls.add(bc);
+						if(rpt){
+							if(in_time_window(parseInt(rpt.t))){
+								let bc = band +"-"+oc;
+								band_calls.add(bc);
+							}
 						}
 					}
 				}

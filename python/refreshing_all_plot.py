@@ -186,11 +186,8 @@ def refreshingPlot():
         graph = ax1.legend(lines + lines2, labels + labels2, loc="best")
 
         plt.tight_layout()
-        plt.pause(1)
+        plt.pause(5)
 
-
-
-    
 config = get_config()
 all_main = get_config_option(config, "input", "all_main", "")
 all_secondary = get_config_option(config, "input", "all_secondary", "")
