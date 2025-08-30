@@ -7,7 +7,7 @@
 
 This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also drill down to view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares or callsigns are being reached and spotted by them.
 
-The software runs in Javascript on your machine and requires no downloads. Just click [here]({{ site.baseurl }}/BandOpticon) to watch the statistics evolve.
+The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the statistics evolve.
 
 [GitHub repo](https://github.com/G1OJS/BandOpticon/)
 
