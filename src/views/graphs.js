@@ -8,10 +8,22 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	let global_tn = tn;
 	function in_time_window(t) {return(t>=global_t0 && t<=global_tn)}
 	
-	// get all transmitting callsigns across all myCalls (works with any number but code below only works with first two)
-	// as unique band-call combinations.  output: set(band-call) 
-	let band_calls = new Set();
+	// get list of bands for first of myCalls
+	let bandList = new Set();
 	for (const band in bandModeData) {
+		if(bandModeData[band][mode]?.Rx[myCalls[0]]) bandList.add(band)
+	}
+	
+	if (bandList.size == 0) {
+		for (const band in bandModeData) {
+			bandList.add(band)
+		}	
+	}
+
+	// get all transmitting callsigns across all myCalls (works with any number but code below only works with first two)
+	// in each unique band-call combination.  output: set(band-call) 
+	let band_calls = new Set();
+	for (const band of bandList) {
 		for (const mc of myCalls){
 			if(bandModeData[band][mode]?.Rx[mc]){
 				for (const oc in bandModeData[band][mode].Rx[mc]) {
@@ -28,31 +40,9 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 		}
 	}
 
-    // look for SNR reports of the same callsign on the same band 
-	// Also include reports from one of myCalls but not the other
+    // look for SNR reports of the same callsign on the same band, 
+	// and reports that are only received by one of myCalls
 	let reports = {};
-	// function to add reports in a structure easy to manipulate later
-	function addReport(bc, rp1, rp2) {
-	  if(rp1 == null) {rp1 = {'t':rp2.t,'rp':-30} }
-	  if(rp2 == null) {rp2 = {'t':rp1.t,'rp':-30} }
-	  
-	  let t1 = parseInt(rp1.t);
-	  let t2 = parseInt(rp2.t);
-	  if ( !in_time_window(t1) || !in_time_window(t2)) {return}	
-	  let r1 = parseInt(rp1.rp);
-	  let r2 = parseInt(rp2.rp);
-	  
-	  if (!reports[bc]) {
-		reports[bc] = {bc, label:bc, range_1:[r1-0.5, r1+0.5], range_2:[r2-0.5, r2+0.5]}; // spread +/- 0.5 for graph visibility
-	  } else {
-		if ((r1 < reports[bc].range_1[0]) && in_time_window(t1)) reports[bc].range_1[0] = r1;
-		if ((r1 > reports[bc].range_1[1]) && in_time_window(t1)) reports[bc].range_1[1] = r1;
-		if ((r2 < reports[bc].range_2[0]) && in_time_window(t2)) reports[bc].range_2[0] = r2;
-		if ((r2 > reports[bc].range_2[1]) && in_time_window(t2)) reports[bc].range_2[1] = r2;
-	  }
-
-	}
-	// loop over bandcalls and add reports to structure
 	for (const bc of band_calls){  // Tx call is set here
 		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
 		if(rpts_1) {
@@ -86,24 +76,25 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 		    let a_band = a.bc.split("-")[0];
 		    let b_band = b.bc.split("-")[0];
 			if (a_band !== b_band) return b_band.localeCompare(a_band); // band sort
-			let max1a = a.range_1[1];
-			let max1b = b.range_1[1];
-			let max2a = a.range_2[1];
-			let max2b = b.range_2[1];
+			let max1a = a.range_1[1] || -50;
+			let max1b = b.range_1[1] || -50;
+			let max2a = a.range_2[1] || -50;
+			let max2b = b.range_2[1] || -50;
 			if(max1b == max1a) return (max2a-max2b)  // rx1 has same rpt (likely -30): reverse sort on rx2
 			return (max1b - max1a) //  sort on Rx1 max
 		});
 
     // prep the data for the chart
 	let labels = reportsArr.map(row => row.label);
-	let color_Rx1 = 'rgba(255, 99, 132, 0.8)';
-	let color_Rx2 = 'rgba(54, 162, 235, 0.8)';
+	let color_Rx1 = 'rgba(255, 99, 132, 1)';
+	let color_Rx2 = 'rgba(54, 162, 235, 0.7)';
 	const data = {
 	  labels,
 	  datasets: [
 		{
 		  label: myCalls[0],
 		  data: reportsArr.map(row => row.range_1),
+		  spanGaps: true,
 		  backgroundColor: color_Rx1,
 		  borderColor:color_Rx1,
 		  barPercentage: 0.5,
@@ -112,6 +103,7 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 		{
 		  label: myCalls[1],
 		  data: reportsArr.map(row => row.range_2),
+		  spanGaps: true,
 		  backgroundColor: color_Rx2, 
 		  borderColor:color_Rx2,
 		  barPercentage: 0.85,
@@ -151,6 +143,28 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	  document.getElementById(canvas),
 	  config
 	);
+	
+	
+	function addReport(bc, rp1, rp2) {
+	  if(rp1 == null) {rp1 = {'t':rp2.t,'rp':null} }
+	  if(rp2 == null) {rp2 = {'t':rp1.t,'rp':null} }
+	  
+	  let t1 = parseInt(rp1.t);
+	  let t2 = parseInt(rp2.t);
+	  if ( !in_time_window(t1) || !in_time_window(t2)) {return}	
+	  let r1 = parseInt(rp1.rp);
+	  let r2 = parseInt(rp2.rp);
+	  
+	  if (!reports[bc]) {
+		reports[bc] = {bc, label:bc, range_1:[r1-0.5, r1+0.5], range_2:[r2-0.5, r2+0.5]}; // spread +/- 0.5 for graph visibility
+	  } else {
+		if ((r1 < reports[bc].range_1[0]) && in_time_window(t1)) reports[bc].range_1[0] = r1;
+		if ((r1 > reports[bc].range_1[1]) && in_time_window(t1)) reports[bc].range_1[1] = r1;
+		if ((r2 < reports[bc].range_2[0]) && in_time_window(t2)) reports[bc].range_2[0] = r2;
+		if ((r2 > reports[bc].range_2[1]) && in_time_window(t2)) reports[bc].range_2[1] = r2;
+	  }
+
+	}
 
 }
 	

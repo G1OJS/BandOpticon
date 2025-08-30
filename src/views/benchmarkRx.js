@@ -12,26 +12,39 @@ export function init(container, band, opts = {}) {
     DOMcontainer = container;
   	getMode = opts.getWatchedMode;
 	mode = getMode();
-	mode = getMode();
 	
     refresh(); // first display
 }
 
 export function refresh(){
+	mode = getMode();
+		
 	let HTML = ""
+	
 	HTML +=  '<h2>Rx Benchmarking for ' + mode +'</h2>';
-	HTML += "<div class = 'text-sm'>";
-	HTML += "This is a new view (still being developed) showing the best recent report from each of 'My Callsigns' for each transmitting callsign heard. ";
-	HTML += "Note that pskreporter only re-issues a report for a spot if 20 minutes have elapesed from the previous spot. ";
-	HTML += "The view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons providing seperate reports to pskreporter. ";
-	HTML += "<br><strong>To see comparisons, enter additional callsigns in the 'My Callsign(s)' box above - either another station's, or your callsign for a secondary Rx.</strong>";
-	HTML += "</div><br>";
+	HTML += "<p class = 'text-sm'>";
+	HTML += "This view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons of your own providing";
+	HTML += " that they are sending seperate reports to pskreporter (i.e. using different callsigns). ";
+	HTML += "</p>";
+
+	HTML += "<p class = 'text-sm'>";
+	HTML += "To see comparisons, ensure there is a second callsign in the 'My Callsign(s)' box; either another station's, or your callsign for a secondary Rx. ";
+	HTML += "You can also use the special callsign 'ALL_HOME' to see the range of reports for all HOME callsigns.";
+	HTML += "</p>";
+
+	HTML += "<p class = 'text-sm'>";
+	HTML += "The chart shows all bands for the selected mode where the second callsign is active, but limited to those bands where you're receiving. ";
+	HTML += "</p>";
+
+	HTML += "<p class = 'text-sm'>";
+	HTML += "This view is still being developed.";
+	HTML += "</p>";
+	
+	HTML += "<p class = 'text-sm'>";	
+
+
 	
 	HTML += "<canvas id='benchmarkGraph' style='width:100%;max-width:700px'></canvas>";
-	
-		HTML += "<br><h3>To Do:</h3><ul>";
-		HTML += "<li>Add distance / bearing / options</li>";
-		HTML += "</ul>";
 	
 	DOMcontainer.innerHTML = HTML;
 	

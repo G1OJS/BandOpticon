@@ -5,7 +5,6 @@ import * as BandsOverview from './views/bandsOverview.js';
 import * as Connectivity from './views/connectivity.js';
 import * as CallsActivity from './views/calls_activity.js';
 import * as BenchmarkRx from './views/benchmarkRx.js';
-import * as AllFileAnalysis from './views/allFileAnalysis.js';
 import {purgeLiveConnections} from './lib/conns-data.js';
 
 // Ribbon scrapes for active modes, has getter for watched mode, and calls here with changes
@@ -47,7 +46,6 @@ export function loadView(viewName, band = null) {
 	  connectivity: Connectivity,
 	  callsActivity: CallsActivity,
 	  benchmarkRx: BenchmarkRx,
-	  allFileAnalysis: AllFileAnalysis
 	};
 
 	console.log("Loading view ",viewName);

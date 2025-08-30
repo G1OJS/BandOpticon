@@ -24,7 +24,6 @@ export function refresh(){
 	HTML += "<button id='details_toggle'>"+details_text+"</button>";
 	
 	HTML += "<button id='btn_benchmarkingView' data-action = 'benchmarkRx'>Rx Benchmarking View</button>";
-	HTML += "<button id='btn_allFileAnalysis' data-action = 'allFileAnalysis'>WSJT ALL analysis</button>";
 	
 	DOMcontainer.innerHTML = HTML;
 	
@@ -78,7 +77,9 @@ function html_forStatsRowLabels() {
 	 if(details_level>0){
 		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>";
 		for (const myCall of STORAGE.myCall.split(',')){
-			HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + myCall.trim() + " spots</div>";
+			if(myCall.trim() != "ALL_HOME"){
+				HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by my callsign'>" + myCall.trim() + " spots</div>";
+			}
 		}
 	 }
      HTML += "</div>";
@@ -127,7 +128,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
         if (count > 0)
             nActive++;
 
-        if (count > nMax) {
+        if (count > nMax && homeCall != "ALL_HOME") {
             nMax = count;
             winner = homeCall;
         }
@@ -145,7 +146,9 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 	if(details_level>0){
 		HTML += "<div title='" + winner + "'>" + nMax + "</div>";
 		for (const myCall in myCalls_counts){
-			HTML += "<div title='" + myCall + "'>" + myCalls_counts[myCall] + "</div>";
+			if(myCall !="ALL_HOME"){
+				HTML += "<div title='" + myCall + "'>" + myCalls_counts[myCall] + "</div>";
+			}
 		}
 	}
     HTML += "</div></div>";

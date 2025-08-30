@@ -35,20 +35,27 @@ export function addSpotToConnectivityMap(connsData, spot){
 	// create mode entry if it doesn't exist
     if (!connsData[band][mode])
         connsData[band][mode] = {Tx: {}, Rx: {} }; 
+	
+	let h = null; let o = null; let d = null;
     if (sh) {
-        const h = spot.sc;
-        const o = spot.rc;
-        if (!connsData[band][mode].Tx[h]) connsData[band][mode].Tx[h] = {}; // create Tx record for this home call if needed
-		if (!connsData[band][mode].Tx[h][o]) connsData[band][mode].Tx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
-		connsData[band][mode].Tx[h][o].push ({'t':t, 'rp':rp});
+        h = spot.sc; o = spot.rc; d = connsData[band][mode].Tx;
     }
     if (rh) {
-        const h = spot.rc;
-        const o = spot.sc;
-		if (!connsData[band][mode].Rx[h]) connsData[band][mode].Rx[h] = {}; // create Rx record for this home call if needed
-		if (!connsData[band][mode].Rx[h][o]) connsData[band][mode].Rx[h][o] = [{'t':t, 'rp':rp}]; // start reports list if needed
-		connsData[band][mode].Rx[h][o].push ({'t':t, 'rp':rp});
-    }
+        h = spot.rc; o = spot.sc; d = connsData[band][mode].Rx;
+	}
+
+	if (!d[h]) d[h] = {}; // create record for this home call if needed
+	if (!d[h][o]) d[h][o] = []; // start reports list if needed
+	d[h][o].push ({'t':t, 'rp':rp});
+
+	if(!d['ALL_HOME']) d['ALL_HOME'] = {};
+	if(!d['ALL_HOME'][o]) {
+		d['ALL_HOME'][o] = [{'t':t, 'rp':rp}, {'t':t, 'rp':rp}];
+	} else {
+		if(rp > parseInt(d['ALL_HOME'][o][0]['rp'])) d['ALL_HOME'][o][0] ={'t':t, 'rp':rp};
+		if(rp < parseInt(d['ALL_HOME'][o][1]['rp'])) d['ALL_HOME'][o][1] ={'t':t, 'rp':rp};
+	}
+
 
     // old code but keep safe:
     // add distance and bearing Home to DX
@@ -57,7 +64,6 @@ export function addSpotToConnectivityMap(connsData, spot){
     // conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
 
 }
-
 
 export function purgeLiveConnections() {
 	
