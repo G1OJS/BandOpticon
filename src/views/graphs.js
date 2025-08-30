@@ -43,28 +43,29 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
     // look for SNR reports of the same callsign on the same band, 
 	// and reports that are only received by one of myCalls
 	let reports = {};
+	
 	for (const bc of band_calls){  // Tx call is set here
 		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
 		let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
-		if(rpts_1) {
+		if(rpts_1){
 			for (const rpt_1 of rpts_1){
-				let also_in_2 = false;
-				if(rpts_2) {
+				if(rpt_1) {
+					let also_in_2 = false;
 					for (const rpt_2 of rpts_2){
-						addReport(bc,rpt_1,rpt_2);
-						also_in_2 = true;
+						if(rpt_2) {
+							addReport(bc, rpt_1, rpt_2);
+							also_in_2 = true;
+						}
 					}
-				}
-				if(!also_in_2) {
-					addReport(bc, rpt_1, {'t':rpt_1.t,'rp':null});
+					if(!also_in_2) {
+						addReport(bc, rpt_1, {t:0,rp:NaN});
+					}
 				}
 			}
 		} else {
-			if(rpts_2){
-				for (const rpt_2 of rpts_2){
-					if(rpt_2){
-						addReport(bc, {'t':rpt_2.t,'rp':null}, rpt_2);
-					}
+			for (const rpt_2 of rpts_2){
+				if(rpt_2){
+					addReport( bc, {t:0,rp:NaN}, rpt_2);
 				}
 			}
 		}
@@ -146,22 +147,26 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	);
 	
 	
-	function addReport(bc, rp1, rp2) {
-  
-	  let t1 = parseInt(rp1.t);
-	  let t2 = parseInt(rp2.t);
-	  if ( !in_time_window(t1) || !in_time_window(t2)) {return}	
-	  let r1 = parseInt(rp1.rp);
-	  let r2 = parseInt(rp2.rp);
+	function addReport( bc, rp1, rp2) {
+		let t1 = parseInt(rp1.t);
+		let t2 = parseInt(rp2.t);
+	    if ( !in_time_window(t1) && !in_time_window(t2)) {return}	
+		let r1 = parseInt(rp1.rp);
+		let r2 = parseInt(rp2.rp);
+		
+		if (!reports[bc]) {
+			reports[bc] = {bc, label:bc, range_1:[r1-0.5, r1+0.5], range_2:[r2-0.5, r2+0.5]}; // spread +/- 0.5 for graph visibility
+		}
 	  
-	  if (!reports[bc]) {
-		reports[bc] = {bc, label:bc, range_1:[r1-0.5, r1+0.5], range_2:[r2-0.5, r2+0.5]}; // spread +/- 0.5 for graph visibility
-	  } else {
-		if ((r1 < reports[bc].range_1[0]) && in_time_window(t1)) reports[bc].range_1[0] = r1;
-		if ((r1 > reports[bc].range_1[1]) && in_time_window(t1)) reports[bc].range_1[1] = r1;
-		if ((r2 < reports[bc].range_2[0]) && in_time_window(t2)) reports[bc].range_2[0] = r2;
-		if ((r2 > reports[bc].range_2[1]) && in_time_window(t2)) reports[bc].range_2[1] = r2;
-	  }
+		if(r1){
+			if ((r1 < reports[bc].range_1[0]) ) reports[bc].range_1[0] = r1
+			if ((r1 > reports[bc].range_1[1]) ) reports[bc].range_1[1] = r1
+		}
+		if(r2){
+			if ((r2 < reports[bc].range_2[0]) ) reports[bc].range_2[0] = r2
+			if ((r2 > reports[bc].range_2[1])) reports[bc].range_2[1] = r2
+		}
+	  
 
 	}
 

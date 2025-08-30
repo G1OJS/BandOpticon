@@ -51,7 +51,7 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if(!d['ALL_HOME']) d['ALL_HOME'] = {}
 	if(!d['ALL_HOME'][o]) d['ALL_HOME'][o] = []
 	if(!d['ALL_HOME'][o][0]) d['ALL_HOME'][o][0] = {'t':0, 'rp':-50}
-	if(!d['ALL_HOME'][o][1]) d['ALL_HOME'][o][1] = {'t':0, 'rp':-50}
+	if(!d['ALL_HOME'][o][1]) d['ALL_HOME'][o][1] = {'t':0, 'rp':50}
 	
 	if(rp > parseInt(d['ALL_HOME'][o][0]['rp'])) d['ALL_HOME'][o][0] ={'t':t, 'rp':rp};
 	if(rp < parseInt(d['ALL_HOME'][o][1]['rp'])) d['ALL_HOME'][o][1] ={'t':t, 'rp':rp};
