@@ -45,9 +45,9 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	let reports = {};
 	for (const bc of band_calls){  // Tx call is set here
 		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
+		let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
 		if(rpts_1) {
 			for (const rpt_1 of rpts_1){
-				let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
 				let also_in_2 = false;
 				if(rpts_2) {
 					for (const rpt_2 of rpts_2){
@@ -56,14 +56,15 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 					}
 				}
 				if(!also_in_2) {
-					addReport(bc,rpt_1,null);
+					addReport(bc, rpt_1, {'t':rpt_1.t,'rp':null});
 				}
 			}
 		} else {
-			let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
 			if(rpts_2){
 				for (const rpt_2 of rpts_2){
-					addReport(bc,null,rpt_2);
+					if(rpt_2){
+						addReport(bc, {'t':rpt_2.t,'rp':null}, rpt_2);
+					}
 				}
 			}
 		}
@@ -146,9 +147,7 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	
 	
 	function addReport(bc, rp1, rp2) {
-	  if(rp1 == null) {rp1 = {'t':rp2.t,'rp':null} }
-	  if(rp2 == null) {rp2 = {'t':rp1.t,'rp':null} }
-	  
+  
 	  let t1 = parseInt(rp1.t);
 	  let t2 = parseInt(rp2.t);
 	  if ( !in_time_window(t1) || !in_time_window(t2)) {return}	
