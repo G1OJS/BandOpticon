@@ -51,10 +51,12 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 			for (const rpt_1 of rpts_1){
 				if(rpt_1) {
 					let also_in_2 = false;
-					for (const rpt_2 of rpts_2){
-						if(rpt_2) {
-							addReport(bc, rpt_1, rpt_2);
-							also_in_2 = true;
+					if(rpts_2){
+						for (const rpt_2 of rpts_2){
+							if(rpt_2) {
+								addReport(bc, rpt_1, rpt_2);
+								also_in_2 = true;
+							}
 						}
 					}
 					if(!also_in_2) {
@@ -63,9 +65,11 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 				}
 			}
 		} else {
-			for (const rpt_2 of rpts_2){
-				if(rpt_2){
-					addReport( bc, {t:0,rp:NaN}, rpt_2);
+			if(rpts_2){
+				for (const rpt_2 of rpts_2){
+					if(rpt_2){
+						addReport( bc, {t:0,rp:NaN}, rpt_2);
+					}
 				}
 			}
 		}
