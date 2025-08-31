@@ -136,6 +136,7 @@ button.active {
 }
 
 .hideme{display:none;}
+.hidden{display:none;}
 
 button:hover:not(.active) {
   border-color: var(--main-paper-color);

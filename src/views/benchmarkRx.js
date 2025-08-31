@@ -2,16 +2,18 @@
 import {liveConnsData} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
-import {graph} from '../views/graphs.js';
+import {snr_graph} from '../views/graphs.js';
 
 var DOMcontainer = null;
 let getMode = () => null;
 let mode = null;
+let band = null;
 
-export function init(container, band, opts = {}) {
+export function init(container, setband, opts = {}) {
     DOMcontainer = container;
   	getMode = opts.getWatchedMode;
 	mode = getMode();
+	band = setband;
 	
     refresh(); // first display
 }
@@ -21,33 +23,34 @@ export function refresh(){
 		
 	let HTML = ""
 	
-	HTML +=  '<h2>Rx Benchmarking for ' + mode +'</h2>';
+	HTML +=  '<h2>Rx Benchmarking for ' + band + ' ' + mode +'</h2>';
 	HTML += "<p class = 'text-sm'>";
-	HTML += "This view allows comparison of Rx performance with other callsigns, or between multiple receive configuratons of your own providing";
-	HTML += " that they are sending seperate reports to pskreporter (i.e. using different callsigns). ";
+	HTML += "This view shows the snr of your Rx spots and the range of snrs of the Rx spots of the other receivers in HOME";
+	HTML += "";
 	HTML += "</p>";
 
 	HTML += "<p class = 'text-sm'>";
-	HTML += "To see comparisons, ensure there is a second callsign in the 'My Callsign(s)' box; either another station's, or your callsign for a secondary Rx. ";
-	HTML += "You can also use the special callsign 'ALL_HOME' to see the range of reports for all HOME callsigns.";
-	HTML += "</p>";
-
-	HTML += "<p class = 'text-sm'>";
-	HTML += "The chart shows all bands for the selected mode where the second callsign is active, but limited to those bands where you're receiving. ";
+	HTML += "";
+	HTML += "";
 	HTML += "</p>";
 
 	HTML += "<p class = 'text-sm'>";
 	HTML += "This view is still being developed.";
 	HTML += "</p>";
 	
-	HTML += "<p class = 'text-sm'>";	
-
-
-	
-	HTML += "<canvas id='benchmarkGraph' style='width:100%;max-width:700px'></canvas>";
+	HTML += "<p class = 'text-sm'>";		
+	HTML += "<canvas class = 'hidden' id='meVsOther' style='width:100%;max-width:700px'></canvas><BR><BR>";
+	HTML += "<canvas class = 'hidden' id='meVsBest' style='width:100%;max-width:700px'></canvas><BR><BR>";
+	HTML += "<canvas class = 'hidden' id='meVsAll' style='width:100%;max-width:700px'></canvas><BR><BR>";
 	
 	DOMcontainer.innerHTML = HTML;
 	
-	graph('benchmarkGraph', liveConnsData, getMode(), STORAGE.myCall.split(",").map(s => s.trim()),0,1e30);
+	let myCall = STORAGE.myCall.split(",")[0].trim();
+	snr_graph('meVsAll', liveConnsData, band, mode, myCall, 'ALL_HOME' ,0,1e30);
+
+	if(STORAGE.myCall.split(",")[1]){
+		let otherCall = STORAGE.myCall.split(",")[1].trim();
+		snr_graph('meVsOther', liveConnsData, band, mode, myCall, otherCall ,0,1e30);	
+	}
 
 }

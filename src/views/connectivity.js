@@ -52,6 +52,7 @@ export function init(container, newband, opts = {}) {
 
 export function refresh(){
 
+
 	const bandData = liveConnsData[band];
 	mode = getMode();
 	

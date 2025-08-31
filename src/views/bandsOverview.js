@@ -12,6 +12,8 @@ export function init(container, band, opts = {}) {
 	DOMcontainer = container;
 	getMode = opts.getWatchedMode;
 	mode = getMode();
+	
+
 	refresh(); // first display
 }
 
@@ -22,9 +24,7 @@ export function refresh(){
 	HTML += html_forStatsForAllBands();
 	let details_text = details_level ? "Hide benchmarking stats":"Show benchmarking stats";
 	HTML += "<button id='details_toggle'>"+details_text+"</button>";
-	
-	HTML += "<button id='btn_benchmarkingView' data-action = 'benchmarkRx'>Rx Benchmarking View</button>";
-	
+		
 	DOMcontainer.innerHTML = HTML;
 	
 	const detailsButton = document.getElementById('details_toggle');
@@ -32,7 +32,6 @@ export function refresh(){
 		details_level = 1-details_level;
 		refresh();
 	});
-
 }
 
 function wavelength(band) {
@@ -140,7 +139,11 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     }
 
     HTML += "<div><div class='outputColumn'>";
-    HTML += "<div class = 'topRowButtonContainer' title = 'Click for connectivity.'><button class='button button--table' data-band='"+band+"'>" + band + "</button></div>";
+	if(RxTx == "Tx"){
+		HTML += "<div class = 'topRowButtonContainer' title = 'Click for connectivity.'><button class='button button--table' data-action = 'connectivity' data-band='"+band+"'>" + band + "</button></div>";
+	} else {
+		HTML += "<div class = 'topRowButtonContainer' title = 'Click for Rx benchmarking.'><button class='button button--table' data-action = 'benchmarkRx' data-band='"+band+"'>" + band + "</button></div>";		
+	}
     HTML += "<div>" + nActive + "</div>";
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";
 	if(details_level>0){
