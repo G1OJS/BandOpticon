@@ -59,9 +59,10 @@ export function refresh(){
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
 	HTML += "Table headings show active <span class = 'transmit'>transmitting</span>"
-	HTML += " and <span class = 'receive'>receiving</span> entities, 'X' shows connectivity. "
+	HTML += " and <span class = 'receive'>receiving</span> entities."
 	HTML += "Dotted borders surround cells where at least one entity is in HOME (BandOpticon does not gather data unless this is true). ";
 	HTML += "Cells are coloured grey if *both* row and column entities are in HOME."
+	HTML += "Numbers in cells show number of connections made."
 	HTML += "<br><br><b>NOTE</b>: Large tables can result for fine-grained entities!<br>";
 	HTML += "</div><br><div style = 'width:max-content;'>";
 	HTML += html_buttonGroup('Home Entity Type','float_left',['L2','L4','L6','CS'],['L2sq','L4sq','L6sq','Call']);
@@ -101,24 +102,27 @@ function html_for_ModeConnectivity(mode){
 	// convert all active tx and rx calls to entities and add connectivity
 	let tx_entities_info = {};
 	let rx_entities_info = {};
-	let entityConns = new Set();	
+	let entityConns = {};	
 
 	for (const ctx in tx_callsigns_info){
 		let etx = getEntity(ctx, tx_callsigns_info[ctx]);
 		for (const crx in rx_callsigns_info){
 			let erx = getEntity(crx, rx_callsigns_info[crx]);
+			let conn = etx.entity+"-"+erx.entity;
 			if(bandModeData.Tx[ctx]) {
 				if( bandModeData.Tx[ctx][crx]) {
-					entityConns.add(etx.entity+"-"+erx.entity);
 					if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
 					if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
+					if(!entityConns[conn]) entityConns[conn] = 0;
+					entityConns[conn] += 1;
 				} 
 			}
 			if(bandModeData.Rx[crx]) {
 				if( bandModeData.Rx[crx][ctx]) {
 					if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
 					if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
-					entityConns.add(etx.entity+"-"+erx.entity);
+					if(!entityConns[conn]) entityConns[conn] = 0;
+					entityConns[conn] += 1;
 				} 
 			}
 		}
@@ -127,7 +131,6 @@ function html_for_ModeConnectivity(mode){
 	if(rx_entities_info.length < 1 || tx_entities_info.length < 1) {return ""};
 	
 	function sortfunc(a,b){
-		console.log(a);
 		if(a[1].inHome != b[1].inHome) return a[1].inHome? -1: 1;
 		
 		return a[0].localeCompare(b[0])
@@ -157,7 +160,7 @@ function html_for_ModeConnectivity(mode){
 			let txt = '';
 			let cellStyle = (homeRow && homeColumn)? "background-color: lightgrey;": "";
 			cellStyle += (homeRow || homeColumn)? " border: 1px dotted gray; ": "";
-			txt = entityConns.has(etx+"-"+erx)? 'X':'';
+			txt = entityConns[etx+"-"+erx]? entityConns[etx+"-"+erx] :'';
 		    HTML += "<td style='" + cellStyle + "'>" + txt + "</td>" ;
 		}
 		HTML += "</tr>";
