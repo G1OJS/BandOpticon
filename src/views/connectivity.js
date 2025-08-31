@@ -105,38 +105,55 @@ function html_for_ModeConnectivity(mode){
 
 	for (const ctx in tx_callsigns_info){
 		let etx = getEntity(ctx, tx_callsigns_info[ctx]);
-		if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
 		for (const crx in rx_callsigns_info){
 			let erx = getEntity(crx, rx_callsigns_info[crx]);
-			if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
-			if(bandModeData.Tx[ctx]) {if( bandModeData.Tx[ctx][crx]) {entityConns.add(etx.entity+"-"+erx.entity);} }
-			if(bandModeData.Rx[crx]) {if( bandModeData.Rx[crx][ctx]) {entityConns.add(etx.entity+"-"+erx.entity);} }
+			if(bandModeData.Tx[ctx]) {
+				if( bandModeData.Tx[ctx][crx]) {
+					entityConns.add(etx.entity+"-"+erx.entity);
+					if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
+					if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
+				} 
+			}
+			if(bandModeData.Rx[crx]) {
+				if( bandModeData.Rx[crx][ctx]) {
+					if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
+					if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
+					entityConns.add(etx.entity+"-"+erx.entity);
+				} 
+			}
 		}
 	}
 
-	//rx_entities_info = Object.entries(rx_entities_info).toSorted();                                              
-	//tx_entities_info = Object.entries(tx_entities_info).toSorted(); 
-	
 	if(rx_entities_info.length < 1 || tx_entities_info.length < 1) {return ""};
-  
+	
+	function sortfunc(a,b){
+		console.log(a);
+		if(a[1].inHome != b[1].inHome) return a[1].inHome? -1: 1;
+		
+		return a[0].localeCompare(b[0])
+	}
+	
+	const sorted_rx_entities_info = Object.entries(rx_entities_info).sort((a, b) => sortfunc(a,b));
+	const sorted_tx_entities_info = Object.entries(tx_entities_info).sort((a, b) => sortfunc(a,b));
+			
 	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='connectivityTable' class='scalingTable' >";
 	// Column headers
 	HTML += "<thead><th></th>";
-	for (const etx of Object.keys(tx_entities_info)) { // (vertical text fussy on mobile so fake it)
-		console.log(etx);
-		let vt = [...etx].map(c => '<div>'+c+'</div>').join('');
+	
+	for (const [etx, info] of sorted_tx_entities_info) { 
+		let vt = [...etx].map(c => '<div>'+c+'</div>').join('');	// (vertical text fussy on mobile so fake it)
 		HTML += "<th class = 'transmit' >"+vt+"</th>";
 	}
 	HTML += "</thead>"
 	
 	HTML += "<tbody>";	
-	for (const erx of Object.keys(rx_entities_info)) {
-		let homeRow = rx_entities_info[erx].inHome;
+	for (const [erx, info] of sorted_rx_entities_info) {
+		let homeRow = info.inHome;
 		// Row Headers
 		HTML += "<tr><th class = 'receive rhead' >"+erx+"</th>";
 		// Cells 
-		for (const etx of Object.keys(tx_entities_info)) {
-			let homeColumn =  tx_entities_info[etx].inHome;
+		for (const [etx, info] of sorted_tx_entities_info) {
+			let homeColumn =  info.inHome;
 			let txt = '';
 			let cellStyle = (homeRow && homeColumn)? "background-color: lightgrey;": "";
 			cellStyle += (homeRow || homeColumn)? " border: 1px dotted gray; ": "";
