@@ -21,7 +21,7 @@ setInterval(() => refreshCurrentView(), 5000);
 
 let currentView = null;
 
-export function loadView(viewName, band = null) {
+export function loadView(viewName, band) {
 	
 	// all views live in the 'mainView' div
 	let DOMmainView = document.getElementById("mainView");
@@ -48,16 +48,13 @@ export function loadView(viewName, band = null) {
 	  benchmarkRx: BenchmarkRx,
 	};
 
-	console.log("Loading view ",viewName);
+	console.log("Loading view ",viewName, "for band ", band);
 	currentView = viewMap[viewName];
 	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
 	
 	// event listeners for the clickable band buttons in bandsOverview
 	DOMmainView.addEventListener('click', (e) => {
-	  const bandElem = e.target.closest('[data-band]');
-	  if (bandElem) {
-		loadView('connectivity',  band = bandElem.dataset.band);
-	  }
+		loadView(e.target.dataset.action,  e.target.dataset.band);
 	});
 
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
@@ -69,7 +66,7 @@ export function refreshCurrentView() {
     currentView.refresh();
 }
 
-// for view select buttons 
+// for HOME and Home Calls buttons
 document.addEventListener('click', (e) => {
   const action = e.target.dataset.action;
   if (!action) return;

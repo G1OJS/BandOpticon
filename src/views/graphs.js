@@ -1,18 +1,21 @@
 
 
-export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
+export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn){
 	
 	if(!bandModeData){return}
 	
-	let global_t0 = t0;
-	let global_tn = tn;
-	function in_time_window(t) {return(t>=global_t0 && t<=global_tn)}
-	
-	// get list of bands for first of myCalls
-	let bandList = new Set();
-	for (const band in bandModeData) {
-		if(bandModeData[band][mode]?.Rx[myCalls[0]]) bandList.add(band)
+	document.getElementById(canvas).classList.remove('hidden');
+
+	function in_time_window(t) {
+		return(t>=t0 && t<=tn)
 	}
+	
+	// get list of bands 
+	let bandList = new Set();
+	bandList.add(band);
+//	for (const band in bandModeData) {
+//		if(bandModeData[band][mode]?.Rx[callA]) bandList.add(band)
+//	}
 	
 	if (bandList.size == 0) {
 		for (const band in bandModeData) {
@@ -20,11 +23,11 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 		}	
 	}
 
-	// get all transmitting callsigns across all myCalls (works with any number but code below only works with first two)
+	// get all transmitting callsigns across rx calls callA and CallB
 	// in each unique band-call combination.  output: set(band-call) 
 	let band_calls = new Set();
 	for (const band of bandList) {
-		for (const mc of myCalls){
+		for (const mc of [callA,callB]){
 			if(bandModeData[band][mode]?.Rx[mc]){
 				for (const oc in bandModeData[band][mode].Rx[mc]) {
 					for (const rpt of bandModeData[band][mode].Rx[mc][oc]){
@@ -41,12 +44,12 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	}
 
     // look for SNR reports of the same callsign on the same band, 
-	// and reports that are only received by one of myCalls
+	// and reports that are only received by one of callA, CallB
 	let reports = {};
 	
 	for (const bc of band_calls){  // Tx call is set here
-		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[0]]?.[bc.split('-')[1]];
-		let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[myCalls[1]]?.[bc.split('-')[1]];
+		let rpts_1 = bandModeData[bc.split('-')[0]][mode].Rx?.[callA]?.[bc.split('-')[1]];
+		let rpts_2 = bandModeData[bc.split('-')[0]][mode].Rx?.[callB]?.[bc.split('-')[1]];
 		if(rpts_1){
 			for (const rpt_1 of rpts_1){
 				if(rpt_1) {
@@ -98,7 +101,7 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 	  labels,
 	  datasets: [
 		{
-		  label: myCalls[0],
+		  label: callA,
 		  data: reportsArr.map(row => row.range_1),
 		  spanGaps: true,
 		  backgroundColor: color_Rx1,
@@ -107,7 +110,7 @@ export function graph(canvas, bandModeData, mode, myCalls, t0, tn){
 		  borderWidth: 1
 		},
 		{
-		  label: myCalls[1],
+		  label: callB,
 		  data: reportsArr.map(row => row.range_2),
 		  spanGaps: true,
 		  backgroundColor: color_Rx2, 
