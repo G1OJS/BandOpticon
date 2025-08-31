@@ -4,7 +4,7 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 	
 	if(!bandModeData){return}
 	
-	document.getElementById(canvas).classList.remove('hidden');
+	document.getElementById(canvas).parentElement.classList.remove('hidden');
 
 	function in_time_window(t) {
 		return(t>=t0 && t<=tn)

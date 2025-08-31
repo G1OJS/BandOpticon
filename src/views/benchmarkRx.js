@@ -28,23 +28,17 @@ export function refresh(){
 	
 	HTML +=  '<h2>Rx Benchmarking for ' + band + ' ' + mode +'</h2>';
 	HTML += "<p class = 'text-sm'>";
-	HTML += "This view shows the snr of your Rx spots and the range of snrs of the Rx spots of the other receivers in HOME";
-	HTML += "";
+	HTML += "This view shows the snr of your Rx spots compared with:";
+	HTML += "<ul><li>All home callsigns as an aggregate receiver</li><li>The home callsign with the most Rx spots</li><li>The callsign specified afer your callsign in My Callsign(s) (comma separated)</li></ul>";
 	HTML += "</p>";
-
-	HTML += "<p class = 'text-sm'>";
-	HTML += "";
-	HTML += "";
-	HTML += "</p>";
-
 	HTML += "<p class = 'text-sm'>";
 	HTML += "This view is still being developed.";
 	HTML += "</p>";
 	
 	HTML += "<p class = 'text-sm'>";		
-	HTML += "<canvas class = 'hidden' id='meVsOther' style='width:100%;max-width:700px'></canvas><BR><BR>";
-	HTML += "<canvas class = 'hidden' id='meVsBest' style='width:100%;max-width:700px'></canvas><BR><BR>";
-	HTML += "<canvas class = 'hidden' id='meVsAll' style='width:100%;max-width:700px'></canvas><BR><BR>";
+	HTML += "<div class = 'hidden'><h3>Benchmarking vs specified callsign</h3><canvas id='meVsOther' style='width:100%;max-width:700px'></canvas><br></div>";
+	HTML += "<div class = 'hidden'><h3>Benchmarking vs home callsign with most spots</h3><canvas id='meVsBest' style='width:100%;max-width:700px'></canvas><br></div>";
+	HTML += "<div class = 'hidden'><h3>Benchmarking vs home aggregate</h3><canvas id='meVsAll' style='width:100%;max-width:700px'></canvas><br></div>";
 	
 	DOMcontainer.innerHTML = HTML;
 	

@@ -55,12 +55,16 @@ function html_forStatsForAllBands() {
 //	console.log("bandsOverview found active bands: "+ activeBands);
 	var HTML = "";
  
-    HTML = "<h3>Transmitting " + mode + "</h3><div class='outputContainer transmit'>";
+    HTML = "<h3>Transmitting " + mode + "</h3>";
+	HTML += "<p class = 'text-sm'>Click band buttons to show connectivity</p>";
+    HTML += "<div class='outputContainer transmit'>";
     HTML += html_forStatsRowLabels();
     activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Tx"));
     HTML += "</div>";
 	
-    HTML += "<h3>Receiving " + mode + "</h3><div class='outputContainer receive'>";
+    HTML += "<h3>Receiving " + mode + "</h3>";
+	HTML += "<p class = 'text-sm'>Click band buttons to show Rx benchmarking</p>";
+    HTML += "<div class='outputContainer receive'>";
     HTML += html_forStatsRowLabels();
     activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Rx"));
     HTML += "</div>";

@@ -59,13 +59,12 @@ export function refresh(){
 	console.log("Connectivity for ",band, mode);
 	let HTML = '<h2>Connectivity for ' + band + ' ' + mode +'</h2>';
 	HTML += "<div class = 'text-sm'>";
-	HTML += "Table headings show active <span class = 'transmit'>transmitting</span>"
-	HTML += " and <span class = 'receive'>receiving</span> entities."
+	HTML += "<p class = 'text-sm'> Table headings show active <span class = 'transmit'>transmitting</span> and <span class = 'receive'>receiving</span> entities. ";
 	HTML += "Dotted borders surround cells where at least one entity is in HOME (BandOpticon does not gather data unless this is true). ";
-	HTML += "Cells are coloured grey if *both* row and column entities are in HOME."
-	HTML += "Numbers in cells show number of connections made."
-	HTML += "<br><br><b>NOTE</b>: Large tables can result for fine-grained entities!<br>";
-	HTML += "</div><br><div style = 'width:max-content;'>";
+	HTML += "Cells are coloured grey if *both* row and column entities are in HOME. ";
+	HTML += "Numbers in cells show number of connections made. </p>";
+	HTML += "<p class = 'text-sm'><b>NOTE</b>: Large tables can result for fine-grained entities!</p>";
+	HTML += "</div><div style = 'width:max-content;'>";
 	HTML += html_buttonGroup('Home Entity Type','float_left',['L2','L4','L6','CS'],['L2sq','L4sq','L6sq','Call']);
 	HTML += html_buttonGroup('Remote Entity Type','',['L2','L4','L6','CS'],['L2sq','L4sq','L6sq','Call']);
 	HTML += "</div>";
