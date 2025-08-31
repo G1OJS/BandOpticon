@@ -48,14 +48,9 @@ export function loadView(viewName, band) {
 	  benchmarkRx: BenchmarkRx,
 	};
 
-	console.log("Loading view ",viewName, "for band ", band);
+	console.log("ui-core: Loading view ",viewName, "for band ", band);
 	currentView = viewMap[viewName];
 	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
-	
-	// event listeners for the clickable band buttons in bandsOverview
-	DOMmainView.addEventListener('click', (e) => {
-		loadView(e.target.dataset.action,  e.target.dataset.band);
-	});
 
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
@@ -71,4 +66,12 @@ document.addEventListener('click', (e) => {
   const action = e.target.dataset.action;
   if (!action) return;
   loadView(action);
+});
+
+// event listeners for the clickable band buttons in bandsOverview
+document.addEventListener('click', (e) => {
+	const action = e.target.dataset.action;
+	if (!action) return;
+	loadView(action,  e.target.dataset.band);
+	console.log("ui-core: clicked with action "+e.target.dataset.action+" and band "+e.target.dataset.band);
 });

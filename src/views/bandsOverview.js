@@ -24,9 +24,7 @@ export function refresh(){
 	HTML += html_forStatsForAllBands();
 	let details_text = details_level ? "Hide benchmarking stats":"Show benchmarking stats";
 	HTML += "<button id='details_toggle'>"+details_text+"</button>";
-	
-	HTML += "<button id='btn_benchmarkingView' data-action = 'benchmarkRx'>Rx Benchmarking View</button>";
-	
+		
 	DOMcontainer.innerHTML = HTML;
 	
 	const detailsButton = document.getElementById('details_toggle');
@@ -34,7 +32,6 @@ export function refresh(){
 		details_level = 1-details_level;
 		refresh();
 	});
-
 }
 
 function wavelength(band) {
