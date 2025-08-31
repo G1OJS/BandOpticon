@@ -21,7 +21,7 @@ setInterval(() => refreshCurrentView(), 5000);
 
 let currentView = null;
 
-export function loadView(viewName, band) {
+export function loadView(viewName, band, winnerCall) {
 	
 	// all views live in the 'mainView' div
 	let DOMmainView = document.getElementById("mainView");
@@ -48,9 +48,9 @@ export function loadView(viewName, band) {
 	  benchmarkRx: BenchmarkRx,
 	};
 
-	console.log("ui-core: Loading view ",viewName, "for band ", band);
+//	console.log("ui-core: Loading view ",viewName, "for band ", band, " with winner ", winnerCall);
 	currentView = viewMap[viewName];
-	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
+	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon), winnerCall:winnerCall});
 
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
@@ -58,20 +58,14 @@ export function loadView(viewName, band) {
 
 export function refreshCurrentView() {
 	ribbon.registerActiveModes();
+	console.log("ui-core: RefreshCurrentView:");
     currentView.refresh();
 }
 
-// for HOME and Home Calls buttons
-document.addEventListener('click', (e) => {
-  const action = e.target.dataset.action;
-  if (!action) return;
-  loadView(action);
-});
-
-// event listeners for the clickable band buttons in bandsOverview
+// event listeners for buttons 
 document.addEventListener('click', (e) => {
 	const action = e.target.dataset.action;
 	if (!action) return;
-	loadView(action,  e.target.dataset.band);
-	console.log("ui-core: clicked with action "+e.target.dataset.action+" and band "+e.target.dataset.band);
+	loadView(action,  e.target.dataset.band, e.target.dataset.winner);
+//	console.log("ui-core: clicked with action "+e.target.dataset.action+" and band "+e.target.dataset.band+" and winner " + e.target.dataset.winner);
 });

@@ -142,7 +142,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 	if(RxTx == "Tx"){
 		HTML += "<div class = 'topRowButtonContainer' title = 'Click for connectivity.'><button class='button button--table' data-action = 'connectivity' data-band='"+band+"'>" + band + "</button></div>";
 	} else {
-		HTML += "<div class = 'topRowButtonContainer' title = 'Click for Rx benchmarking.'><button class='button button--table' data-action = 'benchmarkRx' data-band='"+band+"'>" + band + "</button></div>";		
+		HTML += "<div class = 'topRowButtonContainer' title = 'Click for Rx benchmarking.'><button class='button button--table' data-action = 'benchmarkRx' data-band='"+band+"' data-winner='"+winner+"'>" + band + "</button></div>";		
 	}
     HTML += "<div>" + nActive + "</div>";
     HTML += "<div>" + otherEndCallsAggregate.size + "</div>";

@@ -8,10 +8,13 @@ var DOMcontainer = null;
 let getMode = () => null;
 let mode = null;
 let band = null;
+let winnerCall = null;
 
 export function init(container, setband, opts = {}) {
     DOMcontainer = container;
   	getMode = opts.getWatchedMode;
+	winnerCall = opts.winnerCall;
+	
 	mode = getMode();
 	band = setband;
 	
@@ -47,6 +50,8 @@ export function refresh(){
 	
 	let myCall = STORAGE.myCall.split(",")[0].trim();
 	snr_graph('meVsAll', liveConnsData, band, mode, myCall, 'ALL_HOME' ,0,1e30);
+
+	snr_graph('meVsBest', liveConnsData, band, mode, myCall, winnerCall ,0,1e30);
 
 	if(STORAGE.myCall.split(",")[1]){
 		let otherCall = STORAGE.myCall.split(",")[1].trim();
