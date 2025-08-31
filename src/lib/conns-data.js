@@ -1,6 +1,7 @@
 
 export var liveConnsData = {};
-export var callsigns_info={};
+export var tx_callsigns_info={};
+export var rx_callsigns_info={};
 export var latestTimestamp = 0;
 
 import {squareIsInHome} from './geo.js';
@@ -17,8 +18,8 @@ export function addSpotToConnectivityMap(connsData, spot){
         return; // Bail out ASAP if neither end is in home
 	
 	 // Update callsignInfo
-	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, RxTx:'Tx'};
-	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, RxTx:'Rx'};
+	if (!tx_callsigns_info[spot.sc]) tx_callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md};
+	if (!rx_callsigns_info[spot.rc]) rx_callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md};
 
     // start and maintain a structure associating 'far end' entities with each home call for both home transmit and home receive
     // the structure is connsData[band][Tx|Rx][homeCall][otherCall] = timestamp

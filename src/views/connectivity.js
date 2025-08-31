@@ -1,6 +1,6 @@
 
 
-import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
+import {liveConnsData, tx_callsigns_info, rx_callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 
@@ -28,7 +28,7 @@ export function init(container, newband, opts = {}) {
   	getMode = opts.getWatchedMode;
 	mode = getMode();
   
-  // heuristic to manage *initial* table size until separate entity types available for home/remote
+  // heuristic to manage *initial* table size 
   let wl = parseInt(wavelength(band));
   console.log("Connectivity for band = ",band, "wl=",wl);
   if(wl>10 && wl<80){ entityTypeRemote = 'L2' ;}
@@ -93,90 +93,50 @@ function html_buttonGroup(legend_text, fieldset_class, button_ids, button_text =
 	return HTML
 }
 
-
 function html_for_ModeConnectivity(mode){
 	console.log(band,mode);
 	const bandModeData = liveConnsData[band][mode];
     if (!bandModeData) return "";
 
-	// list all active tx and rx calls
-	let tx_callsSet = new Set();
-	let rx_callsSet = new Set();
-	for (const ctx in bandModeData.Tx){
-		tx_callsSet.add(ctx);
-		for (const crx in bandModeData.Tx[ctx]) {rx_callsSet.add(crx);}
-	}
-	for (const crx in bandModeData.Rx){
-		rx_callsSet.add(crx);
-		for (const ctx in bandModeData.Rx[crx]) {tx_callsSet.add(ctx);}
-	}
-	
-// experimental "filter home calls to myCalls list" - not looking useful so far
-	if(false){
-	let myCalls = ['G1OJS','GE1OJS'];
-		let todelete = new Set();
-		for (const c of rx_callsSet){
-			if(callsigns_info[c].inHome){
-				if(!(myCalls.includes(c.trim()))) todelete.add(c);
-			}
-		}
-		for (const c of todelete) rx_callsSet.delete(c);
-		todelete.clear();
-		for (const c of tx_callsSet){		
-			if(callsigns_info[c].inHome){
-				if(!(myCalls.includes(c.trim()))) todelete.add(c);
-			}			
-		}
-		for (const c of todelete) tx_callsSet.delete(c);
-	}
-		
-	// convert calls to entities and add connectivity
-	let tx_entitiesSet = new Set();
-	let rx_entitiesSet = new Set();
+	// convert all active tx and rx calls to entities and add connectivity
+	let tx_entities_info = {};
+	let rx_entities_info = {};
 	let entityConns = new Set();	
 
-	for (const ctx of tx_callsSet){
-		let entityType = (callsigns_info[ctx].inHome)? entityTypeHome:entityTypeRemote;
-		let etx = getEntity(ctx,entityType);
-		tx_entitiesSet.add(etx);
-		for (const crx of rx_callsSet){
-			let entityType = (callsigns_info[crx].inHome)? entityTypeHome:entityTypeRemote;
-			let erx = getEntity(crx,entityType);
-			rx_entitiesSet.add(erx);
-			if(bandModeData.Tx[ctx]) {if( bandModeData.Tx[ctx][crx]) {entityConns.add(etx+"-"+erx);} }
-			if(bandModeData.Rx[crx]) {if( bandModeData.Rx[crx][ctx]) {entityConns.add(etx+"-"+erx);} }
+	for (const ctx in tx_callsigns_info){
+		let etx = getEntity(ctx, tx_callsigns_info[ctx]);
+		if(!tx_entities_info[etx.entity]) tx_entities_info[etx.entity] = {inHome:etx.inHome};
+		for (const crx in rx_callsigns_info){
+			let erx = getEntity(crx, rx_callsigns_info[crx]);
+			if(!rx_entities_info[erx.entity]) rx_entities_info[erx.entity] = {inHome:erx.inHome};
+			if(bandModeData.Tx[ctx]) {if( bandModeData.Tx[ctx][crx]) {entityConns.add(etx.entity+"-"+erx.entity);} }
+			if(bandModeData.Rx[crx]) {if( bandModeData.Rx[crx][ctx]) {entityConns.add(etx.entity+"-"+erx.entity);} }
 		}
 	}
-	
-	function sortfunc(a,b){
-		const aInHome = entityInHome(a);
-		const bInHome = entityInHome(b);
-		if (aInHome !== bInHome) return aInHome ? -1 : 1;
-		return a.localeCompare(b);
-	}
 
-	let rx_entities = Array.from(rx_entitiesSet).toSorted((a, b) => sortfunc(a, b));                                              
-	let tx_entities = Array.from(tx_entitiesSet).toSorted((a, b) => sortfunc(a, b));                                
+	//rx_entities_info = Object.entries(rx_entities_info).toSorted();                                              
+	//tx_entities_info = Object.entries(tx_entities_info).toSorted(); 
 	
-	if(rx_entities.length < 1 || tx_entities.length < 1) {return ""};
+	if(rx_entities_info.length < 1 || tx_entities_info.length < 1) {return ""};
   
 	let HTML = "<div id='connectivityTableWrapper' class='table-wrapper'><table id='connectivityTable' class='scalingTable' >";
 	// Column headers
 	HTML += "<thead><th></th>";
-	for (const etx of tx_entities) { // (vertical text fussy on mobile so fake it)
+	for (const etx of Object.keys(tx_entities_info)) { // (vertical text fussy on mobile so fake it)
+		console.log(etx);
 		let vt = [...etx].map(c => '<div>'+c+'</div>').join('');
 		HTML += "<th class = 'transmit' >"+vt+"</th>";
 	}
 	HTML += "</thead>"
 	
 	HTML += "<tbody>";	
-	for (const erx of rx_entities) {
-		let homeRow = entityInHome(erx);
+	for (const erx of Object.keys(rx_entities_info)) {
+		let homeRow = rx_entities_info[erx].inHome;
 		// Row Headers
 		HTML += "<tr><th class = 'receive rhead' >"+erx+"</th>";
 		// Cells 
-		for (const etx of tx_entities) {
-			let homeColumn =  entityInHome(etx);
+		for (const etx of Object.keys(tx_entities_info)) {
+			let homeColumn =  tx_entities_info[etx].inHome;
 			let txt = '';
 			let cellStyle = (homeRow && homeColumn)? "background-color: lightgrey;": "";
 			cellStyle += (homeRow || homeColumn)? " border: 1px dotted gray; ": "";
@@ -192,22 +152,14 @@ function html_for_ModeConnectivity(mode){
 
 }
 
-function entityInHome(entity){
-	// entity is either a square (string) or a callsign_info record with a .inHome flag 
-	let inHome = false;
+function getEntity(callsign, callsign_info){
+  let entity = callsign;
+  let inHome = callsign_info.inHome;
+  let entityType = (inHome)? entityTypeHome:entityTypeRemote;
 
-	if(callsigns_info[entity]) {
-		inHome = inHome || callsigns_info[entity].inHome;
-	}
-	inHome = inHome || squareIsInHome(entity);
-	
-	return inHome
-}
-
-function getEntity(call,entityType){
-  if(entityType=="CS"){return call;}
-  let square = callsigns_info[call].sq;
-  if(entityType=="L2"){return square.substring(0,2).toUpperCase();}
-  if(entityType=="L4"){return square.substring(0,4).toUpperCase();} 
-  if(entityType=="L6"){return square.substring(0,6).toUpperCase();} 
+  if(entityType=="L2") {entity = callsign_info.sq.substring(0,2).toUpperCase()}
+  if(entityType=="L4") {entity = callsign_info.sq.substring(0,4).toUpperCase()} 
+  if(entityType=="L6") {entity = callsign_info.sq.substring(0,6).toUpperCase()} 
+  
+  return {entity:entity, inHome:inHome}
 }

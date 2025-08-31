@@ -1,5 +1,5 @@
 
-import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
+import {liveConnsData} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 import {graph} from '../views/graphs.js';

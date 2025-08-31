@@ -1,5 +1,5 @@
 
-import {liveConnsData, callsigns_info} from '../lib/conns-data.js';
+import {liveConnsData, tx_callsigns_info, rx_callsigns_info} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 
 var DOMcontainer = null;
@@ -29,6 +29,8 @@ export function refresh(){
 }
 
 function html_for_callsActivity(RxTx){
+	
+	let callsigns_info = (RxTx=="Rx")? rx_callsigns_info: tx_callsigns_info;
 
     if (!callsigns_info) return;
 	
@@ -40,7 +42,7 @@ function html_for_callsActivity(RxTx){
 	let HTML = "<table>";
 	HTML += "<thead><tr><th>Callsign</th><th>Last Band</th><th>Last Mode</th></thead>"
 	for (const [cs, info] of sortedEntries) {
-		if(info.inHome && info.RxTx == RxTx){
+		if(info.inHome){
 			HTML += "<tr><th class='"+classtxt+"' style = 'text-align:right;'>"+cs+"</th>"
 			HTML += "<td style = 'text-align:center;'>"+info.lastBand+"</td>"
 			HTML += "<td style = 'text-align:center;'>"+info.lastMode+"</td></tr>";
