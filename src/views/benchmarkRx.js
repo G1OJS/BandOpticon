@@ -26,7 +26,8 @@ export function refresh(){
 	let myCall = STORAGE.myCall.split(",")[0].trim();
 	let myCall2 = STORAGE.myCall.split(",")[1]?.trim();
 	let leader_home = updateLeaderInfo(liveConnsData[band][mode].Rx, rx_callsigns_info);
-		
+	console.log(leader_home);
+	
 	let HTML = ""
 	
 	HTML +=  '<h2>Rx Benchmarking for ' + band + ' ' + mode +'</h2>';
