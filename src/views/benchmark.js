@@ -25,14 +25,14 @@ export function init(setviewName, container, setband, opts = {}) {
 	winnerCall = opts.winnerCall;
 	mode = getMode();
 	band = setband;
-	connsData = (viewName=="benchmarkRx")? liveConnsData[band][mode]?.Rx : liveConnsData[band][mode]?.Tx;
-	callsigns_info = (viewName=="benchmarkRx")? rx_callsigns_info : tx_callsigns_info;
 	title_stub = myCall1 + " " + ( (viewName=="benchmarkRx")? "receive" : "transmit" ) + " performance ";
     refresh(); // first display
 }
 
 export function refresh(){
 	mode = getMode();
+	connsData = (viewName=="benchmarkRx")? liveConnsData[band][mode]?.Rx : liveConnsData[band][mode]?.Tx;
+	callsigns_info = (viewName=="benchmarkRx")? rx_callsigns_info : tx_callsigns_info;
 
 	let leader_home = updateLeaderInfo(connsData, callsigns_info);
 	console.log(leader_home);
