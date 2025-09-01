@@ -8,7 +8,7 @@ let getMode = () => null;
 let mode = null;
 let details_level = 0;
 
-export function init(container, band, opts = {}) {
+export function init(viewName, container, band, opts = {}) {
 	DOMcontainer = container;
 	getMode = opts.getWatchedMode;
 	mode = getMode();
@@ -56,26 +56,25 @@ function html_forStatsForAllBands() {
 	var HTML = "";
  
     HTML = "<h3>Transmitting " + mode + "</h3>";
-	HTML += "<p class = 'text-sm'>Click band buttons to show connectivity</p>";
     HTML += "<div class='outputContainer transmit'>";
-    HTML += html_forStatsRowLabels();
+    HTML += html_forStatsRowLabels("Tx");
     activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Tx"));
     HTML += "</div>";
 	
     HTML += "<h3>Receiving " + mode + "</h3>";
-	HTML += "<p class = 'text-sm'>Click band buttons to show Rx benchmarking</p>";
     HTML += "<div class='outputContainer receive'>";
-    HTML += html_forStatsRowLabels();
+    HTML += html_forStatsRowLabels("Rx");
     activeBands.forEach(band => HTML += html_forStatsForThisBand(band, mode, "Rx"));
     HTML += "</div>";
 	
 	return HTML;
 }
 
-function html_forStatsRowLabels() {
+function html_forStatsRowLabels(RxTx) {
 	let HTML = "<div class = 'outputColumn'>"
     HTML +="<div class = 'firstColumn topRow' title = 'Band: click for band details views'>Band</div>";
-    HTML +="<div class = 'firstColumn' title = 'Number of callsigns active in home squares. Click for details.'><button class='button button--table' data-action='callsActivity'>Home calls</button></div>";
+	let act = (RxTx == "Rx")? "RxCallsActivity":"TxCallsActivity"; 
+    HTML +="<div class = 'firstColumn' title = 'Number of callsigns active in home squares. Click for details.'><button class='button button--table' data-action='"+act+"'>Home calls</button></div>";
     HTML +="<div class = 'firstColumn' title = 'Number of spots generated worldwide by all callsigns in home, as a group'>Total spots</div>";
 	 if(details_level>0){
 		HTML += "<div class = 'firstColumn' title = 'Number of spots generated worldwide by best performing callsign in home (hover over numbers for callsign)'>Leader spots</div>";
@@ -138,7 +137,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 
     HTML += "<div><div class='outputColumn'>";
 	if(RxTx == "Tx"){
-		HTML += "<div class = 'topRowButtonContainer' title = 'Click for connectivity.'><button class='button button--table' data-action = 'connectivity' data-band='"+band+"'>" + band + "</button></div>";
+		HTML += "<div class = 'topRowButtonContainer' title = 'Click for Tx benchmarking.'><button class='button button--table' data-action = 'benchmarkTx' data-band='"+band+"'>" + band + "</button></div>";
 	} else {
 		HTML += "<div class = 'topRowButtonContainer' title = 'Click for Rx benchmarking.'><button class='button button--table' data-action = 'benchmarkRx' data-band='"+band+"' data-winner='"+winner+"'>" + band + "</button></div>";		
 	}

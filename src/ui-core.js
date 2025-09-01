@@ -3,8 +3,10 @@
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
 import * as BandsOverview from './views/bandsOverview.js'; 
 import * as Connectivity from './views/connectivity.js';
-import * as CallsActivity from './views/calls_activity.js';
-import * as BenchmarkRx from './views/benchmarkRx.js';
+import * as RxCallsActivity from './views/calls_activity.js';
+import * as TxCallsActivity from './views/calls_activity.js';
+import * as BenchmarkRx from './views/benchmark.js';
+import * as BenchmarkTx from './views/benchmark.js';
 import {purgeLiveConnections} from './lib/conns-data.js';
 
 // Ribbon scrapes for active modes, has getter for watched mode, and calls here with changes
@@ -20,8 +22,10 @@ setInterval(() => ribbon.writeModeButtons(), 5000);
 setInterval(() => refreshCurrentView(), 5000);
 
 let currentView = null;
+let band = null;
 
-export function loadView(viewName, band, winnerCall) {
+export function loadView(viewName, setband, winnerCall) {
+	band = setband;
 	
 	// all views live in the 'mainView' div
 	let DOMmainView = document.getElementById("mainView");
@@ -39,25 +43,27 @@ export function loadView(viewName, band, winnerCall) {
 	let DOMcontainer = document.getElementById("mainViewContent");
     DOMcontainer.innerHTML = ''; 
 	
-	ribbon.registerActiveModes(); // just for visual loading the mode buttons
+	ribbon.registerActiveModes(band); // just for visual loading the mode buttons
 	
-	const viewMap = {
+	const viewMap = { // is this map even necessary?
 	  bandsOverview: BandsOverview,
 	  connectivity: Connectivity,
-	  callsActivity: CallsActivity,
+	  RxCallsActivity: RxCallsActivity,
+	  TxCallsActivity: TxCallsActivity,
 	  benchmarkRx: BenchmarkRx,
+	  benchmarkTx: BenchmarkTx,
 	};
 
-//	console.log("ui-core: Loading view ",viewName, "for band ", band, " with winner ", winnerCall);
+	console.log("ui-core: Loading view ",viewName, "for band ", band, " with winner ", winnerCall);
 	currentView = viewMap[viewName];
-	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon), winnerCall:winnerCall});
+	currentView.init(viewName, DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon), winnerCall:winnerCall});
 
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
 
 
 export function refreshCurrentView() {
-	ribbon.registerActiveModes();
+	ribbon.registerActiveModes(band);
 	console.log("ui-core: RefreshCurrentView:");
     currentView.refresh();
 }

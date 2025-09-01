@@ -1,8 +1,8 @@
 
 
-export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn){
+export function snr_graph(canvas, connsData, callA, callB, t0, tn){
 	
-	if(!bandModeData){return}
+	if(!connsData){return}
 	
 	document.getElementById(canvas).parentElement.classList.remove('hidden');
 
@@ -13,9 +13,9 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 	// get all other callsigns across home calls callA and CallB
 	let other_calls = new Set();
 	for (const mc of [callA, callB]){
-		if(bandModeData[band][mode]?.Rx[mc]){
-			for (const oc in bandModeData[band][mode].Rx[mc]) {
-				for (const rpt of bandModeData[band][mode].Rx[mc][oc]){
+		if(connsData[mc]){
+			for (const oc in connsData[mc]) {
+				for (const rpt of connsData[mc][oc]){
 					if(rpt){
 						if(in_time_window(parseInt(rpt.t))){
 							other_calls.add(oc);
@@ -30,9 +30,9 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 	// and reports that are only received by one of callA, CallB
 	let reports = {};
 	
-	for (const oc of other_calls){  // Tx call is set here
-		let rpts_1 = bandModeData[band][mode].Rx?.[callA]?.[oc];
-		let rpts_2 = bandModeData[band][mode].Rx?.[callB]?.[oc];
+	for (const oc of other_calls){ 
+		let rpts_1 = connsData?.[callA]?.[oc];
+		let rpts_2 = connsData?.[callB]?.[oc];
 		if(rpts_1){
 			for (const rpt_1 of rpts_1){
 				if(rpt_1) {
@@ -61,7 +61,7 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 		}
 	}
 	
-	// sort by SNR diff between the two Rx calls
+	// sort by SNR diff between the two HOME calls
 	let reportsArr = Object.values(reports);
 
 	reportsArr.sort((a, b) => {
@@ -69,14 +69,14 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 			let max1b = b.range_1[1] || -50;
 			let max2a = a.range_2[1] || -50;
 			let max2b = b.range_2[1] || -50;
-			if(max1b == max1a) return (max2a-max2b)  // rx1 has same rpt: reverse sort on rx2
-			return (max1b - max1a) //  sort on Rx1 max
+			if(max1b == max1a) return (max2a-max2b)  // home1 has same rpt as home2 (could be -50 = none): reverse sort on home2
+			return (max1b - max1a) //  sort on home1 max
 		});
 
     // prep the data for the chart
 	let labels = reportsArr.map(row => row.label);
-	let color_Rx1 = 'rgba(255, 99, 132, 1)';
-	let color_Rx2 = 'rgba(54, 162, 235, 0.7)';
+	let color_home1 = 'rgba(255, 99, 132, 1)';
+	let color_home2 = 'rgba(54, 162, 235, 0.7)';
 	const data = {
 	  labels,
 	  datasets: [
@@ -84,8 +84,8 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 		  label: callA,
 		  data: reportsArr.map(row => row.range_1),
 		  spanGaps: true,
-		  backgroundColor: color_Rx1,
-		  borderColor:color_Rx1,
+		  backgroundColor: color_home1,
+		  borderColor:color_home1,
 		  barPercentage: 0.5,
 		  borderWidth: 1
 		},
@@ -93,8 +93,8 @@ export function snr_graph(canvas, bandModeData, band, mode, callA, callB, t0, tn
 		  label: callB,
 		  data: reportsArr.map(row => row.range_2),
 		  spanGaps: true,
-		  backgroundColor: color_Rx2, 
-		  borderColor:color_Rx2,
+		  backgroundColor: color_home2, 
+		  borderColor:color_home2,
 		  barPercentage: 0.85,
 		  borderWidth: 1
 		}

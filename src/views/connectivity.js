@@ -22,7 +22,7 @@ function wavelength(band) {
     }
 }
 
-export function init(container, newband, opts = {}) {
+export function init(viewName, container, newband, opts = {}) {
 
 	band = newband;
   	getMode = opts.getWatchedMode;

@@ -6,12 +6,14 @@ var DOMcontainer = null;
 let band = null;
 let getMode = () => null;
 let mode = null;
+let viewName = null;
 
-export function init(container, band, opts = {}) {
-  DOMcontainer = container;
-  getMode = opts.getWatchedMode;
-  mode = getMode();
-  refresh(); // first display
+export function init(setviewName, container, band, opts = {}) {
+	viewName = setviewName;
+	DOMcontainer = container;
+	getMode = opts.getWatchedMode;
+	mode = getMode();
+	refresh(); // first display
 }
 
 export function refresh(){
@@ -21,10 +23,13 @@ export function refresh(){
 
 	let HTML = "";
 	HTML += "<h2>Home callsign activity</h2>";
-	HTML += "<h3>Transmitting Callsigns</h3>";
-	HTML += html_for_callsActivity('Tx');
-	HTML += "<h3>Receiving Callsigns</h3>";
-	HTML += html_for_callsActivity('Rx');
+	if(viewName == "RxCallsActivity"){
+		HTML += "<h3>Receiving Callsigns</h3>";
+		HTML += html_for_callsActivity('Rx');
+	} else {
+		HTML += "<h3>Transmitting Callsigns</h3>";
+		HTML += html_for_callsActivity('Tx');
+	}
 	DOMcontainer.innerHTML = HTML;
 }
 

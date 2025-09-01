@@ -1,7 +1,6 @@
 var tStart = Date.now(); // software start time
 
 import * as STORAGE from './store-cfg.js';
-
 import {liveConnsData, countAllConnections} from '../lib/conns-data.js';
 
 // ribbon HTML elements expected:
@@ -10,7 +9,6 @@ import {liveConnsData, countAllConnections} from '../lib/conns-data.js';
 
 // functions needed in ui.js:
 // onModeChange(), onConfigChange()
-
 
 export default class Ribbon {
 	
@@ -43,9 +41,21 @@ export default class Ribbon {
 	  return this.watchedMode;
 	}
 
-	registerActiveModes() {
+	registerActiveModes(band = null) {
 		if(!liveConnsData){return}
-		for (const band in liveConnsData){
+		
+	//	console.log("ribbon: registerActiveModes for band = ", band);
+		let bandList = new Set();
+		if(band != null) {
+			bandList = [band];
+		} else {
+			for (const band in liveConnsData){
+				bandList.add(band);
+			}
+		}
+		console.log("ribbon: bandList = ", bandList);
+		this.activeModes = new Set()
+		for (const band of bandList) {
 			for (const md in liveConnsData[band]) {
 				this.activeModes.add(md);
 			}
