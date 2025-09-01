@@ -1,5 +1,5 @@
 
-import {liveConnsData} from '../lib/conns-data.js';
+import {liveConnsData, rx_callsigns_info, updateLeaderInfo} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
 import {snr_graph} from '../views/graphs.js';
@@ -23,6 +23,9 @@ export function init(container, setband, opts = {}) {
 
 export function refresh(){
 	mode = getMode();
+	let myCall = STORAGE.myCall.split(",")[0].trim();
+	let myCall2 = STORAGE.myCall.split(",")[1]?.trim();
+	let leader_home = updateLeaderInfo(liveConnsData[band][mode].Rx, rx_callsigns_info);
 		
 	let HTML = ""
 	
@@ -37,19 +40,13 @@ export function refresh(){
 	
 	HTML += "<p class = 'text-sm'>";		
 	HTML += "<div class = 'hidden'><h3>Benchmarking vs specified callsign</h3><canvas id='meVsOther' style='width:100%;max-width:700px'></canvas><br></div>";
-	HTML += "<div class = 'hidden'><h3>Benchmarking vs home callsign with most spots</h3><canvas id='meVsBest' style='width:100%;max-width:700px'></canvas><br></div>";
+	HTML += "<div class = 'hidden'><h3>Benchmarking vs home callsign with most spots (" + leader_home + ")</h3><canvas id='meVsBest' style='width:100%;max-width:700px'></canvas><br></div>";
 	HTML += "<div class = 'hidden'><h3>Benchmarking vs home aggregate</h3><canvas id='meVsAll' style='width:100%;max-width:700px'></canvas><br></div>";
 	
 	DOMcontainer.innerHTML = HTML;
 	
-	let myCall = STORAGE.myCall.split(",")[0].trim();
-	snr_graph('meVsAll', liveConnsData, band, mode, myCall, 'ALL_HOME' ,0,1e30);
-
-	snr_graph('meVsBest', liveConnsData, band, mode, myCall, winnerCall ,0,1e30);
-
-	if(STORAGE.myCall.split(",")[1]){
-		let otherCall = STORAGE.myCall.split(",")[1].trim();
-		snr_graph('meVsOther', liveConnsData, band, mode, myCall, otherCall ,0,1e30);	
-	}
+	snr_graph('meVsAll', liveConnsData, band, mode, myCall, 'ALL_HOME' ,0,1e30);	
+	snr_graph('meVsBest', liveConnsData, band, mode, myCall, 'LEADER_HOME' ,0,1e30);
+	if(myCall2){ snr_graph('meVsOther', liveConnsData, band, mode, myCall, myCall2 ,0,1e30); }
 
 }

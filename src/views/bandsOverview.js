@@ -96,7 +96,7 @@ function html_forStatsForThisBand(band, mode, RxTx) {
     if (!bandData) return "";
 	
 //	console.log("Writing stats for " + band + " " + mode);
-	var HTML = "";
+	let HTML = "";
 
     // Access the relevant direction of the watched mode
     const bandModeData = bandData[mode]?.[RxTx];
@@ -119,27 +119,21 @@ function html_forStatsForThisBand(band, mode, RxTx) {
 	}
 	
     for (const homeCall in bandModeData) {
-        const peerMap = bandModeData[homeCall];
         const otherSet = new Set();
-
-        for (const otherCall in peerMap) {
+        for (const otherCall in bandModeData[homeCall]) {
             otherSet.add(otherCall);
             otherEndCallsAggregate.add(otherCall);
         }
-
         const count = otherSet.size;
         if (count > 0)
             nActive++;
-
         if (count > nMax && homeCall != "ALL_HOME") {
             nMax = count;
             winner = homeCall;
         }
-
 		if (homeCall.trim() in myCalls_counts){
 			myCalls_counts[homeCall.trim()] = count;
         }
-		
     }
 
     HTML += "<div><div class='outputColumn'>";
