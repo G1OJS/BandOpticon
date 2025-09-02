@@ -1,7 +1,13 @@
 
 export var liveConnsData = {};
-export var callsigns_info={};
+export var callsigns_info= {};
 export var latestTimestamp = 0;
+
+export var homeCalls = null;
+export var leaderCall = null;
+export var otherCalls_myCall1 = null;
+export var otherCalls_Leader = null;
+export var otherCalls_All = null;
 
 import {squareIsInHome} from './geo.js';
 import {purgeMinutes, myCall} from './store-cfg.js';
@@ -33,41 +39,29 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if (!d[h][o]) d[h][o] = [];
 	d[h][o].push ({'t':t, 'rp':rp});
 	
-	// keep track of spots for all callsigns in HOME, with max and min SNR for each HOME/Other pair
-	if(!d['ALL_HOME']) d['ALL_HOME'] = {}
-	if(!d['ALL_HOME'][o]) d['ALL_HOME'][o] = []
-	if(!d['ALL_HOME'][o][0]) d['ALL_HOME'][o][0] = {'t':0, 'rp':-50}
-	if(!d['ALL_HOME'][o][1]) d['ALL_HOME'][o][1] = {'t':0, 'rp':50}
-	if(rp > parseInt(d['ALL_HOME'][o][0]['rp'])) d['ALL_HOME'][o][0] ={'t':t, 'rp':rp};
-	if(rp < parseInt(d['ALL_HOME'][o][1]['rp'])) d['ALL_HOME'][o][1] ={'t':t, 'rp':rp};
-
 }
 
-export function getBandStats(data){
+export function analyseData(data){
 	// data is subset of connectivity map e.g. data = connsData[band][mode].Tx
-	let nHomeCalls = 0;
-	let leaderCall = null;
-	let nOtherCalls = 0;
-	let nOtherCalls_Leader = 0;
-	let nOtherCalls_myCall1 =0;
     let myCall1 = myCall.split(",")[0].trim();
-    let myCall2 = myCall.split(",")[1]?.trim();
-	const ocs_all = new Set();
+	homeCalls = new Set();
+	leaderCall = new Set();
+	otherCalls_myCall1 = new Set();
+	otherCalls_Leader = new Set();
+	otherCalls_All = new Set();
+	
 	for (const hc in data) {
-		nHomeCalls += 1;
-        const ocs = new Set();
-        for (const oc in data[hc]) { ocs.add(oc); ocs_all.add(oc); }
-        nOtherCalls = ocs.size;
-        if (nOtherCalls > nOtherCalls_Leader && hc != "ALL_HOME" && hc != "LEADER_HOME") {
-            nOtherCalls_Leader = nOtherCalls;
+		homeCalls.add(hc);
+        const otherCalls = new Set();
+        for (const oc in data[hc]) { otherCalls.add(oc); otherCalls_All.add(oc); }
+        if (otherCalls.size > otherCalls_Leader.size) {
+			otherCalls_Leader = otherCalls;
             leaderCall = hc;
         }
 		if(hc == myCall1){
-			nOtherCalls_myCall1 = nOtherCalls;
+			otherCalls_myCall1 = otherCalls;
 		}
     }
-	let nOtherCalls_All = ocs_all.size;
-	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls_All, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader, nOtherCalls_myCall1:nOtherCalls_myCall1};
 }
 
 

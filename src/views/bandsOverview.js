@@ -1,5 +1,5 @@
 
-import {liveConnsData, getBandStats } from '../lib/conns-data.js';
+import {liveConnsData, analyseData, homeCalls, otherCalls_myCall1, otherCalls_Leader, otherCalls_All } from '../lib/conns-data.js';
 import {myCall} from '../lib/store-cfg.js';
 
 
@@ -53,7 +53,8 @@ function getBodyRows(RxTx, activeBands, details_level){
 	let bandstats = [];
 	for (const band of activeBands) {
 		let data = (RxTx=="Rx")? liveConnsData[band][mode]?.Rx : liveConnsData[band][mode]?.Tx;
-		bandstats.push(getBandStats(data));
+		analyseData(data)
+		bandstats.push({nHomeCalls:homeCalls.size, nOtherCalls_myCall1:otherCalls_myCall1.size, nOtherCalls_Leader:otherCalls_Leader.size, nOtherCalls_All:otherCalls_All.size});
 	}
 	
 	let HTML="";
@@ -63,7 +64,7 @@ function getBodyRows(RxTx, activeBands, details_level){
 	HTML+="</tr>";
 
 	HTML+="<tr class = '"+rowClass+"'><th>"+otherCallType+" Calls</th>"; 
-	for (const band in activeBands) {HTML += "<td>"+bandstats[band].nOtherCalls+"</td>";} 
+	for (const band in activeBands) {HTML += "<td>"+bandstats[band].nOtherCalls_All+"</td>";} 
 	HTML+="</tr>";
 	
 	if(details_level>0){
