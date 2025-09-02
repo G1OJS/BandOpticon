@@ -15,14 +15,13 @@ let container = null;
 
 export function init(setcontainer, setband, opts = {}) {
 	container = setcontainer;
-    myCall1 = myCall.split(",")[0].trim();
   	getMode = opts.getWatchedMode;
-	mode = getMode();
 	band = setband;
     refresh(); // first display
 }
 
 export function refresh(){
+    myCall1 = myCall.split(",")[0].trim();
 	mode = getMode();
 //	console.log("benchmark: refresh with mode = "+ mode);
 	let html = "<h2> Detail for " + band + " " + mode +"</h2>";
