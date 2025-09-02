@@ -1,12 +1,8 @@
 // ui-core.js
 
 // import view definition APIs from various files (file names don't have to match view names, "as" and {} provides a mapping)
-import * as BandsOverview from './views/bandsOverview.js'; 
-import * as Connectivity from './views/connectivity.js';
-import * as RxCallsActivity from './views/calls_activity.js';
-import * as TxCallsActivity from './views/calls_activity.js';
-import * as BenchmarkRx from './views/benchmark.js';
-import * as BenchmarkTx from './views/benchmark.js';
+import * as bandsOverview from './views/bandsOverview.js'; 
+import * as benchmark from './views/benchmark.js';
 import {purgeLiveConnections} from './lib/conns-data.js';
 
 // Ribbon scrapes for active modes, has getter for watched mode, and calls here with changes
@@ -24,7 +20,7 @@ setInterval(() => refreshCurrentView(), 5000);
 let currentView = null;
 let band = null;
 
-export function loadView(viewName, setband, winnerCall) {
+export function loadView(viewName, setband) {
 	band = setband;
 	
 	// all views live in the 'mainView' div
@@ -46,23 +42,18 @@ export function loadView(viewName, setband, winnerCall) {
 	ribbon.registerActiveModes(band); // just for visual loading the mode buttons
 	
 	const viewMap = { // is this map even necessary?
-	  bandsOverview: BandsOverview,
-	  connectivity: Connectivity,
-	  RxCallsActivity: RxCallsActivity,
-	  TxCallsActivity: TxCallsActivity,
-	  benchmarkRx: BenchmarkRx,
-	  benchmarkTx: BenchmarkTx,
+	  bandsOverview: bandsOverview,
+	  benchmark: benchmark,
 	};
 
-	console.log("ui-core: Loading view ",viewName, "for band ", band, " with winner ", winnerCall);
+	console.log("ui-core: Loading view ",viewName, "for band ", band);
 	currentView = viewMap[viewName];
-	currentView.init(viewName, DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon), winnerCall:winnerCall});
+	currentView.init(DOMcontainer, band, {getWatchedMode: ribbon?.getWatchedMode.bind(ribbon)});
 
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
 
-
-export function refreshCurrentView() {
+function refreshCurrentView() {
 	ribbon.registerActiveModes(band);
 	console.log("ui-core: RefreshCurrentView:");
     currentView.refresh();
@@ -72,6 +63,6 @@ export function refreshCurrentView() {
 document.addEventListener('click', (e) => {
 	const action = e.target.dataset.action;
 	if (!action) return;
-	loadView(action,  e.target.dataset.band, e.target.dataset.winner);
-//	console.log("ui-core: clicked with action "+e.target.dataset.action+" and band "+e.target.dataset.band+" and winner " + e.target.dataset.winner);
+	loadView(action,  e.target.dataset.band);
+//	console.log("ui-core: clicked with action "+e.target.dataset.action+" and band "+e.target.dataset.band);
 });
