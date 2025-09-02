@@ -53,8 +53,7 @@ export function loadView(viewName, setband) {
 	refreshCurrentView(); // in case we arrived here from Home button click: content will have been erased above
 }
 
-
-export function refreshCurrentView() {
+function refreshCurrentView() {
 	ribbon.registerActiveModes(band);
 	console.log("ui-core: RefreshCurrentView:");
     currentView.refresh();

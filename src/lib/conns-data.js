@@ -38,7 +38,6 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if (!d[h]) d[h] = {}; 
 	if (!d[h][o]) d[h][o] = [];
 	d[h][o].push ({'t':t, 'rp':rp});
-	
 }
 
 export function analyseData(data){

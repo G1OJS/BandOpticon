@@ -164,9 +164,6 @@ td{text-align: center;}
   overflow-y:hidden;
 }
 
-
-
-
 .button--tab.active {
   border-bottom: 2px solid var(--controls-color);
   font-weight: 600;
@@ -177,19 +174,10 @@ td{text-align: center;}
 .transmit {background-color: var(--background-color-transmit);}
 .receive  {background-color: var(--background-color-receive);}
 
-
-
-.outputContainer {display: flex; flex-wrap: wrap; gap: var(--spacing-xs); max-width: 100%;  width:fit-content; 
-                  padding: var(--spacing-xs); margin-bottom:var(--spacing); }
-.outputContainer.transmit {background-color: var(--background-color-transmit);}
-.outputContainer.receive  {background-color: var(--background-color-receive);}
-.outputColumn {display: grid; grid-template-columns:max-content; margin:1px;}  
-.outputColumn > div {background-color:var(--light-paper-color);  border-color:var(--border-color);
-                text-align:center; padding-left:var(--spacing-sm); padding-right:var(--spacing-sm);}
-.outputColumn > .firstColumn {font-weight:600; text-align:left; padding-left:var(--spacing-xs);}
-.outputColumn > .topRow {background-color:var(--background-color)}
-.outputColumn > .topRowButtonContainer {background-color:var(--background-color); padding:1px;}
-.outputColumn > .zero {color: #ccc; font-style: italic;}
+#overviewTable  .firstColumn {font-weight:600; text-align:left; padding-left:var(--spacing-xs);}
+#overviewTable  .topRow {background-color:var(--background-color)}
+#overviewTable  .topRowButtonContainer {background-color:var(--background-color); padding:1px;}
+#overviewTable  .zero {color: #ccc; font-style: italic;}
 
 #footer {display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; gap: var(--spacing-sm); }
 a:link {color: #888;}

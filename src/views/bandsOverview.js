@@ -16,12 +16,16 @@ export function init(container, band, opts = {}) {
 
 export function refresh(){
 	mode = getMode();
-	const activeBands = Object.keys(liveConnsData).sort((a, b) => wavelength(b) - wavelength(a));
+	let activeBands = [];
+	const allActiveBands = Object.keys(liveConnsData).sort((a, b) => wavelength(b) - wavelength(a));
+	for (const b of allActiveBands){
+		if(liveConnsData[b][mode]) {activeBands.push(b);}
+	}
 	
 	let HTML = '<h2>Bands Overview</h2>';
 	
 	// column headings / buttons
-	HTML+="<table><thead>";
+	HTML+="<table id = 'overviewTable'><thead class = 'firstRow'>";
 	HTML+="<th></th>";
 	for (const band of activeBands) {
 		HTML += "<th title = 'Click for benchmarking.'><button class='button button--table' data-action = 'benchmark' data-band='"+band+"'>" + band + "</button></th>";
@@ -58,23 +62,23 @@ function getBodyRows(RxTx, activeBands, details_level){
 	}
 	
 	let HTML="";
-	
-	HTML+="<tr class = '"+rowClass+"'><th>Home "+RxTx+" Calls</th>"; 
+	HTML+="<tr class = 'firstColumn "+rowClass+"'><th>Home "+RxTx+" Calls</th>"; 
 	for (const band in activeBands) {HTML += "<td>"+bandstats[band].nHomeCalls+"</td>";} 
 	HTML+="</tr>";
 
-	HTML+="<tr class = '"+rowClass+"'><th>"+otherCallType+" Calls</th>"; 
+	HTML+="<tr class = 'firstColumn "+rowClass+"'><th>"+otherCallType+" Calls</th>"; 
 	for (const band in activeBands) {HTML += "<td>"+bandstats[band].nOtherCalls_All+"</td>";} 
 	HTML+="</tr>";
 	
 	if(details_level>0){
 		let myCall1 = myCall.split(",")[0].trim();
 		let myCall2 = myCall.split(",")[1]?.trim();
-		HTML+="<tr class = '"+rowClass+"'><th>Leader</th>"; 
+		HTML+="<tr class = 'firstColumn "+rowClass+"'><th>Leader</th>"; 
 		for (const band in activeBands) {HTML += "<td title='"+bandstats[band].leaderCall+"'>" +bandstats[band].nOtherCalls_Leader+" </td>";} HTML+="</tr>";
-		HTML+="<tr class = '"+rowClass+"'><th>"+myCall1+"</th>";
+		HTML+="<tr class = 'firstColumn "+rowClass+"'><th>"+myCall1+"</th>";
 		for (const band in activeBands) {HTML += "<td title='"+bandstats[band].leaderCall+"'>" +bandstats[band].nOtherCalls_myCall1+" </td>";} HTML+="</tr>";
 	}	
+
 	return HTML;
 }
 

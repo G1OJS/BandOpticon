@@ -11,7 +11,6 @@ let connsData = null;
 let myCall1 = null;
 let myCall2 = null;
 let RxTx = 0;
-let chart = false;
 let container = null;
 
 export function init(setcontainer, setband, opts = {}) {
@@ -25,34 +24,36 @@ export function init(setcontainer, setband, opts = {}) {
 
 export function refresh(){
 	mode = getMode();
-	let connsData = (RxTx)? liveConnsData[band][mode]?.Rx : liveConnsData[band][mode]?.Tx;
-	RxTx = 1 - RxTx;
+//	console.log("benchmark: refresh with mode = "+ mode);
+	let html = "<h2> Detail for " + band + " " + mode +"</h2>";
+	html += "<div style = 'display:grid; grid-template-columns:1fr 1fr;'><div><h4>Receive</h4></div><div><h4>Transmit</h4></div><div><canvas id='map1'></canvas></div><div><canvas id='map2'></canvas></div></div>";
+	container.innerHTML=html;
+	
+	doChart('map1', liveConnsData[band][mode]?.Rx);
+	doChart('map2', liveConnsData[band][mode]?.Tx);
+}
+		
+function doChart(canvas, connsData){
+	mode = getMode();
 	analyseData(connsData);
-
 	let otherpos_myCall1 = Array.from(otherCalls_myCall1).map((e) => (mhToLatLong(callsigns_info[e].sq)));
 	let otherpos_Leader = Array.from(otherCalls_Leader).map((e) => (mhToLatLong(callsigns_info[e].sq)));
 	let otherpos_All = Array.from(otherCalls_All).map((e) => (mhToLatLong(callsigns_info[e].sq)));
-
 	const data = {
 	  datasets: [	{label: myCall1 + ": "+otherpos_myCall1.length+" spots", data: otherpos_myCall1.map(e => ({x:e.lon, y:e.lat})), backgroundColor: 'rgba(255, 99, 132, 1)', pointRadius:4},
 					{label: leaderCall + ": "+otherpos_Leader.length+" spots", data: otherpos_Leader.map(e => ({x:e.lon, y:e.lat})), backgroundColor: 'rgba(54, 162, 235, 0.7)', pointRadius:6},
 					{label: homeCalls.size +" Home Calls: "+otherpos_All.length+" spots", data: otherpos_All.map(e => ({x:e.lon, y:e.lat})), backgroundColor: 'rgba(200, 162, 235, 0.7)', pointRadius:10}],
 	};
-	
-	if(chart) chart.destroy();
-	container.innerHTML = "<h2> Detail for " + band + " " + mode +"</h2><canvas id='map' style='width:100%;max-width:700px'></canvas><br></div>";
-	
-	chart = new Chart(
-	  document.getElementById('map'),
+	new Chart(
+	  document.getElementById(canvas),
 		{type: 'scatter',data: data, options: {
 			    animation: false, 
+				plugins: {legend: {position:'top', labels:{boxWidth:10, padding:10}}},
 				    scales: {
-						x: {title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom'},
-						y: {title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left'}
+						x: {title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom', max:180, min:-180},
+						y: {title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left', max:80, min:-80}
 					}
 			}
 		}
-	);
-
+	);	
 }
-	
