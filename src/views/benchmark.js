@@ -66,9 +66,9 @@ function geo_graph(canvas, connsData, callsigns_info, callA, callB, callC){
 	let colC = 'rgba(200, 162, 235, 0.7)';
 	
 	const data = {
-	  datasets: [	{label: callA + ":"+llA.length, data: llA.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colA, pointRadius:4},
-					{label: callB + ":"+llB.length, data: llB.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colB, pointRadius:6},
-					{label: "All Home Calls  ("+nhc+"):"+llC.length, data: llC.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colC, pointRadius:10}],
+	  datasets: [	{label: callA + ": "+llA.length+" spots", data: llA.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colA, pointRadius:4},
+					{label: callB + ": "+llB.length+" spots", data: llB.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colB, pointRadius:6},
+					{label: nhc+" Home Calls: "+llC.length+" spots", data: llC.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colC, pointRadius:10}],
 	};
 	
 	new Chart(
