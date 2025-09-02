@@ -23,7 +23,7 @@ export function init(setcontainer, setband, opts = {}) {
 export function refresh(){
     myCall1 = myCall.split(",")[0].trim();
 	mode = getMode();
-//	console.log("benchmark: refresh with mode = "+ mode);
+//	console.log("benchmark: refresh with mode = "+ mode+ " myCall1 = "+myCall1);
 	let html = "<h2> Detail for " + band + " " + mode +"</h2>";
 	html += "<div style = 'display:grid; grid-template-columns:1fr 1fr;'><div><h4>Receive</h4></div><div><h4>Transmit</h4></div><div><canvas id='map1'></canvas></div><div><canvas id='map2'></canvas></div></div>";
 	container.innerHTML=html;
