@@ -1,0 +1,14 @@
+<html>
+<div>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>.leaflet-container {height: 400px;width: 600px;}</style>
+<div id="map" style = 'background-color:blue;height:500px;' ></div>
+		
+<script>
+const map = L.map("map").setView([51, 0], 4);
+const tiles = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom: 19,attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"}).addTo(map);
+const circle = L.circle([51, 0], {color: "red",fillColor: "#f03",fillOpacity: 0.5,radius: 500}).addTo(map).bindPopup("I am a circle.");
+</script>
+</div>
+</html>

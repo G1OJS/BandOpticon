@@ -49,31 +49,23 @@ export function parseSquares(sqsList) {
     return outputSqsArr;
 }
 
-function mhToLatLong(Sq_mixedCase, inRadians = false) {
+export function mhToLatLong(Sq_mixedCase, inRadians = false) {
     let Sq = Sq_mixedCase.toUpperCase();
-    let lat = 10 * (Sq.charCodeAt(1) - 65);
-    let lon = 20 * (Sq.charCodeAt(0) - 65);
-    if (Sq.length > 2) {
-        lat += parseInt(Sq.charAt(3));
-        lon += 2 * parseInt(Sq.charAt(2));
+	let lat = -90 + 10 * (Sq.charCodeAt(1) - 65) + 5;
+	let lon = -180 + 20 * (Sq.charCodeAt(0) - 65) + 10;
+    if (Sq.length > 2) { 
+	    lat += parseInt(Sq.charAt(3)) -5 + 0.5;
+        lon += 2 * parseInt(Sq.charAt(2)) -10 +1;
+	}
+    if (Sq.length > 4) { 
+	    lat += (Sq.charCodeAt(5) - 65) / 24 - 0.5 + 1/48;
+        lon += (Sq.charCodeAt(4) - 65) / 12 -1 + 1/24;
     }
-    if (Sq.length > 4) {
-        lat += (Sq.charCodeAt(5) - 65) / 24;
-        lon += (Sq.charCodeAt(4) - 65) / 12;
-    }
-    lat += 1 / 48.0 - 90;
-    lon += 1 / 24.0 - 180;
-    if (inRadians) {
-        lat = lat * Math.PI / 180;
-        lon = lon * Math.PI / 180;
-    }
-    return {
-        "lat": lat,
-        "lon": lon
-    }
+    if (inRadians) { lat = lat * Math.PI / 180;  lon = lon * Math.PI / 180;}
+    return {"lat": lat, "lon": lon};
 }
 
-function squaresToKmDeg(SqA, SqB) {
+export function squaresToKmDeg(SqA, SqB) {
 
     let A = mhToLatLong(SqA, true);
     let B = mhToLatLong(SqB, true);

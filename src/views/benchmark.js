@@ -2,7 +2,8 @@
 import {liveConnsData, rx_callsigns_info, tx_callsigns_info, updateLeaderInfo} from '../lib/conns-data.js';
 import * as STORAGE from '../lib/store-cfg.js';
 import {squareIsInHome} from '../lib/geo.js';
-import {snr_graph} from '../views/graphs.js';
+import {snr_graph} from '../views/snr_graph.js';
+import {geo_graph} from '../views/geo_graph.js';
 
 let DOMcontainer = null;
 let getMode = () => null;
@@ -41,9 +42,9 @@ export function refresh(){
 	let stub = (viewName=="benchmarkRx")? "Receive": "Transmit";
 	HTML +=  '<h2>'+stub+' benchmarking for ' + band + ' ' + mode +'</h2>';
 	HTML += "<p class = 'text-sm'>";
-	HTML += "This view shows the snr of your spots compared with:";
-	HTML += "<ul><li>All home callsigns as a group</li><li>The home callsign spoted by the greatest number of callsigns</li><li>The callsign specified afer your callsign in My Callsign(s) (comma separated)</li></ul>";
-	HTML += "</p>";
+//	HTML += "This view shows the snr of your spots compared with:";
+//	HTML += "<ul><li>All home callsigns as a group</li><li>The home callsign spoted by the greatest number of callsigns</li><li>The callsign specified afer your callsign in My Callsign(s) (comma separated)</li></ul>";
+//	HTML += "</p>";
 	HTML += "<p class = 'text-sm'>";
 	HTML += "This view is still being developed.";
 	HTML += "</p>";
@@ -52,11 +53,16 @@ export function refresh(){
 	HTML += "<div class = 'hidden'><h3>" + title_stub + "vs "+ myCall2+"</h3><canvas id='meVsOther' style='width:100%;max-width:700px'></canvas><br></div>";
 	HTML += "<div class = 'hidden'><h3>" + title_stub + "vs home callsign with most spots (" + leader_home + ")</h3><canvas id='meVsBest' style='width:100%;max-width:700px'></canvas><br></div>";
 	HTML += "<div class = 'hidden'><h3>" + title_stub + "vs home aggregate</h3><canvas id='meVsAll' style='width:100%;max-width:700px'></canvas><br></div>";
+
+	HTML += "<div class = 'hidden'><h3>" + title_stub + "vs leader (" + leader_home + ") and all home calls</h3><canvas id='meVsCombo_map' style='width:100%;max-width:700px'></canvas><br></div>";
+
 	
 	DOMcontainer.innerHTML = HTML;
-	
-	snr_graph('meVsAll', connsData, myCall1, 'ALL_HOME' ,0, 1e30);	
-	snr_graph('meVsBest', connsData, myCall1, 'LEADER_HOME' ,0, 1e30);
-	if(myCall2){ snr_graph('meVsOther', connsData, myCall1, myCall2,0, 1e30); }
+
+//	snr_graph('meVsAll', connsData, myCall1, 'ALL_HOME' ,0, 1e30);	
+//	snr_graph('meVsBest', connsData, myCall1, 'LEADER_HOME' ,0, 1e30);
+//	if(myCall2){ snr_graph('meVsOther', connsData, myCall1, myCall2,0, 1e30); }
+
+	geo_graph('meVsCombo_map', connsData, myCall1, 'LEADER_HOME', 'ALL_HOME' ,0, 1e30);	
 
 }

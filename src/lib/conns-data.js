@@ -1,5 +1,6 @@
 
 export var liveConnsData = {};
+export var callsigns_info={};
 export var tx_callsigns_info={};
 export var rx_callsigns_info={};
 export var latestTimestamp = 0;
@@ -19,6 +20,8 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if(t > latestTimestamp) {latestTimestamp = t}
 
 	 // Update HOME tx_callsignInfo and rx_callsignInfo
+	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
+	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
 	if (!tx_callsigns_info[spot.sc]) tx_callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
 	if (!rx_callsigns_info[spot.rc]) rx_callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
 
@@ -41,12 +44,6 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if(!d['ALL_HOME'][o][1]) d['ALL_HOME'][o][1] = {'t':0, 'rp':50}
 	if(rp > parseInt(d['ALL_HOME'][o][0]['rp'])) d['ALL_HOME'][o][0] ={'t':t, 'rp':rp};
 	if(rp < parseInt(d['ALL_HOME'][o][1]['rp'])) d['ALL_HOME'][o][1] ={'t':t, 'rp':rp};
-	
-    // old code but keep safe:
-    // add distance and bearing Home to DX
-    // if both in home, sender to receiver
-    // compact logic == always sender to receiver unless Rx in home and Tx in DXin which case reverse
-    // conn["kmDeg"]= (conn.rd=="home" && conn.sd=="dx") ? squaresToKmDeg(conn.rl,conn.sl):squaresToKmDeg(conn.sl,conn.rl);
 
 }
 

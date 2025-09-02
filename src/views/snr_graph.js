@@ -77,57 +77,19 @@ export function snr_graph(canvas, connsData, callA, callB, t0, tn){
 	let labels = reportsArr.map(row => row.label);
 	let color_home1 = 'rgba(255, 99, 132, 1)';
 	let color_home2 = 'rgba(54, 162, 235, 0.7)';
-	const data = {
-	  labels,
-	  datasets: [
-		{
-		  label: callA,
-		  data: reportsArr.map(row => row.range_1),
-		  spanGaps: true,
-		  backgroundColor: color_home1,
-		  borderColor:color_home1,
-		  barPercentage: 0.5,
-		  borderWidth: 1
-		},
-		{
-		  label: callB,
-		  data: reportsArr.map(row => row.range_2),
-		  spanGaps: true,
-		  backgroundColor: color_home2, 
-		  borderColor:color_home2,
-		  barPercentage: 0.85,
-		  borderWidth: 1
-		}
-	  ]
-	};
-	
+	const data = { labels, datasets: [
+		{ label: callA, data: reportsArr.map(row => row.range_1), spanGaps: true, backgroundColor: color_home1, borderColor:color_home1, barPercentage: 0.5, borderWidth: 1 },
+		{ label: callB, data: reportsArr.map(row => row.range_2), spanGaps: true, backgroundColor: color_home2,  borderColor:color_home2, barPercentage: 0.85, borderWidth: 1}
+	  ]};
+	  
 	const config = {
-	  type: 'bar',
-	  data,
-	  options: {
-		responsive: true,
-		scales: {
-		  y: {
-			beginAtZero: false,
-			title: {
-			  display: true,
-			  text: 'SNR (dB)'
-			}
-		  },
-		  x: {
-			title: {
-			  display: false,
-			  text: 'Band - Call'
-			} 
-		  }
-		},
-    datasets: {
-      bar: { grouped: false } 
-    }  
+	  type: 'bar', data, options: { responsive: true, scales: {
+		  y: { beginAtZero: false,title: { display: true, text: 'SNR (dB)'}},
+		  x: { title: {display: false, text: 'Band - Call'} }
+		}, datasets: { bar: { grouped: false } }  
 	  }
 	};
 
-	// Create the chart
 	new Chart(
 	  document.getElementById(canvas),
 	  config
