@@ -1,8 +1,6 @@
 
 export var liveConnsData = {};
 export var callsigns_info={};
-export var tx_callsigns_info={};
-export var rx_callsigns_info={};
 export var latestTimestamp = 0;
 
 import {squareIsInHome} from './geo.js';
@@ -19,11 +17,9 @@ export function addSpotToConnectivityMap(connsData, spot){
     const t = parseInt(spot.t);
 	if(t > latestTimestamp) {latestTimestamp = t}
 
-	 // Update HOME tx_callsignInfo and rx_callsignInfo
-	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
-	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
-	if (!tx_callsigns_info[spot.sc]) tx_callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
-	if (!rx_callsigns_info[spot.rc]) rx_callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh, lastBand:spot.b, lastMode:spot.md, lastTime:spot.t};
+	 // Update callsignInfo
+	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh};
+	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh};
 
     // tree structure of timestamped reports for each home call for both home transmit and home receive
     // connsData[band][mode][Tx|Rx][homeCall][otherCall] = [{'t':t, 'rp':rp}]	
@@ -47,39 +43,23 @@ export function addSpotToConnectivityMap(connsData, spot){
 
 }
 
-
-export function updateLeaderInfo(data, callsigns_info){
+export function getBandStats(data){
 	// data is subset of connectivity map e.g. data = connsData[band][mode].Tx
-
-	// go through active callsigns and find call with most othercalls connected
-	let leader_home = null;
-	let nMax = 0;
-	for (const homeCall in callsigns_info) {
-        const otherCalls = new Set();
-        for (const oc in data[homeCall]) {
-            otherCalls.add(oc);
-        }
-        const count = otherCalls.size;
-        if (count > nMax && homeCall != "ALL_HOME" && homeCall != "LEADER_HOME") {
-            nMax = count;
-            leader_home = homeCall;
+	let nHomeCalls = 0;
+	let leaderCall = null;
+	let nOtherCalls = 0;
+	let nOtherCalls_Leader = 0;
+	for (const hc in data) {
+		nHomeCalls += 1;
+        const ocs = new Set();
+        for (const oc in data[hc]) { ocs.add(oc); }
+        nOtherCalls = ocs.size;
+        if (nOtherCalls > nOtherCalls_Leader && hc != "ALL_HOME" && hc != "LEADER_HOME") {
+            nOtherCalls_Leader = nOtherCalls;
+            leaderCall = hc;
         }		
     }
-	
-	// find max and min reports for each other call connectd to the leader_home, and record in the data tree
-	for (const oc in data[leader_home]) {
-		for (const rpt of data[leader_home][oc]) { 
-			if(!data['LEADER_HOME']) data['LEADER_HOME'] = {}
-			if(!data['LEADER_HOME'][oc]) data['LEADER_HOME'][oc] = []
-			if(!data['LEADER_HOME'][oc][0]) data['LEADER_HOME'][oc][0] = {'t':0, 'rp':-50}
-			if(!data['LEADER_HOME'][oc][1]) data['LEADER_HOME'][oc][1] = {'t':0, 'rp':50}
-			let snr = parseInt(rpt['rp']);
-			if(snr > parseInt(data['LEADER_HOME'][oc][0]['rp'])) data['LEADER_HOME'][oc][0] = rpt;
-			if(snr < parseInt(data['LEADER_HOME'][oc][1]['rp'])) data['LEADER_HOME'][oc][1] = rpt;	
-		}
-	}
-	
-	return leader_home;
+	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader};
 }
 
 

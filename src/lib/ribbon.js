@@ -53,7 +53,7 @@ export default class Ribbon {
 				bandList.add(band);
 			}
 		}
-		console.log("ribbon: bandList = ", bandList);
+	//	console.log("ribbon: bandList = ", bandList);
 		this.activeModes = new Set()
 		for (const band of bandList) {
 			for (const md in liveConnsData[band]) {
