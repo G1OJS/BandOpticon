@@ -52,10 +52,11 @@ export function getBandStats(data){
 	let nOtherCalls_myCall1 =0;
     let myCall1 = myCall.split(",")[0].trim();
     let myCall2 = myCall.split(",")[1]?.trim();
+	const ocs_all = new Set();
 	for (const hc in data) {
 		nHomeCalls += 1;
         const ocs = new Set();
-        for (const oc in data[hc]) { ocs.add(oc); }
+        for (const oc in data[hc]) { ocs.add(oc); ocs_all.add(oc); }
         nOtherCalls = ocs.size;
         if (nOtherCalls > nOtherCalls_Leader && hc != "ALL_HOME" && hc != "LEADER_HOME") {
             nOtherCalls_Leader = nOtherCalls;
@@ -65,7 +66,8 @@ export function getBandStats(data){
 			nOtherCalls_myCall1 = nOtherCalls;
 		}
     }
-	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader, nOtherCalls_myCall1:nOtherCalls_myCall1};
+	let nOtherCalls_All = ocs_all.size;
+	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls_All, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader, nOtherCalls_myCall1:nOtherCalls_myCall1};
 }
 
 
