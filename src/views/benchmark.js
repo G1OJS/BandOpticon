@@ -1,6 +1,6 @@
 
 import {liveConnsData, callsigns_info, getBandStats} from '../lib/conns-data.js';
-import * as STORAGE from '../lib/store-cfg.js';
+import {myCall} from '../lib/store-cfg.js';
 import {mhToLatLong} from '../lib/geo.js';
 
 let DOMcontainer = null;
@@ -13,8 +13,8 @@ let myCall1 = null;
 let myCall2 = null;
 
 export function init(container, setband, opts = {}) {
-    myCall1 = STORAGE.myCall.split(",")[0].trim();
-    myCall2 = STORAGE.myCall.split(",")[1]?.trim();
+    myCall1 = myCall.split(",")[0].trim();
+    myCall2 = myCall.split(",")[1]?.trim();
     DOMcontainer = container;
   	getMode = opts.getWatchedMode;
 	winnerCall = opts.winnerCall;
@@ -25,26 +25,29 @@ export function init(container, setband, opts = {}) {
 
 export function refresh(){
 	mode = getMode();
-	let rx_connsData =  liveConnsData[band][mode]?.Rx
-	let tx_connsData = liveConnsData[band][mode]?.Tx;
-	let rx_leader_home = getBandStats(rx_connsData);
-	let tx_leader_home = getBandStats(tx_connsData);
-	
+	let rx_data = liveConnsData[band][mode]?.Rx;
+	let tx_data = liveConnsData[band][mode]?.Tx;
+
 	let HTML = ""
 	HTML +=  '<h2> Detail for ' + band + ' ' + mode +'</h2>';
 	HTML += "<p class = 'text-sm'>";
 	HTML += "This view is still being developed.";
 	HTML += "</p>";
-	HTML += "<div class = 'hidden'><h3>" + myCall1 + " receive vs home leader (" + rx_leader_home + ") and all home calls</h3><canvas id='meVsCombo_map_rx' style='width:100%;max-width:700px'></canvas><br></div>";
-	HTML += "<div class = 'hidden'><h3>" + myCall1 + " transmit vs home leader (" + tx_leader_home + ") and all home calls</h3><canvas id='meVsCombo_map_tx' style='width:100%;max-width:700px'></canvas><br></div>";
+
+	let rx_leaderCall = getBandStats(rx_data).leaderCall;
+	HTML += "<div class = 'hidden'><h3>" + myCall1 + " receive vs home leader (" + rx_leaderCall + ") and all home calls</h3><canvas id='meVsCombo_map_rx' style='width:100%;max-width:700px'></canvas><br></div>";
+
+	let tx_leaderCall = getBandStats(tx_data).leaderCall;
+	HTML += "<div class = 'hidden'><h3>" + myCall1 + " transmit vs home leader (" + tx_leaderCall + ") and all home calls</h3><canvas id='meVsCombo_map_tx' style='width:100%;max-width:700px'></canvas><br></div>";
+
 	DOMcontainer.innerHTML = HTML;
 
-	geo_graph('meVsCombo_map_rx', rx_connsData, callsigns_info, myCall1, 'LEADER_HOME', 'ALL_HOME', rx_leader_home);	
-	geo_graph('meVsCombo_map_tx', tx_connsData, callsigns_info, myCall1, 'LEADER_HOME', 'ALL_HOME', tx_leader_home);	
+	geo_graph('meVsCombo_map_rx', rx_data, callsigns_info, myCall1, rx_leaderCall, 'ALL_HOME');	
+	geo_graph('meVsCombo_map_tx', tx_data, callsigns_info, myCall1, tx_leaderCall, 'ALL_HOME');	
 
 }
 
-function geo_graph(canvas, connsData, callsigns_info, callA, callB, callC, leadername){
+function geo_graph(canvas, connsData, callsigns_info, callA, callB, callC){
 	
 	if(!connsData){return}
 	
@@ -64,7 +67,7 @@ function geo_graph(canvas, connsData, callsigns_info, callA, callB, callC, leade
 	
 	const data = {
 	  datasets: [	{label: callA + ":"+llA.length, data: llA.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colA, pointRadius:4},
-					{label: leadername + ":"+llB.length, data: llB.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colB, pointRadius:6},
+					{label: callB + ":"+llB.length, data: llB.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colB, pointRadius:6},
 					{label: "All Home Calls  ("+nhc+"):"+llC.length, data: llC.map(e => ({x:e.lon, y:e.lat})), backgroundColor: colC, pointRadius:10}],
 	};
 	

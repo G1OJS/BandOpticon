@@ -4,7 +4,7 @@ export var callsigns_info={};
 export var latestTimestamp = 0;
 
 import {squareIsInHome} from './geo.js';
-import {purgeMinutes} from './store-cfg.js';
+import {purgeMinutes, myCall} from './store-cfg.js';
 
 export function addSpotToConnectivityMap(connsData, spot){
 	// mqtt subscriptions are only for at least one end in HOME, so no non-HOME to non-HOME connections arrive here
@@ -49,6 +49,9 @@ export function getBandStats(data){
 	let leaderCall = null;
 	let nOtherCalls = 0;
 	let nOtherCalls_Leader = 0;
+	let nOtherCalls_myCall1 =0;
+    let myCall1 = myCall.split(",")[0].trim();
+    let myCall2 = myCall.split(",")[1]?.trim();
 	for (const hc in data) {
 		nHomeCalls += 1;
         const ocs = new Set();
@@ -57,9 +60,12 @@ export function getBandStats(data){
         if (nOtherCalls > nOtherCalls_Leader && hc != "ALL_HOME" && hc != "LEADER_HOME") {
             nOtherCalls_Leader = nOtherCalls;
             leaderCall = hc;
-        }		
+        }
+		if(hc == myCall1){
+			nOtherCalls_myCall1 = nOtherCalls;
+		}
     }
-	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader};
+	return {nHomeCalls:nHomeCalls, nOtherCalls:nOtherCalls, leaderCall:leaderCall, nOtherCalls_Leader:nOtherCalls_Leader, nOtherCalls_myCall1:nOtherCalls_myCall1};
 }
 
 
