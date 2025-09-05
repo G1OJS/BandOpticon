@@ -1,9 +1,7 @@
 # BandOpticon
-### What is the activity like on each band to and from *my* local area? What modes are being used? What is the connectivity like on those bands? Is it reciprocal? How many callsigns am I hearing and/or being heard by compared to the best performing station in my area?
+### What is the activity like on each band to and from *my* local area? What modes are being used? What is the coverage like on those bands? Is it reciprocal? Where am I hearing and/or being heard by compared to the best performing station in my area?
 
-#### Version 3 is brand new, with a facelift and simplified navigation and views. More views coming soon!
-
-<img width="859" height="690" alt="Capture2" src="https://github.com/user-attachments/assets/2680ac5f-242b-4018-b02c-4c2d08e10efe" />
+<img width="966" height="713" alt="Capture" src="https://github.com/user-attachments/assets/1f883d3c-71f7-4624-97a7-239cb7623233" />
 
 This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously. This is useful for seeing where the activity is and for spotting band openings. You can also drill down to view detail for a single band, showing which callsigns are transmitting and which are receiving, and which DX squares or callsigns are being reached and spotted by them.
 
