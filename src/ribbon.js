@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import * as STORAGE from './store-cfg.js';
-import {liveConnsData, countAllConnections} from '../lib/conns-data.js';
+import {updateMyCall, updateSquaresList, updatePurgeMins} from './store-cfg.js';
+import {liveConnsData, countAllConnections} from './conns-data.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -12,12 +12,15 @@ import {liveConnsData, countAllConnections} from '../lib/conns-data.js';
 
 export default class Ribbon {
 	
-	constructor({ onModeChange, onConfigChange } = {}) {
+	constructor({onBandsChange, onModeChange, onConfigChange } = {}) {
+		this.onBandsChange = onBandsChange || (() => {});
 		this.onModeChange = onModeChange || (() => {});
 		this.onConfigChange = onConfigChange || (() => {});
 		this.tStart = Date.now();
-		this.watchedMode = "FT8";
+		this.activeBands = new Set(["20m"]);
+		this.watchedBands = new Set(["20m"]);
 		this.activeModes = new Set();
+		this.watchedMode = "FT8";
 		this.attachInputHandlers();
 		setInterval(() => this.updateClock(), 1000);
 	}
@@ -37,25 +40,39 @@ export default class Ribbon {
 		this.writeModeButtons();
 	}
 	
+	toggleBand(band) {
+		console.log(this.watchedBands);
+		if (this.watchedBands.has(band)){
+			if(this.watchedBands.size > 1) this.watchedBands.delete(band);
+		} else {
+			this.watchedBands.add(band);
+		}
+		this.onBandsChange(this.watchedBands);
+		this.writeModeButtons();
+	}
+	
 	getWatchedMode() {
 	  return this.watchedMode;
 	}
-
-	registerActiveModes(band = null) {
+	
+	getActiveBands() {
+	  return this.activeBands;
+	}
+	
+	getWatchedBands() {
+	  return this.watchedBands;
+	}	
+	registerActiveBandsAndModes() {
 		if(!liveConnsData){return}
 		
-	//	console.log("ribbon: registerActiveModes for band = ", band);
-		let bandList = new Set();
-		if(band != null) {
-			bandList = [band];
-		} else {
-			for (const band in liveConnsData){
-				bandList.add(band);
-			}
+		this.activeBands = new Set();
+		for (const band in liveConnsData){
+			this.activeBands.add(band);
 		}
-	//	console.log("ribbon: bandList = ", bandList);
+	//	this.writeBandButtons();
+		
 		this.activeModes = new Set()
-		for (const band of bandList) {
+		for (const band of this.watchedBands) {
 			for (const md in liveConnsData[band]) {
 				this.activeModes.add(md);
 			}
@@ -80,12 +97,30 @@ export default class Ribbon {
 			}
 		});
 	}
+	
+	writeBandButtons() {
+		const el = document.getElementById("bandsSelectBox");
+		el.innerHTML = "<legend>Bands</legend>"; 
+		this.activeBands.forEach((b) => {
+			const bandBtn = document.createElement("button");
+			bandBtn.type = "button";
+			bandBtn.className = "button--band";
+			bandBtn.id = b;
+			bandBtn.textContent = b;
+			bandBtn.addEventListener('click', () => this.toggleBand(b));
+			el.appendChild(bandBtn);
+
+			if (this.watchedBands.has(b)) {
+				bandBtn.classList.add('active');
+			}
+		});
+	}
 
 	attachInputHandlers() {
 		const myCallInput = document.getElementById('myCallInput');
 		if (myCallInput) {
 			myCallInput.addEventListener('change', () => {
-				STORAGE.updateMyCall();
+				updateMyCall();
 				this.onConfigChange();
 			});
 			console.log("Attached 'change' listener to myCallInput")
@@ -96,7 +131,7 @@ export default class Ribbon {
 		const homeSquaresInput = document.getElementById('homeSquaresInput');
 		if (homeSquaresInput) {
 			homeSquaresInput.addEventListener('change', () => {
-				STORAGE.updateSquaresList();
+				updateSquaresList();
 				this.onConfigChange();
 			});
 			console.log("Attached 'change' listener to homeSquaresInput")
@@ -107,7 +142,7 @@ export default class Ribbon {
 		const purgeMinutesInput = document.getElementById('purgeMinutesInput');
 		if (purgeMinutesInput) {
 			purgeMinutesInput.addEventListener('change', () => {
-				STORAGE.updatePurgeMins();
+				updatePurgeMins();
 				this.onConfigChange();
 			});
 			console.log("Attached 'change' listener to purgeMinutesInput")

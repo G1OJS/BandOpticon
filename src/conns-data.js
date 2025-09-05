@@ -1,6 +1,6 @@
 
 export var liveConnsData = {};
-export var callsigns_info= {};
+export var call_locs= {};
 export var latestTimestamp = 0;
 
 export var homeCalls = null;
@@ -9,7 +9,7 @@ export var otherCalls_myCall1 = null;
 export var otherCalls_Leader = null;
 export var otherCalls_All = null;
 
-import {squareIsInHome} from './geo.js';
+import {mhToLatLong, squareIsInHome} from './geo.js';
 import {purgeMinutes, myCall} from './store-cfg.js';
 
 export function addSpotToConnectivityMap(connsData, spot){
@@ -24,11 +24,17 @@ export function addSpotToConnectivityMap(connsData, spot){
 	if(t > latestTimestamp) {latestTimestamp = t}
 
 	 // Update callsignInfo
-	if (!callsigns_info[spot.sc]) callsigns_info[spot.sc] = {sq:spot.sl, inHome:sh};
-	if (!callsigns_info[spot.rc]) callsigns_info[spot.rc] = {sq:spot.rl, inHome:rh};
+	if (!call_locs[spot.sc]){
+		let ll = mhToLatLong(spot.sl);
+		call_locs[spot.sc] = {x:ll[1], y:ll[0]};
+	}
+	if (!call_locs[spot.rc]){
+		let ll = mhToLatLong(spot.rl);
+		call_locs[spot.rc] = {x:ll[1], y:ll[0]};
+	}
 
-    // tree structure of timestamped reports for each home call for both home transmit and home receive
-    // connsData[band][mode][Tx|Rx][homeCall][otherCall] = [{'t':t, 'rp':rp}]	
+    // tree structure of timestamps for each home call for both home transmit and home receive
+    // connsData[band][mode][Tx|Rx][homeCall][otherCall] = t	
 	const rp = spot.rp;
     if (!connsData[band]) { connsData[band] = {}; }
     if (!connsData[band][mode]) {connsData[band][mode] = {Tx: {}, Rx: {} }; }	
@@ -37,37 +43,12 @@ export function addSpotToConnectivityMap(connsData, spot){
     if (rh) {h = spot.rc; o = spot.sc; d = connsData[band][mode].Rx;}
 	if (!d[h]) d[h] = {}; 
 	if (!d[h][o]) d[h][o] = [];
-	d[h][o].push ({'t':t, 'rp':rp});
+	d[h][o]=t;
 }
 
-export function analyseData(data){
-	// data is subset of connectivity map e.g. data = connsData[band][mode].Tx
-    let myCall1 = myCall.split(",")[0].trim();
-	homeCalls = new Set();
-	leaderCall = new Set();
-	otherCalls_myCall1 = new Set();
-	otherCalls_Leader = new Set();
-	otherCalls_All = new Set();
-	
-	for (const hc in data) {
-		homeCalls.add(hc);
-        const otherCalls = new Set();
-        for (const oc in data[hc]) { otherCalls.add(oc); otherCalls_All.add(oc); }
-        if (otherCalls.size > otherCalls_Leader.size) {
-			otherCalls_Leader = otherCalls;
-            leaderCall = hc;
-        }
-		if(hc == myCall1){
-			otherCalls_myCall1 = otherCalls;
-		}
-    }
-}
-
-
-// needs checking
 export function purgeLiveConnections() {
 	
-	// need to add purge for callsigns_info too
+	// need to add purge for call_locs too
 	
 	const tNow = Math.round(Date.now() / 1000);
 	const cutoff = tNow - 60 * purgeMinutes;
@@ -80,19 +61,10 @@ export function purgeLiveConnections() {
 					const otherCalls = liveConnsData[band][mode][dir][homeCall]     
 					const toDelete = [];
 					for (const otherCall in otherCalls) {
-						const reports = otherCalls[otherCall]
-						for (const rpt in reports){
-							if(reports[rpt].t < cutoff) {
-								toDelete.push(rpt)
-							}
-						}
-						toDelete.forEach(rpt => {
-							delete reports[rpt]
-						});
-						if (Object.keys(reports).length === 0) {
-						  delete otherCalls[otherCall];
-					    }
+						if(otherCall.t < cutoff) {toDelete.push(otherCall)}
 					}
+					toDelete.forEach(otherCall=> {delete otherCalls[otherCall];});
+					if (Object.keys(homeCall).length === 0) {delete liveConnsData[band][mode][dir][homeCall];}
 				}
 			}
 		}
@@ -107,7 +79,6 @@ export function countAllConnections() {
 			for (const dir of["Tx", "Rx"]) {
 				for (const homeCall in liveConnsData[band][mode][dir]) {
 					const otherCalls = liveConnsData[band][mode][dir][homeCall]     
-					const toDelete = [];
 					for (const otherCall in otherCalls) {
 						nConns += 1;
 					}

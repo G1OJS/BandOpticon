@@ -3,6 +3,7 @@
 <html lang="en">
 <head>
 <title>BandOpticon V4.0.0</title>
+<meta name="viewport" content="width=devic>e-width, <initi>al-scale=1"/>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -11,14 +12,13 @@
         async src="//gc.zgo.at/count.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="./styles/style.css" /> 
+<link rel="stylesheet" href="./style.css" /> 
 
 </head>
 <body>
 <div id="app" class="paper-primary">
     <h1>BandOpticon V4</h1>
-	<div class="text-sm" style = 'margin-bottom:8px;'>BandOpticon incorporating Station Benchmark, restyled, simplified and rewritten to allow different views to be added in future versions. <a href='./BandOpticonV2.html'>Switch to V2</a></div>
-    <div id="ribbon" class="text-sm">
+	<div id="ribbon" class="text-sm">
 		<fieldset class="ribbonBox">
 		<legend>Info</legend>
 		  <output id="clock" class='clock'></output><br>
@@ -41,21 +41,25 @@
 		<legend>Mode</legend>
 			<!-- written by script -->
 		</fieldset>
-
-   </div>
-
-    <div id="mainView" class="paper" >   
+<!--		<fieldset id='bandsSelectBox' class="ribbonBox" >
+		<legend>Bands</legend>
+			<!-- written by script -->
+<!--		</fieldset> -->
 
 	</div>
 
-   <div id="footer" class="text-muted text-xsm">
+	<div id="mainView" class="paper" >   
+
+	</div>
+
+	<div id="footer" class="text-muted text-xsm">
         <div>
             	Javascript & HTML developed by Alan Robinson:<br>
             	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
             	<a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
 		<a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
 	</div>
-   <div>
+	<div>
             Thanks to:<br>
             Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
             Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
