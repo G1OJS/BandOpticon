@@ -99,13 +99,13 @@ function refreshMainView(newDisplayMode = null, newBands = null){
 	}
 }
 
-function get_otherCall_locs(data){
+function getCallsignLocation(data){
 	const ocLocs = new Set();
 	for (const oc in data) {
 		let ll = call_locs[oc];
 		ocLocs.add(ll); 
 	}	
-	return ocLocs
+	return ocLocs;
 }
 
 function getAggregatedData(data){
@@ -119,7 +119,7 @@ function getAggregatedData(data){
 	
 	for (const hc in data) {
 		homeCalls.add(hc);
-		let ocLocs = get_otherCall_locs(data[hc]);
+		let ocLocs = getCallsignLocation(data[hc]);
         for (const ocLoc in ocLocs) {
 			ocLocs_All.add(ocLoc); 
 		}
@@ -225,13 +225,16 @@ function drawSingle(){
 	
 	let datasets = [];
 	for (const hc in rx_conns_data){ 
-		let locs = Array.from(get_otherCall_locs(rx_conns_data[hc]));
-		datasets.push({	label:hc+"_rx", data: locs, 	pointRadius:6, backgroundColor: coloursList[hc]	}); 
+		let ocLocs = Array.from(getCallsignLocation(rx_conns_data[hc]));
+		let hcLoc = call_locs[hc];
+		let hcLines = []
+		for (const l of ocLocs){
+			hcLines.push(hcLoc)
+			hcLines.push(l)
+		}
+		datasets.push({	type:'line', data: hcLines, 	pointRadius:3, backgroundColor: coloursList[hc]	}); 
 	}
-	for (const hc in tx_conns_data){ 
-		let locs = Array.from(get_otherCall_locs(tx_conns_data[hc]));
-		datasets.push({ label:hc+"_tx", data: locs, 	pointRadius:3, backgroundColor: coloursList[hc]		}); 
-	}
+
 	let data = {datasets};
 	
 	document.getElementById('bandTileTitle').innerHTML = band + " " + rx_aggs.homeCalls.length + " Rx, leader: " + rx_aggs.leaderCall +"; " + tx_aggs.homeCalls.length + " Tx, leader: " + tx_aggs.leaderCall;	
@@ -250,7 +253,7 @@ function drawSingle(){
 	charts[canvas_id]={};
 	charts[canvas_id]['chart'] = new Chart(
 		document.getElementById(canvas_id),
-		{type: 'scatter',data: data, options: {
+		{type:'scatter', data: data, options: {
 			animation: false, 
 			plugins: {	legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
