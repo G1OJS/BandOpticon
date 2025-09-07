@@ -123,18 +123,18 @@ label 				{font-size: var(--font-size-sm); }
 .ribbonBox 			{height:100px;}
 
 #mainView 			{min-height:0px; overflow:auto;}
-.mainViewLegend		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
-.mainViewLegendItem {float:left;}
-.legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); 
-					 margin-left:20px; margin-right:2px; border: 1px solid grey;}
-
+#mainViewRibbon		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
+.legendItem 		{float:left;}
+.legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:20px; margin-right:2px; border: 1px solid grey;}
+					 
 .hidden				{display:none;}
 .transmit 			{background-color: var(--background-color-transmit);}
 .receive  			{background-color: var(--background-color-receive);}
 
-#canvasSpace 		{display:grid; grid-template-columns:1fr 1fr 1fr; height:100%; width:100%; gap:5px; }
+#bandsGrid	 		{display:grid; grid-template-columns:1fr 1fr 1fr; height:100%; width:100%; gap:5px; }
+#bandPane	 		{height:100%; width:100%;}
 .canvasHolder 		{background-color: var(--light-paper-color); padding:0px; padding-bottom:0px; min-width:0;}
-canvas 				{background-image:url('./map/map1.png'); background-size: 100% 100%}
+canvas 				{background-size: 100% 100%}
 .bandTileTitle 		{font-size: var(--font-size-sm); background-color:var(--main-paper-color); padding-left:4px;}
 
 #footer 			{display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; gap: var(--spacing-sm); }
