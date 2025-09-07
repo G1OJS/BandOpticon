@@ -242,7 +242,7 @@ function drawSingle(){
 			hcLines.push(hcLoc)
 			hcLines.push(l)
 		}
-		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0, backgroundColor: callsignColours[hc] });
+		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0, backgroundColor: callsignColours[hc], borderColor: callsignColours[hc] });
         datasets.push({type: 'scatter', label: 'Tx', data: ocLocs, pointRadius:4, backgroundColor:'rgba(255,0,0,0.5)'});
         datasets.push({type: 'scatter', label: 'Rx', data: [hcLoc], pointRadius:7, backgroundColor:'rgba(0,0,355,0.5)'});
 	}
@@ -254,7 +254,7 @@ function drawSingle(){
 			hcLines.push(hcLoc)
 			hcLines.push(l)
 		}
-		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0, backgroundColor: callsignColours[hc] });
+		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0, backgroundColor: callsignColours[hc], borderColor: callsignColours[hc] });
         datasets.push({type: 'scatter', label: 'Tx', data: [hcLoc], pointRadius:4, backgroundColor:'rgba(255,0,0,0.5)'});
         datasets.push({type: 'scatter', label: 'Rx', data: ocLocs, pointRadius:7, backgroundColor:'rgba(0,0,355,0.5)'});
 	}
