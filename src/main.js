@@ -232,7 +232,7 @@ function drawSingle(){
 			hcLines.push(hcLoc)
 			hcLines.push(l)
 		}
-		datasets.push({	type:'line', data: hcLines, 	pointRadius:3, backgroundColor: coloursList[hc]	}); 
+		datasets.push({	data: hcLines, 	pointRadius:3, backgroundColor: coloursList[hc]	}); 
 	}
 
 	let data = {datasets};
