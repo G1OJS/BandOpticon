@@ -223,6 +223,7 @@ function drawSingle(){
 		callsignColours[hc] = coloursList[colIdx];
 	}
 	
+	// currently only doing Rx here as overlaying different coloured endpoints on lines turns all lines grey 
 	let datasets = [];
 	for (const hc in rx_conns_data){ 
 		let ocLocs = Array.from(getCallsignLocation(rx_conns_data[hc]));
@@ -232,7 +233,7 @@ function drawSingle(){
 			hcLines.push(hcLoc)
 			hcLines.push(l)
 		}
-		datasets.push({	data: hcLines, 	pointRadius:3, backgroundColor: coloursList[hc]	}); 
+		datasets.push({	type:'line', data: hcLines, 	pointRadius:3, backgroundColor: coloursList[hc]	}); 
 	}
 
 	let data = {datasets};
