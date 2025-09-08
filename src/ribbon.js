@@ -36,7 +36,7 @@ export default class Ribbon {
 
 	setMode(mode) {
 		this.watchedMode = mode;
-		this.onModeChange(this.watchedMode);
+		this.onModeChange();
 		this.writeModeButtons();
 	}
 	
