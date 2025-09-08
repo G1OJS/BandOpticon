@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import {updateMyCall, updateSquaresList, updatePurgeMins} from './store-cfg.js';
-import {liveConnsData, countAllConnections} from './conns-data.js';
+import {updatemyCalls, updateSquaresList, updatePurgeMins} from './store-cfg.js';
+import {connsData, countAllConnections} from './conns-data.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -63,17 +63,17 @@ export default class Ribbon {
 	  return this.watchedBands;
 	}	
 	registerActiveBandsAndModes() {
-		if(!liveConnsData){return}
+		if(!connsData){return}
 		
 		this.activeBands = new Set();
-		for (const band in liveConnsData){
+		for (const band in connsData){
 			this.activeBands.add(band);
 		}
 	//	this.writeBandButtons();
 		
 		this.activeModes = new Set()
 		for (const band of this.watchedBands) {
-			for (const md in liveConnsData[band]) {
+			for (const md in connsData[band]) {
 				this.activeModes.add(md);
 			}
 		}
