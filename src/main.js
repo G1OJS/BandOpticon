@@ -202,7 +202,9 @@ function drawBandTile(canvas_id, title_el, band){
 		document.getElementById(canvas_id),
 		{type: 'scatter',data: data, options: {
 			animation: false, 
-			plugins: {	legend: {display:false},             
+			plugins: {
+				tooltip:{callbacks: {label: function(context) {let label = context.dataset.label || ''; return label;} }},
+				legend: {display:false},             
 						title: {display: false, align:'start', text: " "+bandInfo}},
 			scales: scales
 			}
@@ -249,27 +251,31 @@ function drawSingle(){
 		let ocLocs = [];
 		let hcLoc = call_locs[hc];
 		let hcLines = []
+		let oCalls =[];
 		for (const oc in rx_conns_data[hc]){
 			hcLines.push(hcLoc)
 			hcLines.push(call_locs[oc])
 			ocLocs.push(call_locs[oc])
+			oCalls.push("TX:"+oc);
 		}
-		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0,  borderColor: callsignColours[hc] });
-        datasets.push({type: 'scatter', label: 'Tx', data: ocLocs, pointRadius:4, backgroundColor:'rgba(255,0,0,0.6)'});
-        datasets.push({type: 'scatter', label: 'Rx', data: [hcLoc], pointRadius:7, backgroundColor:'rgba(0,0,355,0.3)'});
+		datasets.push({type: 'scatter', label: '', data: hcLines, showLine: true, pointRadius:0,  borderColor: callsignColours[hc] });
+        datasets.push({type: 'scatter', label: 'tx', data: ocLocs, pointRadius:4, backgroundColor:'rgba(255,0,0,0.6)'});
+        datasets.push({type: 'scatter', label: hc+'(rx)', data: [hcLoc], pointRadius:7, backgroundColor:'rgba(0,0,355,0.3)'});
 	}
 	for (const hc in tx_conns_data){ 
 		let ocLocs = [];
 		let hcLoc = call_locs[hc];
-		let hcLines = []
+		let hcLines = [];
+		let oCalls =[];
 		for (const oc in tx_conns_data[hc]){
 			hcLines.push(hcLoc)
 			hcLines.push(call_locs[oc])
 			ocLocs.push(call_locs[oc])
+			oCalls.push("RX:"+oc);
 		}
-		datasets.push({type: 'scatter', label: 'Line', data: hcLines, showLine: true, pointRadius:0, borderColor: callsignColours[hc] });
-        datasets.push({type: 'scatter', label: 'Tx', data: [hcLoc], pointRadius:4, backgroundColor:'rgba(255,0,0,0.6)'});
-        datasets.push({type: 'scatter', label: 'Rx', data: ocLocs, pointRadius:7, backgroundColor:'rgba(0,0,355,0.3)'});
+		datasets.push({type: 'scatter', label: '', data: hcLines, showLine: true, pointRadius:0, borderColor: callsignColours[hc] });
+        datasets.push({type: 'scatter', label: hc+'(tx)', data: [hcLoc], pointRadius:4, backgroundColor:'rgba(255,0,0,0.6)'});
+        datasets.push({type: 'scatter', label: 'rx', data: ocLocs, pointRadius:7, backgroundColor:'rgba(0,0,355,0.3)'});
 	}
 
 	let data = {datasets};
@@ -292,7 +298,9 @@ function drawSingle(){
 		document.getElementById(canvas_id),
 		{data: data, options: {
 			animation: false, 
-			plugins: {	legend: {display: false},             
+			plugins: {	
+						tooltip:{callbacks: {label: function(context) {let label = context.dataset.label || ''; return label;} }},
+						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: scales
 			}
