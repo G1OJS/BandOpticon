@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import {updateMyCall, updateSquaresList, updatePurgeMins} from './store-cfg.js';
-import {liveConnsData, countAllConnections} from './conns-data.js';
+import {updatemyCalls, updateSquaresList, updatePurgeMins} from './config.js';
+import {connectionsMap} from './mqtt.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -17,7 +17,6 @@ export default class Ribbon {
 		this.onModeChange = onModeChange || (() => {});
 		this.onConfigChange = onConfigChange || (() => {});
 		this.tStart = Date.now();
-		this.activeBands = new Set(["20m"]);
 		this.watchedBands = new Set(["20m"]);
 		this.activeModes = new Set();
 		this.watchedMode = "FT8";
@@ -31,6 +30,7 @@ export default class Ribbon {
 		const runningmins = Math.trunc(((t - tStart) / 1000) / 60);
 		document.getElementById("clock").innerHTML = utc + " UTC";
 		document.getElementById("runningMins").innerHTML = runningmins;
+
 //		document.getElementById("connectionsIn").innerHTML = countAllConnections();
 	}
 
@@ -40,44 +40,32 @@ export default class Ribbon {
 		this.writeModeButtons();
 	}
 	
-	toggleBand(band) {
-		console.log(this.watchedBands);
-		if (this.watchedBands.has(band)){
-			if(this.watchedBands.size > 1) this.watchedBands.delete(band);
-		} else {
-			this.watchedBands.add(band);
-		}
-		this.onBandsChange(this.watchedBands);
-		this.writeModeButtons();
-	}
-	
 	getWatchedMode() {
 	  return this.watchedMode;
 	}
 	
-	getActiveBands() {
-	  return this.activeBands;
-	}
-	
-	getWatchedBands() {
-	  return this.watchedBands;
-	}	
-	registerActiveBandsAndModes() {
-		if(!liveConnsData){return}
-		
-		this.activeBands = new Set();
-		for (const band in liveConnsData){
-			this.activeBands.add(band);
+	setWatchedBands(bandsList) {
+	   if(!connectionsMap) return;
+
+	   if(!bandsList){			
+			let activeBands = new Set();
+			for (const band in connectionsMap) activeBands.add(band);
+			this.watchedBands = Array.from(activeBands).sort((a, b) => wavelength(b) - wavelength(a));
+		} else {
+			this.watchedBands = bandsList;
 		}
-	//	this.writeBandButtons();
 		
 		this.activeModes = new Set()
 		for (const band of this.watchedBands) {
-			for (const md in liveConnsData[band]) {
+			for (const md in connectionsMap[band]) {
 				this.activeModes.add(md);
 			}
 		}
 		this.writeModeButtons();
+	}
+
+	getWatchedBands() {
+	  return this.watchedBands;
 	}
 	
 	writeModeButtons() {
@@ -98,24 +86,6 @@ export default class Ribbon {
 		});
 	}
 	
-	writeBandButtons() {
-		const el = document.getElementById("bandsSelectBox");
-		el.innerHTML = "<legend>Bands</legend>"; 
-		this.activeBands.forEach((b) => {
-			const bandBtn = document.createElement("button");
-			bandBtn.type = "button";
-			bandBtn.className = "button--band";
-			bandBtn.id = b;
-			bandBtn.textContent = b;
-			bandBtn.addEventListener('click', () => this.toggleBand(b));
-			el.appendChild(bandBtn);
-
-			if (this.watchedBands.has(b)) {
-				bandBtn.classList.add('active');
-			}
-		});
-	}
-
 	attachInputHandlers() {
 		const myCallInput = document.getElementById('myCallInput');
 		if (myCallInput) {
@@ -150,4 +120,13 @@ export default class Ribbon {
 			console.warn('purgeMinutesInput not found');
 		}
 	}
+}
+
+function wavelength(band) {
+    let wl = parseInt(band.split("m")[0]);
+    if (band.search("cm") > 0) {
+        return wl / 100
+    } else {
+        return wl
+    }
 }
