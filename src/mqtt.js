@@ -61,7 +61,7 @@ function onMessage(msg) {
 
 	addSpot(spot);
 }
-
+// how can I best merge these two (^ and v)?
 function addSpot(spot){
 	updateCallLocactions(spot.sc, spot.sl);
 	updateCallLocactions(spot.rc, spot.rl);
@@ -93,12 +93,12 @@ export function connectToTest(){
 		addSpot( {'sc':'G1OJS','rc':'SA0PU','sl':'IO90','rl':'JO03ka','rp':-12,'b':b,'md':'FT8','t':1e30});
 		addSpot( {'sc':'G1OJS','rc':'F3GGG','sl':'IO90','rl':'JO03rr','rp':-2,'b':b,'md':'FT8','t':1e30});
 		addSpot( {'sc':'G1OJS','rc':'2E0IRL','sl':'IO90','rl':'JO02gg','rp':-20,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'sc':'G1OJS','rc':'K0EEE','sl':'IO90','rl':'JO02aa','rp':-17,'b':b,'md':'FT8','t':1e30});
+		addSpot( {'sc':'G1OJS','rc':'K0EEE','sl':'IO90','rl':'nn02aa','rp':-17,'b':b,'md':'FT8','t':1e30});
 		
 		addSpot( {'rc':'G1OJS','sc':'PA0RL','sl':'JO03bu','rl':'IO90','rp':-7,'b':b,'md':'FT8','t':1e30});
 		addSpot( {'rc':'G1OJS','sc':'SA0PU','sl':'JO03ka','rl':'IO90','rp':-2,'b':b,'md':'FT8','t':1e30});
 		addSpot( {'rc':'G1OJS','sc':'F3GGG','sl':'JO03rr','rl':'IO90','rp':-12,'b':b,'md':'FT8','t':1e30});
 		addSpot( {'rc':'G1OJS','sc':'2E0IRL','sl':'JO02gg','rl':'IO90','rp':-22,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'rc':'G1OJS','sc':'K0EEE','sl':'JO02aa','rl':'IO90','rp':-13,'b':b,'md':'FT8','t':1e30});	
+		addSpot( {'rc':'G1OJS','sc':'K0EEE','sl':'nn02aa','rl':'IO90','rp':-13,'b':b,'md':'FT8','t':1e30});	
 	}
 }

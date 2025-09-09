@@ -2,6 +2,14 @@ import {connectToFeed, connectToTest, connectionsMap, callLocations} from './mqt
 
 import {loadConfig, myCalls} from './config.js';
 import Ribbon from './ribbon.js';
+let worldGeoJSON = null;
+
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson')
+  .then(resp => resp.json())
+  .then(data => {
+	console.log("GeoJSON loaded:", data);
+    worldGeoJSON = data;
+  });
 
 let displayMode = null;
 let charts={};
@@ -14,6 +22,40 @@ const ribbon = new Ribbon({
   onConfigChange: refreshMainView,
   onBandsChange: refreshMainView
  });
+ 
+const countryOutlinePlugin = {
+  id: 'countryOutline',
+  beforeDatasetsDraw(chart, args, options) {
+    const { ctx } = chart;
+    ctx.save();
+    ctx.strokeStyle = options.color || 'rgba(0,0,0,0.3)';
+    ctx.lineWidth = options.lineWidth || 1;
+    worldGeoJSON?.features.forEach(feature => {
+      const geom = feature.geometry;
+      if (geom.type === 'Polygon') {
+        drawPolygon(geom.coordinates, chart, ctx);
+      } else if (geom.type === 'MultiPolygon') {
+        geom.coordinates.forEach(polygon => drawPolygon(polygon, chart, ctx));
+      }
+    });
+
+    ctx.restore();
+  }
+};
+ 
+
+function drawPolygon(rings, chart, ctx) {
+  rings.forEach(ring => {
+    ctx.beginPath();
+    ring.forEach(([lon, lat], i) => {
+      const x = chart.scales.x.getPixelForValue(lon);
+      const y = chart.scales.y.getPixelForValue(lat);
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    });
+    ctx.closePath();
+    ctx.stroke();
+  });
+}
  
 setInterval(() => refreshMainView(), 5000);
 
@@ -52,7 +94,7 @@ function refreshMainView(newDisplayMode = null, band = null){
 		html ="";
 		for (let i =0;i<15;i++){
 			html += "<div id = 'bandTile_"+i+"' class = 'bandTile hidden' ><div id = 'bandTileTitle_"+i+"'></div>";
-			html += "<canvas id='bandTileCanvas_"+i+"' style='background-image:url(\"./map/map1.png\");' class='hidden' ></canvas>";
+			html += "<canvas id='bandTileCanvas_"+i+"' class='hidden' ></canvas>";
 			html += "</div>";	
 		}
 		document.getElementById("bandsGrid").innerHTML = html;
@@ -125,28 +167,13 @@ function drawBandTile(canvas_id, title_el, band){
 		
 	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome ]};
 	
-	if(charts[canvas_id]?.['chart']) {charts[canvas_id]['chart'].destroy()}
-	charts[canvas_id]={};
-	charts[canvas_id]['chart'] = new Chart(
-		document.getElementById(canvas_id),
-		{type: 'scatter',data: data, options: {
-			animation: false, 
-			plugins: {
-				tooltip:{callbacks: {label: function(context) {let label = context.dataset.label || ''; return label;} }},
-				legend: {display:false},             
-						title: {display: false, align:'start', text: " "+band}},
-			scales: {
-				x: {display:false, title: {display:false, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
-				y: {display:false, title: {display:false, text: 'Lattitude'}, type: 'linear',position: 'left', max:90, min: -90}
-				}
-			}
-		}
-	);	
+	drawChart(canvas_id, data);	
 	
 	charts[canvas_id]['band']=band;
 }
 
 function drawSingle(){
+
 	let band = ribbon.getWatchedBands()[0];
 	let mode = ribbon.getWatchedMode();
 	let conns = connectionsMap[band][mode];
@@ -183,29 +210,39 @@ function drawSingle(){
 	}
 	
 	let data = { datasets: [
-						{type: 'scatter', label: 'Tx', data: tx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meTx},
-						{type: 'scatter', label: 'Rx', data: rx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meRx },
-						{type: 'scatter', label: 'Tx', data: tx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeTx},
-						{type: 'scatter', label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx}
+						{label: 'Tx', data: tx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meTx},
+						{label: 'Rx', data: rx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meRx },
+						{label: 'Tx', data: tx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeTx},
+						{label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx}
 					]
 				};
+	drawChart(canvas_id, data);
+}
 
+
+function drawChart(canvas_id, data){
 	if(charts[canvas_id]?.['chart']){charts[canvas_id]['chart'].destroy()}
 	charts[canvas_id]={};
 	charts[canvas_id]['chart'] = new Chart(
 		document.getElementById(canvas_id),
-		{data: data, options: {
+		{ type:'scatter',
+		  plugins: [countryOutlinePlugin],
+		    zoom: {pan: {enabled: true, mode: 'xy', overScaleMode: 'xy'},zoom: {wheel: {enabled: true},  pinch: { enabled: true },mode: 'xy'}},
+			data: data, options: {
 			animation: false, 
 			plugins: {	
 						tooltip:{callbacks: {label: function(context) {let label = context.dataset.label || ''; return label;} }},
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {
-				x: {display:true, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom'},
-				y: {display:true, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left'}
+				x: {display:true, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
+				y: {display:true, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:90, min: -90}
 				}
 			}
 		}
-	);	
-
+	);		
 }
+
+
+
+    
