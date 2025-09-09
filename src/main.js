@@ -17,8 +17,8 @@ const ribbon = new Ribbon({
  
 setInterval(() => refreshMainView(), 5000);
 
-const c =   {red:		'rgba(20, 20, 250, 1)',		blue:		'rgba(250, 20, 20, 1)', 
-			 lightred:	'rgba(200, 200, 250, 1)',	lightblue:	'rgba(250, 200, 200, 1)'};
+const c =   {blue:		'rgba(20, 20, 250, 1)',		red:		'rgba(250, 20, 20, 1)', 
+			 lightblue:	'rgba(200, 200, 250, .4)',	lightred:	'rgba(250, 200, 200, .4)'};
 
 const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red, 
 					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
@@ -123,7 +123,7 @@ function drawBandTile(canvas_id, title_el, band){
 		}		
 	}
 		
-	const data = { datasets: [	hearingHome, heardbyHome, hearingMe, heardbyMe ]};
+	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome ]};
 	
 	if(charts[canvas_id]?.['chart']) {charts[canvas_id]['chart'].destroy()}
 	charts[canvas_id]={};
