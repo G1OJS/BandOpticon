@@ -235,8 +235,8 @@ function drawChart(canvas_id, data){
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {
-				x: {display:true, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
-				y: {display:true, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:90, min: -90}
+				x: {display:false, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
+				y: {display:false, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:90, min: -90}
 				}
 			}
 		}
