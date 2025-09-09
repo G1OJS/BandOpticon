@@ -90,5 +90,5 @@ export function loadConfig() {
         purgeMinutes = defaultPurgeMins;
         console.log("No valid purgeMinutes found: default applied.");
     }
-    document.getElementById("purgeMinutesInput").value = purgeMinutes;
+    //document.getElementById("purgeMinutesInput").value = purgeMinutes;
 }
