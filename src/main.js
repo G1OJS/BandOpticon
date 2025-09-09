@@ -163,18 +163,30 @@ function drawSingle(){
 	
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
-			tx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
-			tx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+			if(hc == myCall){
+				tx_lines_me.push({x:callLocations[hc].x, y:callLocations[hc].y})
+				tx_lines_me.push({x:callLocations[oc].x, y:callLocations[oc].y})				
+			} else {
+				tx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
+				tx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+			}
 		}
 		for (const oc in conns[hc].heard) {
-			rx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
-			rx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+			if(hc == myCall){
+				rx_lines_me.push({x:callLocations[hc].x, y:callLocations[hc].y})
+				rx_lines_me.push({x:callLocations[oc].x, y:callLocations[oc].y})				
+			} else {
+				rx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
+				rx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+			}
 		}		
 	}
 	
 	let data = { datasets: [
+						{type: 'scatter', label: 'Tx', data: tx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meTx},
+						{type: 'scatter', label: 'Rx', data: rx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meRx },
 						{type: 'scatter', label: 'Tx', data: tx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeTx},
-						{type: 'scatter', label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx }
+						{type: 'scatter', label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx}
 					]
 				};
 
