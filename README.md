@@ -1,5 +1,5 @@
 # BandOpticon
-### What is the activity like on each band to and from *my* local area? What modes are being used? What is the coverage like on those bands? Is it reciprocal? Where am I hearing and/or being heard by compared to the best performing station in my area?
+### What is the activity like on each band to and from *my* local area? What modes are being used? What is the coverage like on those bands? Is it reciprocal? Where am I hearing and/or being heard by compared to others in my area?
 
 <img width="966" height="713" alt="Capture" src="https://github.com/user-attachments/assets/1f883d3c-71f7-4624-97a7-239cb7623233" />
 
