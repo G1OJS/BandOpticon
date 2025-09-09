@@ -31,7 +31,7 @@ export default class Ribbon {
 		const runningmins = Math.trunc(((t - tStart) / 1000) / 60);
 		document.getElementById("clock").innerHTML = utc + " UTC";
 		document.getElementById("runningMins").innerHTML = runningmins;
-		document.getElementById("connectionsIn").innerHTML = countAllConnections();
+//		document.getElementById("connectionsIn").innerHTML = countAllConnections();
 	}
 
 	setMode(mode) {
