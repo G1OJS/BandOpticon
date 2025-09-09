@@ -1,5 +1,5 @@
 
-import {squaresArr} from './store-cfg.js';
+import {squaresArr} from './config.js';
 
 export function squareIsInHome(sqm) {
     // return true if the level 4, 6, 8 or 10 square sq is in the home squares array

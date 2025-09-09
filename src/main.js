@@ -1,12 +1,8 @@
-import {connectToFeed, connectToTest} from './mqtt.js';
-import {connsData, callsData, purgeLiveConnections} from './conns-data.js';
-import {loadConfig, myCalls} from './store-cfg.js';
+import {connectToFeed, connectToTest, connectionsMap, callLocations} from './mqtt.js';
+
+import {loadConfig, myCalls} from './config.js';
 import Ribbon from './ribbon.js';
 
-let getMode = () => null;
-let getBands = () => null;
-let mode = null;
-let bands = null;
 let displayMode = null;
 let charts={};
 let	html ="";
@@ -19,49 +15,38 @@ const ribbon = new Ribbon({
   onBandsChange: refreshMainView
  });
  
-setInterval(() => purgeLiveConnections(), 5000);
-setInterval(() => ribbon.writeModeButtons(), 5000);
 setInterval(() => refreshMainView(), 5000);
 
-const coloursForAggregates =   {myCall_tx:'rgba(255, 20, 20, 1)', all_tx:'rgba(255, 99, 132, 0.1)',
-								myCall_rx:'rgba(20, 20, 200, 1)', all_rx:'rgba(54, 162, 200, 0.1)'};
+const c =   {red:		'rgba(20, 20, 250, 1)',		blue:		'rgba(250, 20, 20, 1)', 
+			 lightred:	'rgba(200, 200, 250, 1)',	lightblue:	'rgba(250, 200, 200, 1)'};
+
+const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red, 
+					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
+					 meRx:		c.blue,			meTx:		c.red,
+					 homeRx:	c.lightblue,	homeTx:		c.lightred};
 
 html ="";
-html +="<div class = 'legendItem'><b>Receiver:</b> </div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  coloursForAggregates.myCall_rx + "'></span>"+myCall+"</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  coloursForAggregates.all_rx + "'></span>All home  </div>";
-html +="<div class = 'legendItem' style='width:50px;'>&nbsp </div>";
-html +="<div class = 'legendItem'><b>Transmitter:</b> </div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  coloursForAggregates.myCall_tx + "'></span>"+myCall+"</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  coloursForAggregates.all_tx + "'></span>All home</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardMe + "'></span>Heard "+myCall+"</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardHome + "'></span>Heard any home</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardbyMe + "'></span>Heard by "+myCall+"</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardbyHome + "'></span>Heard by any home</div>";
 html +="</div>";
 let overviewLegendHTML = html;
 
-
 html ="";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:rgba(255,0,0,0.5)'></span>Transmitters</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:rgba(0,0,255,0.5)'></span>Receivers</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.meTx +"'></span>"+myCall+" Tx</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.homeTx +"'></span>Home Tx</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.meRx +"'></span>"+myCall+" Rx</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.homeRx +"'></span>Home Rx</div>";
 let detailLegendHTML = html;
-
 
 connectToFeed();
 //connectToTest();
 refreshMainView("Overview");
 
 
-function wavelength(band) {
-    let wl = parseInt(band.split("m")[0]);
-    if (band.search("cm") > 0) {
-        return wl / 100
-    } else {
-        return wl
-    }
-}
+function refreshMainView(newDisplayMode = null, band = null){
 
-function refreshMainView(newDisplayMode = null, newBands = null){
-
-	ribbon.registerActiveBandsAndModes();
-	mode = ribbon.getWatchedMode();
 	if(newDisplayMode) {
 		displayMode = newDisplayMode;
 		html ="";
@@ -81,21 +66,24 @@ function refreshMainView(newDisplayMode = null, newBands = null){
 		document.getElementById("bandPane").innerHTML = html;
 		document.getElementById("bandTileCanvas").addEventListener("click", function (e) {refreshMainView("Overview")});
 	}
+	
 	if(displayMode == "Overview"){
 		document.getElementById("mainViewRibbon").innerHTML = overviewLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Bands Overview";
-		bands = Array.from(ribbon.getActiveBands()).sort((a, b) => wavelength(b) - wavelength(a));
+		ribbon.setWatchedBands();
 		drawBandTiles();
 	} else {
 		document.getElementById("mainViewRibbon").innerHTML = detailLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Band detail";	
-		if(newBands) bands = newBands;
+		if(band) ribbon.setWatchedBands(band);
 		drawSingle();
 	}
 }
 
 function drawBandTiles(){
+	let bands = ribbon.getWatchedBands();
 	if(!bands) return;
+	
 	for (let bandIdx =0;bandIdx<15;bandIdx++){
 		let canvas_id = 'bandTileCanvas_'+bandIdx;
 		if(charts[canvas_id]?.['chart']){
@@ -109,28 +97,32 @@ function drawBandTiles(){
 	}
 }
 
-function check_add(call, addTo){
-	if(!addTo[call]) {addTo.push({x:callsData[call].x, y:callsData[call].y})}
-}
-
 function drawBandTile(canvas_id, title_el, band){
 
+	let mode = ribbon.getWatchedMode();
 	title_el.innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
-	let conns = connsData[band][mode];
+	let conns = connectionsMap[band][mode];
 	
-	let heardbyHome  = {label:'All', data:[], backgroundColor: coloursForAggregates.all_rx, pointRadius:6} ;
-	let hearingHome  = {label:'All', data:[], backgroundColor: coloursForAggregates.all_tx, pointRadius:6} ;
-	let heardbyMe  = {label:myCall, data:[], backgroundColor: coloursForAggregates.myCall_rx, pointRadius:3} ;
-	let hearingMe  = {label:myCall, data:[], backgroundColor: coloursForAggregates.myCall_tx, pointRadius:3} ;
-
-	for (const sc in conns){
-		for (const rc in conns[sc]) {
-			if(callsData[sc].inHome) check_add(rc, hearingHome.data);
-			if(sc == myCall) check_add(rc, hearingMe.data); 
-			if(callsData[rc].inHome) check_add(sc, heardbyHome.data);
-			if(rc == myCall) check_add(sc, hearingMe.data); 
-		}
+	let heardbyHome  = {label:'All', data:[], backgroundColor: myColours.heardbyHome, pointRadius:5} ;
+	let hearingHome  = {label:'All', data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
+	let heardbyMe    = {label:myCall, data:[], backgroundColor: myColours.heardbyMe, pointRadius:3} ;
+	let hearingMe    = {label:myCall, data:[], backgroundColor: myColours.heardMe, pointRadius:3} ;
+	
+	function check_add(dataToCheck, call){
+		if(!dataToCheck[call]) dataToCheck.push({x:callLocations[call].x, y:callLocations[call].y});
 	}
+	
+	for (const hc in conns){
+		for (const oc in conns[hc].heard_by) {
+			check_add(hearingHome.data, oc);
+			if(hc == myCall) check_add(hearingMe.data, oc); 
+		}
+		for (const oc in conns[hc].heard) {
+			check_add(heardbyHome.data, oc);
+			if(hc == myCall) check_add(heardbyMe.data, oc); 
+		}		
+	}
+		
 	const data = { datasets: [	hearingHome, heardbyHome, hearingMe, heardbyMe ]};
 	
 	if(charts[canvas_id]?.['chart']) {charts[canvas_id]['chart'].destroy()}
@@ -154,39 +146,35 @@ function drawBandTile(canvas_id, title_el, band){
 	charts[canvas_id]['band']=band;
 }
 
-function hex2rgba(hex){
-      let red = parseInt(hex.substring(1, 3), 16);
-      let green = parseInt(hex.substring(3, 5), 16);
-      let blue = parseInt(hex.substring(5, 7), 16);	
-	  let opacity = 0.5;
-	  return ` rgba(${red}, ${green}, ${blue}, ${opacity})`
-}
-
 function drawSingle(){
-	let band = bands[0];
-	let conns = connsData[band][mode];
+	let band = ribbon.getWatchedBands()[0];
+	let mode = ribbon.getWatchedMode();
+	let conns = connectionsMap[band][mode];
+	
 	let canvas_id = "bandTileCanvas";
 	document.getElementById('bandTile').classList.remove("hidden");
 	document.getElementById(canvas_id).classList.remove("hidden");
+	document.getElementById("mainViewTitle").innerHTML="Band detail for "+ band + " " + mode;	
 	
-	let tx_lines = [];
-	let rx_lines = [];
-	for (const sc in conns){ 
-		for (const rc in conns[sc]){
-			if(callsData[sc].inHome){
-				tx_lines.push({x:callsData[sc].x, y:callsData[sc].y})
-				tx_lines.push({x:callsData[rc].x, y:callsData[rc].y})
-			}
-			if(callsData[rc].inHome){
-				rx_lines.push({x:callsData[rc].x, y:callsData[rc].y})
-				rx_lines.push({x:callsData[sc].x, y:callsData[sc].y})
-			}
+	let tx_lines_me = [];
+	let rx_lines_me = [];
+	let tx_lines_home = [];
+	let rx_lines_home = [];
+	
+	for (const hc in conns){
+		for (const oc in conns[hc].heard_by) {
+			tx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
+			tx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
 		}
+		for (const oc in conns[hc].heard) {
+			rx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
+			rx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+		}		
 	}
-
+	
 	let data = { datasets: [
-						{type: 'scatter', label: 'Tx', data: tx_lines, showLine: true, pointRadius:0, borderColor: coloursForAggregates.all_tx},
-						{type: 'scatter', label: 'Rx', data: rx_lines, showLine: true, pointRadius:0, borderColor: coloursForAggregates.all_rx }
+						{type: 'scatter', label: 'Tx', data: tx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeTx},
+						{type: 'scatter', label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx }
 					]
 				};
 

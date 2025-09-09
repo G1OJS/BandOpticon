@@ -7,7 +7,6 @@ export var purgeMinutes;
 export var myCalls;
 
 import {parseSquares} from './geo.js';
-import {purgeLiveConnections} from './conns-data.js';
 import {connectToFeed} from './mqtt.js';
 
 export function updatemyCalls(event) {
@@ -39,7 +38,6 @@ export function updatePurgeMins(event) {
     purgeMinutes = document.getElementById('purgeMinutesInput').value;
     console.log("Purge mins updated to " + purgeMinutes);
     saveConfig();
-    purgeLiveConnections();
 }
 
 export function saveConfig() {
