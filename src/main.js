@@ -62,7 +62,7 @@ function drawPolygon(rings, chart, ctx) {
 setInterval(() => refreshMainView(), 5000);
 
 const c =   {blue:		'rgba(20, 20, 250, 1)',		red:		'rgba(250, 20, 20, 1)', 
-			 lightblue:	'rgba(200, 200, 250, .6)',	lightred:	'rgba(250, 200, 200, .6)'};
+			 lightblue:	'rgba(150, 150, 250, .6)',	lightred:	'rgba(250, 150, 150, .6)'};
 
 const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red, 
 					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
@@ -167,6 +167,7 @@ function drawBandTile(bandIdx){
 		}		
 	}
 	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome ]};
+	let [xrng, yrng] = getAxisRanges(data, view);
 
     charts[canvas_id]?.['chart'].destroy();
 	charts[canvas_id]={};
@@ -182,8 +183,8 @@ function drawBandTile(bandIdx){
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {
-				x: {display:false, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
-				y: {display:false, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:90, min: -90}
+				x: {display:false, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:xrng[1], min:xrng[0]},
+				y: {display:false, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:yrng[1], min: yrng[0]}
 				}
 			}
 		}
@@ -191,4 +192,43 @@ function drawBandTile(bandIdx){
 	charts[canvas_id]['band'] = band;
 }
 
-    
+function getAxisRanges(data, view){
+
+	if(view == "Overview") return [[-180,180], [-90,90]]; 
+	
+	let xrng = [1000,-1000];
+	let yrng = [1000,-1000];
+	for (const ds of data.datasets){
+		for (const di of ds.data) {
+			xrng = [di.x<xrng[0]? di.x:xrng[0], di.x>xrng[1]? di.x:xrng[1]] ;
+			yrng = [di.y<yrng[0]? di.y:yrng[0], di.y>yrng[1]? di.y:yrng[1]] ;
+		}
+	}
+
+	function steprange(x){
+		const ranges = [1,2,5,10,20,50,90,180,360];
+		let idx=0;
+		while (x>ranges[idx]) idx+=1;
+		return ranges[idx];
+	}
+
+	let dx =xrng[1]-xrng[0]; 
+	let dy =yrng[1]-yrng[0]; 
+	let y0 = (yrng[0]+yrng[1])/2;
+	let x0 = (xrng[0]+xrng[1])/2;
+	
+	if(dx > 2* dy){
+		dy = steprange(dx/2);
+		dx = dy * 2;
+		console.log("x", dx, dy);
+	} else {
+		dx = steprange(dy*2);
+		dy = dx / 2;
+		console.log("y", dx, dy);
+	}
+
+	xrng = [Math.max(-180, x0-dx/2), Math.min(180, x0+dx/2)]		
+	yrng = [Math.max(-90,y0-dy/2),   Math.min(y0+dy/2)]
+	
+	return [xrng, yrng];
+}
