@@ -151,7 +151,9 @@ function drawBandTile(canvas_id, title_el, band){
 	let hearingMe    = {label:myCall, data:[], backgroundColor: myColours.heardMe, pointRadius:3} ;
 	
 	function check_add(dataToCheck, call){
-		if(!dataToCheck[call]) dataToCheck.push({x:callLocations[call].x, y:callLocations[call].y});
+		let point = callLocations[call];
+		point['cs'] = call;
+		if(!dataToCheck.includes(point)) dataToCheck.push(point);
 	}
 	
 	for (const hc in conns){
@@ -191,20 +193,20 @@ function drawSingle(){
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
 			if(hc == myCall){
-				tx_lines_me.push({x:callLocations[hc].x, y:callLocations[hc].y})
-				tx_lines_me.push({x:callLocations[oc].x, y:callLocations[oc].y})				
+				tx_lines_me.push(callLocations[hc])
+				tx_lines_me.push(callLocations[oc])				
 			} else {
-				tx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
-				tx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+				tx_lines_home.push(callLocations[hc])
+				tx_lines_home.push(callLocations[oc])
 			}
 		}
 		for (const oc in conns[hc].heard) {
 			if(hc == myCall){
-				rx_lines_me.push({x:callLocations[hc].x, y:callLocations[hc].y})
-				rx_lines_me.push({x:callLocations[oc].x, y:callLocations[oc].y})				
+				rx_lines_me.push(callLocations[hc])
+				rx_lines_me.push(callLocations[oc])				
 			} else {
-				rx_lines_home.push({x:callLocations[hc].x, y:callLocations[hc].y})
-				rx_lines_home.push({x:callLocations[oc].x, y:callLocations[oc].y})
+				rx_lines_home.push(callLocations[hc])
+				rx_lines_home.push(callLocations[oc])
 			}
 		}		
 	}
@@ -221,17 +223,18 @@ function drawSingle(){
 
 
 function drawChart(canvas_id, data){
+
 	if(charts[canvas_id]?.['chart']){charts[canvas_id]['chart'].destroy()}
 	charts[canvas_id]={};
 	charts[canvas_id]['chart'] = new Chart(
 		document.getElementById(canvas_id),
 		{ type:'scatter',
 		  plugins: [countryOutlinePlugin],
-		    zoom: {pan: {enabled: true, mode: 'xy', overScaleMode: 'xy'},zoom: {wheel: {enabled: true},  pinch: { enabled: true },mode: 'xy'}},
+		    zoom: {pan: {enabled: true, mode: 'xy', overScaleMode: 'xy'}, zoom: {wheel: {enabled: true},  pinch: { enabled: true },mode: 'xy'}},
 			data: data, options: {
 			animation: false, 
 			plugins: {	
-						tooltip:{callbacks: {label: function(context) {let label = context.dataset.label || ''; return label;} }},
+						tooltip:{callbacks: {label: function(context) {return context.raw.cs;} }},
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {
@@ -242,7 +245,5 @@ function drawChart(canvas_id, data){
 		}
 	);		
 }
-
-
 
     
