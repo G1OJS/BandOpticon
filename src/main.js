@@ -62,12 +62,16 @@ function drawPolygon(rings, chart, ctx) {
 setInterval(() => refreshMainView(), 5000);
 
 const c =   {blue:		'rgba(20, 20, 250, 1)',		red:		'rgba(250, 20, 20, 1)', 
-			 lightblue:	'rgba(150, 150, 250, .6)',	lightred:	'rgba(250, 150, 150, .6)'};
+			 lightblue:	'rgba(150, 150, 250, .6)',	lightred:	'rgba(250, 150, 150, .6)',
+			 lightgrey:  'rgba(200, 200, 240, .5)'
+			 };
 
 const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red, 
 					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
 					 meRx:		c.blue,			meTx:		c.red,
-					 homeRx:	c.lightblue,	homeTx:		c.lightred};
+					 homeRx:	c.lightblue,	homeTx:		c.lightred,
+					 connectionLine: c.lightgrey
+					 };
 
 html ="";
 html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardbyMe + "'></span>Heard by "+myCall+"</div>";
@@ -149,24 +153,38 @@ function drawBandTile(bandIdx){
 	let hearingHome  = {label:'All', data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
 	let heardbyMe    = {label:myCall, data:[], backgroundColor: myColours.heardbyMe, pointRadius:3} ;
 	let hearingMe    = {label:myCall, data:[], backgroundColor: myColours.heardMe, pointRadius:3} ;
+	let lines	     = {label:'', data:[], borderColor:myColours.connectionLine, pointRadius:0, showLine: true } ;
 
 	function check_add(dataToCheck, call){
 		let point = callLocations[call];
 		point['cs'] = call;
-		if(!dataToCheck.includes(point)) dataToCheck.push(point);
+		if(!dataToCheck.includes(point)) {
+			dataToCheck.push(point);
+			return true;
+		}
+		return false;
 	}
 
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
-			check_add(hearingHome.data, oc);
+			let pointAdded = check_add(hearingHome.data, oc);
+			if (view=="Single" && pointAdded) {
+				lines.data.push(callLocations[hc]);
+				lines.data.push(callLocations[oc]);
+			}
 			if(hc == myCall) check_add(hearingMe.data, oc); 
 		}
 		for (const oc in conns[hc].heard) {
-			check_add(heardbyHome.data, oc);
+			let pointAdded = check_add(heardbyHome.data, oc);
 			if(hc == myCall) check_add(heardbyMe.data, oc); 
+			if (view=="Single" && pointAdded) {
+				lines.data.push(callLocations[hc]);
+				lines.data.push(callLocations[oc]);
+			}
 		}		
 	}
-	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome ]};
+	
+	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome, lines ]};
 	let [xrng, yrng] = getAxisRanges(data, view);
 
     charts[canvas_id]?.['chart'].destroy();
@@ -188,7 +206,7 @@ function drawBandTile(bandIdx){
 				}
 			}
 		}
-	);	
+	);		
 	charts[canvas_id]['band'] = band;
 }
 
@@ -206,7 +224,7 @@ function getAxisRanges(data, view){
 	}
 
 	function steprange(x){
-		const ranges = [1,2,5,10,20,50,90,180,360];
+		const ranges = [5,10,20,40,60,80,110,130,150,170,190,210,230,250,270,290,310,330,350,360];
 		let idx=0;
 		while (x>ranges[idx]) idx+=1;
 		return ranges[idx];
