@@ -135,7 +135,6 @@ function refreshMainView( canvas_id_clicked = null ){
 }
 
 
-
 function drawBandTile(bandIdx){
 
 	if(!bands[bandIdx]) return; 
