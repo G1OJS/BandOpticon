@@ -52,7 +52,7 @@ export default class Ribbon {
 			for (const band in connectionsMap) activeBands.add(band);
 			this.watchedBands = Array.from(activeBands).sort((a, b) => wavelength(b) - wavelength(a));
 		} else {
-			this.watchedBands = bandsList;
+			this.watchedBands = [bandsList];
 		}
 		
 		this.activeModes = new Set()

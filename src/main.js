@@ -11,9 +11,11 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_
     worldGeoJSON = data;
   });
 
-let displayMode = null;
 let charts={};
+let bands = null;
+let mode = null;
 let	html ="";
+let view = "Overview";
 loadConfig();
 let myCall = myCalls.split(",")[0].trim();
 
@@ -82,80 +84,79 @@ html +="<div class = 'legendItem'><span class = 'legendMarker' style='background
 html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.homeRx +"'></span>All home Rx</div>";
 let detailLegendHTML = html;
 
+html ="";
+for (let bandIdx =0;bandIdx<15;bandIdx++){
+	let canvas_id = 'bandTileCanvas_'+bandIdx;
+	html += "<div id = 'bandTile_"+bandIdx+"' class = 'bandTile hidden' ><div id = 'bandTileTitle_"+bandIdx+"'></div>";
+	html += "<canvas id='"+canvas_id+"'></canvas>";
+	html += "</div>";	
+}
+document.getElementById("bandsGrid").innerHTML = html;
+for (let bandIdx =0;bandIdx<15;bandIdx++){
+	let canvas_id = 'bandTileCanvas_'+bandIdx;
+	document.getElementById(canvas_id).addEventListener("click", function (e) {refreshMainView(canvas_id)});
+}
+
 connectToFeed();
 //connectToTest();
-refreshMainView("Overview");
+refreshMainView();
 
 
-function refreshMainView(newDisplayMode = null, band = null){
-
-	if(newDisplayMode) {
-		displayMode = newDisplayMode;
-		html ="";
-		for (let i =0;i<15;i++){
-			html += "<div id = 'bandTile_"+i+"' class = 'bandTile hidden' ><div id = 'bandTileTitle_"+i+"'></div>";
-			html += "<canvas id='bandTileCanvas_"+i+"' class='hidden' ></canvas>";
-			html += "</div>";	
+function refreshMainView( canvas_id_clicked = null ){
+	
+	if(canvas_id_clicked){
+		for (let bandIdx =0;bandIdx<15;bandIdx++){
+			document.getElementById('bandTile_'+bandIdx).classList.add("hidden");
 		}
-		document.getElementById("bandsGrid").innerHTML = html;
-		for (let i =0;i<15;i++){
-			document.getElementById("bandTileCanvas_"+i).addEventListener("click", function (e) {refreshMainView("Single",[charts["bandTileCanvas_"+i]['band']])});
-		}	
-		html = "";
-		html += "<div id='bandTile'  class = 'hidden' ><div id = 'bandTileTitle'></div>";
-		html += "<canvas  id='bandTileCanvas'  class = 'hidden' '></canvas>";
-		html += "</div>";
-		document.getElementById("bandPane").innerHTML = html;
-		document.getElementById("bandTileCanvas").addEventListener("click", function (e) {refreshMainView("Overview")});
+		view = (view == "Overview")? "Single":"Overview";
+		if (view == "Single") {
+			ribbon.setWatchedBands(charts[canvas_id_clicked]['band']);
+			bands = ribbon.getWatchedBands();
+		}
 	}
 	
-	if(displayMode == "Overview"){
+	mode = ribbon.getWatchedMode();
+	
+	if(view == "Overview"){
+		ribbon.setWatchedBands();
+		bands = ribbon.getWatchedBands();
+		document.getElementById("bandsGrid").style = "grid-template-columns:1fr 1fr 1fr;"
 		document.getElementById("mainViewRibbon").innerHTML = overviewLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Bands Overview";
-		ribbon.setWatchedBands();
-		drawBandTiles();
+		for (let bandIdx =0;bandIdx<15;bandIdx++) drawBandTile(bandIdx);
 	} else {
-		document.getElementById("mainViewRibbon").innerHTML = detailLegendHTML;
+		document.getElementById("bandsGrid").style = "grid-template-columns:1fr"
+	//	document.getElementById("mainViewRibbon").innerHTML = detailLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Band detail";	
-		if(band) ribbon.setWatchedBands(band);
-		drawSingle();
+		drawBandTile(0)
 	}
+
+	
 }
 
-function drawBandTiles(){
-	let bands = ribbon.getWatchedBands();
-	if(!bands) return;
-	
-	for (let bandIdx =0;bandIdx<15;bandIdx++){
-		let canvas_id = 'bandTileCanvas_'+bandIdx;
-		if(charts[canvas_id]?.['chart']){
-			charts[canvas_id]['chart'].destroy()
-		}
-		if(bandIdx in bands){
-			document.getElementById('bandTile_'+bandIdx).classList.remove("hidden");			
-			document.getElementById(canvas_id).classList.remove("hidden");						
-			drawBandTile(canvas_id,document.getElementById('bandTileTitle_'+bandIdx),bands[bandIdx]);
-		}
-	}
-}
 
-function drawBandTile(canvas_id, title_el, band){
 
-	let mode = ribbon.getWatchedMode();
-	title_el.innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
-	let conns = connectionsMap[band][mode];
-	
+function drawBandTile(bandIdx){
+
+	if(!bands[bandIdx]) return; 
+	let band = bands[bandIdx];
+
+	let canvas_id = 'bandTileCanvas_'+bandIdx;
+	document.getElementById('bandTile_'+bandIdx).classList.remove("hidden");
+	document.getElementById('bandTileTitle_'+bandIdx).innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
+
+	let conns = connectionsMap[band][mode];	
 	let heardbyHome  = {label:'All', data:[], backgroundColor: myColours.heardbyHome, pointRadius:5} ;
 	let hearingHome  = {label:'All', data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
 	let heardbyMe    = {label:myCall, data:[], backgroundColor: myColours.heardbyMe, pointRadius:3} ;
 	let hearingMe    = {label:myCall, data:[], backgroundColor: myColours.heardMe, pointRadius:3} ;
-	
+
 	function check_add(dataToCheck, call){
 		let point = callLocations[call];
 		point['cs'] = call;
 		if(!dataToCheck.includes(point)) dataToCheck.push(point);
 	}
-	
+
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
 			check_add(hearingHome.data, oc);
@@ -166,65 +167,9 @@ function drawBandTile(canvas_id, title_el, band){
 			if(hc == myCall) check_add(heardbyMe.data, oc); 
 		}		
 	}
-		
 	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome ]};
-	
-	drawChart(canvas_id, data);	
-	
-	charts[canvas_id]['band']=band;
-}
 
-function drawSingle(){
-
-	let band = ribbon.getWatchedBands()[0];
-	let mode = ribbon.getWatchedMode();
-	let conns = connectionsMap[band][mode];
-	
-	let canvas_id = "bandTileCanvas";
-	document.getElementById('bandTile').classList.remove("hidden");
-	document.getElementById(canvas_id).classList.remove("hidden");
-	document.getElementById("mainViewTitle").innerHTML="Band detail for "+ band + " " + mode;	
-	
-	let tx_lines_me = [];
-	let rx_lines_me = [];
-	let tx_lines_home = [];
-	let rx_lines_home = [];
-	
-	for (const hc in conns){
-		for (const oc in conns[hc].heard_by) {
-			if(hc == myCall){
-				tx_lines_me.push(callLocations[hc])
-				tx_lines_me.push(callLocations[oc])				
-			} else {
-				tx_lines_home.push(callLocations[hc])
-				tx_lines_home.push(callLocations[oc])
-			}
-		}
-		for (const oc in conns[hc].heard) {
-			if(hc == myCall){
-				rx_lines_me.push(callLocations[hc])
-				rx_lines_me.push(callLocations[oc])				
-			} else {
-				rx_lines_home.push(callLocations[hc])
-				rx_lines_home.push(callLocations[oc])
-			}
-		}		
-	}
-	
-	let data = { datasets: [
-						{label: 'Tx', data: tx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meTx},
-						{label: 'Rx', data: rx_lines_me, showLine: true, pointRadius:0, borderColor: myColours.meRx },
-						{label: 'Tx', data: tx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeTx},
-						{label: 'Rx', data: rx_lines_home, showLine: true, pointRadius:0, borderColor: myColours.homeRx}
-					]
-				};
-	drawChart(canvas_id, data);
-}
-
-
-function drawChart(canvas_id, data){
-
-	if(charts[canvas_id]?.['chart']){charts[canvas_id]['chart'].destroy()}
+    charts[canvas_id]?.['chart'].destroy();
 	charts[canvas_id]={};
 	charts[canvas_id]['chart'] = new Chart(
 		document.getElementById(canvas_id),
@@ -243,7 +188,8 @@ function drawChart(canvas_id, data){
 				}
 			}
 		}
-	);		
+	);	
+	charts[canvas_id]['band'] = band;
 }
 
     
