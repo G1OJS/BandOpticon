@@ -185,7 +185,7 @@ function drawBandTile(bandIdx){
 			let c = cl.split("-");
 			if(callLocations[c[0]] && callLocations[c[1]]){
 				data.datasets.push({data:[callLocations[c[0]],callLocations[c[1]]], borderColor: ((c[0] == myCall)? colours.connMe:colours.conn), borderWidth: 2,
-					pointRadius: ((c[0] == myCall)? 6:0), backgroundColor:(c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) , showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+					pointRadius: ((c[0] == myCall)? 5:0), backgroundColor:(c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) , showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
 			}
 		}
 //	}
