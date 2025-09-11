@@ -181,7 +181,7 @@ function drawBandTile(bandIdx){
 	
 	let [xrng, yrng] = getAxisRanges(data, view);
 	
-//	if (view=="Single" ) {
+	if (view=="Single" ) {
 		for (const cl of tileConns){
 			let c = cl.split("-");
 			if(callLocations[c[0]] && callLocations[c[1]]){
@@ -189,7 +189,7 @@ function drawBandTile(bandIdx){
 					pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
 			}
 		}
-//	}
+	}
 
 
     charts[canvas_id]?.['chart'].destroy();
