@@ -61,21 +61,25 @@ function drawPolygon(rings, chart, ctx) {
  
 setInterval(() => refreshMainView(), 5000);
 
-// move all of this colour definition into css & html into html
 
-const c =   {blue:		'rgba(20, 20, 250, 1)',		red:		'rgba(250, 20, 20, 1)', 
-			 lightblue:	'rgba(150, 150, 250, .6)',	lightred:	'rgba(250, 150, 150, .6)',
-			 lightgrey:  'rgba(200, 200, 240, .5)'
-			 };
+const colours =   {	rxStrong:		'rgba(20, 20, 250, 1)',	txStrong:'rgba(250, 20, 20, 1)', 	txrxStrong:'rgba(255, 0, 255, 1)',
+					rx:	'rgba(150, 150, 250, .6)',			tx:	'rgba(250, 150, 150, .6)',		txrx:'rgba(255, 100, 255, .6)',
+					conn:'rgba(150, 150, 250, .2)' , connMe: 'green'
+					};
 
-const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red, 
-					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
-					 meRx:		c.blue,			meTx:		c.red,
-					 homeRx:	c.lightblue,	homeTx:		c.lightred,
-					 connectionLine: c.lightgrey,
-					 homeCalls: 'green',
-					 homeMyCall: 'orange'
-					 };
+html ="";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.tx + "'></span>Tx</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.rx + "'></span>Rx</div>";
+html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.txrx + "'></span>TxRx</div>";
+//html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.txStrong + "'></span>Tx ("+myCall+")</div>";
+//html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.rxStrong + "'></span>Rx ("+myCall+")</div>";
+//html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  colours.txrxStrong + "'></span>TxRx ("+myCall+")</div>";
+
+html +="</div>";
+
+document.getElementById('mainViewRibbon').innerHTML = html;
+
+let overviewLegendHTML = html;
 
 html ="";
 for (let bandIdx =0;bandIdx<15;bandIdx++){
@@ -136,18 +140,19 @@ function drawBandTile(bandIdx){
 	document.getElementById('bandTileTitle_'+bandIdx).innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
 
 	let conns = connectionsMap[band][mode];	
-	let calls = {}
-	let points  = {data:[], backgroundColor:[], pointRadius:5} ;
+	let tileCalls = {};
+	let tileConns = [];
+	let tilePoints  = {data:[], backgroundColor:[], pointRadius:[]} ;
 
 	function check_add(call, tx, rx){
-		if(!calls[call]) {	
-			calls[call]={tx:tx, rx:rx};
+		if(!tileCalls[call]) {	
+			tileCalls[call]={tx:tx, rx:rx};
 			let d = callLocations[call]
 			d.cs = call;
-			points.data.push(d);
+			tilePoints.data.push(d);
 		} else {
-			calls[call].tx |= tx;
-			calls[call].rx |= rx;
+			tileCalls[call].tx |= tx;
+			tileCalls[call].rx |= rx;
 		}
 	}
 
@@ -155,33 +160,37 @@ function drawBandTile(bandIdx){
 		for (const oc in conns[hc].heard_by) {
 			check_add(hc, true, null);
 			check_add(oc, null, true);
+			let conn = hc+"-"+oc;
+			if(!tileConns.includes(conn)) tileConns.push(conn);
 		}
 		for (const oc in conns[hc].heard) {
 			check_add(hc, null, true);
 			check_add(oc, true, null);
+			let conn = hc+"-"+oc;
+			if(!tileConns.includes(conn)) tileConns.push(conn);
 		}
 	}
 	
-	for (const i in points.data){
-		let c = calls[points.data[i].cs];
-		points.backgroundColor.push( (c.tx && c.rx)? 'violet': (c.tx? 'red': 'blue') );
-	}
-	
-	let data = { datasets: [points]};
-	if (view=="Single" ) {
-		for (const hc in conns){
-			for (const oc in conns[hc].heard_by) {
-				data.datasets.push({data:[callLocations[hc],callLocations[oc]], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
-			}
-		}
-		for (const hc in conns){
-			for (const oc in conns[hc].heard) {
-				data.datasets.push({data:[callLocations[hc],callLocations[oc]], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
-			}
-		}	
+	for (const i in tilePoints.data){
+		let c = tileCalls[tilePoints.data[i].cs];
+		tilePoints.backgroundColor.push( (c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) );			
+		tilePoints.pointRadius.push(5);
 	}
 
+	let data = { datasets: [tilePoints]};
+	
 	let [xrng, yrng] = getAxisRanges(data, view);
+	
+//	if (view=="Single" ) {
+		for (const cl of tileConns){
+			let c = cl.split("-");
+			if(callLocations[c[0]] && callLocations[c[1]]){
+				data.datasets.push({data:[callLocations[c[0]],callLocations[c[1]]], borderColor: ((c[0] == myCall)? colours.connMe:colours.conn), borderWidth: 2,
+					pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+			}
+		}
+//	}
+
 
     charts[canvas_id]?.['chart'].destroy();
 	charts[canvas_id]={};
@@ -233,11 +242,9 @@ function getAxisRanges(data, view){
 	if(dx > 2* dy){
 		dy = steprange(dx/2);
 		dx = dy * 2;
-		console.log("x", dx, dy);
 	} else {
 		dx = steprange(dy*2);
 		dy = dx / 2;
-		console.log("y", dx, dy);
 	}
 
 	xrng = [Math.max(-180, x0-dx/2), Math.min(180, x0+dx/2)]		
