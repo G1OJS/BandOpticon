@@ -1,6 +1,6 @@
 var tStart = Date.now(); // software start time
 
-import {updatemyCalls, updateSquaresList, updatePurgeMins} from './config.js';
+import {updateMyCall, updateSquaresList, updatePurgeMins} from './config.js';
 import {connectionsMap} from './mqtt.js';
 
 // ribbon HTML elements expected:

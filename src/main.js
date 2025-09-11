@@ -1,6 +1,6 @@
 import {connectToFeed, connectToTest, connectionsMap, callLocations} from './mqtt.js';
 
-import {loadConfig, myCalls} from './config.js';
+import {loadConfig, myCall} from './config.js';
 import Ribbon from './ribbon.js';
 let worldGeoJSON = null;
 
@@ -17,7 +17,6 @@ let mode = null;
 let	html ="";
 let view = "Overview";
 loadConfig();
-let myCall = myCalls.split(",")[0].trim();
 
 const ribbon = new Ribbon({
   onModeChange: refreshMainView,
@@ -186,7 +185,7 @@ function drawBandTile(bandIdx){
 			let c = cl.split("-");
 			if(callLocations[c[0]] && callLocations[c[1]]){
 				data.datasets.push({data:[callLocations[c[0]],callLocations[c[1]]], borderColor: ((c[0] == myCall)? colours.connMe:colours.conn), borderWidth: 2,
-					pointRadius: ((c[0] == myCall)? 3:0), backgroundColor:(c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) , showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+					pointRadius: ((c[0] == myCall)? 6:0), backgroundColor:(c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) , showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
 			}
 		}
 //	}

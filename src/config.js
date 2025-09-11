@@ -4,16 +4,16 @@ const defaultPurgeMins=20;
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
 export var purgeMinutes;
-export var myCalls;
+export var myCall;
 
 import {parseSquares} from './geo.js';
 import {connectToFeed} from './mqtt.js';
 
-export function updatemyCalls(event) {
-    myCalls = document.getElementById('myCallsInput').value;
-	myCalls = myCalls.toUpperCase();
-	document.getElementById('myCallsInput').value = myCalls;
-    console.log("my Call updated to " + myCalls);
+export function updateMyCall(event) {
+    myCall = document.getElementById('myCallInput').value;
+	myCall = myCall.toUpperCase();
+	document.getElementById('myCallInput').value = myCall;
+    console.log("my Call updated to " + myCall);
     saveConfig();
 }
 
@@ -44,8 +44,8 @@ export function saveConfig() {
     console.log("Saving config:");
     localStorage.setItem('squaresList', JSON.stringify(squaresList));
     console.log("Saved Squares List: " + squaresList);
-    localStorage.setItem('myCalls', myCalls);
-    console.log("Saved myCalls: " + myCalls);
+    localStorage.setItem('myCall', myCall);
+    console.log("Saved myCall: " + myCall);
     localStorage.setItem('purgeMinutes', purgeMinutes);
     console.log("Saved purgeMinutes: " + purgeMinutes);
 }
@@ -70,16 +70,16 @@ export function loadConfig() {
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
-    // myCalls (simple string, no JSON.parse)
-    let storedCall = localStorage.getItem('myCalls');
+    // myCall (simple string, no JSON.parse)
+    let storedCall = localStorage.getItem('myCall');
     if (storedCall && storedCall.trim() !== "") {
-        myCalls = storedCall;
-        console.log("Loaded myCalls " + myCalls);
+        myCall = storedCall;
+        console.log("Loaded myCall " + myCall);
     } else {
         console.log("No local config data found for my callsign: defaults applied.");
-        myCalls = defaultCall;
+        myCall = defaultCall;
     }
-    document.getElementById("myCallsInput").value = myCalls;
+    document.getElementById("myCallInput").value = myCall;
 
     // purgeMinutes (string, convert to number)
     let storedPurge = localStorage.getItem('purgeMinutes');
