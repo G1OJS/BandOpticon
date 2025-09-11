@@ -59,17 +59,18 @@ function onMessage(msg) {
         spot[kvp[0]] = kvp[1];
     });
 
-	addSpot(spot);
-}
-// how can I best merge these two (^ and v)?
-function addSpot(spot){
-	updateCallLocactions(spot.sc, spot.sl);
-	updateCallLocactions(spot.rc, spot.rl);
-	if(squareIsInHome(spot.sl)) updateConnectionsMap(spot.b, spot.md, spot.sc, true, spot.rc, spot.t);	
-	if(squareIsInHome(spot.rl)) updateConnectionsMap(spot.b, spot.md, spot.rc, false, spot.sc, spot.t);	
+	let sh = squareIsInHome(spot.sl);
+	let rh = squareIsInHome(spot.rl);
+
+	if(sh || rh){
+		updateCallLocations(spot.sc, spot.sl);
+		updateCallLocations(spot.rc, spot.rl);
+		if(sh) updateConnectionsMap(spot.b, spot.md, spot.sc, true, spot.rc, spot.t);	
+		if(rh) updateConnectionsMap(spot.b, spot.md, spot.rc, false, spot.sc, spot.t);	
+	}
 }
 
-function updateCallLocactions(call, square){
+function updateCallLocations(call, square){
 	if (!callLocations[call]){
 		let ll = mhToLatLong(square);
 		callLocations[call] = {x:ll[1], y:ll[0]};
@@ -82,9 +83,9 @@ function updateConnectionsMap(band, mode, homeCall, homeIsTx, otherCall, tstamp)
 	if(!cm[band][mode]) cm[band][mode] = {};
 	if(!cm[band][mode][homeCall]) cm[band][mode][homeCall] = {heard_by:[], heard:[]};
 	
-	let hcStatus = cm[band][mode][homeCall];
-	if (!hcStatus.heard_by[otherCall] && homeIsTx) hcStatus.heard_by[otherCall] = tstamp;
-	if (!hcStatus.heard[otherCall] && !homeIsTx) hcStatus.heard[otherCall] = tstamp;
+	let hcConnections = cm[band][mode][homeCall];
+	if (!hcConnections.heard_by[otherCall] && homeIsTx) hcConnections.heard_by[otherCall] = tstamp;
+	if (!hcConnections.heard[otherCall] && !homeIsTx) hcConnections.heard[otherCall] = tstamp;
 }
 
 export function connectToTest(){

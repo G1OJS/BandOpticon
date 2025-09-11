@@ -78,21 +78,6 @@ const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red,
 					 };
 
 html ="";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardbyMe + "'></span>Heard by "+myCall+"</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardbyHome + "'></span>Heard by any home call</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardMe + "'></span>Heard "+myCall+"</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" +  myColours.heardHome + "'></span>Heard any home call</div>";
-html +="</div>";
-let overviewLegendHTML = html;
-
-html ="";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.meTx +"'></span>"+myCall+" Tx</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.homeTx +"'></span>All home Tx</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.meRx +"'></span>"+myCall+" Rx</div>";
-html +="<div class = 'legendItem'><span class = 'legendMarker' style='background:" + myColours.homeRx +"'></span>All home Rx</div>";
-let detailLegendHTML = html;
-
-html ="";
 for (let bandIdx =0;bandIdx<15;bandIdx++){
 	let canvas_id = 'bandTileCanvas_'+bandIdx;
 	html += "<div id = 'bandTile_"+bandIdx+"' class = 'bandTile hidden' ><div id = 'bandTileTitle_"+bandIdx+"'></div>";
@@ -129,12 +114,10 @@ function refreshMainView( canvas_id_clicked = null ){
 		ribbon.setWatchedBands();
 		bands = ribbon.getWatchedBands();
 		document.getElementById("bandsGrid").style = "grid-template-columns:1fr 1fr 1fr;"
-		document.getElementById("mainViewRibbon").innerHTML = overviewLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Bands Overview";
 		for (let bandIdx =0;bandIdx<15;bandIdx++) drawBandTile(bandIdx);
 	} else {
 		document.getElementById("bandsGrid").style = "grid-template-columns:1fr"
-	//	document.getElementById("mainViewRibbon").innerHTML = detailLegendHTML;
 		document.getElementById("mainViewTitle").innerHTML="Band detail";	
 		drawBandTile(0)
 	}
@@ -153,50 +136,51 @@ function drawBandTile(bandIdx){
 	document.getElementById('bandTileTitle_'+bandIdx).innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
 
 	let conns = connectionsMap[band][mode];	
-	let heardbyHome  = {data:[], backgroundColor: myColours.heardbyHome, pointRadius:5} ;
-	let hearingHome  = {data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
-	let heardbyMe    = {data:[], backgroundColor: myColours.heardbyMe, pointRadius:2} ;
-	let hearingMe    = {data:[], backgroundColor: myColours.heardMe, pointRadius:2} ;
-	let homeCalls    = {data:[], backgroundColor: myColours.homeCalls, pointRadius:2} ;
-	let homeMyCall   = {data:[], backgroundColor: myColours.homeMyCall, pointRadius:2} ;
-	let lines	     = {data:[], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0} ;
-	// can I replace all of the above with one dataset coloured per point?
+	let calls = {}
+	let points  = {data:[], backgroundColor:[], pointRadius:5} ;
 
-	function check_add(dataToCheck, call){
-		let point = callLocations[call];
-		point['cs'] = call;
-		if(!dataToCheck.includes(point)) {
-			dataToCheck.push(point);
-			return true;
+	function check_add(call, tx, rx){
+		if(!calls[call]) {	
+			calls[call]={tx:tx, rx:rx};
+			let d = callLocations[call]
+			d.cs = call;
+			points.data.push(d);
+		} else {
+			calls[call].tx |= tx;
+			calls[call].rx |= rx;
 		}
-		return false;
 	}
 
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
-			let pointAdded = check_add(hearingHome.data, oc);
-			if (view=="Single" && pointAdded) {
-				lines.data.push(callLocations[hc]);
-				lines.data.push(callLocations[oc]);
-			}
-			if(hc == myCall) check_add(hearingMe.data, oc); 
+			check_add(hc, true, null);
+			check_add(oc, null, true);
 		}
 		for (const oc in conns[hc].heard) {
-			let pointAdded = check_add(heardbyHome.data, oc);
-			if (view=="Single" && pointAdded) {
-				lines.data.push(callLocations[hc]);
-				lines.data.push(callLocations[oc]);
-			}
-			if(hc == myCall) check_add(heardbyMe.data, oc); 		
-		}
-		if(hc == myCall){
-			check_add(homeMyCall.data, hc)
-		} else {
-			check_add(homeCalls.data, hc)
+			check_add(hc, null, true);
+			check_add(oc, true, null);
 		}
 	}
 	
-	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome, homeCalls, homeMyCall, lines ]};
+	for (const i in points.data){
+		let c = calls[points.data[i].cs];
+		points.backgroundColor.push( (c.tx && c.rx)? 'violet': (c.tx? 'red': 'blue') );
+	}
+	
+	let data = { datasets: [points]};
+	if (view=="Single" ) {
+		for (const hc in conns){
+			for (const oc in conns[hc].heard_by) {
+				data.datasets.push({data:[callLocations[hc],callLocations[oc]], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+			}
+		}
+		for (const hc in conns){
+			for (const oc in conns[hc].heard) {
+				data.datasets.push({data:[callLocations[hc],callLocations[oc]], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+			}
+		}	
+	}
+
 	let [xrng, yrng] = getAxisRanges(data, view);
 
     charts[canvas_id]?.['chart'].destroy();
@@ -205,7 +189,6 @@ function drawBandTile(bandIdx){
 		document.getElementById(canvas_id),
 		{ type:'scatter',
 		  plugins: [countryOutlinePlugin],
-		    zoom: {pan: {enabled: true, mode: 'xy', overScaleMode: 'xy'}, zoom: {wheel: {enabled: true},  pinch: { enabled: true },mode: 'xy'}},
 			data: data, options: {
 			animation: false, 
 			plugins: {	
