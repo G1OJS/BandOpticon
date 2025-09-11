@@ -61,6 +61,8 @@ function drawPolygon(rings, chart, ctx) {
  
 setInterval(() => refreshMainView(), 5000);
 
+// move all of this colour definition into css & html into html
+
 const c =   {blue:		'rgba(20, 20, 250, 1)',		red:		'rgba(250, 20, 20, 1)', 
 			 lightblue:	'rgba(150, 150, 250, .6)',	lightred:	'rgba(250, 150, 150, .6)',
 			 lightgrey:  'rgba(200, 200, 240, .5)'
@@ -70,7 +72,9 @@ const myColours =   {heardMe:	c.blue,			heardbyMe:	c.red,
 					 heardHome:	c.lightblue,	heardbyHome:c.lightred,
 					 meRx:		c.blue,			meTx:		c.red,
 					 homeRx:	c.lightblue,	homeTx:		c.lightred,
-					 connectionLine: c.lightgrey
+					 connectionLine: c.lightgrey,
+					 homeCalls: 'green',
+					 homeMyCall: 'orange'
 					 };
 
 html ="";
@@ -149,11 +153,14 @@ function drawBandTile(bandIdx){
 	document.getElementById('bandTileTitle_'+bandIdx).innerHTML = "<div class = 'bandTileTitle'>" +band+ "</div>";
 
 	let conns = connectionsMap[band][mode];	
-	let heardbyHome  = {label:'All', data:[], backgroundColor: myColours.heardbyHome, pointRadius:5} ;
-	let hearingHome  = {label:'All', data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
-	let heardbyMe    = {label:myCall, data:[], backgroundColor: myColours.heardbyMe, pointRadius:3} ;
-	let hearingMe    = {label:myCall, data:[], backgroundColor: myColours.heardMe, pointRadius:3} ;
-	let lines	     = {label:'', data:[], borderColor:myColours.connectionLine, pointRadius:0, showLine: true } ;
+	let heardbyHome  = {data:[], backgroundColor: myColours.heardbyHome, pointRadius:5} ;
+	let hearingHome  = {data:[], backgroundColor: myColours.heardHome, pointRadius:5} ;
+	let heardbyMe    = {data:[], backgroundColor: myColours.heardbyMe, pointRadius:2} ;
+	let hearingMe    = {data:[], backgroundColor: myColours.heardMe, pointRadius:2} ;
+	let homeCalls    = {data:[], backgroundColor: myColours.homeCalls, pointRadius:2} ;
+	let homeMyCall   = {data:[], backgroundColor: myColours.homeMyCall, pointRadius:2} ;
+	let lines	     = {data:[], borderColor:myColours.connectionLine, pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0} ;
+	// can I replace all of the above with one dataset coloured per point?
 
 	function check_add(dataToCheck, call){
 		let point = callLocations[call];
@@ -176,15 +183,20 @@ function drawBandTile(bandIdx){
 		}
 		for (const oc in conns[hc].heard) {
 			let pointAdded = check_add(heardbyHome.data, oc);
-			if(hc == myCall) check_add(heardbyMe.data, oc); 
 			if (view=="Single" && pointAdded) {
 				lines.data.push(callLocations[hc]);
 				lines.data.push(callLocations[oc]);
 			}
-		}		
+			if(hc == myCall) check_add(heardbyMe.data, oc); 		
+		}
+		if(hc == myCall){
+			check_add(homeMyCall.data, hc)
+		} else {
+			check_add(homeCalls.data, hc)
+		}
 	}
 	
-	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome, lines ]};
+	const data = { datasets: [	heardbyMe, hearingMe, heardbyHome, hearingHome, homeCalls, homeMyCall, lines ]};
 	let [xrng, yrng] = getAxisRanges(data, view);
 
     charts[canvas_id]?.['chart'].destroy();
