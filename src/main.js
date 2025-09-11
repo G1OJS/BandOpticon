@@ -62,9 +62,8 @@ function drawPolygon(rings, chart, ctx) {
 setInterval(() => refreshMainView(), 5000);
 
 
-const colours =   {	rxStrong:		'rgba(20, 20, 250, 1)',	txStrong:'rgba(250, 20, 20, 1)', 	txrxStrong:'rgba(255, 0, 255, 1)',
-					rx:	'rgba(150, 150, 250, .6)',			tx:	'rgba(250, 150, 150, .6)',		txrx:'rgba(255, 100, 255, .6)',
-					conn:'rgba(150, 150, 250, .2)' , connMe: 'green'
+const colours =   {tx:'rgba(250, 20, 20, .3)', 	rx:		'rgba(20, 250, 20, .3)',		txrx:'rgba(20, 20, 250, .3)',
+					conn:'rgba(150, 150, 250, .2)' , connMe: 'red'
 					};
 
 html ="";
@@ -144,28 +143,29 @@ function drawBandTile(bandIdx){
 	let tileConns = [];
 	let tilePoints  = {data:[], backgroundColor:[], pointRadius:[]} ;
 
-	function check_add(call, tx, rx){
+	function check_add(call, tx, rx, hl){
 		if(!tileCalls[call]) {	
-			tileCalls[call]={tx:tx, rx:rx};
+			tileCalls[call]={tx:tx, rx:rx, hl:hl};
 			let d = callLocations[call]
 			d.cs = call;
 			tilePoints.data.push(d);
 		} else {
 			tileCalls[call].tx |= tx;
 			tileCalls[call].rx |= rx;
+			tileCalls[call].hl |= hl;
 		}
 	}
 
 	for (const hc in conns){
 		for (const oc in conns[hc].heard_by) {
-			check_add(hc, true, null);
-			check_add(oc, null, true);
+			check_add(hc, true, null, (hc==myCall));
+			check_add(oc, null, true, (hc==myCall));
 			let conn = hc+"-"+oc;
 			if(!tileConns.includes(conn)) tileConns.push(conn);
 		}
 		for (const oc in conns[hc].heard) {
-			check_add(hc, null, true);
-			check_add(oc, true, null);
+			check_add(hc, null, true, (hc==myCall));
+			check_add(oc, true, null, (hc==myCall));
 			let conn = hc+"-"+oc;
 			if(!tileConns.includes(conn)) tileConns.push(conn);
 		}
@@ -181,15 +181,15 @@ function drawBandTile(bandIdx){
 	
 	let [xrng, yrng] = getAxisRanges(data, view);
 	
-	if (view=="Single" ) {
+//	if (view=="Single" ) {
 		for (const cl of tileConns){
 			let c = cl.split("-");
 			if(callLocations[c[0]] && callLocations[c[1]]){
 				data.datasets.push({data:[callLocations[c[0]],callLocations[c[1]]], borderColor: ((c[0] == myCall)? colours.connMe:colours.conn), borderWidth: 2,
-					pointRadius:0, showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
+					pointRadius: ((c[0] == myCall)? 3:0), backgroundColor:(c.tx && c.rx)? colours.txrx: (c.tx? colours.tx: colours.rx) , showLine: true, pointHitRadius: 0, pointHoverRadius: 0});
 			}
 		}
-	}
+//	}
 
 
     charts[canvas_id]?.['chart'].destroy();
