@@ -1,9 +1,7 @@
-import {mhToLatLong, squareIsInHome} from './geo.js';
-import {squaresArr} from './config.js';
+import {squareIsInHome} from './geo.js';
+import {squaresArr, myCall} from './config.js';
+import {addSpot} from './plots.js'
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
-
-export var connectionsMap = {};
-export var callLocations = {};
 
 var mqttClient = null;
 
@@ -61,45 +59,6 @@ function onMessage(msg) {
 
 	let sh = squareIsInHome(spot.sl);
 	let rh = squareIsInHome(spot.rl);
-
-	if(sh || rh){
-		updateCallLocations(spot.sc, spot.sl);
-		updateCallLocations(spot.rc, spot.rl);
-		if(sh) updateConnectionsMap(spot.b, spot.md, spot.sc, true, spot.rc, spot.t);	
-		if(rh) updateConnectionsMap(spot.b, spot.md, spot.rc, false, spot.sc, spot.t);	
-	}
+	if(sh || rh) addSpot(spot, sh, rh);
 }
 
-function updateCallLocations(call, square){
-	if (!callLocations[call]){
-		let ll = mhToLatLong(square);
-		callLocations[call] = {x:ll[1], y:ll[0]};
-	}
-}
-
-function updateConnectionsMap(band, mode, homeCall, homeIsTx, otherCall, tstamp){
-	let cm = connectionsMap;
-	if(!cm[band]) cm[band] = {};
-	if(!cm[band][mode]) cm[band][mode] = {};
-	if(!cm[band][mode][homeCall]) cm[band][mode][homeCall] = {heard_by:[], heard:[]};
-	
-	let hcConnections = cm[band][mode][homeCall];
-	if (!hcConnections.heard_by[otherCall] && homeIsTx) hcConnections.heard_by[otherCall] = tstamp;
-	if (!hcConnections.heard[otherCall] && !homeIsTx) hcConnections.heard[otherCall] = tstamp;
-}
-
-export function connectToTest(){
-	for (const b of ["20m","40m", "10m", "15m"]) {
-		addSpot( {'sc':'G1OJS','rc':'PA0RL','sl':'IO90','rl':'JO03bu','rp':-17,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'sc':'G1OJS','rc':'SA0PU','sl':'IO90','rl':'JO03ka','rp':-12,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'sc':'G1OJS','rc':'F3GGG','sl':'IO90','rl':'JO03rr','rp':-2,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'sc':'G1OJS','rc':'2E0IRL','sl':'IO90','rl':'JO02gg','rp':-20,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'sc':'G1OJS','rc':'K0EEE','sl':'IO90','rl':'nn02aa','rp':-17,'b':b,'md':'FT8','t':1e30});
-		
-		addSpot( {'rc':'G1OJS','sc':'PA0RL','sl':'JO03bu','rl':'IO90','rp':-7,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'rc':'G1OJS','sc':'SA0PU','sl':'JO03ka','rl':'IO90','rp':-2,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'rc':'G1OJS','sc':'F3GGG','sl':'JO03rr','rl':'IO90','rp':-12,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'rc':'G1OJS','sc':'2E0IRL','sl':'JO02gg','rl':'IO90','rp':-22,'b':b,'md':'FT8','t':1e30});
-		addSpot( {'rc':'G1OJS','sc':'K0EEE','sl':'nn02aa','rl':'IO90','rp':-13,'b':b,'md':'FT8','t':1e30});	
-	}
-}

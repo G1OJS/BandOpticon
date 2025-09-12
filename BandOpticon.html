@@ -28,6 +28,7 @@
 		<legend>Info</legend>
 		  <output id="clock" class='clock'></output><br>
 		  <span>Running for <output id="runningMins"></output> minutes</span><br>
+		  <span><output id="callsignsInDB"></output> callsigns in db</span><br>
 		</fieldset>
 		<fieldset id='settingsBox' class="ribbonBox" >
 		<legend>Settings</legend>
@@ -51,9 +52,34 @@
 
 	<div id="mainView" class="paper" >   
 		<h3 id='mainViewTitle'></h3>
-		<div id = 'mainViewRibbon'></div>
+		<div id = 'mainViewRibbon'>
+			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</div>
+			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</div>
+			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</div>
+		</div>
 		<div id = 'scrollContainer'>
-			<div id='bandsGrid'></div>
+			<div id='bandsGrid'>
+				<div id = 'bandTile_0' class = 'bandTile hidden'><div id = 'bandTileTitle_0' class = 'bandTileTitle'></div><canvas id='canvas_0' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_1' class = 'bandTile hidden'><div id = 'bandTileTitle_1' class = 'bandTileTitle'></div><canvas id='canvas_1' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_2' class = 'bandTile hidden'><div id = 'bandTileTitle_2' class = 'bandTileTitle'></div><canvas id='canvas_2' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_3' class = 'bandTile hidden'><div id = 'bandTileTitle_3' class = 'bandTileTitle'></div><canvas id='canvas_3' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_4' class = 'bandTile hidden'><div id = 'bandTileTitle_4' class = 'bandTileTitle'></div><canvas id='canvas_4' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_5' class = 'bandTile hidden'><div id = 'bandTileTitle_5' class = 'bandTileTitle'></div><canvas id='canvas_5' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_6' class = 'bandTile hidden'><div id = 'bandTileTitle_6' class = 'bandTileTitle'></div><canvas id='canvas_6' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_7' class = 'bandTile hidden'><div id = 'bandTileTitle_7' class = 'bandTileTitle'></div><canvas id='canvas_7' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_8' class = 'bandTile hidden'><div id = 'bandTileTitle_8' class = 'bandTileTitle'></div><canvas id='canvas_8' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_9' class = 'bandTile hidden'><div id = 'bandTileTitle_9' class = 'bandTileTitle'></div><canvas id='canvas_9' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_10' class = 'bandTile hidden'><div id = 'bandTileTitle_10' class = 'bandTileTitle'></div><canvas id='canvas_10' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_11' class = 'bandTile hidden'><div id = 'bandTileTitle_11' class = 'bandTileTitle'></div><canvas id='canvas_11' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_12' class = 'bandTile hidden'><div id = 'bandTileTitle_12' class = 'bandTileTitle'></div><canvas id='canvas_12' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_13' class = 'bandTile hidden'><div id = 'bandTileTitle_13' class = 'bandTileTitle'></div><canvas id='canvas_13' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_14' class = 'bandTile hidden'><div id = 'bandTileTitle_14' class = 'bandTileTitle'></div><canvas id='canvas_14' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_15' class = 'bandTile hidden'><div id = 'bandTileTitle_15' class = 'bandTileTitle'></div><canvas id='canvas_15' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_16' class = 'bandTile hidden'><div id = 'bandTileTitle_16' class = 'bandTileTitle'></div><canvas id='canvas_16' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_17' class = 'bandTile hidden'><div id = 'bandTileTitle_17' class = 'bandTileTitle'></div><canvas id='canvas_17' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_18' class = 'bandTile hidden'><div id = 'bandTileTitle_18' class = 'bandTileTitle'></div><canvas id='canvas_18' class = 'bandCanvas'></canvas></div>
+				<div id = 'bandTile_19' class = 'bandTile hidden'><div id = 'bandTileTitle_19' class = 'bandTileTitle'></div><canvas id='canvas_19' class = 'bandCanvas'></canvas></div>
+			</div>
 		</div>
 	</div>
 

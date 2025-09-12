@@ -132,7 +132,7 @@ label 				{font-size: var(--font-size-sm); }
 .hidden				{display:none;}
 
 
-#bandsGrid	 		{display:grid; grid-template-columns:1fr 1fr 1fr;  width:100%; gap:5px;}
+#bandsGrid	 		{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); width:100%; gap:5px;}
 .bandTile	 		{background-color: var(--light-paper-color); padding:0px; padding-bottom:0px; min-width:0;}
 .bandTileTitle 		{font-size: var(--font-size-sm); background-color:var(--main-paper-color); padding-left:4px;}
 canvas 				{background-size: 100% 100%}
