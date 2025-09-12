@@ -23,7 +23,7 @@ function getLocation(call, callSq){
 export function filterAllCharts(mode) {
   charts.forEach(chart => {
     chart.data.datasets.forEach(ds => {
-      chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label !== mode;
+      chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label.split("_")[0] != mode;
     });
     chart.update();
   });
@@ -42,7 +42,8 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
     chart.data.datasets.push(ds);
   }
 
-  // find or create the point
+  // find or create the point 
+  //(needs optimisation - use a set or map to test if call exists on this band and mode (can't use call location as that's all bands and modes)
   let pt = ds.data.find(p => p.call === call);
   if (!pt) {
 	pt = getLocation(call, callSq);
@@ -53,7 +54,36 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   pt.attribs.tx ||= tx; pt.attribs.rx ||= rx; pt.attribs.hl ||= hl;
   let idx = ds.data.indexOf(pt)
   let a = pt.attribs;
-  ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
+  if(hl){
+	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrxhl: (a.tx? colours.txhl: colours.rxhl);
+  } else {
+	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
+  }
+
+  //chart.update();
+}
+
+
+function updateLine(band, mode, sc, rc) {
+	
+  const chart = charts.get(band);
+  const label = mode + "_conns"
+
+  // find or create chart's dataset for this mode
+  let ds = chart.data.datasets.find(d => d.label === label);
+  if (!ds) {
+    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: colours.conn};
+    chart.data.datasets.push(ds);
+  }
+
+// needs checking - still getting duplkicates
+  let lbl = sc+"|"+rc;
+  let lblrev = rc+"|"+sc;
+  if (!ds.data.includes(lbl) && !ds.data.includes(lblrev)){
+	let tx = callLocations.get(sc);
+	let rx = callLocations.get(rc);  
+	ds.data.push({x:tx.x, y:tx.y},{ x:rx.x, y:rx.y }, lbl);
+  }
 
   chart.update();
 }
@@ -66,7 +96,7 @@ export function updateChartForView(tile_idx){
 		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
 	} else {
 		let rng = getAxisRanges(chart.data);
-		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;			
+		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
 	}
 	
 	chart.update();
@@ -76,6 +106,7 @@ export function addSpot(spot) {
 	activeModes.add(spot.md);
 	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, spot.sc == myCall)
 	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, spot.rc == myCall)
+	updateLine(spot.b, spot.md, spot.sc, spot.rc);
 }
 
 function createChart(band) {
