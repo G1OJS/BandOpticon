@@ -1,5 +1,6 @@
 import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
+import {colours} from './main.js'
 export const charts = new Map();
 export const chartPoints = new Map();
 export const activeModes = new Set();
@@ -18,49 +19,40 @@ function getLocation(call, callSq){
 	return callLocations.get(call);
 }
 
-function decideColour(spot){
-		
-	return 'green';
-}
-
 export function filterAllCharts(mode) {
   charts.forEach(chart => {
     chart.data.datasets.forEach(ds => {
-		console.log(ds.label);
-      chart.getDatasetMeta(dsIndex(ds, chart)).hidden = ds.label !== mode;
+      chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label !== mode;
     });
     chart.update();
   });
 }
-// helper to get dataset index from dataset object
-function dsIndex(ds, chart) {
-  return chart.data.datasets.indexOf(ds);
-}
 
 function updatePoint(band, mode, call, callSq, tx, rx, hl) {
+	
+  // find or create the chart for this band
   if (!charts.get(band)) charts.set(band, createChart(band));
   const chart = charts.get(band);
 
-  // find or create dataset for this mode
+  // find or create chart's dataset for this mode
   let ds = chart.data.datasets.find(d => d.label === mode);
   if (!ds) {
-    ds = { label: mode, data: [] };
+    ds = { label: mode, data: [], backgroundColor:[] };
     chart.data.datasets.push(ds);
   }
 
   // find or create the point
   let pt = ds.data.find(p => p.call === call);
-  if (pt) {
-    pt.tx ||= tx;
-    pt.rx ||= rx;
-    pt.hl ||= hl;
-    pt.backgroundColor = decideColour(pt);
-  } else {  
+  if (!pt) {
 	pt = getLocation(call, callSq);
-	pt.attribs = {tx:tx, rx:rx, hl:hl}		
-    pt.backgroundColor = decideColour(pt.attribs);
-    ds.data.push(pt);
+	pt.attribs = {tx:tx, rx:rx, hl:hl}	
+    pt.call = call;	
+	ds.data.push(pt);
   }
+  pt.attribs.tx ||= tx; pt.attribs.rx ||= rx; pt.attribs.hl ||= hl;
+  let idx = ds.data.indexOf(pt)
+  let a = pt.attribs;
+  ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
 
   chart.update();
 }
@@ -90,7 +82,7 @@ function createChart(band) {
 			options: {
 			animation: false, 
 			plugins: {	
-						tooltip:{callbacks: {label: function(context) {return context.raw.cs;} }},
+						tooltip:{callbacks: {label: function(context) {return context.raw.call;} }},
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {

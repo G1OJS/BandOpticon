@@ -2,7 +2,7 @@ import {connectToFeed} from './mqtt.js';
 import {loadConfig} from './config.js';
 import {startRibbon} from './ribbon.js'
 
-const colours =   {tx:'rgba(250, 20, 20, .3)', 	rx:		'rgba(20, 250, 20, .3)',		txrx:'rgba(20, 20, 250, .3)',
+export const colours =   {tx:'rgba(250, 20, 20, .3)', 	rx:		'rgba(20, 250, 20, .3)',		txrx:'rgba(20, 20, 250, .3)',
 					conn:'rgba(150, 150, 250, .2)' , connMe: 'red'
 					};
 

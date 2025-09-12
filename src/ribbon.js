@@ -2,7 +2,7 @@ var tStart = Date.now(); // software start time
 
 import {updateMyCall, updateSquaresList} from './config.js';
 import {activeModes, filterAllCharts} from './plots.js';
-
+let watchedMode = '';
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
 // myCallInput, homeSquaresInput, purgeMinutesInput
@@ -14,7 +14,7 @@ export var tStart = Date.now();
 
 export function startRibbon(){
 	attachInputHandlers();
-	writeModeButtons('FT8');
+	setWatchedMode('FT8');
 	setInterval(() => updateClock(), 1000);
 	setInterval(() => writeModeButtons(), 5000);
 }
@@ -28,12 +28,13 @@ function updateClock() {
 //	document.getElementById("connectionsIn").innerHTML = countAllConnections();
 }
 
-function setWatchedMode(watchedMode){
-	writeModeButtons(watchedMode);
-	filterAllCharts(watchedMode);
+function setWatchedMode(mode){
+	watchedMode = mode;
+	writeModeButtons();
+	filterAllCharts(mode);
 }
 			
-function writeModeButtons(watchedMode) {			
+function writeModeButtons() {			
 	const el = document.getElementById("modeSelectBox");
 	el.innerHTML = "<legend>Mode</legend>"; 
 	activeModes.forEach((md) => {
