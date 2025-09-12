@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
-import {updateMyCall, updateSquaresList, updatePurgeMins} from './config.js';
-import {connectionsMap} from './mqtt.js';
+import {updateMyCall, updateSquaresList} from './config.js';
+import {chartPoints} from './plots.js';
 
 // ribbon HTML elements expected:
 // clock, runningMins, connectionsIn, modeSelectBox
@@ -45,23 +45,15 @@ export default class Ribbon {
 	}
 	
 	setWatchedBands(bandsList) {
-	   if(!connectionsMap) return;
 
 	   if(!bandsList){			
-			let activeBands = new Set();
-			for (const band in connectionsMap) activeBands.add(band);
-			this.watchedBands = Array.from(activeBands).sort((a, b) => wavelength(b) - wavelength(a));
+	//		this.watchedBands = Array.from(chartPoints).sort((a, b) => wavelength(b) - wavelength(a));
 		} else {
 			this.watchedBands = [bandsList];
 		}
 		
-		this.activeModes = new Set()
-		for (const band of this.watchedBands) {
-			for (const md in connectionsMap[band]) {
-				this.activeModes.add(md);
-			}
-		}
-		this.writeModeButtons();
+
+	//	this.writeModeButtons();
 	}
 
 	getWatchedBands() {
@@ -107,17 +99,6 @@ export default class Ribbon {
 			console.log("Attached 'change' listener to homeSquaresInput")
 		} else {
 			console.warn('homeSquaresInput not found');
-		}
-
-		const purgeMinutesInput = document.getElementById('purgeMinutesInput');
-		if (purgeMinutesInput) {
-			purgeMinutesInput.addEventListener('change', () => {
-				updatePurgeMins();
-				this.onConfigChange();
-			});
-			console.log("Attached 'change' listener to purgeMinutesInput")
-		} else {
-			console.warn('purgeMinutesInput not found');
 		}
 	}
 }
