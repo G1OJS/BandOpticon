@@ -63,7 +63,6 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   //chart.update();
 }
 
-
 function updateLine(band, mode, sc, rc) {
 	
   const chart = charts.get(band);
@@ -76,13 +75,14 @@ function updateLine(band, mode, sc, rc) {
     chart.data.datasets.push(ds);
   }
 
-// needs checking - still getting duplkicates
   let lbl = sc+"|"+rc;
   let lblrev = rc+"|"+sc;
   if (!ds.data.includes(lbl) && !ds.data.includes(lblrev)){
 	let tx = callLocations.get(sc);
 	let rx = callLocations.get(rc);  
-	ds.data.push({x:tx.x, y:tx.y},{ x:rx.x, y:rx.y }, lbl);
+	ds.data.push({x:tx.x, y:tx.y, call:rc}) // uses call to label tooltip for line with 'other end'
+	ds.data.push({x:rx.x, y:rx.y, call:sc})
+	ds.data.push(lbl);
   }
 
   chart.update();
