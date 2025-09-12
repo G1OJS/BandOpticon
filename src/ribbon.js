@@ -1,14 +1,8 @@
 var tStart = Date.now(); // software start time
 
 import {updateMyCall, updateSquaresList} from './config.js';
-import {activeModes, filterAllCharts} from './plots.js';
+import {activeModes, filterAllCharts, resetData, nCallsigns} from './plots.js';
 let watchedMode = '';
-// ribbon HTML elements expected:
-// clock, runningMins, connectionsIn, modeSelectBox
-// myCallInput, homeSquaresInput, purgeMinutesInput
-
-// functions needed in ui.js:
-// onModeChange(), onConfigChange()
 
 export var tStart = Date.now();
 
@@ -25,7 +19,7 @@ function updateClock() {
 	const runningmins = Math.trunc(((t - tStart) / 1000) / 60);
 	document.getElementById("clock").innerHTML = utc + " UTC";
 	document.getElementById("runningMins").innerHTML = runningmins;
-//	document.getElementById("connectionsIn").innerHTML = countAllConnections();
+	document.getElementById("callsignsInDB").innerHTML = nCallsigns;
 }
 
 function setWatchedMode(mode){
@@ -56,7 +50,7 @@ function attachInputHandlers() {
 	if (myCallInput) {
 		myCallInput.addEventListener('change', () => {
 			updateMyCall();
-			onConfigChange();
+			resetData();
 		});
 		console.log("Attached 'change' listener to myCallInput")
 	} else {
@@ -67,7 +61,7 @@ function attachInputHandlers() {
 	if (homeSquaresInput) {
 		homeSquaresInput.addEventListener('change', () => {
 			updateSquaresList();
-			onConfigChange();
+			resetData();
 		});
 		console.log("Attached 'change' listener to homeSquaresInput")
 	} else {
@@ -75,11 +69,3 @@ function attachInputHandlers() {
 	}
 }
 
-function wavelength(band) {
-    let wl = parseInt(band.split("m")[0]);
-    if (band.search("cm") > 0) {
-        return wl / 100
-    } else {
-        return wl
-    }
-}

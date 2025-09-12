@@ -1,16 +1,19 @@
 import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
 import {colours, view} from './main.js'
-export const charts = new Map();
-export const chartPoints = new Map();
-export const activeModes = new Set();
-export const activeCanvases = new Map();
+import {startRibbon} from './ribbon.js'
+export var charts = new Map();
+export var activeModes = new Set();
+export var activeCanvases = new Map();
+export var nCallsigns = 0;
 
 
-const tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
-const freeCanvases = [...tileCanvases]; // mutable pool
+var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
+var freeCanvases = [...tileCanvases]; // mutable pool
 
-const callLocations = new Map();  // call -> {x, y}
+var callLocations = new Map();  // call -> {x, y}
+
+setInterval(() => sortBandTiles(), 1000);
 
 function getLocation(call, callSq){
 	if(!callLocations.get(call)) {
@@ -18,6 +21,18 @@ function getLocation(call, callSq){
 		callLocations.set(call, {x:ll[1], y:ll[0]});
 	}
 	return callLocations.get(call);
+}
+
+export function resetData(){
+	charts.forEach(chart => {chart.destroy()});
+	for (let idx =0;idx<20;idx++) document.getElementById('bandTile_'+idx).classList.add('hidden');
+	charts = new Map();
+	activeModes = new Set();
+	activeCanvases = new Map();
+	tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
+	freeCanvases = [...tileCanvases];
+	callLocations = new Map(); 
+	startRibbon();
 }
 
 export function filterAllCharts(mode) {
@@ -38,7 +53,7 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   // find or create chart's dataset for this mode
   let ds = chart.data.datasets.find(d => d.label === mode);
   if (!ds) {
-    ds = { label: mode, data: [], backgroundColor:[] };
+    ds = { label: mode, data: [], backgroundColor:[] , z:[], pointRadius:[]};
     chart.data.datasets.push(ds);
   }
 
@@ -49,6 +64,8 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
 	pt = getLocation(call, callSq);
 	pt.attribs = {tx:tx, rx:rx, hl:hl}	
     pt.call = call;	
+	pt.pointRadius = 6;
+	pt.z = 0;
 	ds.data.push(pt);
   }
   pt.attribs.tx ||= tx; pt.attribs.rx ||= rx; pt.attribs.hl ||= hl;
@@ -56,8 +73,12 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   let a = pt.attribs;
   if(hl){
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrxhl: (a.tx? colours.txhl: colours.rxhl);
+	ds.z[idx] = 10;
+	ds.pointRadius[idx] = 3;
   } else {
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
+	ds.z[idx] = 0;
+	ds.pointRadius[idx] = 6;
   }
 
   //chart.update();
@@ -88,6 +109,25 @@ function updateLine(band, mode, sc, rc) {
   chart.update();
 }
 
+function wavelength(band) {
+    let wl = parseInt(band.split("m")[0]);
+    if (band.search("cm") > 0) {
+        return wl / 100
+    } else {
+        return wl
+    }
+}
+
+function sortBandTiles(){
+	nCallsigns = callLocations.size;
+	const container = document.getElementById('bandsGrid');
+	const orderedBands = Array.from(charts.keys()).sort(function(a, b){return wavelength(b) - wavelength(a)}); 
+	for (const band of orderedBands){
+		let idx = charts.get(band).canvas.id.split("_")[1];
+		container.appendChild(document.getElementById('bandTile_'+idx));
+	};
+}
+
 export function updateChartForView(tile_idx){
 	let chart = activeCanvases.get(tile_idx);
 	let s = chart.options.scales;
@@ -104,8 +144,8 @@ export function updateChartForView(tile_idx){
 
 export function addSpot(spot) {
 	activeModes.add(spot.md);
-	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, spot.sc == myCall)
-	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, spot.rc == myCall)
+	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
+	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
 	updateLine(spot.b, spot.md, spot.sc, spot.rc);
 }
 
