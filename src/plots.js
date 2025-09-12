@@ -74,7 +74,7 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   if(hl){
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrxhl: (a.tx? colours.txhl: colours.rxhl);
 	ds.z[idx] = 10;
-	ds.pointRadius[idx] = 3;
+	ds.pointRadius[idx] = 4;
   } else {
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
 	ds.z[idx] = 0;
@@ -88,22 +88,23 @@ function updateLine(band, mode, sc, rc) {
 	
   const chart = charts.get(band);
   const label = mode + "_conns"
+  let col = (sc==myCall || rc==myCall)? colours.connhl: colours.conn;
 
   // find or create chart's dataset for this mode
   let ds = chart.data.datasets.find(d => d.label === label);
   if (!ds) {
-    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: colours.conn};
+    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: [col], pointRadius:0};
     chart.data.datasets.push(ds);
   }
 
   let lbl = sc+"|"+rc;
-  let lblrev = rc+"|"+sc;
-  if (!ds.data.includes(lbl) && !ds.data.includes(lblrev)){
+  if (!ds.data.includes(lbl)){
 	let tx = callLocations.get(sc);
 	let rx = callLocations.get(rc);  
 	ds.data.push({x:tx.x, y:tx.y, call:rc}) // uses call to label tooltip for line with 'other end'
 	ds.data.push({x:rx.x, y:rx.y, call:sc})
 	ds.data.push(lbl);
+	ds.borderColor.push(col);
   }
 
   chart.update();
