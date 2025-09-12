@@ -58,6 +58,20 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   chart.update();
 }
 
+export function updateChartForView(tile_idx){
+	let chart = activeCanvases.get(tile_idx);
+	let s = chart.options.scales;
+		
+	if (view == "Overview"){
+		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
+	} else {
+		let rng = getAxisRanges(chart.data);
+		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;			
+	}
+	
+	chart.update();
+}
+
 export function addSpot(spot) {
 	activeModes.add(spot.md);
 	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, spot.sc == myCall)
@@ -87,8 +101,8 @@ function createChart(band) {
 						legend: {display: false},             
 						title: {display: false, align:'start', text: " "}},
 			scales: {
-				x: {display:false, title: {display:true, text: 'Longitude'}, type: 'linear',position: 'bottom' , max:180, min:-180},
-				y: {display:false, title: {display:true, text: 'Lattitude'}, type: 'linear',position: 'left' , max:90, min: -90}
+				x: {display:false, max:180, min:-180},
+				y: {display:false, max:90, min: -90}
 				}
 			}
 		}
@@ -99,10 +113,8 @@ function createChart(band) {
 }
 
 
-function getAxisRanges(data, view){
+function getAxisRanges(data){
 
-	if(view == "Overview") return [[-180,180], [-90,90]]; 
-	
 	let xrng = [1000,-1000];
 	let yrng = [1000,-1000];
 	for (const ds of data.datasets){
@@ -132,10 +144,8 @@ function getAxisRanges(data, view){
 		dy = dx / 2;
 	}
 
-	xrng = [Math.max(-180, x0-dx/2), Math.min(180, x0+dx/2)]		
-	yrng = [Math.max(-90,y0-dy/2),   Math.min(y0+dy/2)]
+	return {xmin:Math.max(-180, x0-dx/2), xmax: Math.min(180, x0+dx/2), ymin:Math.max(-90,y0-dy/2), ymax:  Math.min(y0+dy/2)};
 	
-	return [xrng, yrng];
 }
 
 

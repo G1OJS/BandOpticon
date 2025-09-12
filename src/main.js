@@ -1,7 +1,7 @@
 import {connectToFeed} from './mqtt.js';
 import {loadConfig} from './config.js';
 import {startRibbon} from './ribbon.js'
-import {activeCanvases} from './plots.js'
+import {activeCanvases, updateChartForView} from './plots.js'
 
 export var view = "Overview";
 
@@ -22,14 +22,16 @@ loadConfig();
 connectToFeed();
 startRibbon();
 
-function switchView(view_idx){
-	view = (view == "Overview")? view_idx: "Overview";
+function switchView(tile_idx){
+	view = (view == "Overview")? tile_idx: "Overview";
 	
 	for (let idx =0;idx<20;idx++){
 		let hide = true;
 		if (view =="Overview" && activeCanvases.has(idx)) hide = false;
-		if (view !="Overview" && idx == view_idx) hide = false;
+		if (view !="Overview" && idx == tile_idx) hide = false;
 		let tile = document.getElementById('bandTile_'+idx); 
 		if (hide) {tile.classList.add('hidden')} else {tile.classList.remove('hidden')};
 	}
+	
+	updateChartForView(tile_idx);
 }
