@@ -4,6 +4,7 @@ import {colours} from './main.js'
 export const charts = new Map();
 export const chartPoints = new Map();
 export const activeModes = new Set();
+export const activeCanvases = new Set();
 
 
 const tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
@@ -72,6 +73,7 @@ function createChart(band) {
     const canvas = freeCanvases.shift(); // grab first free canvas
 	canvas.parentElement.classList.remove('hidden');
 	canvas.previousElementSibling.innerHTML = band;
+	activeCanvases.add(parseInt(canvas.id.split("_")[1]));
 	
     const ctx = canvas.getContext('2d');
 
