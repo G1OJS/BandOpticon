@@ -2,6 +2,8 @@ import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
 export const charts = new Map();
 export const chartPoints = new Map();
+export const activeModes = new Set();
+
 
 const tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 const freeCanvases = [...tileCanvases]; // mutable pool
@@ -21,28 +23,50 @@ function decideColour(spot){
 	return 'green';
 }
 
-function updatePoint(band, mode, call, callSq, tx, rx, hl){
-
-    if(!charts.get(band)) charts.set(band, createChart(band));
-    const chart = charts.get(band);
-	
-	const pointKey = `${band}|${mode}|${call}`;	
-    const pt = chartPoints.get(pointKey);
-    if (pt) {
-		pt.tx ||= tx; pt.rx ||= rx; pt.hl ||= hl;    
-        pt.backgroundColor = decideColour(pt.attribs);
-    } else {
-		let newPt = getLocation(call, callSq);
-		newPt.attribs = {tx:tx, rx:rx, hl:hl}		
-		newPt.backgroundColor = decideColour(newPt.attribs);
-        chart.data.datasets[0].data.push(newPt);
-        chartPoints.set(pointKey, newPt);
-    }
-
+export function filterAllCharts(mode) {
+  charts.forEach(chart => {
+    chart.data.datasets.forEach(ds => {
+		console.log(ds.label);
+      chart.getDatasetMeta(dsIndex(ds, chart)).hidden = ds.label !== mode;
+    });
     chart.update();
+  });
+}
+// helper to get dataset index from dataset object
+function dsIndex(ds, chart) {
+  return chart.data.datasets.indexOf(ds);
+}
+
+function updatePoint(band, mode, call, callSq, tx, rx, hl) {
+  if (!charts.get(band)) charts.set(band, createChart(band));
+  const chart = charts.get(band);
+
+  // find or create dataset for this mode
+  let ds = chart.data.datasets.find(d => d.label === mode);
+  if (!ds) {
+    ds = { label: mode, data: [] };
+    chart.data.datasets.push(ds);
+  }
+
+  // find or create the point
+  let pt = ds.data.find(p => p.call === call);
+  if (pt) {
+    pt.tx ||= tx;
+    pt.rx ||= rx;
+    pt.hl ||= hl;
+    pt.backgroundColor = decideColour(pt);
+  } else {  
+	pt = getLocation(call, callSq);
+	pt.attribs = {tx:tx, rx:rx, hl:hl}		
+    pt.backgroundColor = decideColour(pt.attribs);
+    ds.data.push(pt);
+  }
+
+  chart.update();
 }
 
 export function addSpot(spot) {
+	activeModes.add(spot.md);
 	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, spot.sc == myCall)
 	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, spot.rc == myCall)
 }
@@ -62,7 +86,7 @@ function createChart(band) {
 	const ch = new Chart(ctx, 
 		{ type:'scatter',
 		  plugins: [countryOutlinePlugin],
-		    data: { datasets: [ { data: [] } ] },
+		    data: { datasets: [  ] },
 			options: {
 			animation: false, 
 			plugins: {	
@@ -76,7 +100,7 @@ function createChart(band) {
 			}
 		}
 	);
-	
+	console.log("Ceated chart for "+band);
     return ch;
 }
 
