@@ -169,7 +169,8 @@ function createChart(band) {
 			plugins: {	
 						tooltip:{callbacks: {label: function(context) {return context.raw.call;} }},
 						legend: {display: false},             
-						title: {display: false},
+						title: {display: false}
+					 }
 			scales: {
 				x: {display:false, max:180, min:-180},
 				y: {display:false, max:90, min: -90}
