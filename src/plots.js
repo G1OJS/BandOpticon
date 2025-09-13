@@ -161,20 +161,19 @@ function createChart(band) {
     const ctx = canvas.getContext('2d');
 
 	const ch = new Chart(ctx, 
-		{ type:'scatter',
-		  plugins: [countryOutlinePlugin],
-		    data: { datasets: [  ] },
+		{ 	type:'scatter',
+			plugins: [countryOutlinePlugin],
+			data: { datasets: [  ] },
 			options: {
-			animation: false, 
-			plugins: {	
-						tooltip:{callbacks: {label: function(context) {return context.raw.call;} }},
-						legend: {display: false},             
-						title: {display: false}
-					 }
-			scales: {
-				x: {display:false, max:180, min:-180},
-				y: {display:false, max:90, min: -90}
-				}
+				animation: false, 
+				plugins: {	
+							tooltip:{callbacks: {label: function(context) {return context.raw.call;} }},
+							legend: {display: false}
+						 },
+				scales: {
+					x: {display:false, max:180, min:-180},
+					y: {display:false, max:90, min: -90}
+					}
 			}
 		}
 	);
