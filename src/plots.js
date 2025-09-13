@@ -102,6 +102,9 @@ function updateLine(band, mode, sc, rc, hl) {
 	ds.data.push(lbl);
   }
 
+  if(hl) console.log("hl for "+band+" "+mode+" "+sc + " to "+ rc);
+
+
   chart.update();
 }
 
