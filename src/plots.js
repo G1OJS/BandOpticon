@@ -51,9 +51,11 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   const chart = charts.get(band);
 
   // find or create chart's dataset for this mode
-  let ds = chart.data.datasets.find(d => d.label === mode);
+  let lyr = mode +"_"+hl;
+  if(hl) console.log("Highlight layer");
+  let ds = chart.data.datasets.find(d => d.label === lyr);
   if (!ds) {
-    ds = { label: mode, data: [], backgroundColor:[] , z:[], pointRadius:[]};
+    ds = { label: lyr, data: [], backgroundColor:[] , pointRadius:4, order:(hl? -100:10)};
     chart.data.datasets.push(ds);
   }
 
@@ -73,12 +75,8 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   let a = pt.attribs;
   if(hl){
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrxhl: (a.tx? colours.txhl: colours.rxhl);
-	ds.z[idx] = 10;
-	ds.pointRadius[idx] = 4;
   } else {
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
-	ds.z[idx] = 0;
-	ds.pointRadius[idx] = 6;
   }
 
   //chart.update();
@@ -140,7 +138,7 @@ export function updateChartForView(tile_idx){
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
 	}
 	
-	chart.update();
+	chart.update('none');
 }
 
 export function addSpot(spot) {
