@@ -51,11 +51,10 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   const chart = charts.get(band);
 
   // find or create chart's dataset for this mode
-  let lyr = mode +"_"+hl;
-  if(hl) console.log("Highlight layer");
-  let ds = chart.data.datasets.find(d => d.label === lyr);
+  let label = mode +"_"+hl; // highlight gets its own layer so we can  use order to push it to the front
+  let ds = chart.data.datasets.find(d => d.label === label);
   if (!ds) {
-    ds = { label: lyr, data: [], backgroundColor:[] , pointRadius:4, order:(hl? -100:10)};
+    ds = { label: label, data: [], backgroundColor:[] , pointRadius: hl? 4:6, order:(hl? -100:10)};
     chart.data.datasets.push(ds);
   }
 
@@ -82,16 +81,15 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
   //chart.update();
 }
 
-function updateLine(band, mode, sc, rc) {
+function updateLine(band, mode, sc, rc, hl) {
 	
   const chart = charts.get(band);
-  const label = mode + "_conns"
-  let col = (sc==myCall || rc==myCall)? colours.connhl: colours.conn;
+  const label = mode + "_conns"+"_"+hl;  // highlight gets its own layer so we can  use order to push it to the front
 
-  // find or create chart's dataset for this mode
+  // find or create chart's dataset for this layer
   let ds = chart.data.datasets.find(d => d.label === label);
   if (!ds) {
-    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: [col], pointRadius:0};
+    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: (hl)? colours.connhl: colours.conn, pointRadius:0, order:hl? -100:100};
     chart.data.datasets.push(ds);
   }
 
@@ -102,7 +100,6 @@ function updateLine(band, mode, sc, rc) {
 	ds.data.push({x:tx.x, y:tx.y, call:rc}) // uses call to label tooltip for line with 'other end'
 	ds.data.push({x:rx.x, y:rx.y, call:sc})
 	ds.data.push(lbl);
-	ds.borderColor.push(col);
   }
 
   chart.update();
@@ -145,7 +142,7 @@ export function addSpot(spot) {
 	activeModes.add(spot.md);
 	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
 	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
-	updateLine(spot.b, spot.md, spot.sc, spot.rc);
+	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
 }
 
 function createChart(band) {
