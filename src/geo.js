@@ -84,3 +84,4 @@ export function squaresToKmDeg(SqA, SqB) {
         "deg": Math.round(brg)
     });
 }
+
