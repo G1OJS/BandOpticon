@@ -1,6 +1,6 @@
 import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
-import {colours, view} from './main.js'
+import {colours, view, setMainViewHeight} from './main.js'
 import {startRibbon} from './ribbon.js'
 import {countryOutlinePlugin} from './map.js'
 
@@ -15,7 +15,7 @@ var freeCanvases = [...tileCanvases]; // mutable pool
 
 var callLocations = new Map();  // call -> {x, y}
 
-setInterval(() => sortBandTiles(), 1000);
+setInterval(() => sortAndUpdateTiles(), 1000);
 
 function getLocation(call, callSq){
 	if(!callLocations.get(call)) {
@@ -42,7 +42,6 @@ export function filterAllCharts(mode) {
     chart.data.datasets.forEach(ds => {
       chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label.split("_")[0] != mode;
     });
-    chart.update();
   });
 }
 
@@ -80,7 +79,6 @@ function updatePoint(band, mode, call, callSq, tx, rx, hl) {
 	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
   }
 
-  //chart.update();
 }
 
 function updateLine(band, mode, sc, rc, hl) {
@@ -106,8 +104,6 @@ function updateLine(band, mode, sc, rc, hl) {
 
   if(hl) console.log("hl for "+band+" "+mode+" "+sc + " to "+ rc);
 
-
-  chart.update();
 }
 
 function wavelength(band) {
@@ -119,14 +115,17 @@ function wavelength(band) {
     }
 }
 
-function sortBandTiles(){
+function sortAndUpdateTiles(){
 	nCallsigns = callLocations.size;
 	const container = document.getElementById('bandsGrid');
 	const orderedBands = Array.from(charts.keys()).sort(function(a, b){return wavelength(b) - wavelength(a)}); 
 	for (const band of orderedBands){
-		let idx = charts.get(band).canvas.id.split("_")[1];
+		let chart = charts.get(band);
+		chart.update('none');
+		let idx = chart.canvas.id.split("_")[1];
 		container.appendChild(document.getElementById('bandTile_'+idx));
 	};
+	setMainViewHeight();
 }
 
 export function updateChartForView(tile_idx){
@@ -139,8 +138,6 @@ export function updateChartForView(tile_idx){
 		let rng = getAxisRanges(chart.data);
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
 	}
-	
-	chart.update('none');
 }
 
 export function addSpot(spot) {

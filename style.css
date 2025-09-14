@@ -96,9 +96,9 @@ legend {
 
 #app {
   max-width: 1600px;
-  margin: 0;
-  margin-bottom:20px;
+  margin: 0px;
   padding-top: 0;
+  height:95vh;
 }
 
 .transmit 			{background-color: var(--background-color-transmit);}
@@ -124,8 +124,10 @@ label 				{font-size: var(--font-size-sm); }
 .ribbonBox 			{height:100px;}
 
 #mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content max-content auto; }
+#mainViewTitle		{}
 #mainViewRibbon		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
-#scrollContainer	{min-height:0px; ; overflow-y:scroll;  }
+#heightControl		{display:table; overflow-y:scroll;}
+#scrollContainer	{display:table-cell; overflow-y:scroll;}
 .legendItem 		{float:left;}
 .legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:20px; margin-right:2px; border: 1px solid grey;}
 					 

@@ -39,20 +39,17 @@
 		<legend>Mode</legend>
 			<!-- written by script -->
 		</fieldset>
-<!--		<fieldset id='bandsSelectBox' class="ribbonBox" >
-		<legend>Bands</legend>
-			<!-- written by script -->
-<!--		</fieldset> -->
-
 	</div>
 
-	<div id="mainView" class="paper" >   
-		<h3 id='mainViewTitle'></h3>
+	<button id = 'fewerColumns'>-columns</button><button id = 'moreColumns'>+ columns</button>
+	<div id="mainView" class="paper" >
+		<h3 id='mainViewTitle'>Bands Overview</h3>	
 		<div id = 'mainViewRibbon'>
 			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</div>
 			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</div>
 			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</div>
 		</div>
+
 		<div id = 'scrollContainer'>
 			<div id='bandsGrid'>
 				<div id = 'bandTile_0' class = 'bandTile hidden'><div id = 'bandTileTitle_0' class = 'bandTileTitle'></div><canvas id='canvas_0' class = 'bandCanvas'></canvas></div>
@@ -77,6 +74,7 @@
 				<div id = 'bandTile_19' class = 'bandTile hidden'><div id = 'bandTileTitle_19' class = 'bandTileTitle'></div><canvas id='canvas_19' class = 'bandCanvas'></canvas></div>
 			</div>
 		</div>
+
 	</div>
 
 	<div id="footer" class="text-muted text-xsm">
