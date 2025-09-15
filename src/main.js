@@ -110,6 +110,7 @@ function sortAndUpdateTiles(){
 	for (const band of orderedBands){
 		let chart = charts.get(band);
 		let idx = chart.canvas.id.split("_")[1];
+		if(view == "Overview") toggleZoomToDataRange(document.getElementById('canvas_'+idx), true);
 		container.appendChild(document.getElementById('bandTile_'+idx));
 		chart.update('none');
 	};

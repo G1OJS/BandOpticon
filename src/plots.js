@@ -18,12 +18,11 @@ export function addSpot(spot) {
 	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
 }
 
-export function toggleZoomToDataRange(bandTile_el){
-	console.log(bandTile_el);
-	let band = bandTile_el.title.split(' ')[0];
+export function toggleZoomToDataRange(canvas_el, zoomOut = false){
+	let band = canvas_el.title.split(' ')[0];
 	let chart = charts.get(band);
 	let s = chart.options.scales;
-	if(s.x.min > -180){
+	if(s.x.min > -180 || zoomOut){
 		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
 	} else {
 		let rng = getAxisRanges(chart.data);
