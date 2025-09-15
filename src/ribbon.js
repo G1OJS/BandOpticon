@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
 import {updateMyCall, updateSquaresList} from './config.js';
-import {activeModes, hideUnwatchedModeLayers, resetData, nCallsigns} from './plots.js';
+import {activeModes, hideUnwatchedModeLayers, resetData, callLocations} from './plots.js';
 let watchedMode = '';
 
 export var tStart = Date.now();
@@ -19,7 +19,7 @@ function updateClock() {
 	const runningmins = Math.trunc(((t - tStart) / 1000) / 60);
 	document.getElementById("clock").innerHTML = utc + " UTC";
 	document.getElementById("runningMins").innerHTML = runningmins;
-	document.getElementById("callsignsInDB").innerHTML = nCallsigns;
+	document.getElementById("callsignsInDB").innerHTML = callLocations.size;;
 }
 
 function setWatchedMode(mode){

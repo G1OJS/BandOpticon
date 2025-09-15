@@ -6,9 +6,8 @@ import {countryOutlinePlugin} from './map.js'
 
 export var charts = new Map();
 export var activeModes = new Set();
-export var nCallsigns = 0;
+export var callLocations = new Map();  // call -> {x, y}
 
-var callLocations = new Map();  // call -> {x, y}
 var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
