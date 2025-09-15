@@ -1,7 +1,7 @@
 import {connectToFeed} from './mqtt.js';
 import {loadConfig} from './config.js';
 import {startRibbon} from './ribbon.js'
-import {activeCanvases, updateChartForView} from './plots.js'
+import {charts, toggleZoom} from './plots.js'
 
 export var view = "Overview";
 var nColumns = 3;
@@ -14,10 +14,14 @@ export const colours =   {tx:'rgba(230, 30, 30, .3)', 	rx:		'rgba(30, 230, 30, .
 document.getElementById('legendMarkerTx').style.background = colours.tx;
 document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+document.getElementById('moreColumns').addEventListener("click", function (e) {addRemoveColumns('more')});
+document.getElementById('fewerColumns').addEventListener("click", function (e) {addRemoveColumns('fewer')});
 
-for (let bandIdx =0;bandIdx<20;bandIdx++){
-	let canvas_id = 'bandTile_'+bandIdx;
-	document.getElementById(canvas_id).addEventListener("click", function (e) {switchView(parseInt(canvas_id.split("_")[1]))});
+setInterval(() => sortAndUpdateTiles(), 1000);
+
+for (let idx =0;idx<20;idx++){
+	let canvas_id = 'canvas_'+idx;
+	document.getElementById(canvas_id).addEventListener("click", function (e) {toggleZoom(canvas_id)});
 }
 
 export function setMainViewHeight(){
@@ -31,10 +35,7 @@ export function setMainViewHeight(){
 	el.style.height = h+"px";
 }
 
-document.getElementById('moreColumns').addEventListener("click", function (e) {changeGrid('more')});
-document.getElementById('fewerColumns').addEventListener("click", function (e) {changeGrid('fewer')});
-
-function changeGrid(direction){
+function addRemoveColumns(direction){
 	if(view !="Overview") return;
 	
 	if (direction == "more") nColumns += (nColumns <10);
@@ -44,27 +45,28 @@ function changeGrid(direction){
 	console.log(document.getElementById('bandsGrid').elementStyle);
 }
 
+function sortAndUpdateTiles(){
+	const container = document.getElementById('bandsGrid');
+	const orderedBands = Array.from(charts.keys()).sort(function(a, b){return wavelength(b) - wavelength(a)}); 
+	for (const band of orderedBands){
+		let chart = charts.get(band);
+		let idx = chart.canvas.id.split("_")[1];
+		container.appendChild(document.getElementById('bandTile_'+idx));
+		chart.update('none');
+	};
+	setMainViewHeight();
+}
+
+function wavelength(band) {
+    let wl = parseInt(band.split("m")[0]);
+    if (band.search("cm") > 0) {
+        return wl / 100
+    } else {
+        return wl
+    }
+}
+
+
 loadConfig();
 connectToFeed();
 startRibbon();
-
-function switchView(tile_idx){
-	view = (view == "Overview")? tile_idx: "Overview";
-	
-	for (let idx =0;idx<20;idx++){
-		let hide = true;
-		if (view =="Overview" && activeCanvases.has(idx)) hide = false;
-		if (view !="Overview" && idx == tile_idx) hide = false;
-		let tile = document.getElementById('bandTile_'+idx); 
-		if (hide) {tile.classList.add('hidden')} else {tile.classList.remove('hidden')};
-	}
-	
-	const el = document.getElementById('bandsGrid');
-	if(view == "Overview"){
-		el.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
-	} else {
-		el.setAttribute("style", "grid-template-columns: 1fr;");
-	}
-	
-	updateChartForView(tile_idx);
-}

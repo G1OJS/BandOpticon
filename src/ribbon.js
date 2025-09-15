@@ -1,7 +1,7 @@
 var tStart = Date.now(); // software start time
 
 import {updateMyCall, updateSquaresList} from './config.js';
-import {activeModes, filterAllCharts, resetData, nCallsigns} from './plots.js';
+import {activeModes, hideUnwatchedModeLayers, resetData, nCallsigns} from './plots.js';
 let watchedMode = '';
 
 export var tStart = Date.now();
@@ -25,7 +25,7 @@ function updateClock() {
 function setWatchedMode(mode){
 	watchedMode = mode;
 	writeModeButtons();
-	filterAllCharts(mode);
+	hideUnwatchedModeLayers(mode);
 }
 			
 function writeModeButtons() {			

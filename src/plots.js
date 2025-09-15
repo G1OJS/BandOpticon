@@ -6,16 +6,25 @@ import {countryOutlinePlugin} from './map.js'
 
 export var charts = new Map();
 export var activeModes = new Set();
-export var activeCanvases = new Map();
 export var nCallsigns = 0;
 
-
+var callLocations = new Map();  // call -> {x, y}
 var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
-var callLocations = new Map();  // call -> {x, y}
+export function toggleZoom(canvas_id){
 
-setInterval(() => sortAndUpdateTiles(), 1000);
+//	let s = chart.options.scales;
+//	if (view == "Overview"){
+//		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
+//	} else {
+//		let rng = getAxisRanges(chart.data);
+//		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
+//	}	
+	
+//	chart.update('none');
+}
+
 
 function getLocation(call, callSq){
 	if(!callLocations.get(call)) {
@@ -30,14 +39,13 @@ export function resetData(){
 	for (let idx =0;idx<20;idx++) document.getElementById('bandTile_'+idx).classList.add('hidden');
 	charts = new Map();
 	activeModes = new Set();
-	activeCanvases = new Map();
 	tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 	freeCanvases = [...tileCanvases];
 	callLocations = new Map(); 
 	startRibbon();
 }
 
-export function filterAllCharts(mode) {
+export function hideUnwatchedModeLayers(mode) {
   charts.forEach(chart => {
     chart.data.datasets.forEach(ds => {
       chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label.split("_")[0] != mode;
@@ -106,40 +114,6 @@ function updateLine(band, mode, sc, rc, hl) {
 
 }
 
-function wavelength(band) {
-    let wl = parseInt(band.split("m")[0]);
-    if (band.search("cm") > 0) {
-        return wl / 100
-    } else {
-        return wl
-    }
-}
-
-function sortAndUpdateTiles(){
-	nCallsigns = callLocations.size;
-	const container = document.getElementById('bandsGrid');
-	const orderedBands = Array.from(charts.keys()).sort(function(a, b){return wavelength(b) - wavelength(a)}); 
-	for (const band of orderedBands){
-		let chart = charts.get(band);
-		chart.update('none');
-		let idx = chart.canvas.id.split("_")[1];
-		container.appendChild(document.getElementById('bandTile_'+idx));
-	};
-	setMainViewHeight();
-}
-
-export function updateChartForView(tile_idx){
-	let chart = activeCanvases.get(tile_idx);
-	let s = chart.options.scales;
-		
-	if (view == "Overview"){
-		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
-	} else {
-		let rng = getAxisRanges(chart.data);
-		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
-	}
-}
-
 export function addSpot(spot) {
 	activeModes.add(spot.md);
 	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
@@ -177,7 +151,6 @@ function createChart(band) {
 		}
 	);
 	console.log("Ceated chart for "+band);
-	activeCanvases.set(parseInt(canvas.id.split("_")[1]),ch);
     return ch;
 }
 
