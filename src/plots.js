@@ -11,6 +11,13 @@ export var callLocations = new Map();  // call -> {x, y}
 var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
+export function addSpot(spot) {
+	activeModes.add(spot.md);
+	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
+	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
+	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
+}
+
 export function toggleZoom(clicked_el){
 	// could easily be changed to a stepped zoom cycling through different zoom levels
 	let canvas_title = clicked_el.title;
@@ -26,14 +33,6 @@ export function toggleZoom(clicked_el){
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
 	}	
 	chart.update('none');
-}
-
-function getLocation(call, callSq){
-	if(!callLocations.get(call)) {
-		let ll = mhToLatLong(callSq);
-		callLocations.set(call, {x:ll[1], y:ll[0]});
-	}
-	return callLocations.get(call);
 }
 
 export function resetData(){
@@ -53,6 +52,14 @@ export function hideUnwatchedModeLayers(mode) {
       chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label.split("_")[0] != mode;
     });
   });
+}
+
+function getLocation(call, callSq){
+	if(!callLocations.get(call)) {
+		let ll = mhToLatLong(callSq);
+		callLocations.set(call, {x:ll[1], y:ll[0]});
+	}
+	return callLocations.get(call);
 }
 
 function updatePoint(band, mode, call, callSq, tx, rx, hl) {
@@ -99,7 +106,8 @@ function updateLine(band, mode, sc, rc, hl) {
   // find or create chart's dataset for this layer
   let ds = chart.data.datasets.find(d => d.label === label);
   if (!ds) {
-    ds = {label: label, data: [], showLine: true, spanGaps: false, borderColor: (hl)? colours.connhl: colours.conn, pointRadius:0, order:hl? -100:100};
+    ds = {label: label, data: [], showLine: true, spanGaps: false, 
+			borderColor: (hl)? colours.connhl: colours.conn, pointRadius:0, hitRadius:0, order:hl? -100:100};
     chart.data.datasets.push(ds);
   }
 
@@ -112,16 +120,9 @@ function updateLine(band, mode, sc, rc, hl) {
 	ds.data.push(lbl);
   }
 
-  if(hl) console.log("hl for "+band+" "+mode+" "+sc + " to "+ rc);
-
 }
 
-export function addSpot(spot) {
-	activeModes.add(spot.md);
-	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
-	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
-	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
-}
+
 
 function createChart(band) {
     if (freeCanvases.length === 0) {
@@ -153,7 +154,7 @@ function createChart(band) {
 			}
 		}
 	);
-	
+
 	console.log("Ceated chart for "+band);
     return ch;
 }
