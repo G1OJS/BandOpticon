@@ -130,7 +130,7 @@ function createChart(band) {
 
     const canvas = freeCanvases.shift(); // grab first free canvas
 	if (view == "Overview") canvas.parentElement.classList.remove('hidden');
-	canvas.previousElementSibling.innerHTML = "<span>"+band+"</span><span style='float:right;'>🗕</span>";
+	canvas.previousElementSibling.innerHTML = "<span>"+band+"</span><span style='float:right;' class = 'control'>🗕</span>";
 	canvas.title = band + " click to zoom";
 	
     const ctx = canvas.getContext('2d');

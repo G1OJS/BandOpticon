@@ -4,6 +4,7 @@
   --text-dark: #333;
   --main-paper-color: #eeeeee;
   --light-paper-color: #ffffff;
+  --dark-paper-color: #dddddd;
   --border-color: #ccc;
   --background-color-shade: #f7f9fc;
   --background-color-transmit: #ffebe6;
@@ -125,6 +126,7 @@ label 				{font-size: var(--font-size-sm); }
 
 #mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
 #mainViewTray		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
+.control:hover 		{border-color: var(--main-paper-color); background: var(--dark-paper-color);}			
 .trayGroup			{display:inline-block; margin-right:10px;}
 .trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs)}
 .legendItem 		{float:left; margin-right:3px;}
