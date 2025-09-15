@@ -133,7 +133,7 @@ label 				{font-size: var(--font-size-sm); }
 .legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #scrollContainer	{display:table-cell; overflow-y:scroll;}
 					 
-.hidden				{display:none;}
+
 
 
 #bandsGrid	 		{display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); width:100%; gap:5px;}
@@ -145,3 +145,4 @@ a:link 				{color: #888;}
 a:visited 			{color: #888;}
 
 
+.hidden				{display:none !important;}

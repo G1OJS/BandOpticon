@@ -16,32 +16,42 @@ document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 document.getElementById('moreColumns').addEventListener("click", function (e) {addRemoveColumns('more')});
 document.getElementById('fewerColumns').addEventListener("click", function (e) {addRemoveColumns('fewer')});
+document.getElementById('maximiseGridView').addEventListener("click", function (e) {maximiseGridView('fewer')});
+document.getElementById('restoreGridView').addEventListener("click", function (e) {restoreGridView('fewer')});
 
 setInterval(() => sortAndUpdateTiles(), 1000);
 
-for (const el of document.querySelectorAll('.bandCanvas')){
-	el.addEventListener("click", function (e) {toggleZoom(el.title)});
-}
+for (const el of document.querySelectorAll('.bandCanvas'))		{ el.addEventListener("click", function (e) {toggleZoom(el)}); }
+for (const el of document.querySelectorAll('.bandTileTitle'))	{ el.addEventListener("click", function (e) {minimiseTile(el)});}
+for (const el of document.querySelectorAll('.trayButton'))		{ el.addEventListener("click", function (e) {restoreTile(el)}); }
 
-for (const el of document.querySelectorAll('.bandTileTitle')){
-	el.addEventListener("click", function (e) {minimise(el)});
-}
-for (const el of document.querySelectorAll('.trayButton')){
-	el.addEventListener("click", function (e) {restore(el)});
-}
-function minimise(el){
+function minimiseTile(el){
 	el.parentElement.classList.add('hidden');
 	let idx = el.id.split("_")[1];
 	let trayEl = document.getElementById('tray_'+idx)
 	trayEl.innerHTML = " "+el.innerHTML.split(" ")[0];
 	trayEl.classList.remove('hidden')
 }
-function restore(trayEl){
+function restoreTile(trayEl){
 	let idx = trayEl.id.split("_")[1];
 	trayEl.classList.add('hidden');
 	let gridEl = document.getElementById('bandTile_'+idx)
 	gridEl.classList.remove('hidden')
 }
+
+function maximiseGridView(){
+	console.log("max view");
+	document.getElementById('maximiseGridView').classList.add('hidden');
+	document.getElementById('restoreGridView').classList.remove('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
+}
+function restoreGridView(){
+	document.getElementById('maximiseGridView').classList.remove('hidden');
+	document.getElementById('restoreGridView').classList.add('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
+}
+	
+
 
 export function setMainViewHeight(){
 	let happ = document.getElementById('app').clientHeight;

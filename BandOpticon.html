@@ -19,7 +19,7 @@
 <body>
 <div id="app" class="paper-primary">
     <h1>BandOpticon V5</h1>
-	<div id="ribbon" class="text-sm">
+	<div id="ribbon" class="text-sm hideForMaxView">
 		<fieldset class="ribbonBox">
 		<legend>Info</legend>
 		  <output id="clock" class='clock'></output><br>
@@ -41,7 +41,8 @@
 		</fieldset>
 	</div>
 
-	<button id = 'fewerColumns'>-columns</button><button id = 'moreColumns'>+ columns</button>
+	<button id = 'moreColumns'>More columns</button><button id = 'fewerColumns'>Fewer columns</button>
+	<button id = 'maximiseGridView'>Maximise View</button><button id = 'restoreGridView' class = 'hidden'>Restore View</button>
 	<div id="mainView" class="paper" >
 		<div id = 'mainViewTray'>
 		   <div class = 'ribbonGroup'>
@@ -100,7 +101,7 @@
 
 	</div>
 
-	<div id="footer" class="text-muted text-xsm">
+	<div id="footer" class="text-muted text-xsm  hideForMaxView">
         <div>
             	Javascript & HTML developed by Alan Robinson:<br>
             	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>

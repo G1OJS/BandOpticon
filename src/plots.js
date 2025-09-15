@@ -11,8 +11,9 @@ export var callLocations = new Map();  // call -> {x, y}
 var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
-export function toggleZoom(canvas_title){
+export function toggleZoom(clicked_el){
 	// could easily be changed to a stepped zoom cycling through different zoom levels
+	let canvas_title = clicked_el.title;
 	let band = canvas_title.split(' ')[0];
 	let chart = charts.get(band);
 	console.log(band);
