@@ -23,10 +23,30 @@ for (const el of document.querySelectorAll('.bandCanvas')){
 	el.addEventListener("click", function (e) {toggleZoom(el.title)});
 }
 
+for (const el of document.querySelectorAll('.bandTileTitle')){
+	el.addEventListener("click", function (e) {minimise(el)});
+}
+for (const el of document.querySelectorAll('.trayButton')){
+	el.addEventListener("click", function (e) {restore(el)});
+}
+function minimise(el){
+	el.parentElement.classList.add('hidden');
+	let idx = el.id.split("_")[1];
+	let trayEl = document.getElementById('tray_'+idx)
+	trayEl.innerHTML = " "+el.innerHTML.split(" ")[0];
+	trayEl.classList.remove('hidden')
+}
+function restore(trayEl){
+	let idx = trayEl.id.split("_")[1];
+	trayEl.classList.add('hidden');
+	let gridEl = document.getElementById('bandTile_'+idx)
+	gridEl.classList.remove('hidden')
+}
+
 export function setMainViewHeight(){
 	let happ = document.getElementById('app').clientHeight;
 	let h = happ-20;
-	for (const elId of ['ribbon', 'mainViewTitle', 'mainViewRibbon', 'footer']){
+	for (const elId of ['ribbon', 'mainViewTray', 'footer']){
 		let el = document.getElementById(elId);
 		h -= (el.clientHeight + 40);
 	}

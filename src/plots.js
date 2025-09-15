@@ -24,10 +24,8 @@ export function toggleZoom(canvas_title){
 		let rng = getAxisRanges(chart.data);
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
 	}	
-	
 	chart.update('none');
 }
-
 
 function getLocation(call, callSq){
 	if(!callLocations.get(call)) {

@@ -43,11 +43,20 @@
 
 	<button id = 'fewerColumns'>-columns</button><button id = 'moreColumns'>+ columns</button>
 	<div id="mainView" class="paper" >
-		<h3 id='mainViewTitle'>Bands Overview</h3>	
-		<div id = 'mainViewRibbon'>
-			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</div>
-			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</div>
-			<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</div>
+		<div id = 'mainViewTray'>
+		   <div class = 'ribbonGroup'>
+				<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</div>
+				<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</div>
+				<div class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</div>
+		   </div>
+		   <div class = 'ribbonGroup'>
+				<button id='tray_0' class = 'trayButton hidden'></button>
+				<button id='tray_1' class = 'trayButton hidden'></button>
+				<button id='tray_2' class = 'trayButton hidden'></button>
+				<button id='tray_3' class = 'trayButton hidden'></button>
+				<button id='tray_4' class = 'trayButton hidden'></button>
+				<button id='tray_5' class = 'trayButton hidden'></button>
+		   </div>
 		</div>
 
 		<div id = 'scrollContainer'>

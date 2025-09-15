@@ -123,12 +123,13 @@ label 				{font-size: var(--font-size-sm); }
 					{border-color: #e66;background-color: #fee;}
 .ribbonBox 			{height:100px;}
 
-#mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content max-content auto; }
-#mainViewTitle		{}
-#mainViewRibbon		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
+#mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
+#mainViewTray		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
+.trayGroup			{display:inline-block; margin-right:10px;}
+.trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs)}
+.legendItem 		{float:left; margin-right:3px;}
+.legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #scrollContainer	{display:table-cell; overflow-y:scroll;}
-.legendItem 		{float:left;}
-.legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:20px; margin-right:2px; border: 1px solid grey;}
 					 
 .hidden				{display:none;}
 
