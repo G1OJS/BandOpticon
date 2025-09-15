@@ -12,6 +12,7 @@ var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
 export function toggleZoom(canvas_title){
+	// could easily be changed to a stepped zoom cycling through different zoom levels
 	let band = canvas_title.split(' ')[0];
 	let chart = charts.get(band);
 	console.log(band);
