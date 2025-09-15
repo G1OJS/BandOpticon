@@ -1,7 +1,7 @@
 import {connectToFeed} from './mqtt.js';
 import {loadConfig} from './config.js';
 import {startRibbon} from './ribbon.js'
-import {charts, toggleZoom} from './plots.js'
+import {charts, toggleZoomToDataRange} from './plots.js'
 
 export var view = "Overview";
 var nColumns = 3;
@@ -21,9 +21,15 @@ document.getElementById('restoreGridView').addEventListener("click", function (e
 
 setInterval(() => sortAndUpdateTiles(), 1000);
 
-for (const el of document.querySelectorAll('.bandCanvas'))		{ el.addEventListener("click", function (e) {toggleZoom(el)}); }
+for (const el of document.querySelectorAll('.bandCanvas'))		{ el.addEventListener("click", function (e) {drillIn(el)}); }
 for (const el of document.querySelectorAll('.bandTileTitle'))	{ el.addEventListener("click", function (e) {minimiseTile(el)});}
-for (const el of document.querySelectorAll('.trayButton'))		{ el.addEventListener("click", function (e) {restoreTile(el)}); }
+for (const el of document.querySelectorAll('.trayButton'))		{ 
+	if(el.id == 'tray_All')  {
+		el.addEventListener("click", function (e) {restoreAll()}); 
+	} else {
+		el.addEventListener("click", function (e) {restoreTile(el)}); 
+	}
+}
 
 function minimiseTile(el){
 	el.parentElement.classList.add('hidden');
@@ -33,14 +39,41 @@ function minimiseTile(el){
 	trayEl.classList.remove('hidden')
 }
 function restoreTile(trayEl){
+	console.log("restore "+trayEl.id); 	
 	let idx = trayEl.id.split("_")[1];
 	trayEl.classList.add('hidden');
 	let gridEl = document.getElementById('bandTile_'+idx)
 	gridEl.classList.remove('hidden')
+	view="Overview";
+}
+function drillIn(bandTile_el){
+	if(view == "Single") {
+		toggleZoomToDataRange(bandTile_el);
+	} else {
+		hideAllExcept(bandTile_el);
+		view = "Single"
+		const el = document.getElementById('bandsGrid');
+		el.setAttribute("style", "grid-template-columns: 1fr;");
+	}
+}
+function hideAllExcept(bandTile_el){
+	for (const el of document.querySelectorAll('.bandTileTitle')) {
+		if(el.innerHTML!=""){
+			let idx = el.id.split('_')[1];
+			if(idx  != bandTile_el.id.split('_')[1]) minimiseTile(el);
+		}
+	}
+}
+function restoreAll(){
+	for (const el of document.querySelectorAll('.trayButton')) {
+		if(el.id != 'tray_All' && el.innerHTML !="") restoreTile(el);
+	};
+	const el = document.getElementById('bandsGrid');
+	el.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
+	nColumns = 3;
 }
 
 function maximiseGridView(){
-	console.log("max view");
 	document.getElementById('maximiseGridView').classList.add('hidden');
 	document.getElementById('restoreGridView').classList.remove('hidden');
 	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
@@ -51,8 +84,6 @@ function restoreGridView(){
 	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
 }
 	
-
-
 export function setMainViewHeight(){
 	let happ = document.getElementById('app').clientHeight;
 	let h = happ-20;
@@ -66,7 +97,6 @@ export function setMainViewHeight(){
 
 function addRemoveColumns(direction){
 	if(view !="Overview") return;
-	
 	if (direction == "more") nColumns += (nColumns <10);
 	if (direction == "fewer") nColumns -= (nColumns >1);
 	const el = document.getElementById('bandsGrid');
@@ -84,6 +114,15 @@ function sortAndUpdateTiles(){
 		chart.update('none');
 	};
 	setMainViewHeight();
+	let nVis = 0;
+	for (const el of document.querySelectorAll('.trayButton')) {
+		if(!el.classList.contains('hidden')) nVis +=1;
+	}
+	if(nVis>2) {
+		document.getElementById('tray_All').classList.remove('hidden');
+	} else {
+		document.getElementById('tray_All').classList.add('hidden');
+	}
 }
 
 function wavelength(band) {

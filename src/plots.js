@@ -18,20 +18,17 @@ export function addSpot(spot) {
 	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
 }
 
-export function toggleZoom(clicked_el){
-	// could easily be changed to a stepped zoom cycling through different zoom levels
-	let canvas_title = clicked_el.title;
-	let band = canvas_title.split(' ')[0];
+export function toggleZoomToDataRange(bandTile_el){
+	console.log(bandTile_el);
+	let band = bandTile_el.title.split(' ')[0];
 	let chart = charts.get(band);
-	console.log(band);
-	
 	let s = chart.options.scales;
 	if(s.x.min > -180){
 		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
 	} else {
 		let rng = getAxisRanges(chart.data);
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
-	}	
+	}
 	chart.update('none');
 }
 
