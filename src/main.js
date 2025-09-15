@@ -19,9 +19,8 @@ document.getElementById('fewerColumns').addEventListener("click", function (e) {
 
 setInterval(() => sortAndUpdateTiles(), 1000);
 
-for (let idx =0;idx<20;idx++){
-	let canvas_id = 'canvas_'+idx;
-	document.getElementById(canvas_id).addEventListener("click", function (e) {toggleZoom(canvas_id)});
+for (const el of document.querySelectorAll('.bandCanvas')){
+	el.addEventListener("click", function (e) {toggleZoom(el.title)});
 }
 
 export function setMainViewHeight(){

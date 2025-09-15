@@ -12,17 +12,20 @@ var callLocations = new Map();  // call -> {x, y}
 var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
 var freeCanvases = [...tileCanvases]; // mutable pool
 
-export function toggleZoom(canvas_id){
-
-//	let s = chart.options.scales;
-//	if (view == "Overview"){
-//		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
-//	} else {
-//		let rng = getAxisRanges(chart.data);
-//		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
-//	}	
+export function toggleZoom(canvas_title){
+	let band = canvas_title.split(' ')[0];
+	let chart = charts.get(band);
+	console.log(band);
 	
-//	chart.update('none');
+	let s = chart.options.scales;
+	if(s.x.min > -180){
+		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
+	} else {
+		let rng = getAxisRanges(chart.data);
+		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
+	}	
+	
+	chart.update('none');
 }
 
 
@@ -36,7 +39,7 @@ function getLocation(call, callSq){
 
 export function resetData(){
 	charts.forEach(chart => {chart.destroy()});
-	for (let idx =0;idx<20;idx++) document.getElementById('bandTile_'+idx).classList.add('hidden');
+	for (const el of document.querySelectorAll('.bandTile')) el.classList.add('hidden');
 	charts = new Map();
 	activeModes = new Set();
 	tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
@@ -130,6 +133,7 @@ function createChart(band) {
     const canvas = freeCanvases.shift(); // grab first free canvas
 	if (view == "Overview") canvas.parentElement.classList.remove('hidden');
 	canvas.previousElementSibling.innerHTML = band;
+	canvas.title = band + " click to zoom";
 	
     const ctx = canvas.getContext('2d');
 
@@ -150,6 +154,7 @@ function createChart(band) {
 			}
 		}
 	);
+	
 	console.log("Ceated chart for "+band);
     return ch;
 }
