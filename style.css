@@ -12,10 +12,8 @@
   
   --controls-color: #4da6ff;
   --dark-paper-color: #dddddd;
-  font-family: "Roboto";
+  font-family: system-ui, "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
   font-weight: 400;
-
-  --font-stack: system-ui, sans-serif;
   --font-size-xsm: 0.6rem;
   --font-size-sm: 0.8rem;
   --font-size-base: 1rem;
