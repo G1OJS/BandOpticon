@@ -12,8 +12,6 @@
   
   --controls-color: #4da6ff;
   --dark-paper-color: #dddddd;
-  font-family: system-ui, "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
-  font-weight: 400;
   --font-size-xsm: 0.6rem;
   --font-size-sm: 0.8rem;
   --font-size-base: 1rem;
@@ -40,7 +38,8 @@ html {height:100vh;}
 body {
   background: var(--background-color);
   color: var(--main-font-color);
-  font-family: var(--font-stack);
+  font-family: system-ui, "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
+  font-weight: 400;
   margin: 0;
   padding: var(--spacing);
   height:100vh;
