@@ -89,6 +89,7 @@ function restoreTile(el) {
     const band = el.dataset.band;
     let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
     tile_el.style.display = '';
+	tile_el.querySelector('.minimise').classList.remove('hidden');
     el.remove();
     setViewOverview();
 }
@@ -103,6 +104,7 @@ function drillInTile(el){
 function hideAllExcept(el){
 	el.querySelector('.home').classList.remove('hidden');
 	el.querySelector('.maximise').classList.add('hidden');
+	el.querySelector('.minimise').classList.add('hidden');
 	const band = el.dataset.band;
 	for (const el2 of document.querySelectorAll('.bandTile')) {
 		if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);

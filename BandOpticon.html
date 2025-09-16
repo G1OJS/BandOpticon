@@ -7,11 +7,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
 <meta charset="utf-8">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <script data-goatcounter="https://g1ojs-github.goatcounter.com/count"
         async src="//gc.zgo.at/count.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <link rel="stylesheet" href="./style.css" /> 
@@ -43,29 +40,27 @@
   
 	
 	<div id="mainView" class="paper-light" >
-		<div id = 'mainViewTray'>
-		   <div class = 'trayGroup'>
-				<span class = 'control inactive' data-action='home', id='home-button'>🏠</span>
-				<span class = 'control'id = 'moreColumns'><b>□□□⇢ </b></span><span class = 'control' id = 'fewerColumns'><b>□□⇠</b></span>
-				<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</span>
-				<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</span>
-				<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</span>
-		   </div>
-		   <div class = 'trayGroup' id = 'bandButtonsContainer'></div>
-		   <div class = 'trayGroup right'>
+		<div id = 'mainViewTray' class = 'windowBar'>
+			<span class = 'control inactive' data-action='home', id='home-button'>🏠</span>
+			<span class = 'control'id = 'moreColumns'>□□□⇢</span>
+			<span class = 'control' id = 'fewerColumns'>□□⇠</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</span>
+		    <div class = 'right'>
 				<span class="control" data-action='maximiseGridView'>⛶</span>
 				<span class="control hidden" data-action='restoreGridView'>_</span>
-		   </div>
+		    </div>
 		</div>
 		<div id = 'scrollContainer'>
 			<div id='bandsGrid'>
 			    <template class="bandTileTemplate">
 				  <div class="bandTile hidden">
-					<div class = 'tileWindowBar'>
+					<div class = 'windowBar'>
 						<span class="bandTileTitle"></span>
-						<span class="control home hidden right" data-action='home'>🗗</span>
+						<span class="control home hidden right" data-action='home'>⌫</span>
 						<span class="control maximise right" data-action='drillIn'>⛶</span>
-						<span class="control right" data-action='minimise'>_</span>
+						<span class="control minimise right" data-action='minimise'>_</span>
 					</div>
 					<canvas data-action = 'drillIn'></canvas>
 				  </div>
@@ -74,7 +69,7 @@
 		</div>
 	</div>
 
-	<div id="footer" class="text-muted text-xsm  hideForMaxView">
+	<div id="footer" class="hideForMaxView">
         <div>
             	Javascript & HTML developed by Alan Robinson:<br>
             	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
