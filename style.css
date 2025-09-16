@@ -125,14 +125,15 @@ label 				{font-size: var(--font-size-sm); }
 #mainViewTray		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
 .control:hover 		{border-color: var(--main-paper-color); background: var(--dark-paper-color);}			
 .trayGroup			{display:inline-block; margin-right:10px;}
+.right				{float:right;}
 .trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs)}
-.legendItem 		{float:left; margin-right:3px;}
+.legendItem 		{margin-right:3px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #scrollContainer	{display:table-cell; overflow-y:scroll;}
 					 
 #bandsGrid	 		{display:grid; grid-template-columns: 1fr 1fr 1fr; width:100%; gap:5px;}
 .bandTile	 		{background-color: var(--light-paper-color); padding:0px; padding-bottom:0px; min-width:0;}
-.bandTileTitle 		{font-size: var(--font-size-sm); background-color:var(--main-paper-color); padding-left:4px;}
+.tileWindowBar	 	{font-size: var(--font-size-sm); background-color:var(--main-paper-color); padding-left:4px;}
 
 #footer 			{display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; gap: var(--spacing-sm); }
 a:link 				{color: #888;}

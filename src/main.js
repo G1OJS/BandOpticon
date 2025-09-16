@@ -12,7 +12,6 @@ export const freeTiles = Array.from(document.querySelectorAll('.bandTile'));
 function bandOf(el) 	{return el.closest('.bandTile')?.dataset.band ?? null;}
 function actionOf(el) 	{return el.dataset.action || null;}
 
-
 export var view = "Overview";
 var nColumns = 3;
 
@@ -26,8 +25,7 @@ document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 document.getElementById('moreColumns').addEventListener("click", function (e) {addRemoveColumns('more')});
 document.getElementById('fewerColumns').addEventListener("click", function (e) {addRemoveColumns('fewer')});
-document.getElementById('maximiseGridView').addEventListener("click", function (e) {maximiseGridView('fewer')});
-document.getElementById('restoreGridView').addEventListener("click", function (e) {restoreGridView('fewer')});
+
 
 setInterval(() => sortAndUpdateTiles(), 1000);
 
@@ -37,10 +35,13 @@ const mainViewTray = document.querySelector('#mainViewTray');
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
 document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('trayButton')) restoreTile(e.target);});
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='drillIn') drillInTile(e.target.closest('.bandTile'));});
+document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll();});
+
+document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='maximiseGridView') maximiseGridView(e.target)});
+document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreGridView') restoreGridView(e.target);});
 
 function minimiseTile(el) {
   const band = el.dataset.band;
-	console.log("minimise "+band);
   el.style.display = 'none';
   let btn = mainViewTray.querySelector(`[data-band="${band}"]`);
   if (!btn) {
@@ -49,7 +50,26 @@ function minimiseTile(el) {
     btn.dataset.band = band;
     btn.textContent = band;
     mainViewTray.appendChild(btn);
+//	if(mainViewTray.querySelectorAll('.trayButton').length > 2) //activate home button
   }
+}
+function maximiseGridView(clicked){
+	clicked.nextElementSibling.classList.remove('hidden');
+	clicked.classList.add('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
+}
+function restoreGridView(clicked){
+	clicked.previousElementSibling.classList.remove('hidden');
+	clicked.classList.add('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
+}
+function restoreAll(el){
+	for (const el2 of document.querySelectorAll('.trayButton')) {restoreTile(el2);};
+	for (const el2 of document.querySelectorAll('.bandTile')) {el2.querySelector('.home').classList.add('hidden'); el2.querySelector('.maximise').classList.remove('hidden');}
+	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
+	nColumns = 3;
+	view="Overview";
+	sortAndUpdateTiles();
 }
 function restoreTile(el) {
   const band = el.dataset.band;
@@ -58,7 +78,6 @@ function restoreTile(el) {
   el.remove();
   view="Overview";
 }
-
 function drillInTile(el){
 	if(view == "Single") {
 		toggleZoomToDataRange(el);
@@ -68,29 +87,13 @@ function drillInTile(el){
 		bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");
 	}
 }
-
 function hideAllExcept(el){
+	el.querySelector('.home').classList.remove('hidden');
+	el.querySelector('.maximise').classList.add('hidden');
 	const band = el.dataset.band;
 	for (const el2 of document.querySelectorAll('.bandTile')) {
 		if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);
 	}
-}
-
-function restoreAll(){
-	for (const el of document.querySelectorAll('.trayButton')) {restoreTile(el);};
-	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
-	nColumns = 3;
-}
-
-function maximiseGridView(){
-	document.getElementById('maximiseGridView').classList.add('hidden');
-	document.getElementById('restoreGridView').classList.remove('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
-}
-function restoreGridView(){
-	document.getElementById('maximiseGridView').classList.remove('hidden');
-	document.getElementById('restoreGridView').classList.add('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
 }
 	
 export function setMainViewHeight(){
