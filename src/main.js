@@ -40,6 +40,23 @@ document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='maximiseGridView') maximiseGridView(e.target)});
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreGridView') restoreGridView(e.target);});
 
+function setViewOverview(){
+	view="Overview";
+	document.getElementById('home-button').classList.add("inactive");
+	document.getElementById('moreColumns').classList.remove("inactive");
+	document.getElementById('fewerColumns').classList.remove("inactive");
+	nColumns = 3;
+	sortAndUpdateTiles();
+}
+function setViewSingle(el){
+	hideAllExcept(el);
+	view = "Single"
+	document.getElementById('home-button').classList.remove("inactive");
+	document.getElementById('moreColumns').classList.add("inactive");
+	document.getElementById('fewerColumns').classList.add("inactive");
+	bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");	
+}
+
 function minimiseTile(el) {
   const band = el.dataset.band;
   el.style.display = 'none';
@@ -50,7 +67,7 @@ function minimiseTile(el) {
     btn.dataset.band = band;
     btn.textContent = band;
     mainViewTray.appendChild(btn);
-//	if(mainViewTray.querySelectorAll('.trayButton').length > 2) //activate home button
+	if(mainViewTray.querySelectorAll('.trayButton').length > 2) document.getElementById('home-button').classList.remove("inactive");
   }
 }
 function maximiseGridView(clicked){
@@ -67,26 +84,22 @@ function restoreAll(el){
 	for (const el2 of document.querySelectorAll('.trayButton')) {restoreTile(el2);};
 	for (const el2 of document.querySelectorAll('.bandTile')) {el2.querySelector('.home').classList.add('hidden'); el2.querySelector('.maximise').classList.remove('hidden');}
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
-	nColumns = 3;
-	view="Overview";
-	sortAndUpdateTiles();
 }
 function restoreTile(el) {
-  const band = el.dataset.band;
-  let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
-  tile_el.style.display = '';
-  el.remove();
-  view="Overview";
+    const band = el.dataset.band;
+    let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
+    tile_el.style.display = '';
+    el.remove();
+    setViewOverview();
 }
 function drillInTile(el){
 	if(view == "Single") {
 		toggleZoomToDataRange(el);
 	} else {
-		hideAllExcept(el);
-		view = "Single"
-		bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");
+		setViewSingle(el)
 	}
 }
+
 function hideAllExcept(el){
 	el.querySelector('.home').classList.remove('hidden');
 	el.querySelector('.maximise').classList.add('hidden');

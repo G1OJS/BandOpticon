@@ -1,6 +1,7 @@
 :root {
   --background-color: #f7f9fc;
   --main-font-color: #333;
+  --muted-font-color: #888;
   --text-dark: #333;
   --main-paper-color: #eeeeee;
   --light-paper-color: #ffffff;
@@ -74,7 +75,7 @@ p {
 .text-sm   { font-size: var(--font-size-sm); }
 .text-base { font-size: var(--font-size-base); }
 .text-lg   { font-size: var(--font-size-lg); }
-.text-muted { color: #888; } 
+.text-muted { color: var(--muted-font-color); } 
 .text-dark  { color: var(--main-font-color); }
 
 fieldset {
@@ -123,7 +124,8 @@ label 				{font-size: var(--font-size-sm); }
 
 #mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
 #mainViewTray		{display:inline-block; width:100%; background:var(--main-paper-color); padding:3px; margin:0px; margin-bottom:5px;} 
-.control:hover 		{border-color: var(--main-paper-color); background: var(--dark-paper-color);}			
+.control:hover:not(.inactive) 		{border-color: var(--main-paper-color); background: var(--dark-paper-color);}		
+.control.inactive 	{color: var(--muted-font-color); opacity:0.4;}			
 .trayGroup			{display:inline-block; margin-right:10px;}
 .right				{float:right;}
 .trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs)}
