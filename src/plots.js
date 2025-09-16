@@ -1,15 +1,13 @@
 import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
-import {colours, view, setMainViewHeight} from './main.js'
+import {colours, view, setMainViewHeight, freeTiles} from './main.js'
 import {startRibbon} from './ribbon.js'
 import {countryOutlinePlugin} from './map.js'
 
 export var charts = new Map();
 export var activeModes = new Set();
-export var callLocations = new Map();  // call -> {x, y}
+export var callLocations = new Map();
 
-var tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
-var freeCanvases = [...tileCanvases]; // mutable pool
 
 export function addSpot(spot) {
 	activeModes.add(spot.md);
@@ -17,10 +15,9 @@ export function addSpot(spot) {
 	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
 	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
 }
-
 export function toggleZoomToDataRange(canvas_el, zoomOut = false){
-	let band = canvas_el.title.split(' ')[0];
-	let chart = charts.get(band);
+	let tile = canvas_el.closest('.bandTile');
+	let chart = charts.get(tile.dataset.band);
 	let s = chart.options.scales;
 	if(s.x.min > -180 || zoomOut){
 		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
@@ -118,21 +115,15 @@ function updateLine(band, mode, sc, rc, hl) {
 
 }
 
-
-
 function createChart(band) {
-    if (freeCanvases.length === 0) {
-        console.warn('No free canvas available!');
-        return null;
-    }
+	const tile = freeTiles.pop();   
 
-    const canvas = freeCanvases.shift(); // grab first free canvas
+	tile.dataset.band = band;          
+	tile.querySelector('.bandTileTitle').textContent = band;
+	const canvas = tile.querySelector('canvas');
 	if (view == "Overview") canvas.parentElement.classList.remove('hidden');
-	canvas.previousElementSibling.innerHTML = "<span>"+band+"</span><span style='float:right;' class = 'control'>🗕</span>";
-	canvas.title = band + " click to zoom";
 	
     const ctx = canvas.getContext('2d');
-
 	const ch = new Chart(ctx, 
 		{ 	type:'scatter',
 			plugins: [countryOutlinePlugin],

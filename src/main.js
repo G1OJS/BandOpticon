@@ -3,6 +3,16 @@ import {loadConfig} from './config.js';
 import {startRibbon} from './ribbon.js'
 import {charts, toggleZoomToDataRange} from './plots.js'
 
+for (let idx=0;idx<20;idx++) {
+  var tile  = document.querySelector('.bandTileTemplate').content.cloneNode(true);
+  document.querySelector('#bandsGrid').appendChild(tile);
+}
+export const freeTiles = Array.from(document.querySelectorAll('.bandTile')); 
+
+function bandOf(el) 	{return el.closest('.bandTile')?.dataset.band ?? null;}
+function actionOf(el) 	{return el.dataset.action || null;}
+
+
 export var view = "Overview";
 var nColumns = 3;
 
@@ -21,55 +31,54 @@ document.getElementById('restoreGridView').addEventListener("click", function (e
 
 setInterval(() => sortAndUpdateTiles(), 1000);
 
-for (const el of document.querySelectorAll('.bandCanvas'))		{ el.addEventListener("click", function (e) {drillIn(el)}); }
-for (const el of document.querySelectorAll('.bandTileTitle'))	{ el.addEventListener("click", function (e) {minimiseTile(el)});}
-for (const el of document.querySelectorAll('.trayButton'))		{ 
-	if(el.id == 'tray_All')  {
-		el.addEventListener("click", function (e) {restoreAll()}); 
+const mainView = document.querySelector('#mainView');
+const bandsGrid = document.querySelector('#bandsGrid');
+const mainViewTray = document.querySelector('#mainViewTray');
+document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
+document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('trayButton')) restoreTile(e.target);});
+document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='drillIn') drillInTile(e.target.closest('.bandTile'));});
+
+function minimiseTile(el) {
+  const band = el.dataset.band;
+	console.log("minimise "+band);
+  el.style.display = 'none';
+  let btn = mainViewTray.querySelector(`[data-band="${band}"]`);
+  if (!btn) {
+    btn = document.createElement('button');
+	btn.classList.add('trayButton', 'control');
+    btn.dataset.band = band;
+    btn.textContent = band;
+    mainViewTray.appendChild(btn);
+  }
+}
+function restoreTile(el) {
+  const band = el.dataset.band;
+  let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
+  tile_el.style.display = '';
+  el.remove();
+  view="Overview";
+}
+
+function drillInTile(el){
+	if(view == "Single") {
+		toggleZoomToDataRange(el);
 	} else {
-		el.addEventListener("click", function (e) {restoreTile(el)}); 
+		hideAllExcept(el);
+		view = "Single"
+		bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");
 	}
 }
 
-function minimiseTile(el){
-	el.parentElement.classList.add('hidden');
-	let idx = el.id.split("_")[1];
-	let trayEl = document.getElementById('tray_'+idx)
-	trayEl.innerHTML = " "+el.innerHTML.split(" ")[0];
-	trayEl.classList.remove('hidden')
-}
-function restoreTile(trayEl){
-	console.log("restore "+trayEl.id); 	
-	let idx = trayEl.id.split("_")[1];
-	trayEl.classList.add('hidden');
-	let gridEl = document.getElementById('bandTile_'+idx)
-	gridEl.classList.remove('hidden')
-	view="Overview";
-}
-function drillIn(bandTile_el){
-	if(view == "Single") {
-		toggleZoomToDataRange(bandTile_el);
-	} else {
-		hideAllExcept(bandTile_el);
-		view = "Single"
-		const el = document.getElementById('bandsGrid');
-		el.setAttribute("style", "grid-template-columns: 1fr;");
+function hideAllExcept(el){
+	const band = el.dataset.band;
+	for (const el2 of document.querySelectorAll('.bandTile')) {
+		if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);
 	}
 }
-function hideAllExcept(bandTile_el){
-	for (const el of document.querySelectorAll('.bandTileTitle')) {
-		if(el.innerHTML!=""){
-			let idx = el.id.split('_')[1];
-			if(idx  != bandTile_el.id.split('_')[1]) minimiseTile(el);
-		}
-	}
-}
+
 function restoreAll(){
-	for (const el of document.querySelectorAll('.trayButton')) {
-		if(el.id != 'tray_All' && el.innerHTML !="") restoreTile(el);
-	};
-	const el = document.getElementById('bandsGrid');
-	el.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
+	for (const el of document.querySelectorAll('.trayButton')) {restoreTile(el);};
+	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
 	nColumns = 3;
 }
 
@@ -104,26 +113,17 @@ function addRemoveColumns(direction){
 	console.log(document.getElementById('bandsGrid').elementStyle);
 }
 
-function sortAndUpdateTiles(){
-	const container = document.getElementById('bandsGrid');
-	const orderedBands = Array.from(charts.keys()).sort(function(a, b){return wavelength(b) - wavelength(a)}); 
-	for (const band of orderedBands){
-		let chart = charts.get(band);
-		let idx = chart.canvas.id.split("_")[1];
-		if(view == "Overview") toggleZoomToDataRange(document.getElementById('canvas_'+idx), true);
-		container.appendChild(document.getElementById('bandTile_'+idx));
-		chart.update('none');
-	};
-	setMainViewHeight();
-	let nVis = 0;
-	for (const el of document.querySelectorAll('.trayButton')) {
-		if(!el.classList.contains('hidden')) nVis +=1;
-	}
-	if(nVis>2) {
-		document.getElementById('tray_All').classList.remove('hidden');
-	} else {
-		document.getElementById('tray_All').classList.add('hidden');
-	}
+function sortAndUpdateTiles() {
+    const container = document.getElementById('bandsGrid');
+    const orderedBands = Array.from(charts.keys()).sort((a, b) => wavelength(b) - wavelength(a));
+    for (const band of orderedBands) {
+        const chart = charts.get(band);
+        const tile  = document.querySelector(`.bandTile[data-band="${band}"]`);
+        chart.update('none');
+        if(view == "Overview") toggleZoomToDataRange(chart.canvas, true);
+        container.appendChild(tile);
+    }
+    setMainViewHeight();
 }
 
 function wavelength(band) {

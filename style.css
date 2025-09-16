@@ -4,13 +4,13 @@
   --text-dark: #333;
   --main-paper-color: #eeeeee;
   --light-paper-color: #ffffff;
-  --dark-paper-color: #dddddd;
   --border-color: #ccc;
   --background-color-shade: #f7f9fc;
   --background-color-transmit: #ffebe6;
   --background-color-receive: #e6ffe6;
   
   --controls-color: #4da6ff;
+  --dark-paper-color: #dddddd;
   font-family: "Roboto";
   font-weight: 400;
 
@@ -55,7 +55,7 @@ p {
   margin: 0 0 var(--spacing) 0;
 }
 
-.paper {
+.paper-light {
   background: var(--light-paper-color);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
@@ -63,7 +63,7 @@ p {
   box-shadow: var(--box-shadow);
   margin-bottom: var(--spacing);
 }
-.paper-primary {
+.paper-main {
   background: var(--main-paper-color);
   border-radius: var(--border-radius);
   padding: var(--spacing);
@@ -102,9 +102,6 @@ legend {
   height:95vh;
 }
 
-.transmit 			{background-color: var(--background-color-transmit);}
-.receive  			{background-color: var(--background-color-receive);}
-
 #ribbon 			{display: grid; grid-template-columns: max-content max-content auto; gap: var(--spacing-sm); padding-right:2px}
 #clock 				{font-size: var(--font-size-lg); font-weight:600;}
 #settingsBox 		{display: grid; grid-template-columns: max-content auto; grid-template-rows: auto auto auto;} 
@@ -133,9 +130,6 @@ label 				{font-size: var(--font-size-sm); }
 .legendMarker 		{display:inline-block; width:var(--font-size-sm); height:var(--font-size-sm); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #scrollContainer	{display:table-cell; overflow-y:scroll;}
 					 
-
-
-
 #bandsGrid	 		{display:grid; grid-template-columns: 1fr 1fr 1fr; width:100%; gap:5px;}
 .bandTile	 		{background-color: var(--light-paper-color); padding:0px; padding-bottom:0px; min-width:0;}
 .bandTileTitle 		{font-size: var(--font-size-sm); background-color:var(--main-paper-color); padding-left:4px;}
@@ -143,6 +137,5 @@ label 				{font-size: var(--font-size-sm); }
 #footer 			{display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; gap: var(--spacing-sm); }
 a:link 				{color: #888;}
 a:visited 			{color: #888;}
-
 
 .hidden				{display:none !important;}
