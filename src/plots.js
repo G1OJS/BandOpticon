@@ -125,7 +125,7 @@ function createChart(band) {
 	tile.dataset.band = band;          
 	tile.querySelector('.bandTileTitle').textContent = band;
 	const canvas = tile.querySelector('canvas');
-	if (view == "Overview") canvas.closest('.bandTile').classList.remove('hidden');
+	if (view == "Home") canvas.closest('.bandTile').classList.remove('hidden');
 	
     const ctx = canvas.getContext('2d');
 	const ch = new Chart(ctx, 

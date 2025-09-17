@@ -48,8 +48,8 @@
 			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations transmitting'></span>Rx</span>
 			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
 		    <div class = 'right'>
-				<span class="control" data-action='maximiseGridView' title = 'Maximise view area'>⛶</span>
-				<span class="control hidden" data-action='restoreGridView' title = 'Restore view area'>⌫</span>
+				<span class="control" data-action='hideHeaderAndFooter' title = 'Maximise view area'>⛶</span>
+				<span class="control hidden" data-action='restoreHeaderAndFooter' title = 'Restore view area'>⌫</span>
 		    </div>
 		</div>
 		<div id = 'scrollContainer'>
@@ -58,11 +58,11 @@
 				  <div class="bandTile hidden">
 					<div class = 'windowBar'>
 						<span class="bandTileTitle"></span>
-						<span class="control home hidden right" data-action='home' title = 'Back to grid view'>⌫</span>
-						<span class="control maximise right" data-action='drillInTile' title = 'Maximise view of this band only'>⛶</span>
+						<span class="control home hidden right" data-action='home' title = 'Home view'>⌫</span>
+						<span class="control maximise right" data-action='setSingleOrZoom' title = 'Maximise view of this band only'>⛶</span>
 						<span class="control minimise right" data-action='minimise' title = 'Send this band to the tray'>_</span>
 					</div>
-					<canvas data-action = 'drillInTile' title = 'Zoom to data range / restore'></canvas>
+					<canvas data-action = 'setSingleOrZoom'></canvas>
 				  </div>
 				</template>
 			</div>
