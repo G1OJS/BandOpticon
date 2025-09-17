@@ -15,6 +15,13 @@ function actionOf(el) 	{return el.dataset.action || null;}
 export var view = "Overview";
 var nColumns = 3;
 
+function ceilingXbyY(x,y){
+	return (x>y)? y:x;
+}
+function floorXbyY(x,y){
+	return (x<y)? y:x;
+}
+
 export const colours =   {tx:'rgba(230, 30, 30, .3)', 	rx:		'rgba(30, 230, 30, .3)',	txrx:'rgba(20, 20, 250, .3)',
 						  txhl:'rgba(255, 0, 0, 1)', 	rxhl:	'rgba(0, 255, 0, 1)',		txrxhl:'rgba(0, 0, 255, 1)',
 					conn:'rgba(150, 150, 250, .2)' , connhl: 'rgba(50, 50, 250, .8)'
@@ -118,6 +125,7 @@ export function setMainViewHeight(){
 		let el = document.getElementById(elId);
 		h -= (el.clientHeight + 40);
 	}
+	h = ceilingXbyY(h, document.getElementById('app').clientWidth);
 	let el = document.getElementById('scrollContainer')
 	el.style.height = h+"px";
 }
