@@ -41,15 +41,15 @@
 	
 	<div id="mainView" class="paper-light" >
 		<div id = 'mainViewTray' class = 'windowBar'>
-			<span class = 'control inactive' data-action='home', id='home-button'>🏠</span>
-			<span class = 'control'id = 'moreColumns'>□□□⇢</span>
-			<span class = 'control' id = 'fewerColumns'>□□⇠</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx'></span>Tx</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx'></span>Rx</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx'></span>TxRx</span>
+			<span class = 'control inactive' data-action='home', id='home-button' title = 'Home view'>🏠</span>
+			<span class = 'control'id = 'moreColumns' title = 'Add column to grid'>□□□⇢</span>
+			<span class = 'control' id = 'fewerColumns' title = 'Remove column from grid'>□□⇠</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx' title = 'Stations receiving'></span>Tx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations transmitting'></span>Rx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
 		    <div class = 'right'>
-				<span class="control" data-action='maximiseGridView'>⛶</span>
-				<span class="control hidden" data-action='restoreGridView'>⌫</span>
+				<span class="control" data-action='maximiseGridView' title = 'Maximise view area'>⛶</span>
+				<span class="control hidden" data-action='restoreGridView' title = 'Restore view area'>⌫</span>
 		    </div>
 		</div>
 		<div id = 'scrollContainer'>
@@ -58,11 +58,11 @@
 				  <div class="bandTile hidden">
 					<div class = 'windowBar'>
 						<span class="bandTileTitle"></span>
-						<span class="control home hidden right" data-action='home'>⌫</span>
-						<span class="control maximise right" data-action='drillIn'>⛶</span>
-						<span class="control minimise right" data-action='minimise'>_</span>
+						<span class="control home hidden right" data-action='home' title = 'Back to grid view'>⌫</span>
+						<span class="control maximise right" data-action='drillInTile' title = 'Maximise view of this band only'>⛶</span>
+						<span class="control minimise right" data-action='minimise' title = 'Send this band to the tray'>_</span>
 					</div>
-					<canvas data-action = 'drillIn'></canvas>
+					<canvas data-action = 'drillInTile' title = 'Zoom to data range / restore'></canvas>
 				  </div>
 				</template>
 			</div>

@@ -19,13 +19,17 @@ export function toggleZoomToDataRange(canvas_el, zoomOut = false){
 	let tile = canvas_el.closest('.bandTile');
 	let chart = charts.get(tile.dataset.band);
 	let s = chart.options.scales;
+	let zoom = null;
 	if(s.x.min > -180 || zoomOut){
 		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
+		zoom = 'out';
 	} else {
 		let rng = getAxisRanges(chart.data);
 		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
+		zoom = 'in';
 	}
 	chart.update('none');
+	return zoom;
 }
 
 export function resetData(){

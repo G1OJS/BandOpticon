@@ -40,8 +40,8 @@ const mainView = document.querySelector('#mainView');
 const bandsGrid = document.querySelector('#bandsGrid');
 const mainViewTray = document.querySelector('#mainViewTray');
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
-document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('trayButton')) restoreTile(e.target);});
-document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='drillIn') drillInTile(e.target.closest('.bandTile'));});
+document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('bandButton')) restoreTile(e.target);});
+document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='drillInTile') drillInTile(e.target.closest('.bandTile'));});
 document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll();});
 
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='maximiseGridView') maximiseGridView(e.target)});
@@ -62,6 +62,7 @@ function setViewSingle(el){
 	document.getElementById('moreColumns').classList.add("inactive");
 	document.getElementById('fewerColumns').classList.add("inactive");
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");	
+	el.querySelector('canvas').style = 'cursor:zoom-in;';
 }
 
 function minimiseTile(el) {
@@ -70,11 +71,11 @@ function minimiseTile(el) {
   let btn = mainViewTray.querySelector(`[data-band="${band}"]`);
   if (!btn) {
     btn = document.createElement('button');
-	btn.classList.add('trayButton', 'control');
+	btn.classList.add('control', 'windowBarButton', 'bandButton');
     btn.dataset.band = band;
     btn.textContent = band;
     mainViewTray.appendChild(btn);
-	if(mainViewTray.querySelectorAll('.trayButton').length > 2) document.getElementById('home-button').classList.remove("inactive");
+	if(mainViewTray.querySelectorAll('.bandButton').length > 2) document.getElementById('home-button').classList.remove("inactive");
   }
 }
 function maximiseGridView(clicked){
@@ -88,9 +89,10 @@ function restoreGridView(clicked){
 	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
 }
 function restoreAll(el){
-	for (const el2 of document.querySelectorAll('.trayButton')) {restoreTile(el2);};
+	for (const el2 of document.querySelectorAll('.bandButton')) {restoreTile(el2);};
 	for (const el2 of document.querySelectorAll('.bandTile')) {el2.querySelector('.home').classList.add('hidden'); el2.querySelector('.maximise').classList.remove('hidden');}
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
+//	setViewOverview();
 }
 function restoreTile(el) {
     const band = el.dataset.band;
@@ -99,10 +101,13 @@ function restoreTile(el) {
 	tile_el.querySelector('.minimise').classList.remove('hidden');
     el.remove();
     setViewOverview();
+	el.querySelector('canvas').style = 'cursor:auto;';
 }
 function drillInTile(el){
 	if(view == "Single") {
-		toggleZoomToDataRange(el);
+		let z = toggleZoomToDataRange(el);
+		let c = el.querySelector('canvas');
+		if(z == 'in') {c.style = 'cursor:zoom-out;';} else {c.style = 'cursor:zoom-in;';}  
 	} else {
 		setViewSingle(el)
 	}
