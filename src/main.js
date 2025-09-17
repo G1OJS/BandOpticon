@@ -58,7 +58,7 @@ function setViewHome(){
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
 	sortAndUpdateTiles();
 	checkMinimisedBands();
-	console.log("Set view overview");
+	console.log("Set view Home");
 }
 function setViewSingle(el){
 	if(view != "Home") return;
@@ -112,23 +112,22 @@ function restoreHeaderAndFooter(clicked){
 function restoreAll(){
 	console.log("Restore all");
 	for (const el of document.querySelectorAll('.bandButton')) {restoreTile(el);};
-	for (const el of document.querySelectorAll('.bandTile')) {
-		el.querySelector('.home').classList.add('hidden'); 
-		el.querySelector('.maximise').classList.remove('hidden');
-		el.querySelector('.minimise').classList.remove('hidden');
-		el.querySelector('canvas').style = 'cursor:default;';
-	}
+	for (const tile_el of document.querySelectorAll('.bandTile')) resetTileControls(tile_el);
 	checkMinimisedBands();
 }
-
+function resetTileControls(tile_el){
+	tile_el.querySelector('.home').classList.add('hidden'); 
+	tile_el.querySelector('.maximise').classList.remove('hidden');
+	tile_el.querySelector('.minimise').classList.remove('hidden');
+	tile_el.querySelector('canvas').style = 'cursor:default;';
+}
 function restoreTile(btn_el) {
     const band = btn_el.dataset.band;
 	console.log("Restore "+band);
     let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
     tile_el.classList.remove('hidden');
- 	tile_el.querySelector('.minimise').classList.remove('hidden');
+	resetTileControls(tile_el);
     btn_el.remove();
-	tile_el.querySelector('canvas').style = 'cursor:default;';
     setViewHome();
 }
 function setSingleOrZoom(el){
