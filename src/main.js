@@ -116,7 +116,7 @@ function restoreAll(){
 		el.querySelector('.home').classList.add('hidden'); 
 		el.querySelector('.maximise').classList.remove('hidden');
 		el.querySelector('.minimise').classList.remove('hidden');
-		tile_el.querySelector('canvas').style = 'cursor:default;';
+		el.querySelector('canvas').style = 'cursor:default;';
 	}
 	checkMinimisedBands();
 }
