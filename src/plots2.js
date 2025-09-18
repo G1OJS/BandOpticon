@@ -100,11 +100,12 @@ function getAxisRanges(data){
 	
 }
 
-
 class BandModeTile {
   constructor(bandMode) {
 	this.bandTile = freeTiles.pop();
-	this.canvas = this.bandTile.querySelector('canvas');   
+	this.canvas = this.bandTile.querySelector('canvas');
+	this.bandTile.dataset.band = bandMode;          
+	this.bandTile.querySelector('.bandTileTitle').textContent = bandMode;	
     this.ctx = this.canvas.getContext('2d');
     this.ctx.scale(2,2);
     this.bgCol = 'white';
