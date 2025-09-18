@@ -8,6 +8,15 @@ export var charts = new Map();
 export var activeModes = new Set();
 export var callLocations = new Map();
 
+let worldGeoJSON = null;
+
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson')
+  .then(resp => resp.json())
+  .then(data => {
+	console.log("GeoJSON loaded:", data);
+    worldGeoJSON = data;
+  });
+
 export function toggleZoomToDataRange(canvas_el, zoomOut = false){
 	let tile = canvas_el.closest('.bandTile');
 	let chart = charts.get(tile.dataset.bandMode);
@@ -101,6 +110,7 @@ function getAxisRanges(data){
 }
 
 class BandModeTile {
+
   constructor(bandMode) {
 	this.bandTile = freeTiles.pop();
 	this.canvas = this.bandTile.querySelector('canvas');
@@ -110,6 +120,7 @@ class BandModeTile {
     this.ctx.scale(2,2);
     this.bgCol = 'white';
     this.calls = new Map();
+	this.drawMap();
 	if (view == "Home") this.bandTile.classList.remove('hidden');
 	charts.set(bandMode, this);
 	console.log("Ceated chart for "+bandMode);
@@ -148,6 +159,32 @@ class BandModeTile {
      drawLine(this.ctx, sInfo.p, rInfo.p, col)
   }
   
+  drawMap(){
+    this.ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+    this.ctx.lineWidth = 1;
+    worldGeoJSON?.features.forEach(feature => {
+      const geom = feature.geometry;
+      if (geom.type === 'Polygon') {
+        this.drawPolygon(geom.coordinates, this.ctx);
+      } else if (geom.type === 'MultiPolygon') {
+        geom.coordinates.forEach(polygon => this.drawPolygon(polygon));
+      }
+    });
+  }
+ 
+	drawPolygon(rings, ctx) {
+	  rings.forEach(ring => {
+		this.ctx.beginPath();
+		ring.forEach(([lon, lat], i) => {
+		  let p = this.px([lat, lon]);
+		  i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
+		});
+		this.ctx.closePath();
+		this.ctx.stroke();
+	  });
+	}
+  
+  
 }
 
 function drawBlob(ctx,xy,sz,col){
@@ -165,3 +202,9 @@ function drawLine(ctx,p0,p1,col){
     ctx.lineTo(p1[0],p1[1]);
     ctx.stroke();
 }
+
+
+
+
+
+ 
