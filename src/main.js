@@ -33,7 +33,6 @@ document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 document.getElementById('moreColumns').addEventListener("click", function (e) {addRemoveColumns('more')});
 document.getElementById('fewerColumns').addEventListener("click", function (e) {addRemoveColumns('fewer')});
 
-
 setInterval(() => sortAndUpdateTiles(), 1000);
 
 const mainView = document.querySelector('#mainView');
@@ -42,41 +41,20 @@ const mainViewTray = document.querySelector('#mainViewTray');
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
 document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('bandButton')) restoreTile(e.target);});
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='setSingleOrZoom') setSingleOrZoom(e.target.closest('.bandTile'));});
-document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll();});
+document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target);});
 
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='hideHeaderAndFooter') hideHeaderAndFooter(e.target)});
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreHeaderAndFooter') restoreHeaderAndFooter(e.target);}); // 
 
-
-function setViewHome(){
-	if(view == "Home") return;
-	view="Home";
-	document.getElementById('home-button').classList.add("inactive");
-	document.getElementById('moreColumns').classList.remove("inactive");
-	document.getElementById('fewerColumns').classList.remove("inactive");
-	nColumns = 3;
-	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
-	sortAndUpdateTiles();
-	checkMinimisedBands();
-	console.log("Set view Home");
+function hideHeaderAndFooter(clicked){
+	clicked.nextElementSibling.classList.remove('hidden');
+	clicked.classList.add('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
 }
-function setViewSingle(el){
-	if(view != "Home") return;
-	el.querySelector('.home').classList.remove('hidden');
-	el.querySelector('.maximise').classList.add('hidden');
-	el.querySelector('.minimise').classList.add('hidden');
-	const band = el.dataset.band;
-	for (const el2 of document.querySelectorAll('.bandTile')) {
-		if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);
-	}
-	view = "Single"
-	document.getElementById('home-button').classList.remove("inactive");
-	document.getElementById('moreColumns').classList.add("inactive");
-	document.getElementById('fewerColumns').classList.add("inactive");
-	bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");	
-	el.querySelector('canvas').style = 'cursor:zoom-in;';
-	checkMinimisedBands();
-	console.log("Set view single");
+function restoreHeaderAndFooter(clicked){
+	clicked.previousElementSibling.classList.remove('hidden');
+	clicked.classList.add('hidden');
+	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
 }
 
 function checkMinimisedBands(){
@@ -99,20 +77,10 @@ function minimiseTile(el) {
 	checkMinimisedBands();
   }
 }
-function hideHeaderAndFooter(clicked){
-	clicked.nextElementSibling.classList.remove('hidden');
-	clicked.classList.add('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
-}
-function restoreHeaderAndFooter(clicked){
-	clicked.previousElementSibling.classList.remove('hidden');
-	clicked.classList.add('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
-}
-function restoreAll(){
+function restoreAll(el){
 	console.log("Restore all");
+	resetTileControls(el);
 	for (const el of document.querySelectorAll('.bandButton')) {restoreTile(el);};
-	for (const tile_el of document.querySelectorAll('.bandTile')) resetTileControls(tile_el);
 	checkMinimisedBands();
 }
 function resetTileControls(tile_el){
@@ -128,15 +96,34 @@ function restoreTile(btn_el) {
     tile_el.classList.remove('hidden');
 	resetTileControls(tile_el);
     btn_el.remove();
-    setViewHome();
-}
+    view="Home";
+	document.getElementById('moreColumns').classList.remove("inactive");
+	document.getElementById('fewerColumns').classList.remove("inactive");
+	nColumns = 3;
+	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
+	sortAndUpdateTiles();
+	checkMinimisedBands();
+	
 function setSingleOrZoom(el){
 	if(view == "Single") {
 		let z = toggleZoomToDataRange(el);
 		let c = el.querySelector('canvas');
 		if(z == 'in') {c.style = 'cursor:zoom-out;';} else {c.style = 'cursor:zoom-in;';}  
 	} else {
-		setViewSingle(el)
+		view = "Single"
+		el.querySelector('.home').classList.remove('hidden');
+		el.querySelector('.maximise').classList.add('hidden');
+		el.querySelector('.minimise').classList.add('hidden');
+		const band = el.dataset.band;
+		for (const el2 of document.querySelectorAll('.bandTile')) {
+			if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);
+		}
+		document.getElementById('home-button').classList.remove("inactive");
+		document.getElementById('moreColumns').classList.add("inactive");
+		document.getElementById('fewerColumns').classList.add("inactive");
+		bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");	
+		el.querySelector('canvas').style = 'cursor:zoom-in;';
+		console.log("Set view single");
 	}
 	checkMinimisedBands();
 }
