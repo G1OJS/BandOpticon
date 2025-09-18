@@ -41,7 +41,7 @@ const mainViewTray = document.querySelector('#mainViewTray');
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
 document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('bandButton')) restoreTile(e.target);});
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='setSingleOrZoom') setSingleOrZoom(e.target.closest('.bandTile'));});
-document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target);});
+document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target);}); 	// split here to remember columns and tray bands
 
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='hideHeaderAndFooter') hideHeaderAndFooter(e.target)});
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreHeaderAndFooter') restoreHeaderAndFooter(e.target);}); // 
@@ -78,6 +78,7 @@ function minimiseTile(el) {
   }
 }
 function restoreAll(el){
+	// split here to remember columns and tray bands
 	console.log("Restore all");
 	resetTileControls(el);
 	for (const el of document.querySelectorAll('.bandButton')) {restoreTile(el);};
