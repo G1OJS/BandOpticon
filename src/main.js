@@ -41,7 +41,7 @@ const mainViewTray = document.querySelector('#mainViewTray');
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
 document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('bandButton')) restoreTile(e.target);});
 document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='setSingleOrZoom') setSingleOrZoom(e.target.closest('.bandTile'));});
-document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target);}); 	// split here to remember columns and tray bands
+document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target.closest('.bandTile'));}); 	// split here to remember columns and tray bands
 
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='hideHeaderAndFooter') hideHeaderAndFooter(e.target)});
 document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreHeaderAndFooter') restoreHeaderAndFooter(e.target);}); // 
@@ -79,20 +79,14 @@ function minimiseTile(el) {
 }
 function restoreAll(el){
 	// split here to remember columns and tray bands
-	console.log("Restore all");
-	resetTileControls(el);
-	for (const el of document.querySelectorAll('.bandButton')) {restoreTile(el);};
+//	console.log("Restore all");
+	for (const el of mainViewTray.querySelectorAll('.bandButton')) {restoreTile(el);};
+	for (const el of mainView.querySelectorAll('.bandTile')) {resetTileControls(el);};
 	checkMinimisedBands();
-}
-function resetTileControls(tile_el){
-	tile_el.querySelector('.home').classList.add('hidden'); 
-	tile_el.querySelector('.maximise').classList.remove('hidden');
-	tile_el.querySelector('.minimise').classList.remove('hidden');
-	tile_el.querySelector('canvas').style = 'cursor:default;';
 }
 function restoreTile(btn_el) {
     const band = btn_el.dataset.band;
-	console.log("Restore "+band);
+//	console.log("Restore "+band);
     let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
     tile_el.classList.remove('hidden');
 	resetTileControls(tile_el);
@@ -104,6 +98,12 @@ function restoreTile(btn_el) {
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
 	sortAndUpdateTiles();
 	checkMinimisedBands();
+}
+function resetTileControls(tile_el){
+	tile_el.querySelector('.home').classList.add('hidden'); 
+	tile_el.querySelector('.maximise').classList.remove('hidden');
+	tile_el.querySelector('.minimise').classList.remove('hidden');
+	tile_el.querySelector('canvas').style = 'cursor:default;';
 }
 function setSingleOrZoom(el){
 	if(view == "Single") {
