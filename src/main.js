@@ -103,7 +103,7 @@ function restoreTile(btn_el) {
 	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
 	sortAndUpdateTiles();
 	checkMinimisedBands();
-	
+}
 function setSingleOrZoom(el){
 	if(view == "Single") {
 		let z = toggleZoomToDataRange(el);
