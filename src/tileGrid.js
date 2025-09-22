@@ -14,8 +14,8 @@ document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 
 document.getElementById('homeButton').addEventListener("click", () => {loadHomeView();});	
-document.getElementById('myCallInput').addEventListener('change', () => { updateMyCall(); resetApp();});
-document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetApp();});
+document.getElementById('myCallInput').addEventListener('change', () => { updateMyCall(); resetTileGrid();});
+document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetTileGrid();});
 document.getElementById('moreColumns').addEventListener("click", () => {nColumns += (nColumns <10); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 ribbon.addEventListener('click', () => {loadHomeView()}); // catches changes to mode filters
