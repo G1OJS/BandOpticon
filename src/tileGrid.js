@@ -24,6 +24,7 @@ tray.addEventListener('click', e =>   { if(e.target.dataset.action == 'restore')
 setInterval(() => sortTiles(), 900);
 resetTileGrid();
 
+
 export function addSpot(spot) {
 	let bandMode = spot.b+" "+spot.md;
 	let tileInstance = tileInstances.get(bandMode);
@@ -34,9 +35,9 @@ export function addSpot(spot) {
 	}
 	let isHl = (spot.sc == myCall || spot.rc == myCall);
 	let sInfo = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isHl:isHl};
-	tileInstance.geoChart.recordCall(sInfo, false);
+	tileInstance.geoChart.recordCall(sInfo);
 	let rInfo = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isHl:isHl};
-	tileInstance.geoChart.recordCall(rInfo, false);
+	tileInstance.geoChart.recordCall(rInfo);
 	tileInstance.geoChart.recordConnection(sInfo,rInfo);
 	tileInstance.geoChart.retouchHighlights();
 }
@@ -67,6 +68,7 @@ function sortTiles() {
 		tilesGrid.append(t[1].tileElement);
 		let btnElement = mainViewTray.querySelector('[data-name="'+t[1].tileElement.dataset.name+'"]');
 		if(btnElement) mainViewTray.append(btnElement);
+		t[1].tileTitleElement.textContent = t[1].name + " " + t[1].geoChart.getStats();
 	}
 }
 

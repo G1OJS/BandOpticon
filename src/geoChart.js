@@ -22,6 +22,9 @@ export class geoChart{
 		this.connRecords = new Map();
 		this.drawMap();
 	}
+	getStats(){ 
+		return this.callRecords.size + "cls " + this.connRecords.size+"cns";
+	}
 	px(ll){
 		let z = this.zoomParams;
 		let xnorm = 0.5 + z.scale*(ll[1] - z.lon0)/360;
@@ -33,9 +36,10 @@ export class geoChart{
 	recordCall(cInfo){
 		let callRecord = this.callRecords.get(cInfo.call);
 		if (!callRecord) callRecord = {p:this.px(mhToLatLong(cInfo.sq)), sq:cInfo.sq, tx:cInfo.tx, rx:cInfo.rx, isHl:cInfo.isHl};
-		callRecord.tx ||= cInfo.txrx=='tx';
-		callRecord.rx ||= cInfo.txrx=='rx';
-		this.callRecords.set(cInfo.call, callRecord);//
+		callRecord.tx ||= cInfo.tx;
+		callRecord.rx ||= cInfo.rx;
+		callRecord.isHl ||= cInfo.isHl;
+		this.callRecords.set(cInfo.call, callRecord);
 		this.drawCall(cInfo.call);
 	}
 	drawCall(call){
@@ -124,7 +128,7 @@ export class geoChart{
 	}
 	showInfo(e){
 		this.canvasElement.style = 'cursor:zoom-in;';
-
+		this.canvasElement.title = '';
 		let rect = this.canvasElement.getBoundingClientRect();
 		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
 		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
