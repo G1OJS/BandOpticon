@@ -14,7 +14,7 @@ worldGeoJSON = data;
 let singleViewTileElement = false;
 
 export class tile{
-	constructor(tileTitleText) {
+	constructor(tileTitleText, restoreFromSingleView) {
 		console.log("Create tile "+tileTitleText);
 		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 		document.querySelector('#tilesGrid').append(this.tileElement);
@@ -24,6 +24,7 @@ export class tile{
 		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
 		this.tileTitleElement.textContent = tileTitleText;
 		this.canvasElement = this.tileElement.querySelector('canvas');
+		this.restoreFromSingleView = restoreFromSingleView;
 		
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
@@ -40,6 +41,14 @@ export class tile{
 
 		this.drawMap();
 		this.tileElement.addEventListener("mousemove", e => {this.showInfo(e)}); 
+		this.tileElement.addEventListener("click", e => {	
+			//console.log(e.target.dataset.action);
+			if(e.target.dataset.action == 'minimise') this.minimise();
+			if(e.target.dataset.action == 'maximise') this.maximise();
+			if(e.target.dataset.action == 'back') this.restoreFromSingleView();
+			if(e.target.dataset.action == 'zoomIn') this.zoom('zoomIn', e);
+			if(e.target.dataset.action == 'resetZoom') this.zoom('reset', e);
+		});
 	}
 	addTrayButton(){
 		if(this.btnElement) return;
@@ -138,12 +147,12 @@ export class tile{
 		this.ctx.lineTo(rInfo.p[0],rInfo.p[1]);
 		this.ctx.stroke();
 	}
-	redraw(redrawAll){
+	retouchHighlights(){
 		for (const [conn, connRecord] of this.connRecords.entries()){
-			if(connRecord.isHl || redrawAll) this.drawConnection(conn);
+			if(connRecord.isHl) this.drawConnection(conn);
 		}
 		for (const [call, callRecord] of this.callRecords.entries()) { 
-			if(callRecord.isHl || redrawAll) this.drawCall(call);
+			if(callRecord.isHl) this.drawCall(call);
 		}
 	}
 	drawMap(){
@@ -169,13 +178,11 @@ export class tile{
 			this.ctx.stroke();
 		});
 	}
-	clear(){
-		this.ctx.clearRect(0,0, 2000,2000);
-	}
-	zoom(e){
-		if(e.target.dataset.action == 'resetZoom'){
-			this.zoomParams = {scale:1.0, lat0:0, lon0:0};
-		} else {		
+
+	zoom(zoomAction, e){
+		if(zoomAction == 'reset') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
+
+		if(zoomAction == 'zoomIn'){		
 			let rect = this.canvasElement.getBoundingClientRect();
 			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);
 			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	 
@@ -184,18 +191,17 @@ export class tile{
 			this.zoomParams.scale = this.zoomParams.scale *1.2;
 		}
 		
-		for (var [call, callRecord] of this.callRecords.entries()) { 
+		for (const [call, callRecord] of this.callRecords.entries()) { 
 			let c = callRecord;
-			let p = this.px(mhToLatLong(callRecord.sq));
+			let p = this.px(mhToLatLong(c.sq));
 			this.callRecords.set(call,  {p:p, sq:c.sq, tx:c.tx, rx:c.rx, isHl:c.isHl} );
 		}
-		for (const callRecord of this.callRecords) { 
-			callRecord[1].p = this.px(mhToLatLong(callRecord[1].sq));
-		}
-		this.clear();
+		
+		this.ctx.clearRect(0,0, 2000,2000);
 		this.drawMap();
-		this.redraw(true); // full redraw
-		this.redraw(false); // redraws highlights only
+		for (const conn of this.connRecords.keys()) this.drawConnection(conn);
+		for (const call of this.callRecords.keys()) this.drawCall(call);
+		this.retouchHighlights();
 	}
 	showInfo(e){
 		this.canvasElement.style = 'cursor:zoom-in;';

@@ -24,7 +24,7 @@ export function addSpot(spot) {
 	let bandMode = spot.b+" "+spot.md;
 	let tileInstance = tileInstances.get(bandMode);
 	if(!tileInstance) {
-		tileInstance = new tile(bandMode);
+		tileInstance = new tile(bandMode, restoreFromSingleView);
 		tileInstances.set(bandMode, tileInstance);
 		tileInstance.setVisibility();
 	}
@@ -34,7 +34,7 @@ export function addSpot(spot) {
 	let rInfo = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isHl:isHl};
 	tileInstance.recordCall(rInfo, false);
 	tileInstance.recordConnection(sInfo,rInfo);
-	tileInstance.redraw(false) // redraws highlights only
+	tileInstance.retouchHighlights();
 }
 
 document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -48,7 +48,6 @@ document.getElementById('moreColumns').addEventListener("click", () => {nColumns
 document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 ribbon.addEventListener('click', () => {loadHomeView()});
 mainViewTray.addEventListener('click', e =>   { if(e.target.dataset.action == 'restore') tileInstances.get(e.target.dataset.name).restore(); } );
-mainView.addEventListener('click', e => {mainViewClick(e)});
 
 function resetApp(){
 	tileInstances = new Map();
@@ -60,20 +59,14 @@ function loadHomeView(){
 	tilesGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");	
 	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {tileInstances.get(tileElement.dataset.name).restore();}	
 }
-function mainViewClick(e){
-	let action = e.target.dataset.action;
-	let tile = tileInstances.get(e.target.closest('.tile').dataset.name);
-	if(action=='minimise') tile.minimise();
-	if(action=='maximise') tile.maximise();
-	if(action == 'back') { // same as loading Home view but don't reset nColumns and don't restore tiles minimised to tray
-		for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
-			let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
-			if(!btnElement) tileInstances.get(tileElement.dataset.name).restore();
-		}
-		tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+", 1fr");
+
+function restoreFromSingleView() { // same as loading Home view but don't reset nColumns and don't restore tiles minimised to tray
+	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+		let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
+		if(!btnElement) tileInstances.get(tileElement.dataset.name).restore();
 	}
-	if(action == 'zoomIn' || action == 'resetZoom') tile.zoom(e);
-}	
+	tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+", 1fr");
+}
 
 function sortTiles() {
     const tileInstancesOrdered = Array.from(tileInstances).sort((a, b) => b[1].wavelength - a[1].wavelength);
