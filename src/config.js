@@ -6,6 +6,11 @@ export var myCall;
 
 import {parseSquares} from './geo.js';
 
+export const colours =   {tx:'rgba(200, 30, 30, .4)', 	rx:		'rgba(30, 200, 30, .4)',	txrx:'rgba(20, 20, 200, .4)',
+						  txhl:'rgba(255, 0, 0, 1)', 	rxhl:	'rgba(0, 255, 0, 1)',		txrxhl:'rgba(0, 0, 255, 1)',
+						conn:'rgba(80, 180, 250, .2)' , connhl: 'rgba(50, 50, 250, .6)',
+						map:'rgba(0,0,0,0.3)'};
+
 export function updateMyCall() {
     myCall = document.getElementById('myCallInput').value;
 	myCall = myCall.toUpperCase();
