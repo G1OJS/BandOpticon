@@ -68,7 +68,7 @@ function sortTiles() {
 		tilesGrid.append(t[1].tileElement);
 		let btnElement = mainViewTray.querySelector('[data-name="'+t[1].tileElement.dataset.name+'"]');
 		if(btnElement) mainViewTray.append(btnElement);
-		t[1].tileTitleElement.textContent = t[1].name + " " + t[1].geoChart.getStats();
+		t[1].tileInfoElement.textContent = t[1].geoChart.getStats();
 	}
 }
 
@@ -82,6 +82,7 @@ class tile{
 		this.tileElement.dataset.name = tileTitleText;
 		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
 		this.tileTitleElement.textContent = tileTitleText;
+		this.tileInfoElement = this.tileElement.querySelector('.tileInfo');
 		this.canvasElement = this.tileElement.querySelector('canvas');
 		this.restoreFromSingleView = restoreFromSingleView;
 		this.geoChart = new geoChart(this.canvasElement);
