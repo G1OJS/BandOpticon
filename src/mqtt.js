@@ -1,6 +1,6 @@
 import {squareIsInHome} from './geo.js';
-import {squaresArr, myCall} from './config.js';
-import {addSpot} from './plots.js'
+import {squaresArr} from './config.js';
+import {addSpot} from './main.js'
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
 var mqttClient = null;

@@ -1,188 +1,166 @@
-import {myCall} from './config.js';
 import {mhToLatLong} from './geo.js'
-import {colours, view, setMainViewHeight, freeTiles} from './main.js'
-import {startRibbon} from './ribbon.js'
-import {countryOutlinePlugin} from './map.js'
+import {colours} from './main.js'
 
-export var charts = new Map();
-export var activeModes = new Set();
-export var callLocations = new Map();
+let worldGeoJSON = null;
 
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson')
+//fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastline.geojson')
+.then(resp => resp.json())
+.then(data => {
+	console.log("GeoJSON loaded:", data);
+worldGeoJSON = data;
+});
 
-export function addSpot(spot) {
-	activeModes.add(spot.md);
-	updatePoint(spot.b, spot.md, spot.sc, spot.sl, true, false, (spot.sc == myCall)||(spot.rc == myCall))
-	updatePoint(spot.b, spot.md, spot.rc, spot.rl, false, true, (spot.sc == myCall)||(spot.rc == myCall))
-	updateLine(spot.b, spot.md, spot.sc, spot.rc, (spot.sc == myCall)||(spot.rc == myCall));
-}
-export function toggleZoomToDataRange(canvas_el, zoomOut = false){
-	let tile = canvas_el.closest('.bandTile');
-	let chart = charts.get(tile.dataset.band);
-	let s = chart.options.scales;
-	let zoom = null;
-	if(s.x.min > -180 || zoomOut){
-		s.x.min = -180; s.x.max = 180; s.y.min = -90; s.y.max = 90;	
-		zoom = 'out';
-	} else {
-		let rng = getAxisRanges(chart.data);
-		s.x.min = rng.xmin; s.x.max = rng.xmax; s.y.min = rng.ymin; s.y.max = rng.ymax;		
-		zoom = 'in';
+export class tile{
+	constructor(tileTitleText) {
+		console.log("Create tile "+tileTitleText);
+		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
+		document.querySelector('#tilesGrid').append(this.tileElement);
+		this.tileElement.dataset.name = tileTitleText;
+		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
+		this.tileTitleElement.textContent = tileTitleText;
+		this.canvasElement = this.tileElement.querySelector('canvas');
+		
+		this.ctx = this.canvasElement.getContext('2d');
+		this.canvasElementSize = {w:1200, h:600};
+		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
+		this.bgCol = 'white';
+
+		this.callRecords = new Map();
+		this.connRecords = new Map();
+
+		let band = this.tileTitleElement.textContent.split(" ")[0];
+		let wl = parseInt(band.split("m")[0]);
+		if (band.search("cm") > 0) wl /= 100;
+		this.wavelength = wl;
+
+		this.drawMap();
+		this.tileElement.addEventListener("mousemove", e => {this.showInfo(e)}); 
 	}
-	chart.update('none');
-	return zoom;
-}
-
-export function resetData(){
-	charts.forEach(chart => {chart.destroy()});
-	for (const el of document.querySelectorAll('.bandTile')) el.classList.add('hidden');
-	charts = new Map();
-	activeModes = new Set();
-	tileCanvases = Array.from(document.querySelectorAll('.bandCanvas'));
-	freeCanvases = [...tileCanvases];
-	callLocations = new Map(); 
-	startRibbon();
-}
-
-export function hideUnwatchedModeLayers(mode) {
-  charts.forEach(chart => {
-    chart.data.datasets.forEach(ds => {
-      chart.getDatasetMeta(chart.data.datasets.indexOf(ds)).hidden = ds.label.split("_")[0] != mode;
-    });
-  });
-}
-
-function getLocation(call, callSq){
-	if(!callLocations.get(call)) {
-		let ll = mhToLatLong(callSq);
-		callLocations.set(call, {x:ll[1], y:ll[0]});
+	px(ll){
+		let z = this.zoomParams;
+		let xnorm = 0.5 + z.scale*(ll[1] - z.lon0)/360;
+		let ynorm = 0.5 + z.scale*(ll[0] - z.lat0)/180;
+		let x = this.canvasElementSize.w*xnorm;
+		let y = this.canvasElementSize.h-this.canvasElementSize.h*ynorm;
+		return [x,y];
 	}
-	return callLocations.get(call);
-}
+	recordCall(cInfo){
+		let callRecord = this.callRecords.get(cInfo.call);
+		if (!callRecord) {
+			callRecord = {p:this.px(mhToLatLong(cInfo.sq)), sq:cInfo.sq, tx:cInfo.tx, rx:cInfo.rx, isHl:cInfo.isHl};
+			this.callRecords.set(cInfo.call, callRecord);//
+		}
+		callRecord.tx ||= cInfo.txrx=='tx';
+		callRecord.rx ||= cInfo.txrx=='rx';
+		this.drawCall(cInfo.call);
+	}
+	drawCall(call){
+		let callRecord = this.callRecords.get(call);
+		if(callRecord.isHl){
+			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrxhl: (callRecord.tx? colours.txhl: colours.rxhl);
+		} else {
+			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrx: (callRecord.tx? colours.tx: colours.rx);
+		}
+		this.ctx.beginPath();
+		this.ctx.arc(callRecord.p[0],callRecord.p[1],8,0,6.282);
+		this.ctx.fill();
+	}
+	recordConnection(sInfo, rInfo){
+		let conn = sInfo.call+"|"+rInfo.call
+		let connRecord = this.connRecords.get(conn) || this.connRecords.set(conn, {isHl:(sInfo.isHl || rInfo.isHl)});
+		this.connRecords.set(conn, {isHl:(sInfo.isHl || rInfo.isHl)});
+		this.drawConnection(conn)
+	}
+	drawConnection(conn){
+		let col = this.connRecords.get(conn).isHl? colours.connhl:colours.conn;
+		let sInfo = this.callRecords.get(conn.split("|")[0]); 
+		let rInfo = this.callRecords.get(conn.split("|")[1]); 
+		this.ctx.strokeStyle = col;
+		this.ctx.lineWidth=4;
+		this.ctx.beginPath();
+		this.ctx.moveTo(sInfo.p[0],sInfo.p[1]);
+		this.ctx.lineTo(rInfo.p[0],rInfo.p[1]);
+		this.ctx.stroke();
+	}
+	redraw(redrawAll){
+		for (const [conn, connRecord] of this.connRecords.entries()){
+			if(connRecord.isHl || redrawAll) this.drawConnection(conn);
+		}
+		for (const [call, callRecord] of this.callRecords.entries()) { 
+			if(callRecord.isHl || redrawAll) this.drawCall(call);
+		}
+	}
+	drawMap(){
+		this.ctx.strokeStyle = colours.map;
+		this.ctx.lineWidth = 2;
+		worldGeoJSON?.features.forEach(feature => {
+			const geom = feature.geometry;
+			if (geom.type === 'Polygon') {
+				this.drawPolygons(geom.coordinates);
+			} else if (geom.type === 'MultiPolygon') {
+				geom.coordinates.forEach(polygon => this.drawPolygons(polygon));
+			}
+		});
+	}
+	drawPolygons(polys) {
+		polys.forEach(poly => {
+			this.ctx.beginPath();
+			poly.forEach(([lon, lat], i) => {
+			let p = this.px([lat, lon]);
+				i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
+			});
+			this.ctx.closePath();
+			this.ctx.stroke();
+		});
+	}
+	clear(){
+		this.ctx.clearRect(0,0, 2000,2000);
+	}
+	zoom(e){
+		if(e.target.dataset.action == 'resetZoom'){
+			this.zoomParams = {scale:1.0, lat0:0, lon0:0};
+		} else {		
+			let rect = this.canvasElement.getBoundingClientRect();
+			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);
+			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	 
+			this.zoomParams.lat0 = (-180*(ynorm-0.5) / this.zoomParams.scale) + this.zoomParams.lat0;
+			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
+			this.zoomParams.scale = this.zoomParams.scale *1.2;
+		}
+		
+		for (var [call, callRecord] of this.callRecords.entries()) { 
+			let c = callRecord;
+			let p = this.px(mhToLatLong(callRecord.sq));
+			this.callRecords.set(call,  {p:p, sq:c.sq, tx:c.tx, rx:c.rx, isHl:c.isHl} );
+		}
+		for (const callRecord of this.callRecords) { 
+			callRecord[1].p = this.px(mhToLatLong(callRecord[1].sq));
+		}
+		this.clear();
+		this.drawMap();
+		this.redraw(true); // full redraw
+		this.redraw(false); // redraws highlights only
+	}
+	showInfo(e){
+		this.canvasElement.style = 'cursor:zoom-in;';
 
-function updatePoint(band, mode, call, callSq, tx, rx, hl) {
-	
-  // find or create the chart for this band
-  if (!charts.get(band)) charts.set(band, createChart(band));
-  const chart = charts.get(band);
+		let rect = this.canvasElement.getBoundingClientRect();
+		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
 
-  // find or create chart's dataset for this mode
-  let label = mode +"_"+hl; // highlight gets its own layer so we can  use order to push it to the front
-  let ds = chart.data.datasets.find(d => d.label === label);
-  if (!ds) {
-    ds = { label: label, data: [], backgroundColor:[] , pointRadius: hl? 4:6, order:(hl? -100:10)};
-    chart.data.datasets.push(ds);
-  }
-
-  // find or create the point 
-  //(needs optimisation - use a set or map to test if call exists on this band and mode (can't use call location as that's all bands and modes)
-  let pt = ds.data.find(p => p.call === call);
-  if (!pt) {
-	pt = getLocation(call, callSq);
-	pt.attribs = {tx:tx, rx:rx, hl:hl}	
-    pt.call = call;	
-	pt.pointRadius = 6;
-	pt.z = 0;
-	ds.data.push(pt);
-  }
-  pt.attribs.tx ||= tx; pt.attribs.rx ||= rx; pt.attribs.hl ||= hl;
-  let idx = ds.data.indexOf(pt)
-  let a = pt.attribs;
-  if(hl){
-	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrxhl: (a.tx? colours.txhl: colours.rxhl);
-  } else {
-	ds.backgroundColor[idx] = (a.tx && a.rx)? colours.txrx: (a.tx? colours.tx: colours.rx);
-  }
-
-}
-
-function updateLine(band, mode, sc, rc, hl) {
-	
-  const chart = charts.get(band);
-  const label = mode + "_conns"+"_"+hl;  // highlight gets its own layer so we can  use order to push it to the front
-
-  // find or create chart's dataset for this layer
-  let ds = chart.data.datasets.find(d => d.label === label);
-  if (!ds) {
-    ds = {label: label, data: [], showLine: true, spanGaps: false, 
-			borderColor: (hl)? colours.connhl: colours.conn, pointRadius:0, hitRadius:0, order:hl? -100:100};
-    chart.data.datasets.push(ds);
-  }
-
-  let lbl = sc+"|"+rc;
-  if (!ds.data.includes(lbl)){
-	let tx = callLocations.get(sc);
-	let rx = callLocations.get(rc);  
-	ds.data.push({x:tx.x, y:tx.y, call:rc}) // uses call to label tooltip for line with 'other end'
-	ds.data.push({x:rx.x, y:rx.y, call:sc})
-	ds.data.push(lbl);
-  }
-
-}
-
-function createChart(band) {
-	const tile = freeTiles.pop();   
-
-	tile.dataset.band = band;          
-	tile.querySelector('.bandTileTitle').textContent = band;
-	const canvas = tile.querySelector('canvas');
-	if (view == "Home") canvas.closest('.bandTile').classList.remove('hidden');
-	
-    const ctx = canvas.getContext('2d');
-	const ch = new Chart(ctx, 
-		{ 	type:'scatter',
-			plugins: [countryOutlinePlugin],
-			data: { datasets: [  ] },
-			options: {
-				animation: false, 
-				plugins: {	
-							tooltip:{callbacks: {label: function(context) {return context.raw.call;} }},
-							legend: {display: false}
-						 },
-				scales: {
-					x: {display:false, max:180, min:-180},
-					y: {display:false, max:90, min: -90}
-					}
+		for (const [call, callRecord] of this.callRecords.entries()) { 
+			let p = callRecord.p;
+			if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
+				this.canvasElement.title = call;
+				this.canvasElement.style = 'cursor:default;';
 			}
 		}
-	);
-
-	console.log("Ceated chart for "+band);
-    return ch;
+	}
 }
 
 
-function getAxisRanges(data){
 
-	let xrng = [1000,-1000];
-	let yrng = [1000,-1000];
-	for (const ds of data.datasets){
-		for (const di of ds.data) {
-			xrng = [di.x<xrng[0]? di.x:xrng[0], di.x>xrng[1]? di.x:xrng[1]] ;
-			yrng = [di.y<yrng[0]? di.y:yrng[0], di.y>yrng[1]? di.y:yrng[1]] ;
-		}
-	}
 
-	function steprange(x){
-		const ranges = [5,10,20,40,60,80,110,130,150,170,190,210,230,250,270,290,310,330,350,360];
-		let idx=0;
-		while (x>ranges[idx]) idx+=1;
-		return ranges[idx];
-	}
 
-	let dx =xrng[1]-xrng[0]; 
-	let dy =yrng[1]-yrng[0]; 
-	let y0 = (yrng[0]+yrng[1])/2;
-	let x0 = (xrng[0]+xrng[1])/2;
-	
-	if(dx > 2* dy){
-		dy = steprange(dx/2);
-		dx = dy * 2;
-	} else {
-		dx = steprange(dy*2);
-		dy = dx / 2;
-	}
-
-	return {xmin:Math.max(-180, x0-dx/2), xmax: Math.min(180, x0+dx/2), ymin:Math.max(-90,y0-dy/2), ymax:  Math.min(y0+dy/2)};
-	
-}
-
+ 

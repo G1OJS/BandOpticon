@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon V5.3.0</title>
+<title>BandOpticon Geo</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -15,68 +15,51 @@
 
 </head>
 <body>
+<div id='test' style='height:100%; display:none;'></div>
 <div id="app" class="paper-main">
-    <h1>BandOpticon V5</h1>
-	<div id="ribbon" class="text-sm hideForMaxView">
-		<fieldset class="ribbonBox">
-		<legend>Info</legend>
-		  <output id="clock" class='clock'></output><br>
-		  <span>Running for <output id="runningMins"></output> minutes</span><br>
-		  <span><output id="callsignsInDB"></output> callsigns in db</span><br>
-		</fieldset>
-		<fieldset id='settingsBox' class="ribbonBox" >
-		<legend>Settings</legend>
-			<div class = 'settings-label'>Highlight callsign</div>
-			<div><input class = 'settings-input' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></div>
-			<div><label class = 'settings-label'>Home Square(s)</label></div>
-			<div><input class = 'settings-input' id='homeSquaresInput' type="text" 
-						 title ='The grid squares that must contain at least one end of every spot to be displayed. &#10;Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></div>
-		</fieldset>
-		<fieldset id='modeSelectBox' class="ribbonBox" >
-		<legend>Mode</legend>
-			<!-- written by script -->
-		</fieldset>
+	<div id='ribbon' class="windowBar hideForMaxView ">
+		<h1>BandOpticon Geo</h1>
+		<span><label for="homeSquaresInput">To/from:</label><input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></span>
+		<span><label for="myCallInput">Highlight: </label><input style='width:7em;' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></span>
+		<span class = 'control ' ><input type="checkbox" id="FT8" name="FT8" checked /><label for="FT8">FT8</label></span>
+		<span class = 'control ' ><input type="checkbox" id="FT4" name="FT4" checked /><label for="FT4">FT4</label></span>
+		<span class = 'control ' ><input type="checkbox" id="WSPR" name="WSPR" checked /><label for="WSPR">WSPR</label></span>
+		<span class = 'control ' ><input type="checkbox" id="Other" name="Other" checked /><label for="Other">Other</label></span>
 	</div>
-  
-	
+	<div id = 'mainViewTray' class = 'windowBar'>
+		<span class = 'control windowBarButton' id = 'homeButton' data-action = 'loadHomeView' title = 'Home view'>🏠</span>
+		<span class = 'control windowBarButton' id = 'moreColumns' title = 'Add column to grid'>□□□⇢</span>
+		<span class = 'control windowBarButton' id = 'fewerColumns' title = 'Remove column from grid'>□□⇠</span>
+		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations receiving'></span>Rx</span>
+		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx' title = 'Stations transmitting'></span>Tx</span>
+		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
+	</div>
 	<div id="mainView" class="paper-light" >
-		<div id = 'mainViewTray' class = 'windowBar'>
-			<span class = 'control inactive' data-action='home', id='home-button' title = 'Home view'>🏠</span>
-			<span class = 'control'id = 'moreColumns' title = 'Add column to grid'>□□□⇢</span>
-			<span class = 'control' id = 'fewerColumns' title = 'Remove column from grid'>□□⇠</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx' title = 'Stations receiving'></span>Tx</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations transmitting'></span>Rx</span>
-			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
-		    <div class = 'right'>
-				<span class="control" data-action='hideHeaderAndFooter' title = 'Maximise view area'>⛶</span>
-				<span class="control hidden" data-action='restoreHeaderAndFooter' title = 'Restore view area'>⌫</span>
-		    </div>
-		</div>
 		<div id = 'scrollContainer'>
-			<div id='bandsGrid'>
-			    <template class="bandTileTemplate">
-				  <div class="bandTile hidden">
+			<div id='tilesGrid'>
+			    <template id="tileTemplate">
+				  <div class="tile">
 					<div class = 'windowBar'>
-						<span class="bandTileTitle"></span>
-						<span class="control home hidden right" data-action='home' title = 'Home view'>⌫</span>
-						<span class="control maximise right" data-action='setSingleOrZoom' title = 'Maximise view of this band only'>⛶</span>
-						<span class="control minimise right" data-action='minimise' title = 'Send this band to the tray'>_</span>
+						<span class="tileTitle"></span> <span class="tileInfo"></span>
+						<span class="control windowBarButton back hidden right" data-action='back' title = 'Back'>⌫</span>
+						<span class="control windowBarButton maximise right" data-action='maximise' title = 'Maximise view of this tile only'>⛶</span>
+						<span class="control windowBarButton minimise right" data-action='minimise' title = 'Send this tile to the tray'>_</span>
+						<span class="control windowBarButton right" data-action='resetZoom' title = 'Reset zoom'>=</span>
 					</div>
-					<canvas data-action = 'setSingleOrZoom'></canvas>
+					<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
 				  </div>
 				</template>
 			</div>
 		</div>
 	</div>
-
 	<div id="footer" class="hideForMaxView">
         <div>
-            	Javascript & HTML developed by Alan Robinson:<br>
-            	<a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
-            	<a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
-		<a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
-	</div>
-	<div>
+            Javascript & HTML developed by Alan Robinson:<br>
+            <a href='https://www.qrz.com/db/G1OJS'>G1OJS @QRZ.com</a><br>
+            <a href='https://www.instagram.com/g1ojs_alan/'>G1OJS_alan@instagram.com</a><br>
+			<a href="mailto:G1OJS@yahoo.com">G1OJS@yahoo.com</a>
+		</div>
+		<div>
             Thanks to:<br>
             Philip Gladstone - N1DQ for <a href='https://pskreporter.info/'>Pskreporter.info</a><br>
             Tom Fanning - M0LTE for <a href='http://mqtt.pskreporter.info/'>mqtt.pskreporter.info</a>, the MQTT feed for this app<br>
@@ -87,12 +70,9 @@
           GitHub: <a href='https://github.com/G1OJS/BandOpticon/'>github.com/G1OJS/BandOpticon</a><br>
 		</div>
     </div>
-	
 </div> 
 
-
 <script type='module' src='./src/main.js'></script>
-
 
 </body>
 </html>
