@@ -25,29 +25,21 @@ export class tile{
 		this.tileTitleElement.textContent = tileTitleText;
 		this.canvasElement = this.tileElement.querySelector('canvas');
 		this.restoreFromSingleView = restoreFromSingleView;
+		this.geoChart = new geoChart(this.canvasElement);
 		
-		this.ctx = this.canvasElement.getContext('2d');
-		this.canvasElementSize = {w:1200, h:600};
-		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
-		this.bgCol = 'white';
-
-		this.callRecords = new Map();
-		this.connRecords = new Map();
-
 		let band = this.tileTitleElement.textContent.split(" ")[0];
 		let wl = parseInt(band.split("m")[0]);
 		if (band.search("cm") > 0) wl /= 100;
 		this.wavelength = wl;
 
-		this.drawMap();
-		this.tileElement.addEventListener("mousemove", e => {this.showInfo(e)}); 
+		this.tileElement.addEventListener("mousemove", e => {this.geoChart.showInfo(e, this.canvasElement)}); 
 		this.tileElement.addEventListener("click", e => {	
 			//console.log(e.target.dataset.action);
 			if(e.target.dataset.action == 'minimise') this.minimise();
 			if(e.target.dataset.action == 'maximise') this.maximise();
 			if(e.target.dataset.action == 'back') this.restoreFromSingleView();
-			if(e.target.dataset.action == 'zoomIn') this.zoom('zoomIn', e);
-			if(e.target.dataset.action == 'resetZoom') this.zoom('reset', e);
+			if(e.target.dataset.action == 'zoomIn') this.geoChart.zoom('zoomIn', e);
+			if(e.target.dataset.action == 'resetZoom') this.geoChart.zoom('reset', e);
 		});
 	}
 	addTrayButton(){
@@ -100,6 +92,19 @@ export class tile{
 		}
 		tilesGrid.setAttribute("style", "grid-template-columns: 1fr");	
 		singleViewTileElement = this.tileElement;
+	}	
+}
+
+class geoChart{
+	constructor(canvasElement) {
+		this.canvasElement = canvasElement;
+		this.ctx = this.canvasElement.getContext('2d');
+		this.canvasElementSize = {w:1200, h:600};
+		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
+		this.bgCol = 'white';
+		this.callRecords = new Map();
+		this.connRecords = new Map();
+		this.drawMap();
 	}
 	px(ll){
 		let z = this.zoomParams;

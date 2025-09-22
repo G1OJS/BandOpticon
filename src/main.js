@@ -30,11 +30,11 @@ export function addSpot(spot) {
 	}
 	let isHl = (spot.sc == myCall || spot.rc == myCall);
 	let sInfo = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isHl:isHl};
-	tileInstance.recordCall(sInfo, false);
+	tileInstance.geoChart.recordCall(sInfo, false);
 	let rInfo = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isHl:isHl};
-	tileInstance.recordCall(rInfo, false);
-	tileInstance.recordConnection(sInfo,rInfo);
-	tileInstance.retouchHighlights();
+	tileInstance.geoChart.recordCall(rInfo, false);
+	tileInstance.geoChart.recordConnection(sInfo,rInfo);
+	tileInstance.geoChart.retouchHighlights();
 }
 
 document.getElementById('legendMarkerTx').style.background = colours.tx;
