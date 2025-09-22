@@ -11,11 +11,15 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_
 worldGeoJSON = data;
 });
 
+let singleViewTileElement = false;
+
 export class tile{
 	constructor(tileTitleText) {
 		console.log("Create tile "+tileTitleText);
 		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 		document.querySelector('#tilesGrid').append(this.tileElement);
+		this.btnElement = mainViewTray.querySelector('[data-name="'+this.name+'"]');
+		this.name = tileTitleText;
 		this.tileElement.dataset.name = tileTitleText;
 		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
 		this.tileTitleElement.textContent = tileTitleText;
@@ -36,6 +40,57 @@ export class tile{
 
 		this.drawMap();
 		this.tileElement.addEventListener("mousemove", e => {this.showInfo(e)}); 
+	}
+	addTrayButton(){
+		if(this.btnElement) return;
+		this.btnElement = document.createElement('button');
+		this.btnElement.classList.add('control', 'trayButton');
+		this.btnElement.dataset.action = 'restore';
+		this.btnElement.dataset.name = this.name;
+		this.btnElement.textContent = this.name;
+		mainViewTray.appendChild(this.btnElement);
+	}
+	removeTrayButton(){
+		if(!this.btnElement) return;
+		this.btnElement.remove();	
+	}
+	setVisibility(){
+		let tileMode = this.name.split(" ")[1];
+		let toHide = false;
+		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
+		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
+		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
+		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
+		if(singleViewTileElement && singleViewTileElement != this.tileElement) toHide = true;
+		if(toHide) {
+			this.tileElement.classList.add('hidden');
+			if(this.btnElement) this.btnElement.classList.add('hidden');
+		} else {
+			this.tileElement.classList.remove('hidden');
+			if(this.btnElement) this.btnElement.classList.remove('hidden');
+		}	
+	}
+	restore() {
+		this.tileElement.querySelector('.back').classList.add('hidden'); 
+		this.tileElement.querySelector('.maximise').classList.remove('hidden');
+		this.tileElement.querySelector('.minimise').classList.remove('hidden');
+		this.removeTrayButton();
+		singleViewTileElement = false;
+		this.setVisibility();
+	}
+	minimise(){
+		this.tileElement.classList.add('hidden');
+		this.addTrayButton();
+	}
+	maximise(){
+		this.tileElement.querySelector('.back').classList.remove('hidden');
+		this.tileElement.querySelector('.maximise').classList.add('hidden');
+		this.tileElement.querySelector('.minimise').classList.add('hidden');
+		for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+			if(tileElement.dataset.name !=this.name) tileElement.classList.add('hidden');
+		}
+		tilesGrid.setAttribute("style", "grid-template-columns: 1fr");	
+		singleViewTileElement = this.tileElement;
 	}
 	px(ll){
 		let z = this.zoomParams;
