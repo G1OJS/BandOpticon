@@ -32,12 +32,10 @@ export class geoChart{
 	}
 	recordCall(cInfo){
 		let callRecord = this.callRecords.get(cInfo.call);
-		if (!callRecord) {
-			callRecord = {p:this.px(mhToLatLong(cInfo.sq)), sq:cInfo.sq, tx:cInfo.tx, rx:cInfo.rx, isHl:cInfo.isHl};
-			this.callRecords.set(cInfo.call, callRecord);//
-		}
+		if (!callRecord) callRecord = {p:this.px(mhToLatLong(cInfo.sq)), sq:cInfo.sq, tx:cInfo.tx, rx:cInfo.rx, isHl:cInfo.isHl};
 		callRecord.tx ||= cInfo.txrx=='tx';
 		callRecord.rx ||= cInfo.txrx=='rx';
+		this.callRecords.set(cInfo.call, callRecord);//
 		this.drawCall(cInfo.call);
 	}
 	drawCall(call){
