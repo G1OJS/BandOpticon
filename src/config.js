@@ -6,9 +6,9 @@ export var myCall;
 
 import {parseSquares} from './geo.js';
 
-export const colours =   {tx:'rgba(200, 30, 30, .4)', 	rx:		'rgba(30, 200, 30, .4)',	txrx:'rgba(20, 20, 200, .4)',
-						  txhl:'rgba(255, 0, 0, 1)', 	rxhl:	'rgba(0, 255, 0, 1)',		txrxhl:'rgba(0, 0, 255, 1)',
-						conn:'rgba(80, 180, 250, .2)' , connhl: 'rgba(50, 50, 250, .6)',
+export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(20, 20, 200, 0.5)',
+						  txhl:'rgba(255, 0, 0, 0.9)', 	rxhl:	'rgba(0, 255, 0, 0.9)',		txrxhl:'rgba(0, 0, 255, 0.9)',
+						conn:'rgba(80, 180, 250, .15)' , connhl: 'rgba(50, 50, 250, .5)',
 						map:'rgba(0,0,0,0.3)'};
 
 export function updateMyCall() {
