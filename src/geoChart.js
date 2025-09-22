@@ -40,7 +40,7 @@ export class geoChart{
 		callRecord.rx ||= cInfo.rx;
 		callRecord.isHl ||= cInfo.isHl;
 		this.callRecords.set(cInfo.call, callRecord);
-		this.drawCall(cInfo.call);
+//		this.drawCall(cInfo.call);
 	}
 	drawCall(call){
 		let callRecord = this.callRecords.get(call);
@@ -57,14 +57,14 @@ export class geoChart{
 		let conn = sInfo.call+"|"+rInfo.call
 		let connRecord = this.connRecords.get(conn) || this.connRecords.set(conn, {isHl:(sInfo.isHl || rInfo.isHl)});
 		this.connRecords.set(conn, {isHl:(sInfo.isHl || rInfo.isHl)});
-		this.drawConnection(conn)
+//		this.drawConnection(conn)
 	}
 	drawConnection(conn){
 		let col = this.connRecords.get(conn).isHl? colours.connhl:colours.conn;
 		let sInfo = this.callRecords.get(conn.split("|")[0]); 
 		let rInfo = this.callRecords.get(conn.split("|")[1]); 
 		this.ctx.strokeStyle = col;
-		this.ctx.lineWidth=4;
+		this.ctx.lineWidth=2;
 		this.ctx.beginPath();
 		this.ctx.moveTo(sInfo.p[0],sInfo.p[1]);
 		this.ctx.lineTo(rInfo.p[0],rInfo.p[1]);

@@ -39,6 +39,10 @@ export function addSpot(spot) {
 	let rInfo = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isHl:isHl};
 	tileInstance.geoChart.recordCall(rInfo);
 	tileInstance.geoChart.recordConnection(sInfo,rInfo);
+	
+	tileInstance.geoChart.drawCall(sInfo.call);
+	tileInstance.geoChart.drawCall(rInfo.call);
+	tileInstance.geoChart.drawConnection(sInfo.call+"|"+rInfo.call)
 	tileInstance.geoChart.retouchHighlights();
 }
 
