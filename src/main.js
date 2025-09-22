@@ -1,177 +1,153 @@
 import {connectToFeed} from './mqtt.js';
-import {loadConfig} from './config.js';
-import {startRibbon} from './ribbon.js'
-import {charts, toggleZoomToDataRange} from './plots.js'
+import {loadConfig, myCall, updateSquaresList, updateMyCall} from './config.js';
+import {tile} from './plots.js'
 
-for (let idx=0;idx<20;idx++) {
-  var tile  = document.querySelector('.bandTileTemplate').content.cloneNode(true);
-  document.querySelector('#bandsGrid').appendChild(tile);
-}
-export const freeTiles = Array.from(document.querySelectorAll('.bandTile')); 
+const ribbon = document.querySelector('#ribbon');
+const mainViewTray = document.querySelector('#mainViewTray');
+const mainView = document.querySelector('#mainView');
+const tilesGrid = document.querySelector('#tilesGrid');
+let nColumns = null;
+let singleViewTileElement = false;
+let tileInstances = null;
+setInterval(() => sortTiles(), 900);
+setInterval(() => setHeight(), 1100);
 
-function bandOf(el) 	{return el.closest('.bandTile')?.dataset.band ?? null;}
-function actionOf(el) 	{return el.dataset.action || null;}
+resetApp();
+loadConfig();
+connectToFeed();
 
-export var view = "Home";
-var nColumns = 3;
-
-function ceilingXbyY(x,y){
-	return (x>y)? y:x;
-}
-function floorXbyY(x,y){
-	return (x<y)? y:x;
-}
-
-export const colours =   {tx:'rgba(230, 30, 30, .3)', 	rx:		'rgba(30, 230, 30, .3)',	txrx:'rgba(20, 20, 250, .3)',
+export const colours =   {tx:'rgba(200, 30, 30, .4)', 	rx:		'rgba(30, 200, 30, .4)',	txrx:'rgba(20, 20, 200, .4)',
 						  txhl:'rgba(255, 0, 0, 1)', 	rxhl:	'rgba(0, 255, 0, 1)',		txrxhl:'rgba(0, 0, 255, 1)',
-					conn:'rgba(150, 150, 250, .2)' , connhl: 'rgba(50, 50, 250, .8)'
-					};
+						conn:'rgba(80, 180, 250, .2)' , connhl: 'rgba(50, 50, 250, .6)',
+						map:'rgba(0,0,0,0.3)'};
+
+export function addSpot(spot) {
+	let bandMode = spot.b+" "+spot.md;
+	let tileInstance = tileInstances.get(bandMode);
+	if(!tileInstance) {
+		tileInstance = new tile(bandMode);
+		tileInstances.set(bandMode, tileInstance);
+		setTileVisibility(tileInstance.tileElement);
+		if (singleViewTileElement) {
+			tileInstance.tileElement.classList.add('hidden');
+			addTrayButtonForTile(tileInstance.tileElement);
+		}
+	}
+	let isHl = (spot.sc == myCall || spot.rc == myCall);
+	let sInfo = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isHl:isHl};
+	tileInstance.recordCall(sInfo, false);
+	let rInfo = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isHl:isHl};
+	tileInstance.recordCall(rInfo, false);
+	tileInstance.recordConnection(sInfo,rInfo);
+	tileInstance.redraw(false) // redraws highlights only
+}
 
 document.getElementById('legendMarkerTx').style.background = colours.tx;
 document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
-document.getElementById('moreColumns').addEventListener("click", function (e) {addRemoveColumns('more')});
-document.getElementById('fewerColumns').addEventListener("click", function (e) {addRemoveColumns('fewer')});
 
-setInterval(() => sortAndUpdateTiles(), 1000);
+document.getElementById('homeButton').addEventListener("click", () => {loadHomeView();});	
+document.getElementById('myCallInput').addEventListener('change', () => { updateMyCall(); resetApp();});
+document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetApp();});
+document.getElementById('moreColumns').addEventListener("click", () => {nColumns += (nColumns <10); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
+document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
+ribbon.addEventListener('click', () => {loadHomeView()});
+mainViewTray.addEventListener('click', e =>   { if(e.target.dataset.action == 'restore') restoreTile(tilesGrid.querySelector('[data-name="'+e.target.dataset.name+'"]')); } );
+mainView.addEventListener('click', e => {mainViewClick(e)});
 
-const mainView = document.querySelector('#mainView');
-const bandsGrid = document.querySelector('#bandsGrid');
-const mainViewTray = document.querySelector('#mainViewTray');
-document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='minimise') minimiseTile(e.target.closest('.bandTile'));});
-document.querySelector('#mainViewTray').addEventListener('click', e => {if(e.target.classList?.contains('bandButton')) restoreTile(e.target);});
-document.querySelector('#bandsGrid').addEventListener('click', e => {if(actionOf(e.target)=='setSingleOrZoom') setSingleOrZoom(e.target.closest('.bandTile'));});
-document.querySelector('#mainView').addEventListener('click', e => {if(actionOf(e.target)=='home') restoreAll(e.target.closest('.bandTile'));}); 	// split here to remember columns and tray bands
-
-document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='hideHeaderAndFooter') hideHeaderAndFooter(e.target)});
-document.querySelector('#mainViewTray').addEventListener("click", e => {if(actionOf(e.target)=='restoreHeaderAndFooter') restoreHeaderAndFooter(e.target);}); // 
-
-function hideHeaderAndFooter(clicked){
-	clicked.nextElementSibling.classList.remove('hidden');
-	clicked.classList.add('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.add('hidden');
+function resetApp(){
+	tileInstances = new Map();
+	for (const el of document.querySelectorAll('.tile')) el.remove();
+	loadHomeView();
 }
-function restoreHeaderAndFooter(clicked){
-	clicked.previousElementSibling.classList.remove('hidden');
-	clicked.classList.add('hidden');
-	for (const el of document.querySelectorAll('.hideForMaxView')) el.classList.remove('hidden');
-}
-
-function checkMinimisedBands(){
-	let homeButton = document.getElementById('home-button');
-	let nHidden = mainViewTray.querySelectorAll('.bandButton').length;
-	console.log("nHidden "+nHidden);
-	if(nHidden > 2) {homeButton.classList.remove("inactive");} else {homeButton.classList.add("inactive");}
-}
-
-function minimiseTile(el) {
-  const band = el.dataset.band;
-  el.classList.add('hidden');
-  let btn = mainViewTray.querySelector(`[data-band="${band}"]`);
-  if (!btn) {
-    btn = document.createElement('button');
-	btn.classList.add('control', 'windowBarButton', 'bandButton');
-    btn.dataset.band = band;
-    btn.textContent = band;
-    mainViewTray.appendChild(btn);
-	checkMinimisedBands();
-  }
-}
-function restoreAll(el){
-	// split here to remember columns and tray bands
-//	console.log("Restore all");
-	for (const el of mainViewTray.querySelectorAll('.bandButton')) {restoreTile(el);};
-	for (const el of mainView.querySelectorAll('.bandTile')) {resetTileControls(el);};
-	checkMinimisedBands();
-}
-function restoreTile(btn_el) {
-    const band = btn_el.dataset.band;
-//	console.log("Restore "+band);
-    let tile_el = bandsGrid.querySelector(`[data-band="${band}"]`);
-    tile_el.classList.remove('hidden');
-	resetTileControls(tile_el);
-    btn_el.remove();
-    view="Home";
-	document.getElementById('moreColumns').classList.remove("inactive");
-	document.getElementById('fewerColumns').classList.remove("inactive");
+function loadHomeView(){
 	nColumns = 3;
-	bandsGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");
-	sortAndUpdateTiles();
-	checkMinimisedBands();
+	tilesGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");	
+	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {restoreTile(tileElement);}	
 }
-function resetTileControls(tile_el){
-	tile_el.querySelector('.home').classList.add('hidden'); 
-	tile_el.querySelector('.maximise').classList.remove('hidden');
-	tile_el.querySelector('.minimise').classList.remove('hidden');
-	tile_el.querySelector('canvas').style = 'cursor:default;';
+function addTrayButtonForTile(tileElement){
+	let tileName = tileElement.dataset.name;
+	let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
+	if (!btnElement) {
+		btnElement = document.createElement('button');
+		btnElement.classList.add('control', 'trayButton');
+		btnElement.dataset.action = 'restore';
+		btnElement.dataset.name = tileName;
+		btnElement.textContent = tileName;
+		mainViewTray.appendChild(btnElement);
+	}		
 }
-function setSingleOrZoom(el){
-	if(view == "Single") {
-		let z = toggleZoomToDataRange(el);
-		let c = el.querySelector('canvas');
-		if(z == 'in') {c.style = 'cursor:zoom-out;';} else {c.style = 'cursor:zoom-in;';}  
+function removeTrayButtonForTile(tileElement){
+	let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
+    if(btnElement) btnElement.remove();	
+}
+function setTileVisibility(tileElement){
+	let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
+	let tileMode = tileElement.dataset.name.split(" ")[1];
+	let toHide = false;
+	if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
+	if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
+	if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
+	if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
+	if(toHide) {
+		tileElement.classList.add('hidden');
+		if(btnElement) btnElement.classList.add('hidden');
 	} else {
-		view = "Single"
-		el.querySelector('.home').classList.remove('hidden');
-		el.querySelector('.maximise').classList.add('hidden');
-		el.querySelector('.minimise').classList.add('hidden');
-		const band = el.dataset.band;
-		for (const el2 of document.querySelectorAll('.bandTile')) {
-			if(el2.dataset.band && el2.dataset.band !=band) minimiseTile(el2);
+		tileElement.classList.remove('hidden');
+		if(btnElement) btnElement.classList.remove('hidden');
+	}	
+}
+function restoreTile(tileElement) {
+	tileElement.querySelector('.back').classList.add('hidden'); 
+	tileElement.querySelector('.maximise').classList.remove('hidden');
+	tileElement.querySelector('.minimise').classList.remove('hidden');
+	removeTrayButtonForTile(tileElement);
+	singleViewTileElement = false;
+	setTileVisibility(tileElement);
+}
+function mainViewClick(e){
+	let action = e.target.dataset.action;
+	let tileElement = e.target.closest('.tile');
+	let tileName = tileElement.dataset.name;
+	if(action=='minimise') {
+		tileElement.classList.add('hidden');
+		addTrayButtonForTile(tileElement);
+	}
+	if(action=='maximise'){
+		tileElement.querySelector('.back').classList.remove('hidden');
+		tileElement.querySelector('.maximise').classList.add('hidden');
+		tileElement.querySelector('.minimise').classList.add('hidden');
+		for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+			if(tileElement.dataset.name !=tileName) tileElement.classList.add('hidden');
 		}
-		document.getElementById('home-button').classList.remove("inactive");
-		document.getElementById('moreColumns').classList.add("inactive");
-		document.getElementById('fewerColumns').classList.add("inactive");
-		bandsGrid.setAttribute("style", "grid-template-columns: 1fr;");	
-		el.querySelector('canvas').style = 'cursor:zoom-in;';
-		console.log("Set view single");
+		tilesGrid.setAttribute("style", "grid-template-columns: 1fr");	
+		singleViewTileElement = tileElement;
 	}
-	checkMinimisedBands();
-}
-export function setMainViewHeight(){
-	let happ = document.getElementById('app').clientHeight;
-	let h = happ-20;
-	for (const elId of ['ribbon', 'mainViewTray', 'footer']){
-		let el = document.getElementById(elId);
-		h -= (el.clientHeight + 40);
+	if(action == 'back') { // same as loading Home view but don't reset nColumns and don't restore tiles minimised to tray
+		for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+			let btnElement = mainViewTray.querySelector('[data-name="'+tileElement.dataset.name+'"]');
+			if(!btnElement) restoreTile(tileElement);
+		}
+		tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+", 1fr");
 	}
-	h = ceilingXbyY(h, document.getElementById('app').clientWidth);
-	let el = document.getElementById('scrollContainer')
-	el.style.height = h+"px";
+	if(action == 'zoomIn' || action == 'resetZoom') tileInstances.get(tileName).zoom(e);
+}
+function sortTiles() {
+    const tileInstancesOrdered = Array.from(tileInstances).sort((a, b) => b[1].wavelength - a[1].wavelength);
+    for (const t of tileInstancesOrdered) {
+		tilesGrid.append(t[1].tileElement);
+		let btnElement = mainViewTray.querySelector('[data-name="'+t[1].tileElement.dataset.name+'"]');
+		if(btnElement) mainViewTray.append(btnElement);
+	}
 }
 
-function addRemoveColumns(direction){
-	if(view !="Home") return;
-	if (direction == "more") nColumns += (nColumns <10);
-	if (direction == "fewer") nColumns -= (nColumns >1);
-	const el = document.getElementById('bandsGrid');
-	el.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
-	console.log(document.getElementById('bandsGrid').elementStyle);
+function setHeight(){
+	let vh	=  window.innerHeight || document.documentElement.clientHeight;
+	let app =  parseInt(document.getElementById('app').offsetHeight);
+	let rib =  parseInt(document.getElementById('ribbon').offsetHeight);
+	let tray=  parseInt(document.getElementById('mainViewTray').offsetHeight);
+	let foot=  parseInt(document.getElementById('footer').offsetHeight);
+	let misc=  100;
+	let maxh = vh-rib-tray-foot-misc;
+	document.getElementById('scrollContainer').style.maxHeight = maxh+"px";	
 }
-
-function sortAndUpdateTiles() {
-    const container = document.getElementById('bandsGrid');
-    const orderedBands = Array.from(charts.keys()).sort((a, b) => wavelength(b) - wavelength(a));
-    for (const band of orderedBands) {
-        const chart = charts.get(band);
-        const tile  = document.querySelector(`.bandTile[data-band="${band}"]`);
-        chart.update('none');
-        if(view == "Home") toggleZoomToDataRange(chart.canvas, true);
-        container.appendChild(tile);
-    }
-    setMainViewHeight();
-}
-
-function wavelength(band) {
-    let wl = parseInt(band.split("m")[0]);
-    if (band.search("cm") > 0) {
-        return wl / 100
-    } else {
-        return wl
-    }
-}
-
-
-loadConfig();
-connectToFeed();
-startRibbon();
