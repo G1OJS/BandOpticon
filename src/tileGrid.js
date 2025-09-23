@@ -1,5 +1,6 @@
-import {updateSquaresList, updateMyCall, colours} from './config.js';
+import {updateSquaresList, colours} from './config.js';
 import {geoChart} from './geoChart.js';
+import {connectToFeed} from './mqtt.js';
 
 const ribbon = document.querySelector('#ribbon');
 const tray = document.querySelector('#mainViewTray');
@@ -16,7 +17,7 @@ document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 
 document.getElementById('homeButton').addEventListener("click", () => {loadHomeView();});	
-document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetTileGrid();});
+document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetTileGrid(); connectToFeed();});
 document.getElementById('moreColumns').addEventListener("click", () => {nColumns += (nColumns <10); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 ribbon.addEventListener('click', () => {loadHomeView()}); // catches changes to mode filters

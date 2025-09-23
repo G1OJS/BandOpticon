@@ -1,23 +1,12 @@
 const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
-const defaultCall="G1OJS";
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
-export var myCall;
-
 import {parseSquares} from './geo.js';
 
 export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(20, 20, 200, 0.5)',
 						  txhl:'rgba(255, 0, 0, 0.9)', 	rxhl:	'rgba(0, 255, 0, 0.9)',		txrxhl:'rgba(0, 0, 255, 0.9)',
-						conn:'rgba(80, 180, 250, .15)' , connhl: 'rgba(50, 50, 250, .5)',
+						conn:'rgba(80, 180, 250, .3)' , connhl: 'rgba(50, 50, 250, .5)',
 						map:'rgba(0,0,0,0.3)'};
-
-export function updateMyCall() {
-    myCall = document.getElementById('myCallInput').value;
-	myCall = myCall.toUpperCase();
-	document.getElementById('myCallInput').value = myCall;
-    console.log("my Call updated to " + myCall);
-    localStorage.setItem('myCall', myCall);
-}
 
 export function updateSquaresList() {
     let input = document.getElementById('homeSquaresInput');
@@ -55,14 +44,4 @@ export function loadConfig() {
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
-    // myCall (simple string, no JSON.parse)
-    let storedCall = localStorage.getItem('myCall');
-    if (storedCall && storedCall.trim() !== "") {
-        myCall = storedCall;
-        console.log("Loaded myCall " + myCall);
-    } else {
-        console.log("No local config data found for my callsign: defaults applied.");
-        myCall = defaultCall;
-    }
-    document.getElementById("myCallInput").value = myCall;
 }
