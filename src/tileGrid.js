@@ -5,7 +5,7 @@ import {connectToFeed} from './mqtt.js';
 const ribbon = document.querySelector('#ribbon');
 const tray = document.querySelector('#mainViewTray');
 const tilesGrid = document.querySelector('#tilesGrid');
-const sideBar = document.querySelector('#sideBar');
+const homeCallsList = document.querySelector('#homeCallsList');
 
 let nColumns = null;
 let tileInstances = null;
@@ -22,7 +22,14 @@ document.getElementById('moreColumns').addEventListener("click", () => {nColumns
 document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
 ribbon.addEventListener('click', () => {loadHomeView()}); // catches changes to mode filters
 tray.addEventListener('click', e =>   { if(e.target.dataset.action == 'restore') tileInstances.get(e.target.dataset.name).restore(); } );
-sideBar.addEventListener('click', e =>   { myCall = e.target.dataset.name; for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {tileInstances.get(tileElement.dataset.name).geoChart.redraw()};  } );
+
+homeCallsList.addEventListener('click', e =>   { 
+	myCall = e.target.dataset.name; 
+	e.target.classList.add("hlCall");
+	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
+		tileInstances.get(tileElement.dataset.name).geoChart.redraw()
+	};  
+});
 
 setInterval(() => sortTilesAndButtons(), 900);
 setInterval(() => updateTileStats(), 900);
@@ -90,9 +97,9 @@ function updateHomeCalls(){
 	let html='';
 	for (const homeCall of Array.from(homeCalls).sort()) {
 		let hl = (homeCall == myCall)? "hlCall":"";
-		html += "<span data-name = "+homeCall +" class = '"+hl+"'>"+homeCall+"</span><br>";
+		html += "<p data-name = "+homeCall +" class = '"+hl+"'>"+homeCall+"</p>";
 	}
-	document.getElementById('sideBar').innerHTML = html;
+	homeCallsList.innerHTML = html;
 }
 
 class tile{
@@ -117,7 +124,6 @@ class tile{
 
 		this.tileElement.addEventListener("mousemove", e => {this.geoChart.showInfo(e, this.canvasElement)}); 
 		this.tileElement.addEventListener("click", e => {	
-			//console.log(e.target.dataset.action);
 			if(e.target.dataset.action == 'minimise') this.minimise();
 			if(e.target.dataset.action == 'maximise') this.maximise();
 			if(e.target.dataset.action == 'back') this.restoreFromSingleView();
