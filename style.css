@@ -106,9 +106,9 @@ canvas				{width:100%}
 .right				{float:right;}
 .trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs); border:1px; font-weight: 600; }
 
-#sideBar			{padding-right:5px;}
+#sideBar			{padding-right:5px; width:100px;}
 #sideBarHeader		{margin-right:5px;}
-#sideBarScrollContainer	{display:table-cell; overflow-y:scroll;  }
+#sideBarScrollContainer	{display:table-cell; overflow-y:scroll; width:100px; }
 #homeCallsList		{display:grid; grid-template-columns: 1fr; }
 #homeCallsList > *  {font-size:var(--font-size-sm); margin:1px; padding:2px; width:fit-content;}
 .hlCall				{border: 2px solid blue;}
