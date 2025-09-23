@@ -8,8 +8,10 @@ setInterval(() => {
 	let rib =  parseInt(document.getElementById('ribbon').offsetHeight);
 	let tray=  parseInt(document.getElementById('mainViewTray').offsetHeight);
 	let foot=  parseInt(document.getElementById('footer').offsetHeight);
+	let scrl=  parseInt(document.getElementById('scrollContainer').offsetHeight);
 	let misc=  100;
 	let maxh = vh-rib-tray-foot-misc;
+	document.getElementById('sideBar').style.maxHeight = Math.min(scrl, maxh)+"px";	
 	document.getElementById('scrollContainer').style.maxHeight = maxh+"px";	
 }, 1100);
 
