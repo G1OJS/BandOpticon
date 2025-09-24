@@ -122,7 +122,7 @@ function updateHomeCalls(){
 	let html='';
 	for (const homeCall of Array.from(homeCalls).sort()) {
 		let hl = (homeCall == myCall)? "hlCall":"";
-		html += "<p data-name = "+homeCall +" class = '"+hl+"'>"+homeCall+"</p>";
+		html += "<p data-name = "+homeCall +" class = '"+hl+"' title = 'Click to highlight'>"+homeCall+"</p>";
 	}
 	homeCallsList.innerHTML = html;
 }
