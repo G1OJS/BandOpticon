@@ -1,4 +1,5 @@
 # BandOpticon Geo
+### What's it for? [Click here](https://g1ojs.github.io/BandOpticon/Uses)
 ### A live, visual, geographic view showing all bands and modes at once across the whole world, a filtered view, or a single connection:
 
 <img width="1208" height="675" alt="Mainpic" src="https://github.com/user-attachments/assets/bd9ea68e-9d74-4b90-9b2c-3ec8fc1f97cb" />
