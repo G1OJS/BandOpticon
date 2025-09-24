@@ -1,6 +1,5 @@
 import {mhToLatLong} from './geo.js'
-import {colours} from './config.js'
-import {myCall} from './tileGrid.js'
+import {myCall, colours} from './config.js'
 
 let worldGeoJSON = null;
 

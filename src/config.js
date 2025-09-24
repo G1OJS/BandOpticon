@@ -1,6 +1,7 @@
 const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
+export var myCall = "";
 import {parseSquares} from './geo.js';
 
 export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(20, 20, 200, 0.5)',
@@ -12,8 +13,14 @@ export function updateMyCall(myCall) {
 	myCall = myCall || document.getElementById('myCallInput').value;
 	myCall = myCall.toUpperCase();
 	document.getElementById('myCallInput').value = myCall;
-    console.log("my Call updated to " + myCall);
+}
+
+export function updateAndSaveMyCall(myCall) {
+	myCall = myCall || document.getElementById('myCallInput').value;
+	myCall = myCall.toUpperCase();
+	document.getElementById('myCallInput').value = myCall;
     localStorage.setItem('myCall', myCall);
+    console.log("my Call updated to " + myCall);
 }
 
 export function updateSquaresList() {
@@ -35,21 +42,24 @@ export function updateSquaresList() {
 export function loadConfig() {
     console.log("Loading config data");
 
-    // squaresList (complex, so parse JSON)
     let storedSquares = localStorage.getItem('squaresList');
-    if (storedSquares) {
-        try {
-            squaresList = JSON.parse(storedSquares);
-            console.log("Loaded squares list");
-        } catch (e) {
-            console.warn("Failed to parse squaresList, using defaults.");
-            squaresList = defaultSquaresList;
-        }
-    } else {
-        squaresList = defaultSquaresList;
-        console.log("No local config data found for squares list: defaults applied.");
-    }
+    if (storedSquares) { try {squaresList = JSON.parse(storedSquares);} catch (e) {storedSquares = false;} }
+	if (storedSquares) { 
+		console.log("Loaded squares list "+squaresList); 
+	} else {
+		squaresList = defaultSquaresList;
+		console.log("No local config data found for squares list: defaults applied.");
+	}
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
+	let storedCall = localStorage.getItem('myCall');
+	if (storedCall) { 
+		myCall = storedCall;
+		console.log("Loaded my call " + myCall); 
+		document.getElementById('myCallInput').value = myCall;
+	} else {
+		myCall = '';
+		console.log("No local config data found myCall.");
+	}
 }
