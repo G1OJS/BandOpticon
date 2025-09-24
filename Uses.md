@@ -1,4 +1,4 @@
-#What can you use BandOpticon for?
+# What can you use BandOpticon for?
 I wrote BandOpticon so that I could get a live view of all bands simultaneously, but without all bands being plotted on the same map.
 Very early on this led me towards making something based on a grid of tiles, each covering one band and/or mode. In my mind there are two
 main uses:
@@ -15,6 +15,7 @@ Below are some examples.
 <img width="702" height="576" alt="connect" src="https://github.com/user-attachments/assets/26b3128a-7b17-4934-953d-6c18436d952b" />
 
 ### Benchmarking My Rx performance
+In the screenshot below, the stronger colours show my Rx spots against the background of everyone else's.
 <img width="1155" height="906" alt="Benchmark" src="https://github.com/user-attachments/assets/ae8c06eb-5876-4324-862b-b1504e235786" />
 
 ### A look at Other Modes
