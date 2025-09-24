@@ -25,3 +25,5 @@ In the screenshot below, the stronger colours show my Rx spots against the backg
 ## A look at Other Modes
 <img width="1411" height="879" alt="Other modes" src="https://github.com/user-attachments/assets/a0a2fac9-6cdf-44d3-9ffc-98316ced4229" />
 
+<script data-goatcounter="https://g1ojs-github.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
