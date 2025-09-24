@@ -4,7 +4,9 @@ Very early on this led me towards making something based on a grid of tiles, eac
 main uses:
 1. The 'all bands at once' view, with an option for a detailed view showing connectivity of one or a few bands, and
 2. A way of overlaying my tx/rx spots with those of other stations 'close to' me.
-Below are some examples.
+   
+Below are some examples. I hope I've created something that allows you to get to what information you want easily.
+
 ### All Band Overview
 <img width="1379" height="785" alt="Allbands" src="https://github.com/user-attachments/assets/5a545694-84cf-4f4f-b27d-367474037ba3" />
 
