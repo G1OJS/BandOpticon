@@ -89,16 +89,15 @@ input				{font-size: var(--font-size-base); border: 1px solid var(--border-color
 input:invalid 		{border-color: #e66;background-color: #fee;}
 
 
-#mainView 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
+#mainView 			{display: grid; grid-template-columns: 100px 1fr; grid-template-rows: max-content auto; }
 #mainViewTray		{display:block;}
 .control:hover:not(.inactive) 	{border-color: var(--main-paper-color); background: var(--dark-paper-color);  cursor: pointer;}		
 .control.inactive 	{color: var(--muted-font-color); opacity:0.4;}			
 .legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-3px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-base); height:var(--font-size-base); margin-left:5px; margin-right:3px; border: 1px solid grey;}
-#scrollContainer	{display:table-cell; overflow-y:scroll;}
-					 
+#tilesGridScrollContainer	{display:table-cell; overflow-y:scroll;}					 
 #tilesGrid	 		{display:grid; grid-template-columns: 1fr 1fr 1fr; width:100%; gap:5px;}
-.windowBar			{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:5px; font-weight: 600; margin:0px; margin-bottom:3px;} 
+.windowBar			{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:5px; font-weight: 600; margin:2px; margin-bottom:3px;} 
 .tile	 			{padding:0px; padding-bottom:0px; min-width:0; height:max-content; overflow:clip;}
 .tileInfo			{font-size: var(--font-size-sm); font-weight:400;}
 canvas				{width:100%}
@@ -106,6 +105,13 @@ canvas				{width:100%}
 .windowBarButton	{display:inline-block; margin-right:5px;  box-shadow:1px 1px 1px 1px rgb(0 0 255 / .2); padding:0px 4px 2px 4px;}
 .right				{float:right;}
 .trayButton			{font-size: var(--font-size-xsm); padding: var(--spacing-xs); border:1px; font-weight: 600; }
+
+#sideBar			{padding-right:5px; width:100px;}
+#sideBarHeader		{margin-right:5px;}
+#sideBarScrollContainer	{display:table-cell; overflow-y:scroll; width:100px; }
+#homeCallsList		{display:grid; grid-template-columns: 1fr; }
+#homeCallsList > *  {font-size:var(--font-size-sm); margin:1px; padding:2px; width:fit-content;}
+.hlCall				{border: 2px solid blue;}
 
 #footer 			{display: grid; grid-template-columns: auto auto auto; grid-template-rows: auto; gap: var(--spacing-sm); font-size:var(--font-size-xsm); color:var(--muted-font-color);}
 a:link 				{color: #888;}
