@@ -5,8 +5,8 @@ export var squaresArr = []; // contains the full list of every square (level 4, 
 export var squaresList = ""; // the human-firendly list of squares to watch
 export var highlightCall = "";
 
-export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(20, 20, 200, 0.5)',
-						  txhl:'rgba(255, 51, 153, 1)', 	rxhl:	'rgba(102, 255, 51, 1)',		txrxhl:'rgba(51, 153, 255, 1)',
+export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(51, 153, 255, 0.5)',
+						  txhl:'rgba(255, 51, 153, 1)', 	rxhl:	'rgba(102, 255, 51, 1)',		txrxhl:'rgba(20, 20, 200, 1)',
 						conn:'rgba(80, 180, 250, .3)' , connhl: 'rgba(50, 50, 250, .5)',
 						map:'rgba(0,0,0,0.3)'};
 
