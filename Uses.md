@@ -14,6 +14,8 @@ Below are some examples. I hope I've created something that allows you to get to
 <img width="1155" height="895" alt="4 bands" src="https://github.com/user-attachments/assets/73e574fb-fd6a-4825-b6a9-3c2e6b11583b" />
 
 ### Connectivity Detail
+This screenshot shows detail from a plot of 2m FT8 activity. You can brows the callsigns by hovering the mouse, and you can select calls to 
+highlight from the list of 'home' calls on the left.
 <img width="702" height="576" alt="connect" src="https://github.com/user-attachments/assets/26b3128a-7b17-4934-953d-6c18436d952b" />
 
 ### Benchmarking My Rx performance
