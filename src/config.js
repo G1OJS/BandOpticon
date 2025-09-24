@@ -8,6 +8,14 @@ export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 
 						conn:'rgba(80, 180, 250, .3)' , connhl: 'rgba(50, 50, 250, .5)',
 						map:'rgba(0,0,0,0.3)'};
 
+export function updateMyCall(myCall) {
+	myCall = myCall || document.getElementById('myCallInput').value;
+	myCall = myCall.toUpperCase();
+	document.getElementById('myCallInput').value = myCall;
+    console.log("my Call updated to " + myCall);
+    localStorage.setItem('myCall', myCall);
+}
+
 export function updateSquaresList() {
     let input = document.getElementById('homeSquaresInput');
     let newSquaresList = input.value; // potentially mixed case but that's OK

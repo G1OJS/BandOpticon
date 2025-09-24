@@ -1,4 +1,4 @@
-import {updateSquaresList, colours} from './config.js';
+import {updateMyCall, updateSquaresList, colours} from './config.js';
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
@@ -16,26 +16,45 @@ document.getElementById('legendMarkerTx').style.background = colours.tx;
 document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 
-document.getElementById('homeButton').addEventListener("click", () => {loadHomeView();});	
-document.getElementById('homeSquaresInput').addEventListener('change', () => {updateSquaresList(); resetTileGrid(); connectToFeed();});
-document.getElementById('moreColumns').addEventListener("click", () => {nColumns += (nColumns <10); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
-document.getElementById('fewerColumns').addEventListener("click", () => {nColumns -= (nColumns >1); tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");});
-ribbon.addEventListener('click', () => {loadHomeView()}); // catches changes to mode filters
-tray.addEventListener('click', e =>   { if(e.target.dataset.action == 'restore') tileInstances.get(e.target.dataset.name).restore(); } );
-
+document.getElementById('homeButton').addEventListener("click", () => {
+	loadHomeView();
+});	
+document.getElementById('homeSquaresInput').addEventListener('change', () => {
+	updateSquaresList(); 
+	reloadApp(); 
+	connectToFeed();
+});
+document.getElementById('myCallInput').addEventListener('change', () => {
+	updateMyCall(); 
+	redrawVisibleTiles();
+});
+document.getElementById('moreColumns').addEventListener("click", () => {
+	nColumns += (nColumns <10); 
+	tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
+});
+document.getElementById('fewerColumns').addEventListener("click", () => {
+	nColumns -= (nColumns >1); 
+	tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
+});
+ribbon.addEventListener('click', () => { // catches changes to mode filters
+	loadHomeView()
+}); 
+tray.addEventListener('click', e =>   {
+	if(e.target.dataset.action == 'restore') 
+		tileInstances.get(e.target.dataset.name).restore(); 
+} );
 homeCallsList.addEventListener('click', e =>   { 
 	myCall = e.target.dataset.name; 
 	e.target.classList.add("hlCall");
-	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
-		tileInstances.get(tileElement.dataset.name).geoChart.redraw()
-	};  
+	updateMyCall(myCall); 
+	redrawVisibleTiles();
 });
 
 setInterval(() => sortTilesAndButtons(), 900);
 setInterval(() => updateTileStats(), 900);
 setInterval(() => updateHomeCalls(), 900);
 
-resetTileGrid();
+reloadApp();
 
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
@@ -52,10 +71,16 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	tileInstance.geoChart.retouchHighlights();
 }
 
-function resetTileGrid(){
+function reloadApp(){
 	tileInstances = new Map();
 	for (const el of document.querySelectorAll('.tile')) el.remove();
 	loadHomeView();
+}
+
+function redrawVisibleTiles(){
+	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
+		tileInstances.get(tileElement.dataset.name).geoChart.redraw()
+	};  
 }
 
 function loadHomeView(){
