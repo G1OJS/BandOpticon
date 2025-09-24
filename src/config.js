@@ -1,26 +1,27 @@
+import {parseSquares} from './geo.js';
 const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
+
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
-export var myCall = "";
-import {parseSquares} from './geo.js';
+export var highlightCall = "";
 
 export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(20, 20, 200, 0.5)',
 						  txhl:'rgba(255, 0, 0, 0.9)', 	rxhl:	'rgba(0, 255, 0, 0.9)',		txrxhl:'rgba(0, 0, 255, 0.9)',
 						conn:'rgba(80, 180, 250, .3)' , connhl: 'rgba(50, 50, 250, .5)',
 						map:'rgba(0,0,0,0.3)'};
 
-export function updateMyCall(myCall) {
-	myCall = myCall || document.getElementById('myCallInput').value;
-	myCall = myCall.toUpperCase();
-	document.getElementById('myCallInput').value = myCall;
+export function setHighlightCall(call) {
+	highlightCall = call;
+	document.getElementById('storedHighlightCallInput').value = highlightCall;
 }
 
-export function updateAndSaveMyCall(myCall) {
-	myCall = myCall || document.getElementById('myCallInput').value;
-	myCall = myCall.toUpperCase();
-	document.getElementById('myCallInput').value = myCall;
-    localStorage.setItem('myCall', myCall);
-    console.log("my Call updated to " + myCall);
+export function updateStoredHighlightCall() {
+	let storedHighlightCall = document.getElementById('storedHighlightCallInput').value;
+	storedHighlightCall = storedHighlightCall.toUpperCase();
+	document.getElementById('storedHighlightCallInput').value = storedHighlightCall;
+    localStorage.setItem('storedHighlightCall', storedHighlightCall);
+	setHighlightCall(storedHighlightCall);
+    console.log("my Call updated to " + storedHighlightCall);
 }
 
 export function updateSquaresList() {
@@ -53,13 +54,11 @@ export function loadConfig() {
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
-	let storedCall = localStorage.getItem('myCall');
-	if (storedCall) { 
-		myCall = storedCall;
-		console.log("Loaded my call " + myCall); 
-		document.getElementById('myCallInput').value = myCall;
-	} else {
-		myCall = '';
-		console.log("No local config data found myCall.");
+	let storedHighlightCall = localStorage.getItem('storedHighlightCall');
+	if (storedHighlightCall) { 
+		console.log("Loaded my call " + storedHighlightCall); 
+		document.getElementById('storedHighlightCallInput').value = storedHighlightCall;
+		setHighlightCall(storedHighlightCall);
 	}
+
 }

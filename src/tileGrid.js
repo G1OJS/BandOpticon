@@ -1,4 +1,4 @@
-import {myCall, updateMyCall, updateAndSaveMyCall, updateSquaresList, colours} from './config.js';
+import {updateStoredHighlightCall, updateSquaresList, setHighlightCall, colours, highlightCall} from './config.js';
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
@@ -23,8 +23,8 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 	reloadApp(); 
 	connectToFeed();
 });
-document.getElementById('myCallInput').addEventListener('change', () => {
-	updateAndSaveMyCall(); 
+document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
+	updateStoredHighlightCall(); 
 	redrawVisibleTiles();
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
@@ -36,14 +36,14 @@ document.getElementById('fewerColumns').addEventListener("click", () => {
 	tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
 });
 ribbon.addEventListener('click', () => { // catches changes to mode filters
-	loadHomeView()
+	updateTileVisibility();
 }); 
 tray.addEventListener('click', e =>   {
 	if(e.target.dataset.action == 'restore') 
 		tileInstances.get(e.target.dataset.name).restore(); 
 } );
 homeCallsList.addEventListener('click', e =>   { 
-	updateMyCall(e.target.dataset.name); 
+	setHighlightCall(e.target.dataset.name); 
 	e.target.classList.add("hlCall");
 	redrawVisibleTiles();
 });
@@ -75,9 +75,15 @@ function reloadApp(){
 	loadHomeView();
 }
 
+function updateTileVisibility(){
+	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+		tileInstances.get(tileElement.dataset.name).setVisibility();
+	};  
+}
+
 function redrawVisibleTiles(){
 	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
-		tileInstances.get(tileElement.dataset.name).geoChart.redraw()
+		tileInstances.get(tileElement.dataset.name).geoChart.redraw();
 	};  
 }
 
@@ -119,7 +125,7 @@ function updateHomeCalls(){
 	}
 	let html='';
 	for (const homeCall of Array.from(homeCalls).sort()) {
-		let hl = (homeCall == myCall)? "hlCall":"";
+		let hl = (homeCall == highlightCall)? "hlCall":"";
 		html += "<p data-name = "+homeCall +" class = '"+hl+"' title = 'Click to highlight'>"+homeCall+"</p>";
 	}
 	homeCallsList.innerHTML = html;

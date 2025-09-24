@@ -1,5 +1,5 @@
 import {mhToLatLong} from './geo.js'
-import {myCall, colours} from './config.js'
+import {colours, highlightCall} from './config.js'
 
 let worldGeoJSON = null;
 
@@ -34,32 +34,40 @@ export class geoChart{
 		return [x,y];
 	}
 	recordConnection(sRecord, rRecord){
+		// adds a connection to the list, draws it if it's new, 
+		// and updates/creates call records for s and r
 		let conn = sRecord.call+"|"+rRecord.call;
-		let highlight = (sRecord.call==myCall || rRecord.call==myCall);
-		this._recordCall(sRecord, highlight);
+		let highlight = (sRecord.call==highlightCall || rRecord.call==highlightCall);
+		this._recordCall(sRecord, highlight);  // always check s and r are recorded / updated
 		this._recordCall(rRecord, highlight);
-		if(!this.connRecords.has(conn)) {
-			this.connRecords.add(conn);
+		if(!this.connRecords.has(conn)) {	// only draw connection here if
+			this.connRecords.add(conn);		// it's a new connection
 			this._drawConnection(conn, highlight);
 		}
 	}
 	_recordCall(cRecord, highlight){
-		let callRecord = this.callRecords.get(cRecord.call) || cRecord;
-		if (callRecord.p == null) callRecord.p = this.px(mhToLatLong(cRecord.sq));
-		callRecord.tx ||= cRecord.tx;
-		callRecord.rx ||= cRecord.rx;
-		this.callRecords.set(cRecord.call, callRecord);
-		this._drawCall(callRecord, highlight);
+		let changes = false;
+		let call = cRecord.call;
+		if(!this.callRecords.get(call)) {
+			cRecord.p = this.px(mhToLatLong(cRecord.sq));
+			this.callRecords.set(call, cRecord);
+			changes = true;
+		}
+		let callRecord = this.callRecords.get(call);
+		if (cRecord.tx && !callRecord.tx) {callRecord.tx = true; changes = true;}
+		if (cRecord.rx && !callRecord.rx) {callRecord.rx = true; changes = true;}
+		if(changes) this._drawCall(callRecord, highlight);
 	}
 	_drawConnection(conn, highlight){
 		let col = highlight? colours.connhl:colours.conn;
-		let s = this.callRecords.get(conn.split("|")[0]); 
-		let r = this.callRecords.get(conn.split("|")[1]); 
+		let calls = conn.split("|");  
+		let sp = this.callRecords.get(calls[0]).p; 
+		let rp = this.callRecords.get(calls[1]).p; 
 		this.ctx.strokeStyle = col;
 		this.ctx.lineWidth=2;
 		this.ctx.beginPath();
-		this.ctx.moveTo(s.p[0],s.p[1]);
-		this.ctx.lineTo(r.p[0],r.p[1]);
+		this.ctx.moveTo(sp[0],sp[1]);
+		this.ctx.lineTo(rp[0],rp[1]);
 		this.ctx.stroke();
 	}
 	_drawCall(callRecord, highlight){
@@ -73,9 +81,22 @@ export class geoChart{
 		this.ctx.fill();
 	}
 	retouchHighlights(){
-		for (const [conn, connRecord] of this.connRecords.entries()){
-			if(conn.search(myCall)>=0) this._drawConnection(conn, true);
+		for (const conn of this.connRecords){
+	//		console.log(conn);
+			let calls = conn.split("|");  
+			if(calls[0]==highlightCall || calls[1]==highlightCall) {
+				console.log(calls);
+				this._drawCall(this.callRecords.get(calls[0], true));
+				this._drawCall(this.callRecords.get(calls[1], true));
+				this._drawConnection(conn, true);
+			}
 		}
+	}
+	redraw(){
+		this.drawMap();
+		for (const conn of this.connRecords) this._drawConnection(conn, false);
+		for (const call of this.callRecords.values()) this._drawCall(call, false);
+		this.retouchHighlights();	
 	}
 	drawMap(){
 		this.ctx.clearRect(0,0, 2000,2000);
@@ -101,7 +122,6 @@ export class geoChart{
 			this.ctx.stroke();
 		});
 	}
-
 	zoom(zoomAction, e){
 		if(zoomAction == 'reset') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
 
@@ -117,13 +137,6 @@ export class geoChart{
 		for (const callRecord of this.callRecords.values()) callRecord.p = this.px(mhToLatLong(callRecord.sq));
 		this.redraw();
 	}
-	redraw(){
-		this.drawMap();
-		for (const conn of this.connRecords) this._drawConnection(conn, false);
-		for (const call of this.callRecords.values()) this._drawCall(call, false);
-		this.retouchHighlights();	
-	}
-	
 	showInfo(e){
 		this.canvasElement.style = 'cursor:zoom-in;';
 		this.canvasElement.title = '';
