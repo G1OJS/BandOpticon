@@ -71,24 +71,22 @@ export class geoChart{
 		this.ctx.stroke();
 	}
 	_drawCall(callRecord, highlight){
+		this.ctx.beginPath();
+		this.ctx.arc(callRecord.p[0], callRecord.p[1], highlight? 7:6, 0, 6.282);
 		if(highlight){
 			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrxhl: (callRecord.tx? colours.txhl: colours.rxhl);
 		} else {
 			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrx: (callRecord.tx? colours.tx: colours.rx);
 		}
-		this.ctx.beginPath();
-		this.ctx.arc(callRecord.p[0],callRecord.p[1],8,0,6.282);
 		this.ctx.fill();
 	}
 	retouchHighlights(){
 		for (const conn of this.connRecords){
-	//		console.log(conn);
 			let calls = conn.split("|");  
 			if(calls[0]==highlightCall || calls[1]==highlightCall) {
-				console.log(calls);
-				this._drawCall(this.callRecords.get(calls[0], true));
-				this._drawCall(this.callRecords.get(calls[1], true));
 				this._drawConnection(conn, true);
+				this._drawCall(this.callRecords.get(calls[0]), true);
+				this._drawCall(this.callRecords.get(calls[1]), true);
 			}
 		}
 	}
