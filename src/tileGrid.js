@@ -1,4 +1,4 @@
-import {updateMyCall, updateSquaresList, colours} from './config.js';
+import {myCall, updateMyCall, updateAndSaveMyCall, updateSquaresList, colours} from './config.js';
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
@@ -10,7 +10,6 @@ const homeCallsList = document.querySelector('#homeCallsList');
 let nColumns = null;
 let tileInstances = null;
 let singleViewTileElement = false;
-export let myCall = null;
 
 document.getElementById('legendMarkerTx').style.background = colours.tx;
 document.getElementById('legendMarkerRx').style.background = colours.rx;
@@ -25,7 +24,7 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 	connectToFeed();
 });
 document.getElementById('myCallInput').addEventListener('change', () => {
-	updateMyCall(); 
+	updateAndSaveMyCall(); 
 	redrawVisibleTiles();
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
@@ -44,9 +43,8 @@ tray.addEventListener('click', e =>   {
 		tileInstances.get(e.target.dataset.name).restore(); 
 } );
 homeCallsList.addEventListener('click', e =>   { 
-	myCall = e.target.dataset.name; 
+	updateMyCall(e.target.dataset.name); 
 	e.target.classList.add("hlCall");
-	updateMyCall(myCall); 
 	redrawVisibleTiles();
 });
 
