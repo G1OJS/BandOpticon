@@ -1,5 +1,5 @@
 # What can you use BandOpticon for?
-I wrote BandOpticon so that I could get a live view of all bands simultaneously, but without all bands being plotted on the same map.
+I wrote [BandOpticon](https://g1ojs.github.io/BandOpticon/BandOpticon) so that I could get a live view of all bands simultaneously, but without all bands being plotted on the same map.
 Very early on this led me towards making something based on a grid of tiles, each covering one band and/or mode. In my mind there are two
 main uses:
 1. The 'all bands at once' view, with an option for a detailed view showing connectivity of one or a few bands, and
