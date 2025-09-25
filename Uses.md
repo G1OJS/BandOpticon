@@ -1,5 +1,5 @@
 # What can you use BandOpticon for?
-I wrote [BandOpticon](https://g1ojs.github.io/BandOpticon/BandOpticon) so that I could get a live view of all bands simultaneously, but without all bands being plotted on the same map.
+I wrote [BandOpticon](https://g1ojs.github.io/BandOpticon/BandOpticon) so that I could get a live view of all bands simultaneously, but without all bands being plotted on the same map. I also wanted an 'un fussy' app that just worked in a browser without installation, and works on a phone just as well as on a desktop.
 Very early on this led me towards making something based on a grid of tiles, each covering one band and/or mode. In my mind there are two
 main uses:
 1. The 'all bands at once' view, with an option for a detailed view showing connectivity of one or a few bands, and
@@ -19,7 +19,7 @@ I hope I've created something that allows you to get to what information you wan
 <img alt="4 bands" src="https://github.com/user-attachments/assets/73e574fb-fd6a-4825-b6a9-3c2e6b11583b" />
 
 ## Connectivity Detail
-This screenshot shows detail from a plot of 2m FT8 activity. You can brows the callsigns by hovering the mouse, and you can select calls to 
+This screenshot shows detail from a plot of 2m FT8 activity. You can browse the callsigns by hovering the mouse, and you can select calls to 
 highlight from the list of 'home' calls on the left.
 <img alt="connect" src="https://github.com/user-attachments/assets/26b3128a-7b17-4934-953d-6c18436d952b" />
 
