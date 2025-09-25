@@ -5,7 +5,12 @@ main uses:
 1. The 'all bands at once' view, with an option for a detailed view showing connectivity of one or a few bands, and
 2. A way of overlaying my tx/rx spots with those of other stations 'close to' me.
    
-Below are some examples. I hope I've created something that allows you to get to what information you want easily.
+Below are some examples. 
+I've put a lot of effort in recently to improve the user interface (and my JavaScript!). So you can quickly hop between looking at all bands, 
+a specific set of bands and modes, or just one band and mode, zoom in on an area, and highlight activity from a specific callsign. You can even
+set a different zoom level for each band you're watching simultaneously.
+
+I hope I've created something that allows you to get to what information you want easily.
 
 ## All Band Overview
 <img  alt="Allbands" src="https://github.com/user-attachments/assets/5a545694-84cf-4f4f-b27d-367474037ba3" />
