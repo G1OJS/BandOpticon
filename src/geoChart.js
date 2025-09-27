@@ -20,6 +20,7 @@ export class geoChart{
 		this.bgCol = 'white';
 		this.callRecords = new Map();
 		this.connRecords = new Set();
+		this.hasHighlights = false;
 		this.drawMap();
 	}
 	getStats(){ 
@@ -40,35 +41,35 @@ export class geoChart{
 		let highlight = (sRecord.call==highlightCall || rRecord.call==highlightCall);
 		this._recordCall(sRecord, highlight);  // always check s and r are recorded / updated
 		this._recordCall(rRecord, highlight);
-		if(!this.connRecords.has(conn)) {	// only draw connection here if
+		if(!this.connRecords.has(conn)) {	// only draw connection if
 			this.connRecords.add(conn);		// it's a new connection
 			this._drawConnection(conn, highlight);
 		}
 	}
+	_drawConnection(conn, highlight){
+		let col = highlight? colours.connhl:colours.conn;
+		let calls = conn.split("|");  
+		let sCallRecrd = this.callRecords.get(calls[0]); 
+		let rCallRecrd = this.callRecords.get(calls[1]); 
+		this.ctx.strokeStyle = col;
+		this.ctx.lineWidth=2;
+		this.ctx.beginPath();
+		this.ctx.moveTo(sCallRecrd.p[0],sCallRecrd.p[1]);
+		this.ctx.lineTo(rCallRecrd.p[0],rCallRecrd.p[1]);
+		this.ctx.stroke();
+		this._drawCall(sCallRecrd, highlight)
+		this._drawCall(rCallRecrd, highlight)
+		if(highlight) this.hasHighlights = true;
+	}
 	_recordCall(cRecord, highlight){
-		let changes = false;
 		let call = cRecord.call;
 		if(!this.callRecords.get(call)) {
 			cRecord.p = this.px(mhToLatLong(cRecord.sq));
 			this.callRecords.set(call, cRecord);
-			changes = true;
 		}
 		let callRecord = this.callRecords.get(call);
-		if (cRecord.tx && !callRecord.tx) {callRecord.tx = true; changes = true;}
-		if (cRecord.rx && !callRecord.rx) {callRecord.rx = true; changes = true;}
-		if(changes) this._drawCall(callRecord, highlight);
-	}
-	_drawConnection(conn, highlight){
-		let col = highlight? colours.connhl:colours.conn;
-		let calls = conn.split("|");  
-		let sp = this.callRecords.get(calls[0]).p; 
-		let rp = this.callRecords.get(calls[1]).p; 
-		this.ctx.strokeStyle = col;
-		this.ctx.lineWidth=2;
-		this.ctx.beginPath();
-		this.ctx.moveTo(sp[0],sp[1]);
-		this.ctx.lineTo(rp[0],rp[1]);
-		this.ctx.stroke();
+		if (cRecord.tx && !callRecord.tx) {callRecord.tx = true; }
+		if (cRecord.rx && !callRecord.rx) {callRecord.rx = true; }
 	}
 	_drawCall(callRecord, highlight){
 		this.ctx.beginPath();

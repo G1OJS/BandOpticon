@@ -2,7 +2,7 @@ import {updateStoredHighlightCall, updateSquaresList, setHighlightCall, colours,
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
-const ribbon = document.querySelector('#ribbon');
+const filters = document.querySelector('#filters');
 const tray = document.querySelector('#mainViewTray');
 const tilesGrid = document.querySelector('#tilesGrid');
 const homeCallsList = document.querySelector('#homeCallsList');
@@ -35,7 +35,7 @@ document.getElementById('fewerColumns').addEventListener("click", () => {
 	nColumns -= (nColumns >1); 
 	tilesGrid.setAttribute("style", "grid-template-columns: repeat("+nColumns+",1fr)");
 });
-ribbon.addEventListener('click', () => { // catches changes to mode filters
+filters.addEventListener('click', () => {
 	updateTileVisibility();
 }); 
 tray.addEventListener('click', e =>   {
@@ -181,6 +181,7 @@ class tile{
 		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
 		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
 		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
+		if(document.getElementById('Highlighted').checked && !this.geoChart.hasHighlights) toHide = true;
 		if(singleViewTileElement && singleViewTileElement != this.tileElement) toHide = true;
 		if(toHide) {
 			this.tileElement.classList.add('hidden');
