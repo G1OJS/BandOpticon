@@ -59,7 +59,10 @@ export class geoChart{
 		this.ctx.stroke();
 		this._drawCall(sCallRecrd, highlight)
 		this._drawCall(rCallRecrd, highlight)
-		if(highlight) this.hasHighlights = true;
+		if(highlight && !this.hasHighlights) {
+			this.hasHighlights = true; 
+			this.canvasElement.closest('.tile').classList.remove('hidden'); //kludge?
+		}
 	}
 	_recordCall(cRecord, highlight){
 		let call = cRecord.call;
@@ -92,6 +95,7 @@ export class geoChart{
 		}
 	}
 	redraw(){
+		this.hasHighlights = false;
 		this.drawMap();
 		for (const conn of this.connRecords) this._drawConnection(conn, false);
 		for (const call of this.callRecords.values()) this._drawCall(call, false);
