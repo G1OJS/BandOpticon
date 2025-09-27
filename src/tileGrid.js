@@ -25,7 +25,8 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 });
 document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
 	updateStoredHighlightCall(); 
-	redrawVisibleTiles();
+	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
+	updateTileVisibility();
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
 	nColumns += (nColumns <10); 
@@ -45,7 +46,8 @@ tray.addEventListener('click', e =>   {
 homeCallsList.addEventListener('click', e =>   { 
 	setHighlightCall(e.target.dataset.name); 
 	e.target.classList.add("hlCall");
-	redrawVisibleTiles();
+	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
+	updateTileVisibility();
 });
 
 setInterval(() => sortTilesAndButtons(), 900);
@@ -80,7 +82,11 @@ function updateTileVisibility(){
 		tileInstances.get(tileElement.dataset.name).setVisibility();
 	};  
 }
-
+function redrawAllTiles(){
+	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
+		tileInstances.get(tileElement.dataset.name).geoChart.redraw();
+	};  
+}
 function redrawVisibleTiles(){
 	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
 		tileInstances.get(tileElement.dataset.name).geoChart.redraw();
@@ -177,6 +183,7 @@ class tile{
 	setVisibility(){
 		let tileMode = this.name.split(" ")[1];
 		let toHide = false;
+		this.geoChart.redraw(); // necessary to check for highlights for highlights filter
 		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
 		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
 		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
