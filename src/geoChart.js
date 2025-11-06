@@ -18,14 +18,29 @@ export class geoChart{
 		this.canvasElementSize = {w:1200, h:600};
 		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 		this.bgCol = 'white';
+		this.stats = {};
 		this.callRecords = new Map();
 		this.connRecords = new Set();
 		this.hasHighlights = false;
 		this.drawMap();
 	}
 	getStats(){ 
-		return this.callRecords.size + "cls " + this.connRecords.size+"cns";
-	}
+		let totalTx = 0, totalRx = 0, total = 0;
+		for (const call of this.callRecords.keys()) {
+			let crec = this.callRecords.get(call);
+			if (crec.isInHome){
+				total +=1;
+				if(crec.tx) totalTx +=1;
+				if(crec.rx) totalRx +=1;
+			}
+		}
+		this.stats = {
+		  cls: total,
+		  tx_pc: Math.round(100*totalTx/total),
+		  rx_pc: Math.round(100*totalRx/total)
+		};
+
+}
 	px(ll){
 		let z = this.zoomParams;
 		let xnorm = 0.5 + z.scale*(ll[1] - z.lon0)/360;

@@ -118,7 +118,12 @@ function sortTilesAndButtons() {
 function updateTileStats(){
 	for (const tileElement of tilesGrid.querySelectorAll('.tile')){
 		let tileInstance = tileInstances.get(tileElement.dataset.name);
-		tileInstance.tileInfoElement.textContent = tileInstance.geoChart.getStats();
+		tileInstance.geoChart.getStats();
+		let s = tileInstance.geoChart.stats;
+		tileInstance.tileInfoElement.innerHTML = "Stats: "
+			+"<span title = 'Number of home callsigns'>" + s.cls + "</span> "
+			+"<span title = 'Percent transmitting'>" + s.tx_pc + "%</span> "
+			+"<span title = 'Percent receiving'>" + s.rx_pc + "%</span>";
 	}
 }
 
