@@ -25,7 +25,6 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 });
 document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
 	updateStoredHighlightCall(); 
-	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
 	updateTileVisibility();
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
@@ -46,7 +45,6 @@ tray.addEventListener('click', e =>   {
 homeCallsList.addEventListener('click', e =>   { 
 	setHighlightCall(e.target.dataset.name); 
 	e.target.classList.add("hlCall");
-	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
 	updateTileVisibility();
 });
 

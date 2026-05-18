@@ -21,7 +21,6 @@ export class geoChart{
 		this.stats = {};
 		this.cRecords = new Map();
 		this.connRecords = new Set();
-		this.hasHighlights = false;
 		this.drawMap();
 	}
 	getStats(){ 
