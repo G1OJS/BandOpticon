@@ -67,8 +67,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	}
 	let sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	let rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
-	tileInstance.geoChart.recordConnection(sRecord, rRecord);
-	tileInstance.geoChart.retouchHighlights();
+	tileInstance.geoChart.addConnection(sRecord, rRecord);
 }
 
 function reloadApp(){
@@ -130,7 +129,7 @@ function updateTileStats(){
 function updateHomeCalls(){
 	let homeCalls = new Set();
 	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')){
-		for (const call of tileInstances.get(tileElement.dataset.name).geoChart.callRecords) {
+		for (const call of tileInstances.get(tileElement.dataset.name).geoChart.cRecords) {
 			if (call[1].isInHome) homeCalls.add(call[0]);
 		}
 	}

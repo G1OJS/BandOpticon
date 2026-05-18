@@ -1,5 +1,5 @@
 import {mhToLatLong} from './geo.js'
-import {colours, highlightCall} from './config.js'
+import {colours} from './config.js'
 
 let worldGeoJSON = null;
 
@@ -19,15 +19,15 @@ export class geoChart{
 		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 		this.bgCol = 'white';
 		this.stats = {};
-		this.callRecords = new Map();
+		this.cRecords = new Map();
 		this.connRecords = new Set();
 		this.hasHighlights = false;
 		this.drawMap();
 	}
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
-		for (const call of this.callRecords.keys()) {
-			let crec = this.callRecords.get(call);
+		for (const call of this.cRecords.keys()) {
+			let crec = this.cRecords.get(call);
 			if (crec.isInHome){
 				total +=1;
 				if(crec.tx) totalTx +=1;
@@ -49,72 +49,71 @@ export class geoChart{
 		let y = this.canvasElementSize.h-this.canvasElementSize.h*ynorm;
 		return [x,y];
 	}
-	recordConnection(sRecord, rRecord){
-		// adds a connection to the list, draws it if it's new, 
-		// and updates/creates call records for s and r
+	addConnection(sRecord, rRecord){
+		let changed = false;
 		let conn = sRecord.call+"|"+rRecord.call;
-		let highlight = (sRecord.call==highlightCall || rRecord.call==highlightCall);
-		this._recordCall(sRecord, highlight);  // always check s and r are recorded / updated
-		this._recordCall(rRecord, highlight);
-		if(!this.connRecords.has(conn)) {	// only draw connection if
-			this.connRecords.add(conn);		// it's a new connection
-			this._drawConnection(conn, highlight);
+		if(!this.connRecords.has(conn)) {	
+			this.connRecords.add(conn);
+			changed = true;
 		}
+		this._refreshcRecord(sRecord);  
+		this._refreshcRecord(rRecord);
+		this._drawConnection(sRecord, rRecord);
 	}
-	_drawConnection(conn, highlight){
-		let col = highlight? colours.connhl:colours.conn;
-		let calls = conn.split("|");  
-		let sCallRecrd = this.callRecords.get(calls[0]); 
-		let rCallRecrd = this.callRecords.get(calls[1]); 
-		this.ctx.strokeStyle = col;
-		this.ctx.lineWidth=2;
-		this.ctx.beginPath();
-		this.ctx.moveTo(sCallRecrd.p[0],sCallRecrd.p[1]);
-		this.ctx.lineTo(rCallRecrd.p[0],rCallRecrd.p[1]);
-		this.ctx.stroke();
-		this._drawCall(sCallRecrd, highlight)
-		this._drawCall(rCallRecrd, highlight)
-		if(highlight && !this.hasHighlights) {
-			this.hasHighlights = true; 
-			this.canvasElement.closest('.tile').classList.remove('hidden'); //kludge?
-		}
-	}
-	_recordCall(cRecord, highlight){
-		let call = cRecord.call;
-		if(!this.callRecords.get(call)) {
-			cRecord.p = this.px(mhToLatLong(cRecord.sq));
-			this.callRecords.set(call, cRecord);
-		}
-		let callRecord = this.callRecords.get(call);
-		if (cRecord.tx && !callRecord.tx) {callRecord.tx = true; }
-		if (cRecord.rx && !callRecord.rx) {callRecord.rx = true; }
-	}
-	_drawCall(callRecord, highlight){
-		this.ctx.beginPath();
-		this.ctx.arc(callRecord.p[0], callRecord.p[1], highlight? 7:6, 0, 6.282);
-		if(highlight){
-			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrxhl: (callRecord.tx? colours.txhl: colours.rxhl);
+	
+	_refreshcRecord(cRecordNew){
+		let call = cRecordNew.call;
+		let cRecordExisting = this.cRecords.get(call);
+		let changed = false;
+		if(cRecordExisting === undefined) {
+			changed = true;
 		} else {
-			this.ctx.fillStyle = (callRecord.tx && callRecord.rx)? colours.txrx: (callRecord.tx? colours.tx: colours.rx);
+			if (cRecordNew.tx && !cRecordExisting.tx) {cRecordExisting.tx = true; changed = true;}
+			if (cRecordNew.rx && !cRecordExisting.rx) {cRecordExisting.rx = true; changed = true;}
 		}
-		this.ctx.fill();
+		if (changed) {
+			this.cRecords.set(call, cRecordNew);
+		}
+		return changed;
 	}
-	retouchHighlights(){
-		for (const conn of this.connRecords){
-			let calls = conn.split("|");  
-			if(calls[0]==highlightCall || calls[1]==highlightCall) {
-				this._drawConnection(conn, true);
-				this._drawCall(this.callRecords.get(calls[0]), true);
-				this._drawCall(this.callRecords.get(calls[1]), true);
+	
+	_drawConnection(sRecord, rRecord){
+
+		for (const cRecord of [sRecord, rRecord]) {
+			if (cRecord.p === null) {
+				cRecord.p = this.px(mhToLatLong(cRecord.sq));
 			}
+			this.ctx.beginPath();
+			this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
+			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
+			this.ctx.fill();
 		}
+		
+		let col = colours.conn; 
+
+		//this.ctx.strokeStyle = col;
+		//this.ctx.lineWidth=2;
+		//this.ctx.beginPath();
+		//this.ctx.moveTo(sCallRecrd.p[0],sCallRecrd.p[1]);
+		//this.ctx.lineTo(rCallRecrd.p[0],rCallRecrd.p[1]);
+		//this.ctx.stroke();
+		//if(highlight && !this.hasHighlights) {
+		//	this.hasHighlights = true; 
+		//	this.canvasElement.closest('.tile').classList.remove('hidden'); //kludge?
+		//}
+
+
 	}
+
 	redraw(){
-		this.hasHighlights = false;
 		this.drawMap();
-		for (const conn of this.connRecords) this._drawConnection(conn, false);
-		for (const call of this.callRecords.values()) this._drawCall(call, false);
-		this.retouchHighlights();	
+		for (const conn of this.connRecords) {
+			let calls = conn.split('|');
+			console.log(calls[0]);
+			let sRecord = this.cRecords.get(calls[0]);
+			let rRecord = this.cRecords.get(calls[1]);
+			this._drawConnection(sRecord, rRecord);
+		}
 	}
 	drawMap(){
 		this.ctx.clearRect(0,0, 2000,2000);
@@ -151,8 +150,7 @@ export class geoChart{
 			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
 			this.zoomParams.scale = this.zoomParams.scale *1.2;
 		}
-		
-		for (const callRecord of this.callRecords.values()) callRecord.p = this.px(mhToLatLong(callRecord.sq));
+		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(mhToLatLong(cRecord.sq));
 		this.redraw();
 	}
 	showInfo(e){
@@ -162,8 +160,8 @@ export class geoChart{
 		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
 		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
 
-		for (const [call, callRecord] of this.callRecords.entries()) { 
-			let p = callRecord.p;
+		for (const [call, cRecord] of this.cRecords.entries()) { 
+			let p = cRecord.p;
 			if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
 				this.canvasElement.title = call;
 				this.canvasElement.style = 'cursor:default;';
