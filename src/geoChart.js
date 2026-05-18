@@ -1,5 +1,5 @@
 import {mhToLatLong} from './geo.js'
-import {colours} from './config.js'
+import {colours, highlightCall} from './config.js'
 
 let worldGeoJSON = null;
 
@@ -49,16 +49,17 @@ export class geoChart{
 		let y = this.canvasElementSize.h-this.canvasElementSize.h*ynorm;
 		return [x,y];
 	}
-	addConnection(sRecord, rRecord){
-		let changed = false;
+	addConnection(sRecord, rRecord, changed){
 		let conn = sRecord.call+"|"+rRecord.call;
+		changed |= this._refreshcRecord(sRecord);  
+		changed |= this._refreshcRecord(rRecord);
 		if(!this.connRecords.has(conn)) {	
 			this.connRecords.add(conn);
 			changed = true;
 		}
-		this._refreshcRecord(sRecord);  
-		this._refreshcRecord(rRecord);
-		this._drawConnection(sRecord, rRecord);
+		if (changed) {
+			this._drawConnection(sRecord, rRecord);
+		}
 	}
 	
 	_refreshcRecord(cRecordNew){
@@ -68,8 +69,10 @@ export class geoChart{
 		if(cRecordExisting === undefined) {
 			changed = true;
 		} else {
-			if (cRecordNew.tx && !cRecordExisting.tx) {cRecordExisting.tx = true; changed = true;}
-			if (cRecordNew.rx && !cRecordExisting.rx) {cRecordExisting.rx = true; changed = true;}
+			changed |= (cRecordNew.tx != cRecordExisting.tx)
+			changed |= (cRecordNew.rx != cRecordExisting.rx)
+			cRecordNew.tx |= cRecordExisting.tx;
+			cRecordNew.rx |= cRecordExisting.rx;
 		}
 		if (changed) {
 			this.cRecords.set(call, cRecordNew);
@@ -78,30 +81,35 @@ export class geoChart{
 	}
 	
 	_drawConnection(sRecord, rRecord){
-
-		for (const cRecord of [sRecord, rRecord]) {
-			if (cRecord.p === null) {
-				cRecord.p = this.px(mhToLatLong(cRecord.sq));
-			}
-			this.ctx.beginPath();
-			this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
-			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
-			this.ctx.fill();
-		}
 		
-		let col = colours.conn; 
+		if ( (sRecord.isInHome && document.getElementById('homeTx').checked) || (rRecord.isInHome && document.getElementById('homeRx').checked) ) {
 
-		//this.ctx.strokeStyle = col;
-		//this.ctx.lineWidth=2;
-		//this.ctx.beginPath();
-		//this.ctx.moveTo(sCallRecrd.p[0],sCallRecrd.p[1]);
-		//this.ctx.lineTo(rCallRecrd.p[0],rCallRecrd.p[1]);
-		//this.ctx.stroke();
-		//if(highlight && !this.hasHighlights) {
-		//	this.hasHighlights = true; 
-		//	this.canvasElement.closest('.tile').classList.remove('hidden'); //kludge?
-		//}
-
+			for (const cRecord of [sRecord, rRecord]) {
+				if (cRecord.p === null) {
+					cRecord.p = this.px(mhToLatLong(cRecord.sq));
+				}
+				this.ctx.beginPath();
+				this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
+				this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
+				this.ctx.fill();
+			}
+			
+			if (sRecord.call == highlightCall || rRecord.call == highlightCall) {
+				this.ctx.strokeStyle = "black";
+				this.ctx.lineWidth=2;
+				this.ctx.beginPath();
+				this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
+				this.ctx.lineTo(rRecord.p[0],rRecord.p[1]);
+				this.ctx.stroke();
+				this.ctx.beginPath();
+				this.ctx.arc(sRecord.p[0], sRecord.p[1], 6, 0, 6.282);
+				this.ctx.stroke();
+				this.ctx.beginPath();
+				this.ctx.arc(rRecord.p[0], rRecord.p[1], 6, 0, 6.282);
+				this.ctx.stroke();
+			}
+		
+		}
 
 	}
 
@@ -112,7 +120,7 @@ export class geoChart{
 			console.log(calls[0]);
 			let sRecord = this.cRecords.get(calls[0]);
 			let rRecord = this.cRecords.get(calls[1]);
-			this._drawConnection(sRecord, rRecord);
+			this.addConnection(sRecord, rRecord, true);
 		}
 	}
 	drawMap(){

@@ -67,7 +67,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	}
 	let sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	let rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
-	tileInstance.geoChart.addConnection(sRecord, rRecord);
+	tileInstance.geoChart.addConnection(sRecord, rRecord, false);
 }
 
 function reloadApp(){
@@ -187,12 +187,10 @@ class tile{
 	setVisibility(){
 		let tileMode = this.name.split(" ")[1];
 		let toHide = false;
-		this.geoChart.redraw(); // necessary to check for highlights for highlights filter
 		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
 		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
 		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
 		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
-		if(document.getElementById('Highlighted').checked && !this.geoChart.hasHighlights) toHide = true;
 		if(singleViewTileElement && singleViewTileElement != this.tileElement) toHide = true;
 		if(toHide) {
 			this.tileElement.classList.add('hidden');
@@ -200,6 +198,7 @@ class tile{
 		} else {
 			this.tileElement.classList.remove('hidden');
 			if(this.btnElement) this.btnElement.classList.remove('hidden');
+			this.geoChart.redraw(); 
 		}	
 	}
 	restore() {
