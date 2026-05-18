@@ -25,7 +25,6 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 });
 document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
 	updateStoredHighlightCall(); 
-	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
 	updateTileVisibility();
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
@@ -46,7 +45,6 @@ tray.addEventListener('click', e =>   {
 homeCallsList.addEventListener('click', e =>   { 
 	setHighlightCall(e.target.dataset.name); 
 	e.target.classList.add("hlCall");
-	redrawAllTiles(); //(forces update of 'geoTile.hasHighlights' for this new highlighted callsign)
 	updateTileVisibility();
 });
 
@@ -67,8 +65,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	}
 	let sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	let rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
-	tileInstance.geoChart.recordConnection(sRecord, rRecord);
-	tileInstance.geoChart.retouchHighlights();
+	tileInstance.geoChart.addConnection(sRecord, rRecord, false);
 }
 
 function reloadApp(){
@@ -130,7 +127,7 @@ function updateTileStats(){
 function updateHomeCalls(){
 	let homeCalls = new Set();
 	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')){
-		for (const call of tileInstances.get(tileElement.dataset.name).geoChart.callRecords) {
+		for (const call of tileInstances.get(tileElement.dataset.name).geoChart.cRecords) {
 			if (call[1].isInHome) homeCalls.add(call[0]);
 		}
 	}
@@ -188,12 +185,10 @@ class tile{
 	setVisibility(){
 		let tileMode = this.name.split(" ")[1];
 		let toHide = false;
-		this.geoChart.redraw(); // necessary to check for highlights for highlights filter
 		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
 		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
 		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
 		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
-		if(document.getElementById('Highlighted').checked && !this.geoChart.hasHighlights) toHide = true;
 		if(singleViewTileElement && singleViewTileElement != this.tileElement) toHide = true;
 		if(toHide) {
 			this.tileElement.classList.add('hidden');
@@ -201,6 +196,7 @@ class tile{
 		} else {
 			this.tileElement.classList.remove('hidden');
 			if(this.btnElement) this.btnElement.classList.remove('hidden');
+			this.geoChart.redraw(); 
 		}	
 	}
 	restore() {
