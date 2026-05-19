@@ -4,6 +4,7 @@ const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
 export var highlightCall = "";
+export var storedHighlightCall = "";
 
 export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(51, 153, 255, 0.5)',
 						conn:'rgba(20, 20, 20, 1)' ,
@@ -15,9 +16,7 @@ export function setHighlightCall(call) {
 }
 
 export function updateStoredHighlightCall() {
-	let storedHighlightCall = document.getElementById('storedHighlightCallInput').value;
-	storedHighlightCall = storedHighlightCall.toUpperCase();
-	document.getElementById('storedHighlightCallInput').value = storedHighlightCall;
+	storedHighlightCall = document.getElementById('storedHighlightCallInput').value.toUpperCase();
     localStorage.setItem('storedHighlightCall', storedHighlightCall);
 	setHighlightCall(storedHighlightCall);
     console.log("my Call updated to " + storedHighlightCall);
@@ -56,7 +55,7 @@ export function loadConfig() {
 	let storedHighlightCall = localStorage.getItem('storedHighlightCall');
 	if (storedHighlightCall) { 
 		console.log("Loaded my call " + storedHighlightCall); 
-		document.getElementById('storedHighlightCallInput').value = storedHighlightCall;
+		document.getElementById('storedHighlightCallInput').value = storedHighlightCall.toUpperCase();;
 		setHighlightCall(storedHighlightCall);
 	}
 

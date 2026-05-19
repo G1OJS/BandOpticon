@@ -1,5 +1,6 @@
 import {mhToLatLong} from './geo.js'
-import {colours, highlightCall} from './config.js'
+import {colours, highlightCall, setHighlightCall} from './config.js'
+import {singleViewTileElement} from './tileGrid.js'
 
 let worldGeoJSON = null;
 
@@ -57,7 +58,7 @@ export class geoChart{
 			changed = true;
 		}
 		if (changed) {
-			this._drawConnection(sRecord, rRecord);
+			this._updateCanvas(sRecord, rRecord);
 		}
 	}
 	
@@ -79,7 +80,7 @@ export class geoChart{
 		return changed;
 	}
 	
-	_drawConnection(sRecord, rRecord){
+	_updateCanvas(sRecord, rRecord){
 		
 		if ( (sRecord.isInHome && document.getElementById('homeTx').checked) || (rRecord.isInHome && document.getElementById('homeRx').checked) ) {
 
@@ -160,18 +161,24 @@ export class geoChart{
 		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(mhToLatLong(cRecord.sq));
 		this.redraw();
 	}
-	showInfo(e){
-		this.canvasElement.style = 'cursor:zoom-in;';
-		this.canvasElement.title = '';
-		let rect = this.canvasElement.getBoundingClientRect();
-		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
-		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
+	onHover(e){
+		if (singleViewTileElement) {
+			this.canvasElement.style = 'cursor:zoom-in;';
+			this.canvasElement.title = '';
+			let rect = this.canvasElement.getBoundingClientRect();
+			let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+			let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
 
-		for (const [call, cRecord] of this.cRecords.entries()) { 
-			let p = cRecord.p;
-			if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
-				this.canvasElement.title = call;
-				this.canvasElement.style = 'cursor:default;';
+			for (const [call, cRecord] of this.cRecords.entries()) { 
+				let p = cRecord.p;
+				if (p !== null) { // some cRecords might not have had p set in _updateCanvas
+					if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
+						this.canvasElement.style = 'cursor:default;';
+						this.canvasElement.title = call;
+						setHighlightCall(call);
+						this.redraw();
+					}
+				}
 			}
 		}
 	}

@@ -1,15 +1,15 @@
-import {updateStoredHighlightCall, updateSquaresList, setHighlightCall, colours, highlightCall} from './config.js';
+import {storedHighlightCall, updateStoredHighlightCall, updateSquaresList, setHighlightCall, colours, highlightCall, loadConfig} from './config.js';
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
+
+export var singleViewTileElement = false;
 
 const filters = document.querySelector('#filters');
 const tray = document.querySelector('#mainViewTray');
 const tilesGrid = document.querySelector('#tilesGrid');
-const homeCallsList = document.querySelector('#homeCallsList');
 
 let nColumns = null;
 let tileInstances = null;
-let singleViewTileElement = false;
 
 document.getElementById('legendMarkerTx').style.background = colours.tx;
 document.getElementById('legendMarkerRx').style.background = colours.rx;
@@ -25,7 +25,7 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 });
 document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
 	updateStoredHighlightCall(); 
-	updateTileVisibility();
+	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {tileInstances.get(tileElement.dataset.name).setVisibility();}	;
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
 	nColumns += (nColumns <10); 
@@ -42,15 +42,9 @@ tray.addEventListener('click', e =>   {
 	if(e.target.dataset.action == 'restore') 
 		tileInstances.get(e.target.dataset.name).restore(); 
 } );
-homeCallsList.addEventListener('click', e =>   { 
-	setHighlightCall(e.target.dataset.name); 
-	e.target.classList.add("hlCall");
-	updateTileVisibility();
-});
 
 setInterval(() => sortTilesAndButtons(), 900);
 setInterval(() => updateTileStats(), 900);
-setInterval(() => updateHomeCalls(), 900);
 
 reloadApp();
 
@@ -73,25 +67,14 @@ function reloadApp(){
 	for (const el of document.querySelectorAll('.tile')) el.remove();
 	loadHomeView();
 }
-
 function updateTileVisibility(){
 	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
 		tileInstances.get(tileElement.dataset.name).setVisibility();
 	};  
 }
-function redrawAllTiles(){
-	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {
-		tileInstances.get(tileElement.dataset.name).geoChart.redraw();
-	};  
-}
-function redrawVisibleTiles(){
-	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')) {
-		tileInstances.get(tileElement.dataset.name).geoChart.redraw();
-	};  
-}
-
 function loadHomeView(){
 	nColumns = 3;
+	loadConfig();
 	tilesGrid.setAttribute("style", "grid-template-columns: 1fr 1fr 1fr;");	
 	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {tileInstances.get(tileElement.dataset.name).restore();}	
 }
@@ -124,21 +107,6 @@ function updateTileStats(){
 	}
 }
 
-function updateHomeCalls(){
-	let homeCalls = new Set();
-	for (const tileElement of tilesGrid.querySelectorAll('.tile:not(.hidden)')){
-		for (const call of tileInstances.get(tileElement.dataset.name).geoChart.cRecords) {
-			if (call[1].isInHome) homeCalls.add(call[0]);
-		}
-	}
-	let html='';
-	for (const homeCall of Array.from(homeCalls).sort()) {
-		let hl = (homeCall == highlightCall)? "hlCall":"";
-		html += "<p data-name = "+homeCall +" class = '"+hl+"' title = 'Click to highlight'>"+homeCall+"</p>";
-	}
-	homeCallsList.innerHTML = html;
-}
-
 class tile{
 	constructor(tileTitleText, restoreFromSingleView) {
 		console.log("Create tile "+tileTitleText);
@@ -159,7 +127,8 @@ class tile{
 		if (band.search("cm") > 0) wl /= 100;
 		this.wavelength = wl;
 
-		this.tileElement.addEventListener("mousemove", e => {this.geoChart.showInfo(e, this.canvasElement)}); 
+		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onHover(e, this.canvasElement)}); 
+		
 		this.tileElement.addEventListener("click", e => {	
 			if(e.target.dataset.action == 'minimise') this.minimise();
 			if(e.target.dataset.action == 'maximise') this.maximise();

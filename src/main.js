@@ -12,11 +12,8 @@ setInterval(() => {
 	let misc=  100;
 	let maxh = vh-rib-tray-foot-misc;
 
-	document.getElementById('sideBar').style.maxHeight = maxh+"px";	
 	document.getElementById('tilesGridScrollContainer').style.maxHeight = maxh+"px";
 	
-	let sbh = parseInt(document.getElementById('sideBarHeader').offsetHeight);
-	document.getElementById('homeCallsList').style.maxHeight = (maxh-sbh)+"px";
 }, 1100);
 
 document.addEventListener('DOMContentLoaded', () => {
