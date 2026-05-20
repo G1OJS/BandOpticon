@@ -1,4 +1,4 @@
-import {storedHighlightCall, updateStoredHighlightCall, updateSquaresList, setHighlightCall, colours, highlightCall, loadConfig} from './config.js';
+import {updatemyCall, updateSquaresList, colours, loadConfig} from './config.js';
 import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
@@ -23,8 +23,8 @@ document.getElementById('homeSquaresInput').addEventListener('change', () => {
 	reloadApp(); 
 	connectToFeed();
 });
-document.getElementById('storedHighlightCallInput').addEventListener('change', () => {
-	updateStoredHighlightCall(); 
+document.getElementById('myCallInput').addEventListener('change', () => {
+	updatemyCall(); 
 	for (const tileElement of tilesGrid.querySelectorAll('.tile')) {tileInstances.get(tileElement.dataset.name).setVisibility();}	;
 });
 document.getElementById('moreColumns').addEventListener("click", () => {
@@ -127,7 +127,7 @@ class tile{
 		if (band.search("cm") > 0) wl /= 100;
 		this.wavelength = wl;
 
-		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onHover(e, this.canvasElement)}); 
+		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onMouseMove(e, this.canvasElement)}); 
 		
 		this.tileElement.addEventListener("click", e => {	
 			if(e.target.dataset.action == 'minimise') this.minimise();
@@ -165,7 +165,7 @@ class tile{
 		} else {
 			this.tileElement.classList.remove('hidden');
 			if(this.btnElement) this.btnElement.classList.remove('hidden');
-			this.geoChart.redraw(); 
+			this.geoChart.redraw(document.getElementById('myCallInput').value); 
 		}	
 	}
 	restore() {

@@ -1,5 +1,5 @@
 import {mhToLatLong} from './geo.js'
-import {colours, highlightCall, setHighlightCall} from './config.js'
+import {colours} from './config.js'
 import {singleViewTileElement} from './tileGrid.js'
 
 let worldGeoJSON = null;
@@ -15,6 +15,7 @@ worldGeoJSON = data;
 export class geoChart{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
+		this.myCall = document.getElementById('myCallInput').value;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
 		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
@@ -58,7 +59,7 @@ export class geoChart{
 			changed = true;
 		}
 		if (changed) {
-			this._updateCanvas(sRecord, rRecord);
+			this._updateCanvas(sRecord, rRecord, this.myCall);
 		}
 	}
 	
@@ -80,7 +81,7 @@ export class geoChart{
 		return changed;
 	}
 	
-	_updateCanvas(sRecord, rRecord){
+	_updateCanvas(sRecord, rRecord, highlightCall){
 		
 		if ( (sRecord.isInHome && document.getElementById('homeTx').checked) || (rRecord.isInHome && document.getElementById('homeRx').checked) ) {
 
@@ -113,14 +114,13 @@ export class geoChart{
 
 	}
 
-	redraw(){
+	redraw(highlightCall){
 		this.drawMap();
 		for (const conn of this.connRecords) {
 			let calls = conn.split('|');
-			console.log(calls[0]);
 			let sRecord = this.cRecords.get(calls[0]);
 			let rRecord = this.cRecords.get(calls[1]);
-			this.addConnection(sRecord, rRecord, true);
+			this._updateCanvas(sRecord, rRecord, highlightCall);
 		}
 	}
 	drawMap(){
@@ -159,10 +159,11 @@ export class geoChart{
 			this.zoomParams.scale = this.zoomParams.scale *1.2;
 		}
 		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(mhToLatLong(cRecord.sq));
-		this.redraw();
+		this.redraw(this.myCall);
 	}
-	onHover(e){
+	onMouseMove(e){
 		if (singleViewTileElement) {
+			let hovering_over = "G1OJS";
 			this.canvasElement.style = 'cursor:zoom-in;';
 			this.canvasElement.title = '';
 			let rect = this.canvasElement.getBoundingClientRect();
@@ -175,11 +176,13 @@ export class geoChart{
 					if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
 						this.canvasElement.style = 'cursor:default;';
 						this.canvasElement.title = call;
-						setHighlightCall(call);
-						this.redraw();
+						hovering_over = call;
 					}
 				}
 			}
+
+			this.redraw(hovering_over);
+
 		}
 	}
 }
