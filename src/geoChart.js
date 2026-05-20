@@ -96,7 +96,8 @@ export class geoChart{
 			}
 			
 			if (sRecord.call == highlightCall || rRecord.call == highlightCall) {
-				this.ctx.strokeStyle = "black";
+				this.ctx.strokeStyle = colours.rx;
+				if (sRecord.call == highlightCall) this.ctx.strokeStyle = colours.tx;
 				this.ctx.lineWidth=2;
 				this.ctx.beginPath();
 				this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
