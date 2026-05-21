@@ -5,29 +5,39 @@ import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
 var mqttClient = null;
 
-export function connectToFeed() {
+export function connectToFeed(bands) {
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
     mqttClient = mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess = subscribe();
+    mqttClient.onSuccess = subscribe(bands);
     mqttClient.on("message", (filter, message) => {
         onMessage(message.toString());
     });
 }
 
-function subscribe() {
+function validate_band(band){
+	let valid = true;
+	valid = valid && band.endsWith('m');
+	return (valid);
+}
+
+function subscribe(bands) {
     // find the topics for the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
     let topics = new Set;
-    for (let i = 0; i < squaresArr.length; i++) {
-        topics.add('pskr/filter/v2/+/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/+/#');
-        topics.add('pskr/filter/v2/+/+/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/#');
-    }
+	for (const b of bands) {
+		if (validate_band(b)) {
+			for (let i = 0; i < squaresArr.length; i++) {
+				topics.add('pskr/filter/v2/'+b+'/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/+/#');
+				topics.add('pskr/filter/v2/'+b+'/+/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/#');
+			}
+		}
+	}
     // now subscribe to the topics
-    Array.from(topics).forEach((t) => {
-        console.log("Subscribe to " + t);
-        mqttClient.subscribe(t, (error) => {
-            if (error) {console.error('subscription failed to ' + t, error)}
-        });
-    });
+	Array.from(topics).forEach((t) => {
+		console.log("Subscribe to " + t);
+		mqttClient.subscribe(t, (error) => {
+			if (error) {console.error('subscription failed to ' + t, error)}
+		});
+	});
 }
 
 function onMessage(msg) {

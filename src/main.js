@@ -2,6 +2,16 @@
 import {loadConfig} from './config.js';
 import {connectToFeed} from './mqtt.js';
 
+let bands = '+';
+
+let url = new URL(window.location.href);
+let params = new URLSearchParams(url.search);
+if (params){
+	let b = params.get("b");
+	if (b){
+		{bands = b.split(',');}
+	}
+}
 setInterval(() => {
 	let vh	=  window.innerHeight || document.documentElement.clientHeight;
 	let app =  parseInt(document.getElementById('app').offsetHeight);
@@ -18,5 +28,5 @@ setInterval(() => {
 
 document.addEventListener('DOMContentLoaded', () => {
   loadConfig();
-  connectToFeed();
+  connectToFeed(bands);
 });
