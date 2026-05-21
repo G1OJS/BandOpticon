@@ -23,8 +23,9 @@ function validate_band(band){
 function subscribe(bands) {
     // find the topics for the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
     let topics = new Set;
+	
 	for (const b of bands) {
-		if (validate_band(b)) {
+		if (validate_band(b) || b=='+') {
 			for (let i = 0; i < squaresArr.length; i++) {
 				topics.add('pskr/filter/v2/'+b+'/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/+/#');
 				topics.add('pskr/filter/v2/'+b+'/+/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/#');
