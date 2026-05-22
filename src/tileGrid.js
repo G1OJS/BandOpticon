@@ -27,6 +27,10 @@ setInterval(() => curateTiles(), 900);
 
 // need to add a titlebar with reset zoom in main window
 
+function isInTray(tileElement){
+	return (tileElement.parentElement.id == 'tileTrayGrid');
+}
+
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	const sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	const rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
@@ -45,8 +49,25 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 		geoChart = new GeoChart(canvasElement);
 		geoCharts.set(bandMode, geoChart);
 
-		tileElement.addEventListener("click", e => {showMain(bandMode)}); 
+		tileElement.addEventListener("click", e => {
+			if (isInTray(tileElement)){
+				showMain(bandMode);
+			}
+		}); 
 		tileElement.addEventListener("mousemove", e => {geoChart.onMouseMove(e, canvasElement)}); 
+
+		const tileWindowBarElement = tileElement.querySelector('.tileWindowBar');
+		tileWindowBarElement.addEventListener("click", e => {
+			geoChart.zoom('reset', e);
+		}); 
+
+		canvasElement.addEventListener("click", e => {
+			if (!isInTray(tileElement)){
+				geoChart.zoom('zoomIn', e);
+			}
+		}); 
+
+
 	}
 
 	geoChart.addConnection(sRecord, rRecord, false);
