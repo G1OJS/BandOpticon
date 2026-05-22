@@ -3,7 +3,7 @@ import {geoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
 const filters = document.querySelector('#filters');
-const mainTile = document.querySelector('#mainTile');
+const mainView = document.querySelector('#mainView');
 let tileInstances = new Map();
 
 //document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -53,8 +53,7 @@ function sortTiles() {
 
 function showMain(bandMode){
 	let tileElement = document.getElementById(bandMode);
-	let mainElement = document.getElementById('mainTile');
-	mainElement.moveBefore(tileElement, null);
+	mainView.moveBefore(tileElement, null);
 }
 
 
