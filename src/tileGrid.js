@@ -25,6 +25,8 @@ filters.addEventListener('click', () => {
 
 setInterval(() => curateTiles(), 900);
 
+// need to add a titlebar with reset zoom in main window
+
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	const sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	const rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
