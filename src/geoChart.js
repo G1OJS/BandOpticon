@@ -164,7 +164,7 @@ export class geoChart{
 	}
 	onMouseMove(e){
 		if (singleViewTileElement) {
-			let hovering_over = "G1OJS";
+			let hovering_over = this.myCall;
 			this.canvasElement.style = 'cursor:zoom-in;';
 			this.canvasElement.title = '';
 			let rect = this.canvasElement.getBoundingClientRect();
