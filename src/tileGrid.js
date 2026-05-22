@@ -22,6 +22,8 @@ filters.addEventListener('click', () => {
 	updateTileVisibility();
 }); 
 
+setInterval(() => sortTiles(), 900);
+setInterval(() => updateTileVisibility(), 900);
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	let bandMode = spot.b+" "+spot.md;
@@ -39,6 +41,13 @@ function updateTileVisibility(){
 	for (const tileElement of document.querySelector('#tileTrayGrid').querySelectorAll('.tile')) {
 		tileInstances.get(tileElement.dataset.name).setVisibility();
 	};  
+}
+
+function sortTiles() {
+    const tileInstancesOrdered = Array.from(tileInstances).sort((a, b) => b[1].wavelength - a[1].wavelength);
+    for (const t of tileInstancesOrdered) {
+		document.querySelector('#tileTrayGrid').append(t[1].tileElement);
+	}
 }
 
 class tile{
