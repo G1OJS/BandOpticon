@@ -1,11 +1,11 @@
 import {updatemyCall, updateSquaresList, colours, loadConfig} from './config.js';
-import {geoChart} from './geoChart.js';
+import {GeoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
 const filters = document.querySelector('#filters');
 const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid')
-let tileInstances = new Map();
+let geoCharts = new Map();
 
 //document.getElementById('legendMarkerTx').style.background = colours.tx;
 //document.getElementById('legendMarkerRx').style.background = colours.rx;
@@ -26,15 +26,28 @@ filters.addEventListener('click', () => {
 setInterval(() => curateTiles(), 900);
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
-	let bandMode = spot.b+" "+spot.md;
-	let tileInstance = tileInstances.get(bandMode);
-	if(!tileInstance) {
-		tileInstance = new tile(bandMode);
-		tileInstances.set(bandMode, tileInstance);
+	const sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
+	const rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
+
+	const bandMode = spot.b+" "+spot.md;
+	let geoChart = geoCharts.get(bandMode);
+	if(!geoChart) {
+		console.log("Create tile "+bandMode);
+		const tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
+		tileTrayGrid.append(tileElement);
+
+		tileElement.querySelector('.tileTitle').textContent = bandMode;  
+		tileElement.id = bandMode;
+
+		const canvasElement = tileElement.querySelector('canvas');
+		geoChart = new GeoChart(canvasElement);
+		geoCharts.set(bandMode, geoChart);
+
+		tileElement.addEventListener("click", e => {showMain(bandMode)}); 
+		tileElement.addEventListener("mousemove", e => {geoChart.onMouseMove(e, canvasElement)}); 
 	}
-	let sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
-	let rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
-	tileInstance.geoChart.addConnection(sRecord, rRecord, false);
+
+	geoChart.addConnection(sRecord, rRecord, false);
 }
 
 function tile_wavelength(tileTitleElement){
@@ -74,25 +87,3 @@ function showMain(bandMode){
 	mainView.moveBefore(tileElement, null);
 }
 
-
-class tile{
-	constructor(tileTitleText) {
-		// first few lines should be in add spot?
-		console.log("Create tile "+tileTitleText);
-		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
-		tileTrayGrid.append(this.tileElement);
-		// to here?
-		this.name = tileTitleText;
-		this.tileElement.dataset.name = tileTitleText;
-		this.tileElement.id = tileTitleText;
-		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
-		this.tileTitleElement.textContent = tileTitleText;
-		this.canvasElement = this.tileElement.querySelector('canvas');
-		this.geoChart = new geoChart(this.canvasElement);
-		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onMouseMove(e, this.canvasElement)}); 
-		this.tileElement.addEventListener("click", e => {showMain(tileTitleText)}); 
-	}
-	
-
-
-}

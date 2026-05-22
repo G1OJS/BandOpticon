@@ -11,7 +11,7 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_
 worldGeoJSON = data;
 });
 
-export class geoChart{
+export class GeoChart{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
 		this.myCall = document.getElementById('myCallInput').value;
@@ -23,6 +23,7 @@ export class geoChart{
 		this.cRecords = new Map();
 		this.connRecords = new Set();
 		this.drawMap();
+		this.canvasElement.addEventListener("click", e => {this.zoom('zoomIn', e);}); 
 	}
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
