@@ -1,6 +1,5 @@
 import {mhToLatLong} from './geo.js'
 import {colours} from './config.js'
-import {singleViewTileElement} from './tileGrid.js'
 
 let worldGeoJSON = null;
 
@@ -163,28 +162,26 @@ export class geoChart{
 		this.redraw(this.myCall);
 	}
 	onMouseMove(e){
-		if (singleViewTileElement) {
-			let hovering_over = "G1OJS";
-			this.canvasElement.style = 'cursor:zoom-in;';
-			this.canvasElement.title = '';
-			let rect = this.canvasElement.getBoundingClientRect();
-			let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
-			let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
+		let hovering_over = "G1OJS";
+		this.canvasElement.style = 'cursor:zoom-in;';
+		this.canvasElement.title = '';
+		let rect = this.canvasElement.getBoundingClientRect();
+		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);	
 
-			for (const [call, cRecord] of this.cRecords.entries()) { 
-				let p = cRecord.p;
-				if (p !== null) { // some cRecords might not have had p set in _updateCanvas
-					if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
-						this.canvasElement.style = 'cursor:default;';
-						this.canvasElement.title = call;
-						hovering_over = call;
-					}
+		for (const [call, cRecord] of this.cRecords.entries()) { 
+			let p = cRecord.p;
+			if (p !== null) { // some cRecords might not have had p set in _updateCanvas
+				if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
+					this.canvasElement.style = 'cursor:default;';
+					this.canvasElement.title = call;
+					hovering_over = call;
 				}
 			}
-
-			this.redraw(hovering_over);
-
 		}
+
+		this.redraw(hovering_over);
+
 	}
 }
 

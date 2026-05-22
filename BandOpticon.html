@@ -30,29 +30,26 @@
 			<span class = 'control ' ><input type="checkbox" id="Other" name="Other"  /><label for="Other">Other</label></span>
 		</span>
 	</div>
-	<div id = 'mainViewTray' class = 'windowBar'>
-		<span class = 'control windowBarButton' id = 'homeButton' data-action = 'loadHomeView' title = 'Home view'>🏠</span>
-		<span class = 'control windowBarButton' id = 'moreColumns' title = 'Add column to grid'>□□□⇢</span>
-		<span class = 'control windowBarButton' id = 'fewerColumns' title = 'Remove column from grid'>□□⇠</span>
-		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations receiving'></span>Rx</span>
-		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx' title = 'Stations transmitting'></span>Tx</span>
-		<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
-	</div>
-	<div id="mainView" class="paper-light" >
-		<div id = 'tilesGridScrollContainer'>
-			<div id='tilesGrid'>
+	
+	<div id="tileTray" class="paper-light" >
+		<div id = 'tileTrayScrollContainer'>
+			<div id = 'tileTrayGrid'>
 			    <template id="tileTemplate">
 				  <div class="tile" >
-					<div class = 'windowBar'>
-						<span class="tileTitle"></span> <span class="tileInfo"></span>
-						<span class="control windowBarButton back hidden right" data-action='back' title = 'Back'>⌫</span>
-						<span class="control windowBarButton maximise right" data-action='maximise' title = 'Maximise view of this tile only'>⛶</span>
-						<span class="control windowBarButton minimise right" data-action='minimise' title = 'Send this tile to the tray'>_</span>
-						<span class="control windowBarButton right" data-action='resetZoom' title = 'Reset zoom'>=</span>
+					<div class = 'tileWindowBar'>
+						<span class="tileTitle"></span> <span class="tileSubtitle"></span>
 					</div>
 					<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
 				  </div>
 				</template>
+			</div>
+		</div>
+	</div>	
+	
+	<div id="mainView" class="paper-light" >
+		<div id='mainTile'>
+			<div class="tile">
+				<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
 			</div>
 		</div>
 	</div>
