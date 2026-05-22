@@ -100,7 +100,7 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 .right				{float:right;}
 				
 .tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:1px; margin:0px; margin-bottom:1px;} 
-.tileTitle			{font-size: var(--font-size-sm); font-weight:400; }
+.tileTitle			{font-size: var(--font-size-base); font-weight:600; }
 .tileSubtitle	{font-size: var(--font-size-xsm); font-weight:400;}
 
 .canvas-container	{padding:0px; padding-bottom:0px; min-width:0; overflow:hidden;}
