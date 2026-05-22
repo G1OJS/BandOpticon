@@ -92,8 +92,8 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 .control.inactive 	{color: var(--muted-font-color); opacity:0.4;}			
 .legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-3px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-base); height:var(--font-size-base); margin-left:5px; margin-right:3px; border: 1px solid grey;}
-#tileTrayScrollContainer	{display:inline-block; max-width:100%; overflow-x:scroll;}
-#tileTrayGrid		{display: grid; grid-template-columns: repeat(20, 100px); grid-template-rows: 1fr;  }			 
+#tileTrayScrollContainer	{display:inline-block; max-width:100%; overflow-x:scroll; overflow-y:hidden;}
+#tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 100px); grid-template-rows: 1fr;  }			 
 #mainTile 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
 
 .tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:5px; font-weight: 600; margin:2px; margin-bottom:3px;} 
