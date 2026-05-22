@@ -4,6 +4,7 @@ import {connectToFeed} from './mqtt.js';
 
 const filters = document.querySelector('#filters');
 const mainView = document.querySelector('#mainView');
+const tileTrayGrid = document.querySelector('#tileTrayGrid')
 let tileInstances = new Map();
 
 //document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -38,7 +39,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 }
 
 function updateTileVisibility(){
-	for (const tileElement of document.querySelector('#tileTrayGrid').querySelectorAll('.tile')) {
+	for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) {
 		tileInstances.get(tileElement.dataset.name).setVisibility();
 	};  
 }
@@ -52,7 +53,10 @@ function sortTiles() {
 }
 
 function showMain(bandMode){
-	// need to check for existing tile and move it back to the #tileTrayGrid
+	let existingMainElement = mainView.querySelector('.tile');
+	if (existingMainElement) {
+		tileTrayGrid.moveBefore(existingMainElement, null);
+	}
 	let tileElement = document.getElementById(bandMode);
 	mainView.moveBefore(tileElement, null);
 }
@@ -63,7 +67,7 @@ class tile{
 		// first few lines should be in add spot?
 		console.log("Create tile "+tileTitleText);
 		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
-		document.querySelector('#tileTrayGrid').append(this.tileElement);
+		tileTrayGrid.append(this.tileElement);
 		// to here?
 		this.name = tileTitleText;
 		this.tileElement.dataset.name = tileTitleText;
