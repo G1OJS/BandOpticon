@@ -100,11 +100,12 @@ function curateTiles() {
 		}	
 	}
 	
-	let existingMainElement = mainView.querySelector('.tile');
-	if (existingMainElement) {
-		let geoChart = geoCharts.get(existingMainElement.id)
-		geoChart.zoom('zoomToData', null);
-	}
+	// add this with an 'if keep zoom to data' is checked?
+	//let mainElement = mainView.querySelector('.tile');
+	//if (mainElement) {
+	//	let geoChart = geoCharts.get(mainElement.id)
+	//	geoChart.zoom('zoomToData', null);
+	//}
 
 }
 
@@ -114,6 +115,9 @@ function showMain(bandMode){
 		tileTrayGrid.moveBefore(existingMainElement, null);
 	}
 	let tileElement = document.getElementById(bandMode);
+	let geoChart = geoCharts.get(tileElement.id)
+	geoChart.zoom('zoomToData', null);
 	mainView.moveBefore(tileElement, null);
+	
 }
 
