@@ -3,8 +3,7 @@ import {colours} from './config.js'
 
 let worldGeoJSON = null;
 
-fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_admin_0_countries.geojson')
-//fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastline.geojson')
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastline.geojson')
 .then(resp => resp.json())
 .then(data => {
 	console.log("GeoJSON loaded:", data);
@@ -129,24 +128,21 @@ export class GeoChart{
 		this.ctx.lineWidth = 2;
 		worldGeoJSON?.features.forEach(feature => {
 			const geom = feature.geometry;
-			if (geom.type === 'Polygon') {
-				this.drawPolygons(geom.coordinates);
-			} else if (geom.type === 'MultiPolygon') {
-				geom.coordinates.forEach(polygon => this.drawPolygons(polygon));
+			if (geom.type === 'LineString') {
+				this.drawLineString(geom.coordinates);
 			}
 		});
 	}
-	drawPolygons(polys) {
-		polys.forEach(poly => {
-			this.ctx.beginPath();
-			poly.forEach(([lon, lat], i) => {
+	
+	drawLineString(coords) {
+		this.ctx.beginPath();
+		coords.forEach(([lon, lat], i) => {
 			let p = this.px([lat, lon]);
 				i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
 			});
-			this.ctx.closePath();
-			this.ctx.stroke();
-		});
+		this.ctx.stroke();
 	}
+	
 	zoom(zoomAction, e){
 		if(zoomAction == 'reset') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
 
