@@ -93,12 +93,12 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 .legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-3px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-base); height:var(--font-size-base); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #tileTrayScrollContainer	{display:inline-block; max-width:100%; overflow-x:scroll; overflow-y:hidden;}
-#tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 100px); grid-template-rows: 1fr;  }			 
+#tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 140px); grid-template-rows: 1fr;  }			 
 #mainTile 			{display: grid; grid-template-columns: 1fr; grid-template-rows: max-content auto; }
 
-.tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:5px; font-weight: 600; margin:2px; margin-bottom:3px;} 
+.tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:1px; margin:0px; margin-bottom:1px;} 
 .tile	 			{padding:0px; padding-bottom:0px; min-width:0; height:100px; overflow:clip;}
-.tileTitle			{font-size: var(--font-size-sm); font-weight:400;}
+.tileTitle			{font-size: var(--font-size-sm); font-weight:400; }
 .tileSubtitle	{font-size: var(--font-size-xsm); font-weight:400;}
 canvas				{width:100%}
 						 
