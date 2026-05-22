@@ -23,7 +23,6 @@ export class GeoChart{
 		this.cRecords = new Map();
 		this.connRecords = new Set();
 		this.drawMap();
-		this.canvasElement.addEventListener("click", e => {this.zoom('zoomIn', e);}); 
 	}
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
@@ -154,7 +153,7 @@ export class GeoChart{
 		if(zoomAction == 'zoomIn'){		
 			let rect = this.canvasElement.getBoundingClientRect();
 			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);
-			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	 
+			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	
 			this.zoomParams.lat0 = (-180*(ynorm-0.5) / this.zoomParams.scale) + this.zoomParams.lat0;
 			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
 			this.zoomParams.scale = this.zoomParams.scale *1.2;
@@ -163,7 +162,7 @@ export class GeoChart{
 		this.redraw(this.myCall);
 	}
 	onMouseMove(e){
-		let hovering_over = "G1OJS";
+		let hovering_over = this.myCall;
 		this.canvasElement.style = 'cursor:zoom-in;';
 		this.canvasElement.title = '';
 		let rect = this.canvasElement.getBoundingClientRect();
