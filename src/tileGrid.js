@@ -52,6 +52,7 @@ function sortTiles() {
 }
 
 function showMain(bandMode){
+	// need to check for existing tile and move it back to the #tileTrayGrid
 	let tileElement = document.getElementById(bandMode);
 	mainView.moveBefore(tileElement, null);
 }
@@ -59,9 +60,11 @@ function showMain(bandMode){
 
 class tile{
 	constructor(tileTitleText) {
+		// first few lines should be in add spot?
 		console.log("Create tile "+tileTitleText);
 		this.tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 		document.querySelector('#tileTrayGrid').append(this.tileElement);
+		// to here?
 		this.name = tileTitleText;
 		this.tileElement.dataset.name = tileTitleText;
 		this.tileElement.id = tileTitleText;
