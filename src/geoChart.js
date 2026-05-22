@@ -144,7 +144,7 @@ export class GeoChart{
 	}
 	
 	zoom(zoomAction, e){
-		if(zoomAction == 'reset') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
+		if(zoomAction == 'zoomFullEarth') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
 
 		if(zoomAction == 'zoomToData'){
 			let latrng = [90,-90];
@@ -162,7 +162,7 @@ export class GeoChart{
 			let b = 90/Math.abs((latrng[0]-this.zoomParams.lat0));
 			let c = 180/Math.abs((lonrng[1]-this.zoomParams.lon0));
 			let d = 180/Math.abs((lonrng[0]-this.zoomParams.lon0));
-			this.zoomParams.scale = Math.min(a,b,c,d);
+			this.zoomParams.scale = Math.max(Math.min(a,b,c,d)/1.2, 1);
 		}
 
 		if(zoomAction == 'zoomIn'){		
@@ -173,6 +173,12 @@ export class GeoChart{
 			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
 			this.zoomParams.scale = this.zoomParams.scale *1.2;
 		}
+		
+		if(zoomAction == 'zoomOut'){		
+			this.zoomParams.scale = Math.max(this.zoomParams.scale / 1.2, 1);
+		}		
+		
+		
 		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(mhToLatLong(cRecord.sq));
 		this.redraw(this.myCall);
 	}

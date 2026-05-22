@@ -11,6 +11,7 @@
         async src="//gc.zgo.at/count.js"></script>
 
 <link rel="stylesheet" href="./style.css" /> 
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 </head>
 <body>
@@ -35,9 +36,12 @@
 		<div id = 'tileTrayScrollContainer'>
 			<div id = 'tileTrayGrid'>
 			    <template id="tileTemplate">
-					<div class = 'tile'>
+					<div class = 'tile hidden'>
 						<div class = 'tileWindowBar'>
 							<span class="tileTitle"></span> <span class="tileSubtitle"></span>
+							<span class="control windowBarButton hidden right" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
+							<span class="control windowBarButton hidden right" data-action='zoomToData' title = 'Zoom to Data'>=</span>
+							<span class="control windowBarButton hidden right" data-action='zoomOut' title = 'Zoom Out'><span class="glyphicon">&#xe016;</span></span>
 						</div>
 						<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
 					</div>

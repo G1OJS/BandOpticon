@@ -57,17 +57,13 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 		tileElement.addEventListener("mousemove", e => {geoChart.onMouseMove(e, canvasElement)}); 
 
 		const tileWindowBarElement = tileElement.querySelector('.tileWindowBar');
-		tileWindowBarElement.addEventListener("click", e => {
-			geoChart.zoom('reset', e);
-		}); 
+		tileWindowBarElement.addEventListener( "click", e => {geoChart.zoom(e.target.dataset.action, e)} ); 
 
 		canvasElement.addEventListener("click", e => {
 			if (!isInTray(tileElement)){
 				geoChart.zoom('zoomIn', e);
 			}
 		}); 
-
-
 	}
 
 	geoChart.addConnection(sRecord, rRecord, false);
@@ -80,6 +76,15 @@ function tile_wavelength(tileTitleElement){
 	return wl;
 }
 
+function modeFilter(md){
+	let vis = false;
+	vis |= (md == 'FT8' && document.getElementById('FT8').checked);
+	vis |= (md == 'FT4' && document.getElementById('FT4').checked);
+	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
+	vis |= ('FT8FT4WSPR'.search(md) <0 && document.getElementById('Other').checked);
+	return vis;
+}
+
 function curateTiles() {
 	// sort tile tray by wavelength
 	[...tileTrayGrid.children].sort((a, b) => tile_wavelength(b) - tile_wavelength(a)).forEach(node => tileTrayGrid.appendChild(node));
@@ -88,24 +93,23 @@ function curateTiles() {
 	let tiles = tileTrayGrid.querySelectorAll('.tile');
 	for (const tileElement of tiles) {
 		let tileMode = tileElement.id.split(" ")[1];
-		let toHide = false;
-		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
-		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
-		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
-		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
-		if(toHide) {
-			tileElement.classList.add('hidden');
-		} else {
+		if(modeFilter(tileMode)) {
+			let buttons = tileElement.querySelectorAll('.windowBarButton');
+			for (const b of buttons){b.classList.add('hidden');}
 			tileElement.classList.remove('hidden');
+		} else {
+			tileElement.classList.add('hidden');
 		}	
 	}
 	
+	let mainElement = mainView.querySelector('.tile');
+	if (mainElement) {
+		let buttons = mainElement.querySelectorAll('.windowBarButton');
+		for (const b of buttons){b.classList.remove('hidden');}
 	// add this with an 'if keep zoom to data' is checked?
-	//let mainElement = mainView.querySelector('.tile');
-	//if (mainElement) {
 	//	let geoChart = geoCharts.get(mainElement.id)
 	//	geoChart.zoom('zoomToData', null);
-	//}
+	}
 
 }
 
@@ -116,7 +120,7 @@ function showMain(bandMode){
 	}
 	let tileElement = document.getElementById(bandMode);
 	let geoChart = geoCharts.get(tileElement.id)
-	geoChart.zoom('zoomToData', null);
+	
 	mainView.moveBefore(tileElement, null);
 	
 }
