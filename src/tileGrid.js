@@ -44,11 +44,19 @@ function updateTileVisibility(){
 }
 
 function sortTiles() {
-    const tileInstancesOrdered = Array.from(tileInstances).sort((a, b) => b[1].wavelength - a[1].wavelength);
-    for (const t of tileInstancesOrdered) {
-		document.querySelector('#tileTrayGrid').append(t[1].tileElement);
-	}
+	// needs rewrite (direct from DOM elements?) as this sorts the main view back into the tiles
+    //const tileInstancesOrdered = Array.from(tileInstances).sort((a, b) => b[1].wavelength - a[1].wavelength);
+    //for (const t of tileInstancesOrdered) {
+	//	document.querySelector('#tileTrayGrid').append(t[1].tileElement);
+	//}
 }
+
+function showMain(bandMode){
+	let tileElement = document.getElementById(bandMode);
+	let mainElement = document.getElementById('mainTile');
+	mainElement.moveBefore(tileElement, null);
+}
+
 
 class tile{
 	constructor(tileTitleText) {
@@ -57,6 +65,7 @@ class tile{
 		document.querySelector('#tileTrayGrid').append(this.tileElement);
 		this.name = tileTitleText;
 		this.tileElement.dataset.name = tileTitleText;
+		this.tileElement.id = tileTitleText;
 		this.tileTitleElement = this.tileElement.querySelector('.tileTitle');  
 		this.tileTitleElement.textContent = tileTitleText;
 		this.canvasElement = this.tileElement.querySelector('canvas');
@@ -66,6 +75,7 @@ class tile{
 		if (band.search("cm") > 0) wl /= 100;
 		this.wavelength = wl;
 		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onMouseMove(e, this.canvasElement)}); 
+		this.tileElement.addEventListener("click", e => {showMain(tileTitleText)}); 
 	}
 	
 	setVisibility(){
