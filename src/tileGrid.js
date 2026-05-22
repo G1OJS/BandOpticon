@@ -19,7 +19,7 @@ document.getElementById('myCallInput').addEventListener('change', () => {
 	//refresh all tiles
 });
 filters.addEventListener('click', () => {
-	//refresh all tiles
+	updateTileVisibility();
 }); 
 
 
@@ -33,6 +33,12 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	let sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
 	let rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
 	tileInstance.geoChart.addConnection(sRecord, rRecord, false);
+}
+
+function updateTileVisibility(){
+	for (const tileElement of document.querySelector('#tileTrayGrid').querySelectorAll('.tile')) {
+		tileInstances.get(tileElement.dataset.name).setVisibility();
+	};  
 }
 
 class tile{
@@ -51,6 +57,22 @@ class tile{
 		if (band.search("cm") > 0) wl /= 100;
 		this.wavelength = wl;
 		this.tileElement.addEventListener("mousemove", e => {this.geoChart.onMouseMove(e, this.canvasElement)}); 
+	}
+	
+	setVisibility(){
+		let tileMode = this.name.split(" ")[1];
+		let toHide = false;
+		if(tileMode == 'FT8' && !document.getElementById('FT8').checked) toHide = true;
+		if(tileMode == 'FT4' && !document.getElementById('FT4').checked) toHide = true;
+		if(tileMode == 'WSPR' && !document.getElementById('WSPR').checked) toHide = true;
+		if('FT8FT4WSPR'.search(tileMode) <0 && !document.getElementById('Other').checked) toHide = true;
+		if(toHide) {
+			this.tileElement.classList.add('hidden');
+			if(this.btnElement) this.btnElement.classList.add('hidden');
+		} else {
+			this.tileElement.classList.remove('hidden');
+			this.geoChart.redraw(document.getElementById('myCallInput').value); 
+		}	
 	}
 
 }
