@@ -146,6 +146,25 @@ export class GeoChart{
 	zoom(zoomAction, e){
 		if(zoomAction == 'reset') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
 
+		if(zoomAction == 'zoomToData'){
+			let latrng = [90,-90];
+			let lonrng = [180,-180];
+			for (const cRecord of this.cRecords.values()){
+				let ll = mhToLatLong(cRecord.sq);
+				if (ll[0] > latrng[1]) {latrng[1] = ll[0];}
+				if (ll[0] < latrng[0]) {latrng[0] = ll[0];}
+				if (ll[1] > lonrng[1]) {lonrng[1] = ll[1];}
+				if (ll[1] < lonrng[0]) {lonrng[0] = ll[1];}
+			}
+			this.zoomParams.lat0 = 0.5*(latrng[1]+latrng[0]);
+			this.zoomParams.lon0 = 0.5*(lonrng[1]+lonrng[0]);
+			let a = 90/Math.abs((latrng[1]-this.zoomParams.lat0));
+			let b = 90/Math.abs((latrng[0]-this.zoomParams.lat0));
+			let c = 180/Math.abs((lonrng[1]-this.zoomParams.lon0));
+			let d = 180/Math.abs((lonrng[0]-this.zoomParams.lon0));
+			this.zoomParams.scale = Math.min(a,b,c,d);
+		}
+
 		if(zoomAction == 'zoomIn'){		
 			let rect = this.canvasElement.getBoundingClientRect();
 			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);

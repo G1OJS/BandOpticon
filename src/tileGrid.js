@@ -99,6 +99,13 @@ function curateTiles() {
 			tileElement.classList.remove('hidden');
 		}	
 	}
+	
+	let existingMainElement = mainView.querySelector('.tile');
+	if (existingMainElement) {
+		let geoChart = geoCharts.get(existingMainElement.id)
+		geoChart.zoom('zoomToData', null);
+	}
+
 }
 
 function showMain(bandMode){
