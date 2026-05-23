@@ -1,8 +1,7 @@
-import {updatemyCall, updateSquaresList, colours, loadConfig} from './config.js';
+import {myCall, setMyCall, setSquaresList, colours, loadConfig} from './config.js';
 import {GeoChart} from './geoChart.js';
 import {connectToFeed} from './mqtt.js';
 
-const filters = document.querySelector('#filters');
 const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid')
 let geoCharts = new Map();
@@ -12,24 +11,27 @@ document.getElementById('legendMarkerRx').style.background = colours.rx;
 document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 
 document.getElementById('homeSquaresInput').addEventListener('change', () => {
-	updateSquaresList(); 
+	setSquaresList(); 
 	connectToFeed();
 });
 document.getElementById('myCallInput').addEventListener('change', () => {
-	updatemyCall(); 
-	//refresh all tiles
+	let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
+	document.getElementById('myCallInput').value = myCallNew;
+	setMyCall(myCallNew); 
+	for (const geoChart of geoCharts.values()){
+		geoChart.setMyCall(myCall);
+		geoChart.redraw(myCall);
+	}
 });
-filters.addEventListener('click', () => {
+document.querySelector('#filters').addEventListener('change', () => {
+	for (const geoChart of geoCharts.values()){
+		geoChart.setFilters(document.getElementById('homeTx').checked, document.getElementById('homeRx').checked);
+		geoChart.redraw(myCall);
+	}
 	curateTiles();
 }); 
 
 setInterval(() => curateTiles(), 900);
-
-// need to add a titlebar with reset zoom in main window
-
-function isInTray(tileElement){
-	return (tileElement.parentElement.id == 'tileTrayGrid');
-}
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	const sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
@@ -47,22 +49,19 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 
 		const canvasElement = tileElement.querySelector('canvas');
 		geoChart = new GeoChart(canvasElement);
+		geoChart.setView('tile');
+		geoChart.setMyCall(myCall);
+		geoChart.setFilters(document.getElementById('homeTx').value, document.getElementById('homeTx').value);
 		geoCharts.set(bandMode, geoChart);
 
-		tileElement.addEventListener("click", e => {
-			if (isInTray(tileElement)){
-				showMain(bandMode);
-			}
-		}); 
+		tileElement.addEventListener("click", e => {showMain(bandMode);}); 
 		tileElement.addEventListener("mousemove", e => {geoChart.onMouseMove(e, canvasElement)}); 
 
 		const tileWindowBarElement = tileElement.querySelector('.tileWindowBar');
 		tileWindowBarElement.addEventListener( "click", e => {geoChart.zoom(e.target.dataset.action, e)} ); 
 
-		canvasElement.addEventListener("click", e => {
-			if (!isInTray(tileElement)){
-				geoChart.zoom('zoomIn', e);
-			}
+		mainView.addEventListener("click", e => {
+			if (e.target.nodeName =='CANVAS') {geoChart.zoom('zoomIn', e);}
 		}); 
 	}
 
@@ -92,6 +91,7 @@ function curateTiles() {
 	
 	// only show tiles for selected modes
 	let tiles = tileTrayGrid.querySelectorAll('.tile');
+
 	for (const tileElement of tiles) {
 		let tileMode = tileElement.id.split(" ")[1];
 		if(modeFilter(tileMode)) {
@@ -99,6 +99,7 @@ function curateTiles() {
 			for (const b of buttons){b.classList.add('hidden');}
 			tileElement.classList.remove('hidden');
 			let geoChart = geoCharts.get(tileElement.id)
+			geoChart.setView('tile');
 			if (document.getElementById('zoomTilesToActivity').checked){
 				geoChart.zoom('zoomToData', null);
 			} else {
@@ -121,38 +122,21 @@ function curateTiles() {
 
 }
 
-
 function showMain(bandMode){ 
     document.getElementById('clickTileMessage').classList.add('hidden');
 
     const tileElement = document.getElementById(bandMode);
     const geoChart = geoCharts.get(bandMode);
     const existingMainElement = mainView.querySelector('.tile');
-
+	
+	geoChart.setView('main');
+	
     if (existingMainElement) {
         tileTrayGrid.appendChild(existingMainElement);
     }
-
-    mainView.appendChild(tileElement);
+    
+	mainView.appendChild(tileElement);
     requestAnimationFrame(() => {
         geoChart?.redraw();
     });
 }
-
-function showMain_(bandMode){
-	document.getElementById('clickTileMessage').classList.add('hidden');
-	let existingMainElement = mainView.querySelector('.tile');
-	if (existingMainElement) {
-		tileTrayGrid.moveBefore(existingMainElement, null);
-	}
-	let tileElement = document.getElementById(bandMode);
-	let geoChart = geoCharts.get(tileElement.id)
-	
-	//tileTrayGrid.appendChild(existingMainElement);
-	//mainView.appendChild(tileElement);
-	
-	mainView.moveBefore(tileElement, null);
-	geoChart.redraw();
-	
-}
-
