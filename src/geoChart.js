@@ -13,7 +13,9 @@ worldGeoJSON = data;
 export class GeoChart{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
-		this.myCall = document.getElementById('myCallInput').value;
+		this.view = null;
+		this.filters = null;
+		this.myCall = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
@@ -25,8 +27,22 @@ export class GeoChart{
 		this.drawMap();
 	}
 	
-	isInTray(){
-		return (this.canvasElement.parentElement.parentElement.id == 'tileTrayGrid');
+	setView(viewType){
+		if (viewType == 'main'){
+			this.view = {markerSize: 6, showConnections: true, mapData: null}
+			this.canvasElement.style = 'cursor:zoom-in;';
+		} else {
+			this.view = {markerSize: 20, showConnections: false, mapData: null}
+			this.canvasElement.style = 'cursor:pointer;';
+		}
+	}
+	
+	setMyCall(myCall){
+		this.myCall = myCall;
+	}
+	
+	setFilters(showInvolvingHomeTx, showInvolvingHomeRx){
+		this.filters = {showInvolvingHomeTx, showInvolvingHomeRx};
 	}
 	
 	getStats(){ 
@@ -72,14 +88,25 @@ export class GeoChart{
 		let call = cRecordNew.call;
 		let cRecordExisting = this.cRecords.get(call);
 		let changed = false;
+		let noLatLong = false;
+		
 		if(cRecordExisting === undefined) {
-			changed = true;
+			noLatLong = true;
 		} else {
+			noLatLong |= (cRecordNew.latlong === undefined);
 			changed |= (cRecordNew.tx != cRecordExisting.tx)
 			changed |= (cRecordNew.rx != cRecordExisting.rx)
 			cRecordNew.tx |= cRecordExisting.tx;
 			cRecordNew.rx |= cRecordExisting.rx;
 		}
+		
+		if (noLatLong){
+			if(cRecordNew.sq){
+				cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
+				changed = true;
+			}
+		}
+		
 		if (changed) {
 			this.cRecords.set(call, cRecordNew);
 		}
@@ -88,15 +115,14 @@ export class GeoChart{
 	
 	_updateCanvas(sRecord, rRecord, highlightCall){
 		
-		if ( (sRecord.isInHome && document.getElementById('homeTx').checked) || (rRecord.isInHome && document.getElementById('homeRx').checked) ) {
-			let inTray = this.isInTray();
+		if ( (sRecord.isInHome && this.filters.showInvolvingHomeTx) || (rRecord.isInHome && this.filters.showInvolvingHomeRx) ) {
 
 			for (const cRecord of [sRecord, rRecord]) {
 				if (cRecord.p === null) {
-					cRecord.p = this.px(mhToLatLong(cRecord.sq));
+					cRecord.p = this.px(cRecord.latlong);
 				}
 				this.ctx.beginPath();
-				this.ctx.arc(cRecord.p[0], cRecord.p[1], inTray? 20:6, 0, 6.282);
+				this.ctx.arc(cRecord.p[0], cRecord.p[1], this.view.markerSize, 0, 6.282);
 				this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
 				this.ctx.fill();
 			}
@@ -153,13 +179,13 @@ export class GeoChart{
 	}
 	
 	zoom(zoomAction, e){
-		if(zoomAction == 'zoomFullEarth') this.zoomParams = {scale:1.0, lat0:0, lon0:0};
+		if(zoomAction == 'zoomFullEarth') this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 
 		if(zoomAction == 'zoomToData'){
 			let latrng = [90,-90];
 			let lonrng = [180,-180];
 			for (const cRecord of this.cRecords.values()){
-				let ll = mhToLatLong(cRecord.sq);
+				let ll = cRecord.latlong;
 				if (ll[0] > latrng[1]) {latrng[1] = ll[0];}
 				if (ll[0] < latrng[0]) {latrng[0] = ll[0];}
 				if (ll[1] > lonrng[1]) {lonrng[1] = ll[1];}
@@ -187,13 +213,12 @@ export class GeoChart{
 			this.zoomParams.scale = Math.max(this.zoomParams.scale / 1.2, 1);
 		}		
 		
-		
-		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(mhToLatLong(cRecord.sq));
-		this.redraw(this.myCall);
+		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(cRecord.latlong);
+
 	}
+	
 	onMouseMove(e){
 		let hovering_over = this.myCall;
-		this.canvasElement.style = 'cursor:zoom-in;';
 		this.canvasElement.title = '';
 		let rect = this.canvasElement.getBoundingClientRect();
 		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);

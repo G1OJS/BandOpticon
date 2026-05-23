@@ -9,13 +9,12 @@ export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 
 						conn:'rgba(20, 20, 20, 1)' ,
 						map:'rgba(0,0,0,0.3)'};
 
-export function updatemyCall() {
-	myCall = document.getElementById('myCallInput').value.toUpperCase();
+export function setMyCall(myCall) {
     localStorage.setItem('myCall', myCall);
     console.log("my Call updated to " + myCall);
 }
 
-export function updateSquaresList() {
+export function setSquaresList() {
     let input = document.getElementById('homeSquaresInput');
     let newSquaresList = input.value; // potentially mixed case but that's OK
 	console.log("squares list updated to " + newSquaresList);
