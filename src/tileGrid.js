@@ -131,7 +131,10 @@ function showMain(bandMode){
 	let tileElement = document.getElementById(bandMode);
 	let geoChart = geoCharts.get(tileElement.id)
 	
-	mainView.moveBefore(tileElement, null);
+	tileTrayGrid.appendChild(existingMainElement);
+	mainView.appendChild(tileElement);
+	
+	//mainView.moveBefore(tileElement, null);
 	geoChart.redraw();
 	
 }
