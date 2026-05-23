@@ -7,9 +7,9 @@ const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid')
 let geoCharts = new Map();
 
-//document.getElementById('legendMarkerTx').style.background = colours.tx;
-//document.getElementById('legendMarkerRx').style.background = colours.rx;
-//document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+document.getElementById('legendMarkerTx').style.background = colours.tx;
+document.getElementById('legendMarkerRx').style.background = colours.rx;
+document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 
 document.getElementById('homeSquaresInput').addEventListener('change', () => {
 	updateSquaresList(); 
@@ -122,6 +122,7 @@ function showMain(bandMode){
 	let geoChart = geoCharts.get(tileElement.id)
 	
 	mainView.moveBefore(tileElement, null);
+	geoChart.redraw();
 	
 }
 

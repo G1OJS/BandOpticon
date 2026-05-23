@@ -19,8 +19,8 @@
 	<div id='ribbon' class="windowBar hideForMaxView ">
 		<h1>BandOpticon Geo</h1>
 		<span><label for="homeSquaresInput">To/from:</label><input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></span>
-		<span><label for="myCallInput">My Call: </label><input style='width:7em;' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></span>
-		<br>
+		<span><label for="myCallInput">My Call:</label><input style='width:7em;' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></span>
+		<span><label for = "filters">Show:</label></span> 
 		<span id='filters'>
 			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Home Tx</label></span>
 			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Home Rx</label></span>
@@ -29,8 +29,15 @@
 			<span class = 'control ' ><input type="checkbox" id="WSPR" name="WSPR" /><label for="WSPR">WSPR</label></span>
 			<span class = 'control ' ><input type="checkbox" id="Other" name="Other"  /><label for="Other">Other</label></span>
 		</span>
+		<br>
+		<span><label for = "mainViewTray">Legend:</label></span> 
+		<span id = 'mainViewTray' class = 'windowBar'>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations receiving'></span>Rx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTx' title = 'Stations transmitting'></span>Tx</span>
+			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerTxRx' title = 'Stations receiving and transmitting'></span>TxRx</span>
+		</span>		
 	</div>
-	
+	<br>	
 	<div id="tileTray" class="paper-light" >
 		<div id = 'tileTrayScrollContainer'>
 			<div id = 'tileTrayGrid'>

@@ -23,6 +23,11 @@ export class GeoChart{
 		this.connRecords = new Set();
 		this.drawMap();
 	}
+	
+	isInTray(){
+		return (this.canvasElement.parentElement.parentElement.id == 'tileTrayGrid');
+	}
+	
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
 		for (const call of this.cRecords.keys()) {
@@ -38,8 +43,8 @@ export class GeoChart{
 		  tx_pc: Math.round(100*totalTx/total),
 		  rx_pc: Math.round(100*totalRx/total)
 		};
-
-}
+	}
+	
 	px(ll){
 		let z = this.zoomParams;
 		let xnorm = 0.5 + z.scale*(ll[1] - z.lon0)/360;
@@ -48,6 +53,7 @@ export class GeoChart{
 		let y = this.canvasElementSize.h-this.canvasElementSize.h*ynorm;
 		return [x,y];
 	}
+	
 	addConnection(sRecord, rRecord, changed){
 		let conn = sRecord.call+"|"+rRecord.call;
 		changed |= this._refreshcRecord(sRecord);  
@@ -82,13 +88,14 @@ export class GeoChart{
 	_updateCanvas(sRecord, rRecord, highlightCall){
 		
 		if ( (sRecord.isInHome && document.getElementById('homeTx').checked) || (rRecord.isInHome && document.getElementById('homeRx').checked) ) {
+			let inTray = this.isInTray();
 
 			for (const cRecord of [sRecord, rRecord]) {
 				if (cRecord.p === null) {
 					cRecord.p = this.px(mhToLatLong(cRecord.sq));
 				}
 				this.ctx.beginPath();
-				this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
+				this.ctx.arc(cRecord.p[0], cRecord.p[1], inTray? 20:6, 0, 6.282);
 				this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
 				this.ctx.fill();
 			}
@@ -122,6 +129,7 @@ export class GeoChart{
 			this._updateCanvas(sRecord, rRecord, highlightCall);
 		}
 	}
+	
 	drawMap(){
 		this.ctx.clearRect(0,0, 2000,2000);
 		this.ctx.strokeStyle = colours.map;
