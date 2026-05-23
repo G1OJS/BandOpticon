@@ -1,5 +1,9 @@
-import {mhToLatLong} from './geo.js'
-import {colours} from './config.js'
+
+
+
+
+// MOVE ALL INTO VIEWMGR
+import {myCall, colours} from './config.js'
 
 let worldGeoJSON = null;
 
@@ -15,15 +19,12 @@ export class GeoChart{
 		this.canvasElement = canvasElement;
 		this.view = null;
 		this.filters = null;
-		this.myCall = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
 		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 		this.bgCol = 'white';
 		this.stats = {};
-		this.cRecords = new Map();
-		this.connRecords = new Set();
 		this.drawMap();
 	}
 	
@@ -37,29 +38,9 @@ export class GeoChart{
 		}
 	}
 	
-	setMyCall(myCall){
-		this.myCall = myCall;
-	}
 	
 	setFilters(showInvolvingHomeTx, showInvolvingHomeRx){
 		this.filters = {showInvolvingHomeTx, showInvolvingHomeRx};
-	}
-	
-	getStats(){ 
-		let totalTx = 0, totalRx = 0, total = 0;
-		for (const call of this.cRecords.keys()) {
-			let crec = this.cRecords.get(call);
-			if (crec.isInHome){
-				total +=1;
-				if(crec.tx) totalTx +=1;
-				if(crec.rx) totalRx +=1;
-			}
-		}
-		this.stats = {
-		  cls: total,
-		  tx_pc: Math.round(100*totalTx/total),
-		  rx_pc: Math.round(100*totalRx/total)
-		};
 	}
 	
 	px(ll){
@@ -80,7 +61,7 @@ export class GeoChart{
 			changed = true;
 		}
 		if (changed) {
-			this._updateCanvas(sRecord, rRecord, this.myCall);
+			this._updateCanvas(sRecord, rRecord, myCall);
 		}
 	}
 	
