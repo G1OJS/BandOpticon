@@ -80,8 +80,9 @@ function modeFilter(md){
 	let vis = false;
 	vis |= (md == 'FT8' && document.getElementById('FT8').checked);
 	vis |= (md == 'FT4' && document.getElementById('FT4').checked);
+	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
-	vis |= ('FT8FT4WSPR'.search(md) <0 && document.getElementById('Other').checked);
+	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);
 	return vis;
 }
 
