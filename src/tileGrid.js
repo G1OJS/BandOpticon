@@ -122,7 +122,30 @@ function curateTiles() {
 
 }
 
-function showMain(bandMode){
+
+function showMain(bandMode){ 
+    document.getElementById('clickTileMessage').classList.add('hidden');
+
+    const tileElement = document.getElementById(bandMode);
+    const geoChart = geoCharts.get(bandMode);
+
+    const existingMainElement = mainView.querySelector('.tile');
+
+    // 1. move out first
+    if (existingMainElement) {
+        tileTrayGrid.appendChild(existingMainElement);
+    }
+
+    // 2. move new in
+    mainView.appendChild(tileElement);
+
+    // 3. redraw AFTER DOM settles
+    requestAnimationFrame(() => {
+        geoChart?.redraw();
+    });
+}
+
+function showMain_(bandMode){
 	document.getElementById('clickTileMessage').classList.add('hidden');
 	let existingMainElement = mainView.querySelector('.tile');
 	if (existingMainElement) {
