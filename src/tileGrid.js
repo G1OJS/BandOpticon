@@ -20,15 +20,28 @@ document.getElementById('myCallInput').addEventListener('change', () => {
 	setMyCall(myCallNew); 
 	for (const geoChart of geoCharts.values()){
 		geoChart.setMyCall(myCall);
+	}
+	redraw_geoCharts();
+});
+
+function redraw_geoCharts(){
+	console.log('redraw');
+	for (const geoChart of geoCharts.values()){
 		geoChart.redraw(myCall);
 	}
+}
+
+document.querySelector('#zoomTilesToActivity').addEventListener('change', () => {
+	curateTiles();
+	redraw_geoCharts();
 });
+
 document.querySelector('#filters').addEventListener('change', () => {
 	for (const geoChart of geoCharts.values()){
 		geoChart.setFilters(document.getElementById('homeTx').checked, document.getElementById('homeRx').checked);
-		geoChart.redraw(myCall);
 	}
 	curateTiles();
+	redraw_geoCharts();
 }); 
 
 setInterval(() => curateTiles(), 900);
