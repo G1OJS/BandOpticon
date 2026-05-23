@@ -14,6 +14,7 @@ export class GeoChart{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
 		this.myCall = document.getElementById('myCallInput').value;
+		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
 		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
@@ -208,8 +209,11 @@ export class GeoChart{
 				}
 			}
 		}
-
-		this.redraw(hovering_over);
+		
+		if (hovering_over !== this.currentHover) {
+			this.currentHover = hovering_over;
+			this.redraw(hovering_over);
+		}
 
 	}
 }

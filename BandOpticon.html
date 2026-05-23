@@ -39,7 +39,8 @@
 		</span>		
 	</div>
 	<br>	
-	<div id="tileTray" class="paper-light" >
+	<div id="tileTray" class="paper-light" title = 'Click a tile to move it to the main view'>
+		<span class = 'control ' ><input type="checkbox" id="zoomTilesToActivity" name="zoomTilesToActivity" /><label for="zoomTilesToActivity"> Zoom tiles to activity</label></span>
 		<div id = 'tileTrayScrollContainer'>
 			<div id = 'tileTrayGrid'>
 			    <template id="tileTemplate">
@@ -59,7 +60,7 @@
 	
 	<div id="mainViewContainer" class="paper-light" >
 		<div id='mainView' >
-	
+			<div id = 'clickTileMessage' class = 'hidden'>Click a tile above to show its detail here</div>
 		</div>
 	</div>
 	<div id="footer" class="hideForMaxView">

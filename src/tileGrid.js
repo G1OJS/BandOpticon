@@ -92,12 +92,19 @@ function curateTiles() {
 	
 	// only show tiles for selected modes
 	let tiles = tileTrayGrid.querySelectorAll('.tile');
+	console.log(tiles);
 	for (const tileElement of tiles) {
 		let tileMode = tileElement.id.split(" ")[1];
 		if(modeFilter(tileMode)) {
 			let buttons = tileElement.querySelectorAll('.windowBarButton');
 			for (const b of buttons){b.classList.add('hidden');}
 			tileElement.classList.remove('hidden');
+			let geoChart = geoCharts.get(tileElement.id)
+			if (document.getElementById('zoomTilesToActivity').checked){
+				geoChart.zoom('zoomToData', null);
+			} else {
+				geoChart.zoom('zoomFullEarth', null);
+			}
 		} else {
 			tileElement.classList.add('hidden');
 		}	
@@ -107,14 +114,16 @@ function curateTiles() {
 	if (mainElement) {
 		let buttons = mainElement.querySelectorAll('.windowBarButton');
 		for (const b of buttons){b.classList.remove('hidden');}
-	// add this with an 'if keep zoom to data' is checked?
-	//	let geoChart = geoCharts.get(mainElement.id)
-	//	geoChart.zoom('zoomToData', null);
 	}
+	
+	if (tiles.length && !mainElement) {
+		document.getElementById('clickTileMessage').classList.remove('hidden');
+	} 
 
 }
 
 function showMain(bandMode){
+	document.getElementById('clickTileMessage').classList.add('hidden');
 	let existingMainElement = mainView.querySelector('.tile');
 	if (existingMainElement) {
 		tileTrayGrid.moveBefore(existingMainElement, null);
