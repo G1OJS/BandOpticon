@@ -1,25 +1,45 @@
 import {myCall, setMyCall, setSquaresList, colours} from './config.js';
 import {GeoView} from './geoView.js';
+import {getDataVignette} from './dataMgr.js';
 
 const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
-const showInvolvingHomeTx = document.getElementById('homeTx');
-const showInvolvingHomeRx = document.getElementById('homeRx');
 let geoViews = new Map();
 
-document.getElementById('legendMarkerTx').style.background = colours.tx;
-document.getElementById('legendMarkerRx').style.background = colours.rx;
-document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+export function initialisePage(){
+	document.getElementById('legendMarkerTx').style.background = colours.tx;
+	document.getElementById('legendMarkerRx').style.background = colours.rx;
+	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+	
+	document.getElementById('modeFilters').addEventListener('change', () => {
+		for (const tileElement of document.querySelectorAll('.tile')) {
+			if (modeFilter(tileElement.id.split(' ')[1])) {
+				tileElement.classList.remove('hidden');
+			} else {
+				tileElement.classList.add('hidden');
+			}
+		}
+	});	
+	
+	document.getElementById('myCallInput').addEventListener('change', () => {
+		let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
+		document.getElementById('myCallInput').value = myCallNew;
+		setMyCall(myCallNew); 
+		redrawAllTiles();
+	});
 
-document.getElementById('homeSquaresInput').addEventListener('change', () => {
-	setSquaresList(); 
-});
+	document.getElementById('homeSquaresInput').addEventListener('change', () => {
+		setSquaresList(); 
+		redrawAllTiles();
+	});	
+	
+	document.getElementById('homeCallFilters').addEventListener('change', () => {
+		console.log("homeCallFilters.change");
+		redrawAllTiles();
+	});	
+	
+}
 
-document.getElementById('myCallInput').addEventListener('change', () => {
-	let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
-	document.getElementById('myCallInput').value = myCallNew;
-	setMyCall(myCallNew); 
-});
 
 function modeFilter(md){
 	let vis = false;
@@ -31,15 +51,10 @@ function modeFilter(md){
 	return vis;
 }
 
-export function manageViews() {
-	
-
-}
-
 function drawFilteredConnections(view, callsignRecords, connectionString){
 	let endpointCallsigns = connectionString.split('|');
 	let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
-	if ( (endpointRecords[0].isInHome && showInvolvingHomeTx.checked) || (endpointRecords[1].isInHome && showInvolvingHomeRx.checked) ) {
+	if ( (endpointRecords[0].isInHome && document.getElementById('homeTx').checked) || (endpointRecords[1].isInHome && document.getElementById('homeRx').checked) ) {
 		view.drawConnection(endpointCallsigns, endpointRecords, myCall);
 	}
 }
@@ -59,18 +74,28 @@ function zoom(zoomAction, e){
 		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(cRecord.latlong);
 }
 
-export function updateViews(bandMode, callsignRecords, connectionStrings){
-	if (modeFilter(bandMode.split(' ')[1])) {
-		
-		let full_draw_needed = false;
+function redrawAllTiles(){
+	for (const tileElement of document.querySelectorAll('.tile')) {
+		updateView(tileElement.id, true);
+	}
+}
 
-		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode.replace(' ','')+"']");
+
+export function updateView(bandMode, full_draw_needed){
+	if (modeFilter(bandMode.split(' ')[1])) {
+
+		let dataVignette = getDataVignette(bandMode);
+		let callsignRecords = dataVignette.getCallsignRecords();
+		let connectionStrings = dataVignette.getConnectionStrings(); 
+
+		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
+
 		if (!tileElement) {
 			console.log("Create tile "+bandMode);
 			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 			tileTrayGrid.append(tileElement);				
 			tileElement.querySelector('.tileTitle').textContent = bandMode;  
-			tileElement.id = bandMode.replace(' ','');
+			tileElement.id = bandMode;
 			full_draw_needed = true;
 		}
 		const canvasElement = tileElement.querySelector('canvas');				
@@ -100,7 +125,6 @@ export function updateViews(bandMode, callsignRecords, connectionStrings){
 		} else {
 			drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
 		}
-
 	}
 
 }

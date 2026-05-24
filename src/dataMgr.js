@@ -1,7 +1,11 @@
 import {mhToLatLong} from './geoFuncs.js'
-import {updateViews} from './pageMgr.js'
+import {updateView} from './pageMgr.js'
 
 let dataVignettes = new Map();
+
+export function getDataVignette(bandMode){
+	return dataVignettes.get(bandMode);
+}
 
 export class DataVignette{
 	constructor(bandMode){
@@ -31,6 +35,14 @@ export class DataVignette{
 		};
 	}
 	
+	getConnectionStrings(){
+		return this.connectionStrings;	
+	}
+	
+	getCallsignRecords(){
+		return this.callsignRecords;
+	}
+	
 	recordConnection(sRecord, rRecord){
 		let changed = false;
 		let connectionString = sRecord.call+"|"+rRecord.call;
@@ -41,7 +53,7 @@ export class DataVignette{
 			changed = true;
 		}
 		if (changed) {
-			updateViews(this.bandMode, this.callsignRecords, this.connectionStrings);
+			updateView(this.bandMode);
 		}
 	}
 	
