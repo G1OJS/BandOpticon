@@ -41,6 +41,16 @@ export function initialisePage(){
 	});	
 	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
+	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
+		if (mainView){
+			if (e.target.dataset.action == 'zoomFullEarth') {mainView.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};}
+			if (e.target.dataset.action == 'zoomToData') {mainView.axisRanges = {'lat0':-45, 'lat1':45, 'lon0':-90, 'lon1':90};}
+			if (e.target.dataset.action == 'zoomOut') {mainView.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};}
+			updateMain(true);
+		}
+	});
+	
+	
 }
 
 function modeFilter(md){
