@@ -15,6 +15,7 @@ export function initialisePage(){
 		for (const tileElement of document.querySelectorAll('.tile')) {
 			if (modeFilter(tileElement.id.split(' ')[1])) {
 				tileElement.classList.remove('hidden');
+				updateView(tileElement.id, true);
 			} else {
 				tileElement.classList.add('hidden');
 			}
