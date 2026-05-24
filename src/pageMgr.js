@@ -5,6 +5,7 @@ import {getDataVignette} from './dataMgr.js';
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
 const mainViewCanvasElement = document.getElementById('mainCanvas');
 let geoViews = new Map();
+let mainBandMode = null;
 let mainView = null;
 
 export function initialisePage(){
@@ -14,14 +15,6 @@ export function initialisePage(){
 	
 	document.getElementById('modeFilters').addEventListener('change', () => {
 		redrawAllTiles();
-//		for (const tileElement of document.querySelectorAll('.tile')) {
-//			if (modeFilter(tileElement.id.split(' ')[1])) {
-//				tileElement.classList.remove('hidden');
-//				updateTile(tileElement.id, true);
-//			} else {
-//				tileElement.classList.add('hidden');
-//			}
-//		}
 	});	
 	
 	document.getElementById('myCallInput').addEventListener('change', () => {
@@ -43,16 +36,8 @@ export function initialisePage(){
 	
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		console.log("tileTrayGrid.click");
-		let bandMode = e.target.closest('.tile').id;
-		let dataVignette = getDataVignette(bandMode);
-		let callsignRecords = dataVignette.getCallsignRecords();
-		let connectionStrings = dataVignette.getConnectionStrings(); 
-
-		const mainViewTitleElement = document.getElementById('mainViewTitle');	
-		const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
-		const viewName = bandMode+' main'
-		mainViewTitleElement.innerText = bandMode;
-		_drawConnections(mainViewCanvasElement, viewName, callsignRecords, connectionStrings, true);
+		mainBandMode = e.target.closest('.tile').id;
+		redrawMain();
 	});	
 	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
@@ -72,11 +57,9 @@ function modeFilter(md){
 function updateHoveringOver(e){
 	if (mainView){
 		mainView.updateHoveringOver(e);
-		mainViewCanvasElement.title = mainView.currentHover;
-		
-		//console.log(mainView.currentHover);
+		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
+		redrawMain();
 	}
-	
 }
 
 function zoom(zoomAction, e){
@@ -107,12 +90,23 @@ export function updateTile(bandMode, full_draw_needed){
 		}
 		const canvasElement = tileElement.querySelector('canvas');				
 		tileElement.classList.remove('hidden');		
-		_drawConnections(canvasElement, bandMode, callsignRecords, connectionStrings, full_draw_needed);
+		_drawConnections(canvasElement, bandMode, callsignRecords, connectionStrings, full_draw_needed, myCall);
 	}
-	
 }
 
-function _drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed){
+function redrawMain(){
+	let dataVignette = getDataVignette(mainBandMode);
+	let callsignRecords = dataVignette.getCallsignRecords();
+	let connectionStrings = dataVignette.getConnectionStrings(); 
+
+	const mainViewTitleElement = document.getElementById('mainViewTitle');	
+	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
+	const viewName = mainBandMode+' main'
+	mainViewTitleElement.innerText = mainBandMode;
+	_drawConnections(mainViewCanvasElement, viewName, callsignRecords, connectionStrings, true, mainViewCanvasElement.title);	
+}
+
+function _drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed, highlightCall){
 	let view = geoViews.get(viewName);
 	if (!view) {
 		view = new GeoView(canvasElement);
@@ -136,7 +130,7 @@ function _drawConnections(canvasElement, viewName, callsignRecords, connectionSt
 		vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
 		vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
 		if (vis){	
-			view.drawConnection(endpointCallsigns, endpointRecords, myCall);
+			view.drawConnection(endpointCallsigns, endpointRecords, highlightCall);
 		}
 	}
 }

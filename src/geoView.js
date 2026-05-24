@@ -32,19 +32,20 @@ export class GeoView{
 	}
 	
 	drawConnection(endpointCallsigns, endpointRecords, highlightCall){
-
+		
 		for (const cRecord of endpointRecords) {
-			const p = this.px(cRecord.latlong);
-			this.drawnCalls.set(cRecord.call, p);
+			cRecord.p = this.px(cRecord.latlong);
+			this.drawnCalls.set(cRecord.call, cRecord.p);
 			this.ctx.beginPath();
-			this.ctx.arc(p[0], p[1], 6, 0, 6.282);
+			this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
 			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
 			this.ctx.fill();
 		}
 		
 		if (endpointCallsigns.includes(highlightCall)) {
+			let [sRecord, rRecord] = endpointRecords;
 			this.ctx.strokeStyle = colours.rx;
-			if (sRecord.call == highlightCall) this.ctx.strokeStyle = colours.tx;
+			if (endpointCallsigns[0] == highlightCall) this.ctx.strokeStyle = colours.tx;
 			this.ctx.lineWidth=2;
 			this.ctx.beginPath();
 			this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
