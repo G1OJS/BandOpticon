@@ -37,7 +37,7 @@ export function initialisePage(){
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		console.log("tileTrayGrid.click");
 		mainBandMode = e.target.closest('.tile').id;
-		redrawMain();
+		updateMain(true);
 	});	
 	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
@@ -58,7 +58,7 @@ function updateHoveringOver(e){
 	if (mainView){
 		mainView.updateHoveringOver(e);
 		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
-		redrawMain();
+		updateMain(true);
 	}
 }
 
@@ -78,6 +78,10 @@ export function updateTile(bandMode, full_draw_needed){
 	let callsignRecords = dataVignette.getCallsignRecords();
 	let connectionStrings = dataVignette.getConnectionStrings(); 
 
+	if (bandMode == mainBandMode) {
+		updateMain(full_draw_needed);
+	}
+
 	if (modeFilter(bandMode.split(' ')[1])) {
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) {
@@ -92,9 +96,11 @@ export function updateTile(bandMode, full_draw_needed){
 		tileElement.classList.remove('hidden');		
 		_drawConnections(canvasElement, bandMode, callsignRecords, connectionStrings, full_draw_needed, myCall);
 	}
+	
+
 }
 
-function redrawMain(){
+function updateMain(full_draw_needed){
 	let dataVignette = getDataVignette(mainBandMode);
 	let callsignRecords = dataVignette.getCallsignRecords();
 	let connectionStrings = dataVignette.getConnectionStrings(); 
@@ -103,7 +109,7 @@ function redrawMain(){
 	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
 	const viewName = mainBandMode+' main'
 	mainViewTitleElement.innerText = mainBandMode;
-	_drawConnections(mainViewCanvasElement, viewName, callsignRecords, connectionStrings, true, mainViewCanvasElement.title);	
+	_drawConnections(mainViewCanvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed, mainViewCanvasElement.title);	
 }
 
 function _drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed, highlightCall){

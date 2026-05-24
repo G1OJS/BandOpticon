@@ -34,7 +34,7 @@ export class GeoView{
 	drawConnection(endpointCallsigns, endpointRecords, highlightCall){
 		
 		for (const cRecord of endpointRecords) {
-			cRecord.p = this.px(cRecord.latlong);
+			cRecord.p = this.px(cRecord.latlong); // with p back in cRecord, do I still need this.drawnCalls? Maybe yes as it's a subset of cRecords?
 			this.drawnCalls.set(cRecord.call, cRecord.p);
 			this.ctx.beginPath();
 			this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
