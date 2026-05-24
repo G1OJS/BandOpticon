@@ -60,42 +60,47 @@ function zoom(zoomAction, e){
 }
 
 export function updateViews(bandMode, callsignRecords, connectionStrings){
-	let full_draw_needed = false;
+	if (modeFilter(bandMode.split(' ')[1])) {
+		
+		let full_draw_needed = false;
 
-	let tileElement = tileTrayGrid.querySelector("[id='"+bandMode.replace(' ','')+"']");
-	if (!tileElement) {
-		console.log("Create tile "+bandMode);
-		tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
-		tileTrayGrid.append(tileElement);				
-		tileElement.querySelector('.tileTitle').textContent = bandMode;  
-		tileElement.id = bandMode.replace(' ','');
-		full_draw_needed = true;
-	}
-	const canvasElement = tileElement.querySelector('canvas');				
-	let tileButtons = tileElement.querySelectorAll('.windowBarButton');
-	for (const b of tileButtons){b.classList.add('hidden');}
-	tileElement.classList.remove('hidden');
-	
-	let view = geoViews.get(bandMode);
-	if (!view) {
-		view = new GeoView(canvasElement);
-		geoViews.set(bandMode, view);		
-		full_draw_needed = true;
-	}
-
-	if (document.getElementById('zoomTilesToActivity').checked){
-		view.setZoom('zoomToData', null);
-	} else {
-		view.setZoom('zoomFullEarth', null);
-	}	
-	view.setMarkerSize(20);
-	if (full_draw_needed){
-		view.drawMap();
-		for (const connectionString of connectionStrings){
-			drawFilteredConnections(view, callsignRecords, connectionString);
+		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode.replace(' ','')+"']");
+		if (!tileElement) {
+			console.log("Create tile "+bandMode);
+			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
+			tileTrayGrid.append(tileElement);				
+			tileElement.querySelector('.tileTitle').textContent = bandMode;  
+			tileElement.id = bandMode.replace(' ','');
+			full_draw_needed = true;
 		}
-	} else {
-		drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
+		const canvasElement = tileElement.querySelector('canvas');				
+		let tileButtons = tileElement.querySelectorAll('.windowBarButton');
+		for (const b of tileButtons){b.classList.add('hidden');}
+		tileElement.classList.remove('hidden');
+		
+		let view = geoViews.get(bandMode);
+		if (!view) {
+			view = new GeoView(canvasElement);
+			geoViews.set(bandMode, view);		
+			full_draw_needed = true;
+		}
+
+		if (document.getElementById('zoomTilesToActivity').checked){
+			view.setZoom('zoomToData', null);
+		} else {
+			view.setZoom('zoomFullEarth', null);
+		}	
+		view.setMarkerSize(20);
+		if (full_draw_needed){
+			console.log("Full draw for " + bandMode);
+			view.drawMap();
+			for (const connectionString of connectionStrings){
+				drawFilteredConnections(view, callsignRecords, connectionString);
+			}
+		} else {
+			drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
+		}
+
 	}
 
 }
