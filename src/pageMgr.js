@@ -5,7 +5,6 @@ import {getDataVignette} from './dataMgr.js';
 const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
 let geoViews = new Map();
-let detailBandMode = null;
 
 export function initialisePage(){
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -42,9 +41,7 @@ export function initialisePage(){
 	
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		console.log("tileTrayGrid.click");
-		detailBandMode = e.target.closest('.tile').id;
-		updateTile(detailBandMode, true);
-		updateMain(detailBandMode, true);
+		updateMain(e.target.closest('.tile').id, true);
 	});	
 	
 }
@@ -99,8 +96,11 @@ function updateMain(bandMode, full_draw_needed){
 	let connectionStrings = dataVignette.getConnectionStrings(); 
 
 	const canvasElement = document.getElementById('mainCanvas');	
+	const mainViewTitleElement = document.getElementById('mainViewTitle');	
+	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
+	
 	const viewName = bandMode+' main'
-
+	mainViewTitleElement.innerText = bandMode;
 	_drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed);
 }
 
