@@ -74,10 +74,8 @@ export class DataVignette{
 		}
 		
 		if (noLatLong){
-			if(cRecordNew.sq){
-				cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
-				changed = true;
-			}
+			cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
+			changed = true;
 		}
 		
 		if (changed) {
@@ -89,13 +87,14 @@ export class DataVignette{
 }
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
-	const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
-	const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
-	const bandMode = spot.b+" "+spot.md;
-	if(! dataVignettes.get(bandMode)) {
-		console.log("Create data vignette "+bandMode);
-		dataVignettes.set(bandMode, new DataVignette(bandMode));
-		//dataVignettes.sort((a, b) => b.wavelength - a.wavelength);
+	if (spot.sl && spot.rl){
+		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
+		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
+		const bandMode = spot.b+" "+spot.md;
+		if(!dataVignettes.get(bandMode)) {
+			console.log("Create data vignette "+bandMode);
+			dataVignettes.set(bandMode, new DataVignette(bandMode));
+		}
+		dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
 	}
-	dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
 }

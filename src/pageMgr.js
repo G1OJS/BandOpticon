@@ -44,10 +44,10 @@ export function initialisePage(){
 		console.log("tileTrayGrid.click");
 		detailBandMode = e.target.closest('.tile').id;
 		updateView(detailBandMode, true);
+		updateMain(detailBandMode, true);
 	});	
 	
 }
-
 
 function modeFilter(md){
 	let vis = false;
@@ -55,31 +55,13 @@ function modeFilter(md){
 	vis |= (md == 'FT4' && document.getElementById('FT4').checked);
 	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
-	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);
-	return vis;
-}
-
-function drawFilteredConnections(view, callsignRecords, connectionString){
-	let endpointCallsigns = connectionString.split('|');
-	let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
-	if ( (endpointRecords[0].isInHome && document.getElementById('homeTx').checked) || (endpointRecords[1].isInHome && document.getElementById('homeRx').checked) ) {
-		view.drawConnection(endpointCallsigns, endpointRecords, myCall);
-	}
+	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
+	
+	return vis;	
 }
 
 function zoom(zoomAction, e){
-		if(zoomAction == 'zoomIn'){		
-			let rect = this.canvasElement.getBoundingClientRect();
-			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);
-			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	
-			this.zoomParams.lat0 = (-180*(ynorm-0.5) / this.zoomParams.scale) + this.zoomParams.lat0;
-			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
-			this.zoomParams.scale = this.zoomParams.scale *1.2;
-		} else {
-			this.set_zoom(zoomAction);
-		}
-		
-		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(cRecord.latlong);
+
 }
 
 function redrawAllTiles(){
@@ -88,13 +70,12 @@ function redrawAllTiles(){
 	}
 }
 
-
 export function updateView(bandMode, full_draw_needed){
-	if (modeFilter(bandMode.split(' ')[1])) {
+	let dataVignette = getDataVignette(bandMode);
+	let callsignRecords = dataVignette.getCallsignRecords();
+	let connectionStrings = dataVignette.getConnectionStrings(); 
 
-		let dataVignette = getDataVignette(bandMode);
-		let callsignRecords = dataVignette.getCallsignRecords();
-		let connectionStrings = dataVignette.getConnectionStrings(); 
+	if (modeFilter(bandMode.split(' ')[1])) {
 
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) {
@@ -115,44 +96,55 @@ export function updateView(bandMode, full_draw_needed){
 			full_draw_needed = true;
 		}
 
-//		if (document.getElementById('zoomTilesToActivity').checked){
-//			
-//		} else {
-//			
-//		}	
-		view.setMarkerSize(6);
+		let connsToDraw = connectionStrings.slice(-1);
 		if (full_draw_needed){
 			console.log("Full draw for " + bandMode);
-			view.drawMap();
-			for (const connectionString of connectionStrings){
-				drawFilteredConnections(view, callsignRecords, connectionString);
-			}
-		} else {
-			drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
+			view.rebase();
+			connsToDraw = connectionStrings;
 		}
-		
-		if (bandMode == detailBandMode){
-			const canvasElement = document.getElementById('mainCanvas');
-			let viewName = bandMode + ' main';
-			let view = geoViews.get(viewName);
-			if (!view) {
-				view = new GeoView(canvasElement);
-				geoViews.set(viewName, view);		
-				full_draw_needed = true;
-			}
-			view.setMarkerSize(6);
-			if (full_draw_needed){
-				console.log("Full draw for " + viewName);
-				view.drawMap();
-				for (const connectionString of connectionStrings){
-					drawFilteredConnections(view, callsignRecords, connectionString);
-				}
-			} else {
-				drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
+		for (const connectionString of connsToDraw){
+			let vis = false;
+			let endpointCallsigns = connectionString.split('|');
+			let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
+			vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
+			vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
+			if (vis){	
+				view.drawConnection(endpointCallsigns, endpointRecords, myCall);
 			}
 		}
-		
+	}
+	
+}
+
+function updateMain(bandMode, full_draw_needed){
+	let dataVignette = getDataVignette(bandMode);
+	let callsignRecords = dataVignette.getCallsignRecords();
+	let connectionStrings = dataVignette.getConnectionStrings(); 
+
+	const canvasElement = document.getElementById('mainCanvas');	
+	const viewName = bandMode+' main'
+	let view = geoViews.get(viewName);
+	if (!view) {
+		view = new GeoView(canvasElement);
+		geoViews.set(viewName, view);		
+		full_draw_needed = true;
 	}
 
+	let connsToDraw = connectionStrings.slice(-1);
+	if (full_draw_needed){
+		console.log("Full draw for " + viewName);
+		view.rebase();
+		connsToDraw = connectionStrings;
+	}
+	for (const connectionString of connsToDraw){
+		let vis = false;
+		let endpointCallsigns = connectionString.split('|');
+		let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
+		vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
+		vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
+		if (vis){	
+			view.drawConnection(endpointCallsigns, endpointRecords, myCall);
+		}
+	}
 }
 
