@@ -1,7 +1,7 @@
 
 import {loadConfig} from './config.js';
 import {connectToFeed} from './mqtt.js';
-import {manageViews} from './viewMgr.js';
+import {manageViews} from './pageMgr.js';
 
 let bands = '+';
 

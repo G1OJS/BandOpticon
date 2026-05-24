@@ -1,23 +1,23 @@
-import {mhToLatLong} from './geo.js'
+import {mhToLatLong} from './geoFuncs.js'
+import {updateViews} from './pageMgr.js'
 
 let dataVignettes = new Map();
 
 export class DataVignette{
 	constructor(bandMode){
 		this.bandMode = bandMode;
-		this.band = this.bandMode.split(' ')[0];
-		this.wavelength = parseInt(this.band.split("m")[0]);
-		if (this.band.search("cm") > 0) this.wavelength /= 100;
-		this.mode = this.bandMode.split(' ')[1];
+		let band = this.bandMode.split(' ')[0];
+		this.wavelength = parseInt(band.split("m")[0]);
+		if (band.search("cm") > 0) this.wavelength /= 100;
 		this.stats = {};
-		this.cRecords = new Map();
-		this.connRecords = new Set();
+		this.callsignRecords = new Map();
+		this.connectionStrings = [];
 	}
 	
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
-		for (const call of this.cRecords.keys()) {
-			let crec = this.cRecords.get(call);
+		for (const call of this.callsignRecords.keys()) {
+			let crec = this.callsignRecords.get(call);
 			if (crec.isInHome){
 				total +=1;
 				if(crec.tx) totalTx +=1;
@@ -31,18 +31,23 @@ export class DataVignette{
 		};
 	}
 	
-	addConnection(sRecord, rRecord){
-		let conn = sRecord.call+"|"+rRecord.call;
-		this._refreshcRecord(sRecord);  
-		this._refreshcRecord(rRecord);
-		if(!this.connRecords.has(conn)) {	
-			this.connRecords.add(conn);
+	recordConnection(sRecord, rRecord){
+		let changed = false;
+		let connectionString = sRecord.call+"|"+rRecord.call;
+		changed |= this._update_cRecords(sRecord);  
+		changed |= this._update_cRecords(rRecord);
+		if(!this.connectionStrings.includes(connectionString)) {	
+			this.connectionStrings.push(connectionString);
+			changed = true;
+		}
+		if (changed) {
+			updateViews(this.bandMode, this.callsignRecords, this.connectionStrings);
 		}
 	}
 	
-	_refreshcRecord(cRecordNew){
+	_update_cRecords(cRecordNew){
 		let call = cRecordNew.call;
-		let cRecordExisting = this.cRecords.get(call);
+		let cRecordExisting = this.callsignRecords.get(call);
 		let changed = false;
 		let noLatLong = false;
 		
@@ -64,7 +69,7 @@ export class DataVignette{
 		}
 		
 		if (changed) {
-			this.cRecords.set(call, cRecordNew);
+			this.callsignRecords.set(call, cRecordNew);
 		}
 		return changed;
 	}
@@ -78,7 +83,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	if(! dataVignettes.get(bandMode)) {
 		console.log("Create data vignette "+bandMode);
 		dataVignettes.set(bandMode, new DataVignette(bandMode));
-		dataVignettes.sort((a, b) => b.wavelength - a.wavelength);
+		//dataVignettes.sort((a, b) => b.wavelength - a.wavelength);
 	}
-	dataVignettes.get(bandMode).addConnection(sRecord, rRecord);
+	dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
 }

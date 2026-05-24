@@ -1,9 +1,5 @@
 
-
-
-
-// MOVE ALL INTO VIEWMGR
-import {myCall, colours} from './config.js'
+import {colours} from './config.js'
 
 let worldGeoJSON = null;
 
@@ -14,33 +10,20 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastlin
 worldGeoJSON = data;
 });
 
-export class GeoChart{
+export class GeoView{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
-		this.view = null;
-		this.filters = null;
+		this.viewProps = {};
+		this.zoomParams = {};
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:1200, h:600};
-		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 		this.bgCol = 'white';
 		this.stats = {};
-		this.drawMap();
 	}
 	
-	setView(viewType){
-		if (viewType == 'main'){
-			this.view = {markerSize: 6, showConnections: true, mapData: null}
-			this.canvasElement.style = 'cursor:zoom-in;';
-		} else {
-			this.view = {markerSize: 20, showConnections: false, mapData: null}
-			this.canvasElement.style = 'cursor:pointer;';
-		}
-	}
-	
-	
-	setFilters(showInvolvingHomeTx, showInvolvingHomeRx){
-		this.filters = {showInvolvingHomeTx, showInvolvingHomeRx};
+	setMarkerSize(markerSize){
+		this.viewProps.markerSize = markerSize;
 	}
 	
 	px(ll){
@@ -52,63 +35,19 @@ export class GeoChart{
 		return [x,y];
 	}
 	
-	addConnection(sRecord, rRecord, changed){
-		let conn = sRecord.call+"|"+rRecord.call;
-		changed |= this._refreshcRecord(sRecord);  
-		changed |= this._refreshcRecord(rRecord);
-		if(!this.connRecords.has(conn)) {	
-			this.connRecords.add(conn);
-			changed = true;
-		}
-		if (changed) {
-			this._updateCanvas(sRecord, rRecord, myCall);
-		}
-	}
-	
-	_refreshcRecord(cRecordNew){
-		let call = cRecordNew.call;
-		let cRecordExisting = this.cRecords.get(call);
-		let changed = false;
-		let noLatLong = false;
+	drawConnection(endpointCallsigns, endpointRecords, highlightCall){
 		
-		if(cRecordExisting === undefined) {
-			noLatLong = true;
-		} else {
-			noLatLong |= (cRecordNew.latlong === undefined);
-			changed |= (cRecordNew.tx != cRecordExisting.tx)
-			changed |= (cRecordNew.rx != cRecordExisting.rx)
-			cRecordNew.tx |= cRecordExisting.tx;
-			cRecordNew.rx |= cRecordExisting.rx;
-		}
-		
-		if (noLatLong){
-			if(cRecordNew.sq){
-				cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
-				changed = true;
-			}
-		}
-		
-		if (changed) {
-			this.cRecords.set(call, cRecordNew);
-		}
-		return changed;
-	}
-	
-	_updateCanvas(sRecord, rRecord, highlightCall){
-		
-		if ( (sRecord.isInHome && this.filters.showInvolvingHomeTx) || (rRecord.isInHome && this.filters.showInvolvingHomeRx) ) {
-
-			for (const cRecord of [sRecord, rRecord]) {
+			for (const cRecord of endpointRecords) {
 				if (cRecord.p === null) {
 					cRecord.p = this.px(cRecord.latlong);
 				}
 				this.ctx.beginPath();
-				this.ctx.arc(cRecord.p[0], cRecord.p[1], this.view.markerSize, 0, 6.282);
+				this.ctx.arc(cRecord.p[0], cRecord.p[1], this.viewProps.markerSize, 0, 6.282);
 				this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
 				this.ctx.fill();
 			}
 			
-			if (sRecord.call == highlightCall || rRecord.call == highlightCall) {
+			if (endpointCallsigns.includes(highlightCall)) {
 				this.ctx.strokeStyle = colours.rx;
 				if (sRecord.call == highlightCall) this.ctx.strokeStyle = colours.tx;
 				this.ctx.lineWidth=2;
@@ -124,20 +63,8 @@ export class GeoChart{
 				this.ctx.stroke();
 			}
 		
-		}
-
 	}
 
-	redraw(highlightCall){
-		this.drawMap();
-		for (const conn of this.connRecords) {
-			let calls = conn.split('|');
-			let sRecord = this.cRecords.get(calls[0]);
-			let rRecord = this.cRecords.get(calls[1]);
-			this._updateCanvas(sRecord, rRecord, highlightCall);
-		}
-	}
-	
 	drawMap(){
 		this.ctx.clearRect(0,0, 2000,2000);
 		this.ctx.strokeStyle = colours.map;
@@ -145,12 +72,12 @@ export class GeoChart{
 		worldGeoJSON?.features.forEach(feature => {
 			const geom = feature.geometry;
 			if (geom.type === 'LineString') {
-				this.drawLineString(geom.coordinates);
+				this._drawLineString(geom.coordinates);
 			}
 		});
 	}
 	
-	drawLineString(coords) {
+	_drawLineString(coords) {
 		this.ctx.beginPath();
 		coords.forEach(([lon, lat], i) => {
 			let p = this.px([lat, lon]);
@@ -159,7 +86,7 @@ export class GeoChart{
 		this.ctx.stroke();
 	}
 	
-	zoom(zoomAction, e){
+	setZoom(zoomAction){
 		if(zoomAction == 'zoomFullEarth') this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 
 		if(zoomAction == 'zoomToData'){
@@ -180,22 +107,10 @@ export class GeoChart{
 			let d = 180/Math.abs((lonrng[0]-this.zoomParams.lon0));
 			this.zoomParams.scale = Math.max(Math.min(a,b,c,d)/1.2, 1);
 		}
-
-		if(zoomAction == 'zoomIn'){		
-			let rect = this.canvasElement.getBoundingClientRect();
-			let xnorm = (e.clientX - rect.left) / (rect.right-rect.left);
-			let ynorm = (e.clientY - rect.top)/ (rect.bottom-rect.top);	
-			this.zoomParams.lat0 = (-180*(ynorm-0.5) / this.zoomParams.scale) + this.zoomParams.lat0;
-			this.zoomParams.lon0 = ( 360*(xnorm-0.5) / this.zoomParams.scale) + this.zoomParams.lon0;
-			this.zoomParams.scale = this.zoomParams.scale *1.2;
-		}
 		
 		if(zoomAction == 'zoomOut'){		
 			this.zoomParams.scale = Math.max(this.zoomParams.scale / 1.2, 1);
-		}		
-		
-		for (const cRecord of this.cRecords.values()) cRecord.p = this.px(cRecord.latlong);
-
+		}	
 	}
 	
 	onMouseMove(e){

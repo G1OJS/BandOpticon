@@ -1,4 +1,4 @@
-import {parseSquares} from './geo.js';
+import {parseSquares} from './geoFuncs.js';
 const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
