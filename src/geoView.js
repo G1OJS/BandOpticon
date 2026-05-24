@@ -14,7 +14,7 @@ export class GeoView{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
 		this.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};
-		this.drawnCalls ={};
+		this.drawnCalls = new Map();
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:canvasElement.width, h:canvasElement.height};
@@ -35,7 +35,7 @@ export class GeoView{
 
 		for (const cRecord of endpointRecords) {
 			const p = this.px(cRecord.latlong);
-			this.drawnCalls[cRecord.call] = p;
+			this.drawnCalls.set(cRecord.call, p);
 			this.ctx.beginPath();
 			this.ctx.arc(p[0], p[1], 6, 0, 6.282);
 			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
@@ -61,24 +61,27 @@ export class GeoView{
 	}
 
 	rebase(){
-		this.drawnCalls ={};
+		this.drawnCalls = new Map();
 		this._drawMap();
 	}
 	
-	getCallAt(p){
+	updateHoveringOver(e){
+		let hovering_over = null;
+		let rect = this.canvasElement.getBoundingClientRect();
+		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
 
 		for (const [call, pos] of this.drawnCalls.entries()) { 
-			if(Math.abs(p[0] - pos[0]) < 5 && Math.abs(p[1] - pos[1])<5) {
+			//console.log(x, pos[0], y, pos[1]);
+			if(Math.abs(x - pos[0]) < 5 && Math.abs(y - pos[1])<5) {
 				this.canvasElement.style = 'cursor:default;';
 				this.canvasElement.title = call;
 				hovering_over = call;
 				break;
 			}
 		}
-		
 		if (hovering_over !== this.currentHover) {
 			this.currentHover = hovering_over;
-			this.redraw(hovering_over);
 		}
 	}
 	

@@ -2,9 +2,10 @@ import {myCall, setMyCall, setSquaresList, colours} from './config.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
 
-const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
+const mainViewCanvasElement = document.getElementById('mainCanvas');
 let geoViews = new Map();
+let mainView = null;
 
 export function initialisePage(){
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -12,14 +13,15 @@ export function initialisePage(){
 	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 	
 	document.getElementById('modeFilters').addEventListener('change', () => {
-		for (const tileElement of document.querySelectorAll('.tile')) {
-			if (modeFilter(tileElement.id.split(' ')[1])) {
-				tileElement.classList.remove('hidden');
-				updateTile(tileElement.id, true);
-			} else {
-				tileElement.classList.add('hidden');
-			}
-		}
+		redrawAllTiles();
+//		for (const tileElement of document.querySelectorAll('.tile')) {
+//			if (modeFilter(tileElement.id.split(' ')[1])) {
+//				tileElement.classList.remove('hidden');
+//				updateTile(tileElement.id, true);
+//			} else {
+//				tileElement.classList.add('hidden');
+//			}
+//		}
 	});	
 	
 	document.getElementById('myCallInput').addEventListener('change', () => {
@@ -41,9 +43,19 @@ export function initialisePage(){
 	
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		console.log("tileTrayGrid.click");
-		updateMain(e.target.closest('.tile').id, true);
+		let bandMode = e.target.closest('.tile').id;
+		let dataVignette = getDataVignette(bandMode);
+		let callsignRecords = dataVignette.getCallsignRecords();
+		let connectionStrings = dataVignette.getConnectionStrings(); 
+
+		const mainViewTitleElement = document.getElementById('mainViewTitle');	
+		const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
+		const viewName = bandMode+' main'
+		mainViewTitleElement.innerText = bandMode;
+		_drawConnections(mainViewCanvasElement, viewName, callsignRecords, connectionStrings, true);
 	});	
 	
+	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
 }
 
 function modeFilter(md){
@@ -55,6 +67,16 @@ function modeFilter(md){
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
 	
 	return vis;	
+}
+
+function updateHoveringOver(e){
+	if (mainView){
+		mainView.updateHoveringOver(e);
+		mainViewCanvasElement.title = mainView.currentHover;
+		
+		//console.log(mainView.currentHover);
+	}
+	
 }
 
 function zoom(zoomAction, e){
@@ -90,20 +112,6 @@ export function updateTile(bandMode, full_draw_needed){
 	
 }
 
-function updateMain(bandMode, full_draw_needed){
-	let dataVignette = getDataVignette(bandMode);
-	let callsignRecords = dataVignette.getCallsignRecords();
-	let connectionStrings = dataVignette.getConnectionStrings(); 
-
-	const canvasElement = document.getElementById('mainCanvas');	
-	const mainViewTitleElement = document.getElementById('mainViewTitle');	
-	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
-	
-	const viewName = bandMode+' main'
-	mainViewTitleElement.innerText = bandMode;
-	_drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed);
-}
-
 function _drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed){
 	let view = geoViews.get(viewName);
 	if (!view) {
@@ -111,6 +119,10 @@ function _drawConnections(canvasElement, viewName, callsignRecords, connectionSt
 		geoViews.set(viewName, view);		
 		full_draw_needed = true;
 	}
+	if (canvasElement == mainViewCanvasElement) {
+		mainView = view;
+	}
+	
 	let connsToDraw = connectionStrings.slice(-1);
 	if (full_draw_needed){
 		console.log("Full draw for " + viewName);
