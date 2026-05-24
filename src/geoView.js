@@ -14,13 +14,12 @@ export class GeoView{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
 		this.viewProps = {};
-		this.zoomParams = null;
+		this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:canvasElement.width, h:canvasElement.height};
 		this.bgCol = 'white';
 		this.stats = {};
-		this.setZoom('zoomFullEarth');
 		console.log("Created geoView with size "+this.canvasElementSize.w + ", "+ this.canvasElementSize.h);
 	}
 	
@@ -86,33 +85,7 @@ export class GeoView{
 		this.ctx.stroke();
 	}
 	
-	setZoom(zoomAction){
-		if(zoomAction == 'zoomFullEarth') this.zoomParams = {scale:1.2, lat0:0, lon0:0};
 
-		if(zoomAction == 'zoomToData'){
-			let latrng = [90,-90];
-			let lonrng = [180,-180];
-			for (const cRecord of this.cRecords.values()){
-				let ll = cRecord.latlong;
-				if (ll[0] > latrng[1]) {latrng[1] = ll[0];}
-				if (ll[0] < latrng[0]) {latrng[0] = ll[0];}
-				if (ll[1] > lonrng[1]) {lonrng[1] = ll[1];}
-				if (ll[1] < lonrng[0]) {lonrng[0] = ll[1];}
-			}
-			this.zoomParams.lat0 = 0.5*(latrng[1]+latrng[0]);
-			this.zoomParams.lon0 = 0.5*(lonrng[1]+lonrng[0]);
-			let a = 90/Math.abs((latrng[1]-this.zoomParams.lat0));
-			let b = 90/Math.abs((latrng[0]-this.zoomParams.lat0));
-			let c = 180/Math.abs((lonrng[1]-this.zoomParams.lon0));
-			let d = 180/Math.abs((lonrng[0]-this.zoomParams.lon0));
-			this.zoomParams.scale = Math.max(Math.min(a,b,c,d)/1.2, 1);
-		}
-		
-		if(zoomAction == 'zoomOut'){		
-			this.zoomParams.scale = Math.max(this.zoomParams.scale / 1.2, 1);
-		}	
-	}
-	
 	onMouseMove(e){
 		let hovering_over = this.myCall;
 		this.canvasElement.title = '';
@@ -122,12 +95,11 @@ export class GeoView{
 
 		for (const [call, cRecord] of this.cRecords.entries()) { 
 			let p = cRecord.p;
-			if (p !== null) { // some cRecords might not have had p set in _updateCanvas
-				if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
-					this.canvasElement.style = 'cursor:default;';
-					this.canvasElement.title = call;
-					hovering_over = call;
-				}
+			if (p == null) p = this.px(cRecord.latlong);
+			if(Math.abs(p[0] - x) < 5 && Math.abs(p[1] - y)<5) {
+				this.canvasElement.style = 'cursor:default;';
+				this.canvasElement.title = call;
+				hovering_over = call;
 			}
 		}
 		

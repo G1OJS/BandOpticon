@@ -115,11 +115,11 @@ export function updateView(bandMode, full_draw_needed){
 			full_draw_needed = true;
 		}
 
-		if (document.getElementById('zoomTilesToActivity').checked){
-			view.setZoom('zoomToData', null);
-		} else {
-			view.setZoom('zoomFullEarth', null);
-		}	
+//		if (document.getElementById('zoomTilesToActivity').checked){
+//			
+//		} else {
+//			
+//		}	
 		view.setMarkerSize(6);
 		if (full_draw_needed){
 			console.log("Full draw for " + bandMode);
