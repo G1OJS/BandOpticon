@@ -16,7 +16,7 @@ export function initialisePage(){
 		for (const tileElement of document.querySelectorAll('.tile')) {
 			if (modeFilter(tileElement.id.split(' ')[1])) {
 				tileElement.classList.remove('hidden');
-				updateView(tileElement.id, true);
+				updateTile(tileElement.id, true);
 			} else {
 				tileElement.classList.add('hidden');
 			}
@@ -43,7 +43,7 @@ export function initialisePage(){
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		console.log("tileTrayGrid.click");
 		detailBandMode = e.target.closest('.tile').id;
-		updateView(detailBandMode, true);
+		updateTile(detailBandMode, true);
 		updateMain(detailBandMode, true);
 	});	
 	
@@ -66,17 +66,17 @@ function zoom(zoomAction, e){
 
 function redrawAllTiles(){
 	for (const tileElement of document.querySelectorAll('.tile')) {
-		updateView(tileElement.id, true);
+		console.log("Update "+tileElement.id);
+		updateTile(tileElement.id, true);
 	}
 }
 
-export function updateView(bandMode, full_draw_needed){
+export function updateTile(bandMode, full_draw_needed){
 	let dataVignette = getDataVignette(bandMode);
 	let callsignRecords = dataVignette.getCallsignRecords();
 	let connectionStrings = dataVignette.getConnectionStrings(); 
 
 	if (modeFilter(bandMode.split(' ')[1])) {
-
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) {
 			console.log("Create tile "+bandMode);
@@ -86,32 +86,9 @@ export function updateView(bandMode, full_draw_needed){
 			tileElement.id = bandMode;
 			full_draw_needed = true;
 		}
-		
 		const canvasElement = tileElement.querySelector('canvas');				
 		tileElement.classList.remove('hidden');		
-		let view = geoViews.get(bandMode);
-		if (!view) {
-			view = new GeoView(canvasElement);
-			geoViews.set(bandMode, view);		
-			full_draw_needed = true;
-		}
-
-		let connsToDraw = connectionStrings.slice(-1);
-		if (full_draw_needed){
-			console.log("Full draw for " + bandMode);
-			view.rebase();
-			connsToDraw = connectionStrings;
-		}
-		for (const connectionString of connsToDraw){
-			let vis = false;
-			let endpointCallsigns = connectionString.split('|');
-			let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
-			vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
-			vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
-			if (vis){	
-				view.drawConnection(endpointCallsigns, endpointRecords, myCall);
-			}
-		}
+		_drawConnections(canvasElement, bandMode, callsignRecords, connectionStrings, full_draw_needed);
 	}
 	
 }
@@ -123,13 +100,17 @@ function updateMain(bandMode, full_draw_needed){
 
 	const canvasElement = document.getElementById('mainCanvas');	
 	const viewName = bandMode+' main'
+
+	_drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed);
+}
+
+function _drawConnections(canvasElement, viewName, callsignRecords, connectionStrings, full_draw_needed){
 	let view = geoViews.get(viewName);
 	if (!view) {
 		view = new GeoView(canvasElement);
 		geoViews.set(viewName, view);		
 		full_draw_needed = true;
 	}
-
 	let connsToDraw = connectionStrings.slice(-1);
 	if (full_draw_needed){
 		console.log("Full draw for " + viewName);
