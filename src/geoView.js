@@ -14,12 +14,14 @@ export class GeoView{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
 		this.viewProps = {};
-		this.zoomParams = {};
+		this.zoomParams = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
-		this.canvasElementSize = {w:1200, h:600};
+		this.canvasElementSize = {w:canvasElement.width, h:canvasElement.height};
 		this.bgCol = 'white';
 		this.stats = {};
+		this.setZoom('zoomFullEarth');
+		console.log("Created geoView with size "+this.canvasElementSize.w + ", "+ this.canvasElementSize.h);
 	}
 	
 	setMarkerSize(markerSize){
@@ -37,36 +39,34 @@ export class GeoView{
 	
 	drawConnection(endpointCallsigns, endpointRecords, highlightCall){
 		
-			for (const cRecord of endpointRecords) {
-				if (cRecord.p === null) {
-					cRecord.p = this.px(cRecord.latlong);
-				}
-				this.ctx.beginPath();
-				this.ctx.arc(cRecord.p[0], cRecord.p[1], this.viewProps.markerSize, 0, 6.282);
-				this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
-				this.ctx.fill();
-			}
-			
-			if (endpointCallsigns.includes(highlightCall)) {
-				this.ctx.strokeStyle = colours.rx;
-				if (sRecord.call == highlightCall) this.ctx.strokeStyle = colours.tx;
-				this.ctx.lineWidth=2;
-				this.ctx.beginPath();
-				this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
-				this.ctx.lineTo(rRecord.p[0],rRecord.p[1]);
-				this.ctx.stroke();
-				this.ctx.beginPath();
-				this.ctx.arc(sRecord.p[0], sRecord.p[1], 6, 0, 6.282);
-				this.ctx.stroke();
-				this.ctx.beginPath();
-				this.ctx.arc(rRecord.p[0], rRecord.p[1], 6, 0, 6.282);
-				this.ctx.stroke();
-			}
+		for (const cRecord of endpointRecords) {
+			const p = this.px(cRecord.latlong);
+			this.ctx.beginPath();
+			this.ctx.arc(p[0], p[1], this.viewProps.markerSize, 0, 6.282);
+			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
+			this.ctx.fill();
+		}
+		
+		if (endpointCallsigns.includes(highlightCall)) {
+			this.ctx.strokeStyle = colours.rx;
+			if (sRecord.call == highlightCall) this.ctx.strokeStyle = colours.tx;
+			this.ctx.lineWidth=2;
+			this.ctx.beginPath();
+			this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
+			this.ctx.lineTo(rRecord.p[0],rRecord.p[1]);
+			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.arc(sRecord.p[0], sRecord.p[1], 6, 0, 6.282);
+			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.arc(rRecord.p[0], rRecord.p[1], 6, 0, 6.282);
+			this.ctx.stroke();
+		}
 		
 	}
 
 	drawMap(){
-		this.ctx.clearRect(0,0, 2000,2000);
+		this.ctx.clearRect(0,0, this.canvasElementSize.w, this.canvasElementSize.h);
 		this.ctx.strokeStyle = colours.map;
 		this.ctx.lineWidth = 2;
 		worldGeoJSON?.features.forEach(feature => {

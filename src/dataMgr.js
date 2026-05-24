@@ -89,8 +89,8 @@ export class DataVignette{
 }
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
-	const sRecord = {call:spot.sc, p:null, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
-	const rRecord = {call:spot.rc, p:null, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
+	const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
+	const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
 	const bandMode = spot.b+" "+spot.md;
 	if(! dataVignettes.get(bandMode)) {
 		console.log("Create data vignette "+bandMode);

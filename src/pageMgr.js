@@ -5,6 +5,7 @@ import {getDataVignette} from './dataMgr.js';
 const mainView = document.querySelector('#mainView');
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
 let geoViews = new Map();
+let detailBandMode = null;
 
 export function initialisePage(){
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -37,6 +38,12 @@ export function initialisePage(){
 	document.getElementById('homeCallFilters').addEventListener('change', () => {
 		console.log("homeCallFilters.change");
 		redrawAllTiles();
+	});	
+	
+	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
+		console.log("tileTrayGrid.click");
+		detailBandMode = e.target.closest('.tile').id;
+		updateView(detailBandMode, true);
 	});	
 	
 }
@@ -90,7 +97,6 @@ export function updateView(bandMode, full_draw_needed){
 		let connectionStrings = dataVignette.getConnectionStrings(); 
 
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
-
 		if (!tileElement) {
 			console.log("Create tile "+bandMode);
 			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
@@ -99,11 +105,9 @@ export function updateView(bandMode, full_draw_needed){
 			tileElement.id = bandMode;
 			full_draw_needed = true;
 		}
-		const canvasElement = tileElement.querySelector('canvas');				
-		let tileButtons = tileElement.querySelectorAll('.windowBarButton');
-		for (const b of tileButtons){b.classList.add('hidden');}
-		tileElement.classList.remove('hidden');
 		
+		const canvasElement = tileElement.querySelector('canvas');				
+		tileElement.classList.remove('hidden');		
 		let view = geoViews.get(bandMode);
 		if (!view) {
 			view = new GeoView(canvasElement);
@@ -116,7 +120,7 @@ export function updateView(bandMode, full_draw_needed){
 		} else {
 			view.setZoom('zoomFullEarth', null);
 		}	
-		view.setMarkerSize(20);
+		view.setMarkerSize(6);
 		if (full_draw_needed){
 			console.log("Full draw for " + bandMode);
 			view.drawMap();
@@ -126,6 +130,28 @@ export function updateView(bandMode, full_draw_needed){
 		} else {
 			drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
 		}
+		
+		if (bandMode == detailBandMode){
+			const canvasElement = document.getElementById('mainCanvas');
+			let viewName = bandMode + ' main';
+			let view = geoViews.get(viewName);
+			if (!view) {
+				view = new GeoView(canvasElement);
+				geoViews.set(viewName, view);		
+				full_draw_needed = true;
+			}
+			view.setMarkerSize(6);
+			if (full_draw_needed){
+				console.log("Full draw for " + viewName);
+				view.drawMap();
+				for (const connectionString of connectionStrings){
+					drawFilteredConnections(view, callsignRecords, connectionString);
+				}
+			} else {
+				drawFilteredConnections(view, callsignRecords, connectionStrings.slice(-1)[0]);
+			}
+		}
+		
 	}
 
 }

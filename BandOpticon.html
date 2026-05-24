@@ -49,11 +49,8 @@
 					<div class = 'tile hidden'>
 						<div class = 'tileWindowBar'>
 							<span class="tileTitle"></span> <span class="tileSubtitle"></span>
-							<span class="control windowBarButton hidden right" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
-							<span class="control windowBarButton hidden right" data-action='zoomToData' title = 'Zoom to Data'>=</span>
-							<span class="control windowBarButton hidden right" data-action='zoomOut' title = 'Zoom Out'>-</span>
 						</div>
-						<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
+						<canvas data-action = 'zoomIn' width="400" height="200"></canvas>
 					</div>
 				</template>
 			</div>
@@ -63,6 +60,15 @@
 	<div id="mainViewContainer" class="paper-light" >
 		<div id='mainView' >
 			<div id = 'clickTileMessage' class = 'hidden'>Click a tile above to show its detail here</div>
+			<div class = 'tile'>
+				<div class = 'tileWindowBar'>
+					<span class="tileTitle"></span> <span class="tileSubtitle"></span>
+					<span class="control windowBarButton hidden right" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
+					<span class="control windowBarButton hidden right" data-action='zoomToData' title = 'Zoom to Data'>=</span>
+					<span class="control windowBarButton hidden right" data-action='zoomOut' title = 'Zoom Out'>-</span>
+				</div>
+				<canvas data-action = 'zoomIn' width="1200" height="600", id='mainCanvas'></canvas>
+			</div>
 		</div>
 	</div>
 	<div id="footer" class="hideForMaxView">
