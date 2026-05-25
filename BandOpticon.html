@@ -18,12 +18,15 @@
 <div id="app" class="paper-main">
 	<div id='ribbon' class="windowBar hideForMaxView ">
 		<h1>BandOpticon Geo</h1>
+		<div class= 'statusMessage' id = 'mqttStatus'></div>
 		<span><label for="homeSquaresInput">To/from:</label><input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></span>
 		<span><label for="myCallInput">My Call:</label><input style='width:7em;' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></span>
 		<span><label for = "filters">Show:</label></span> 
-		<span id='filters'>
+		<span id='homeCallFilters'>
 			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Home Tx</label></span>
 			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Home Rx</label></span>
+		</span>
+		<span id='modeFilters'>
 			<span class = 'control ' ><input type="checkbox" id="FT8" name="FT8" checked /><label for="FT8">FT8</label></span>
 			<span class = 'control ' ><input type="checkbox" id="FT4" name="FT4" /><label for="FT4">FT4</label></span>
 			<span class = 'control ' ><input type="checkbox" id="FT2" name="FT2" /><label for="FT2">FT2</label></span>
@@ -40,18 +43,15 @@
 	</div>
 	<br>	
 	<div id="tileTray" class="paper-light" title = 'Click a tile to move it to the main view'>
-		<span class = 'control ' ><input type="checkbox" id="zoomTilesToActivity" name="zoomTilesToActivity" /><label for="zoomTilesToActivity"> Zoom tiles to activity</label></span>
+		<span class = 'control ' ><input type="checkbox" id="zoomTilesToData" name="zoomTilesToData" /><label for="zoomTilesToData"> Zoom to activity</label></span>
 		<div id = 'tileTrayScrollContainer'>
 			<div id = 'tileTrayGrid'>
 			    <template id="tileTemplate">
 					<div class = 'tile hidden'>
 						<div class = 'tileWindowBar'>
 							<span class="tileTitle"></span> <span class="tileSubtitle"></span>
-							<span class="control windowBarButton hidden right" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
-							<span class="control windowBarButton hidden right" data-action='zoomToData' title = 'Zoom to Data'>=</span>
-							<span class="control windowBarButton hidden right" data-action='zoomOut' title = 'Zoom Out'>-</span>
 						</div>
-						<canvas data-action = 'zoomIn' width="1200" height="600"></canvas>
+						<canvas data-action = 'zoomIn' width="400" height="200"></canvas>
 					</div>
 				</template>
 			</div>
@@ -61,6 +61,16 @@
 	<div id="mainViewContainer" class="paper-light" >
 		<div id='mainView' >
 			<div id = 'clickTileMessage' class = 'hidden'>Click a tile above to show its detail here</div>
+			<div class = 'mainTile'>
+				<span class = 'control ' ><input type="checkbox" id="zoomMainToData" name="zoomMainToData" /><label for="zoomMainToData"> Zoom to activity</label></span>
+				<div class = 'tileWindowBar', id='mainViewWindowBar'>
+					<span class="control windowBarButton" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
+					<span class="control windowBarButton" data-action='zoomToData' title = 'Set Zoom to Current Activity'>=</span>
+					<span class="control windowBarButton" data-action='zoomOut' title = 'Zoom Out'>-</span>
+					<span class="tileTitle" id='mainViewTitle'></span> <span class="tileSubtitle" id='mainViewSubTitle'></span>
+				</div>
+				<canvas data-action = 'zoomIn' width="1200" height="600", id='mainCanvas'></canvas>
+			</div>
 		</div>
 	</div>
 	<div id="footer" class="hideForMaxView">

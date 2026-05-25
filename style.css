@@ -84,6 +84,7 @@ button.active 		{border-width: 1px; font-weight: 600; color: var(--controls-colo
 button:hover:not(.active) 
 					{border-color: var(--main-paper-color);color: var(--controls-color);}
 					
+.statusMessage		{font-size: var(--font-size-xsm); font-weight: 400; var(--muted-font-color);}
 label 				{font-size: var(--font-size-base); font-weight: 600; color: var(--main-font-color); padding-right:3px; }
 input				{font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius:6px; padding-top:1px; margin-top:2px; }
 input:invalid 		{border-color: #e66;background-color: #fee;}
@@ -96,7 +97,7 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 #tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 140px); grid-template-rows: 1fr; }		
 #tileTrayGrid > div {border: 1px solid black;  }	 
 				
-.windowBarButton	{display:inline-block; margin-right:5px;  box-shadow:1px 1px 1px 1px rgb(0 0 255 / .2); padding:0px 4px 2px 4px;}
+.windowBarButton	{display:inline-block; margin:0px;  box-shadow:1px 1px 1px 1px rgb(0 0 255 / .2); padding:0px 4px 2px 4px;}
 .right				{float:right;}
 				
 .tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:1px; margin:0px; margin-bottom:1px;} 

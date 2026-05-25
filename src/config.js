@@ -1,4 +1,4 @@
-import {parseSquares} from './geo.js';
+import {parseSquares} from './geoFuncs.js';
 const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
@@ -44,10 +44,11 @@ export function loadConfig() {
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
-	let myCall = localStorage.getItem('myCall');
-	if (myCall) { 
-		console.log("Loaded my call " + myCall); 
-		document.getElementById('myCallInput').value = myCall.toUpperCase();;
+	let myCallStorred = localStorage.getItem('myCall');
+	if (myCallStorred) { 
+		console.log("Loaded my call " + myCallStorred); 
+		document.getElementById('myCallInput').value = myCallStorred.toUpperCase();
+		myCall = document.getElementById('myCallInput').value;
 	}
 
 }

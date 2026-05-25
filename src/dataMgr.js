@@ -1,0 +1,109 @@
+import {mhToLatLong} from './geoFuncs.js'
+import {onDataUpdate} from './pageMgr.js'
+
+let dataVignettes = new Map();
+
+function _updateBounds(bounds, ll) {
+	bounds.latmax = (ll[0]>bounds.latmax)? ll[0]:bounds.latmax;
+	bounds.latmin = (ll[0]<bounds.latmin)? ll[0]:bounds.latmin;
+	bounds.lonmax = (ll[1]>bounds.lonmax)? ll[1]:bounds.lonmax;
+	bounds.lonmin = (ll[1]<bounds.lonmin)? ll[1]:bounds.lonmin;
+}
+
+export function getDataVignette(bandMode){
+	return dataVignettes.get(bandMode);
+}
+
+export class DataVignette{
+	constructor(bandMode){
+		this.bandMode = bandMode;
+		let band = this.bandMode.split(' ')[0];
+		this.wavelength = parseInt(band.split("m")[0]);
+		if (band.search("cm") > 0) this.wavelength /= 100;
+		this.geoRange = {'latmin':90, 'latmax':-90, 'lonmin':180, 'lonmax':-180};
+		this.stats = {};
+		this.callsignRecords = new Map();
+		this.connectionStrings = [];
+	}
+	
+	getStats(){ 
+		let totalTx = 0, totalRx = 0, total = 0;
+		for (const call of this.callsignRecords.keys()) {
+			let crec = this.callsignRecords.get(call);
+			if (crec.isInHome){
+				total +=1;
+				if(crec.tx) totalTx +=1;
+				if(crec.rx) totalRx +=1;
+			}
+		}
+		this.stats = {
+		  cls: total,
+		  tx_pc: Math.round(100*totalTx/total),
+		  rx_pc: Math.round(100*totalRx/total)
+		};
+	}
+	
+	getConnectionStrings(){
+		return this.connectionStrings;	
+	}
+	
+	getCallsignRecords(){
+		return this.callsignRecords;
+	}
+	
+	recordConnection(sRecord, rRecord){
+		let changed = false;
+		let connectionString = sRecord.call+"|"+rRecord.call;
+		changed |= this._update_cRecords(sRecord);  
+		changed |= this._update_cRecords(rRecord);
+		if(!this.connectionStrings.includes(connectionString)) {	
+			this.connectionStrings.push(connectionString);
+			changed = true;
+		}
+		if (changed) {
+			onDataUpdate(this.bandMode);
+		}
+	}
+	
+	_update_cRecords(cRecordNew){
+		let call = cRecordNew.call;
+		let cRecordExisting = this.callsignRecords.get(call);
+		let changed = false;
+		let noLatLong = false;
+		
+		if(cRecordExisting === undefined) {
+			noLatLong = true;
+		} else {
+			noLatLong |= (cRecordNew.latlong === undefined);
+			changed |= (cRecordNew.tx != cRecordExisting.tx)
+			changed |= (cRecordNew.rx != cRecordExisting.rx)
+			cRecordNew.tx |= cRecordExisting.tx;
+			cRecordNew.rx |= cRecordExisting.rx;
+		}
+		
+		if (noLatLong){
+			cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
+			_updateBounds(this.geoRange, cRecordNew.latlong);
+			changed = true;
+		}
+		
+		if (changed) {
+			this.callsignRecords.set(call, cRecordNew);
+		}
+		return changed;
+	}
+		
+}
+
+export function addSpot(spot, senderIsInHome, receiverIsInHome) {
+	if (spot.sl && spot.rl){
+		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, p:null, isInHome:senderIsInHome};
+		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, p:null, isInHome:receiverIsInHome};
+		const bandMode = spot.b+" "+spot.md;
+		if(!dataVignettes.get(bandMode)) {
+			console.log("Create data vignette "+bandMode);
+			dataVignettes.set(bandMode, new DataVignette(bandMode));
+		}
+		dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
+	}
+}

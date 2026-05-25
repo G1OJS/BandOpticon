@@ -1,6 +1,7 @@
 
 import {loadConfig} from './config.js';
 import {connectToFeed} from './mqtt.js';
+import {initialisePage} from './pageMgr.js';
 
 let bands = '+';
 
@@ -13,8 +14,8 @@ if (params){
 	}
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
   loadConfig();
   connectToFeed(bands);
+  initialisePage();
 });
