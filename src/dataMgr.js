@@ -1,5 +1,5 @@
 import {mhToLatLong} from './geoFuncs.js'
-import {updateTile} from './pageMgr.js'
+import {onDataUpdate} from './pageMgr.js'
 
 let dataVignettes = new Map();
 
@@ -61,7 +61,7 @@ export class DataVignette{
 			changed = true;
 		}
 		if (changed) {
-			updateTile(this.bandMode);
+			onDataUpdate(this.bandMode);
 		}
 	}
 	
