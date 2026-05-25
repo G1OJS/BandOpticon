@@ -13,7 +13,7 @@ worldGeoJSON = data;
 export class GeoView{
 	constructor(canvasElement) {
 		this.canvasElement = canvasElement;
-		this.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};
+		this.axisRanges = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
 		this.drawnCalls = new Map();
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
@@ -23,11 +23,30 @@ export class GeoView{
 		console.log("Created geoView with size "+this.canvasElementSize.w + ", "+ this.canvasElementSize.h);
 	}
 	
+	zoomAndPan(zoomFactor, panlat, panlon){
+		let g = this.axisRanges;
+		let latmean = (g.latmin + g.latmax)/2.0;
+		let lonmean = (g.lonmin + g.lonmax)/2.0;
+		g.latmin = panlat + latmean + (g.latmin - latmean) / zoomFactor;
+		g.latmax = panlat + latmean + (g.latmax - latmean) / zoomFactor;
+		g.lonmin = panlon + lonmean + (g.lonmin - lonmean) / zoomFactor;
+		g.lonmax = panlon + lonmean + (g.lonmax - lonmean) / zoomFactor;	
+	}
+	
+	zoomToBox(newBox, marginFactor){
+		let e = this.axisRanges;
+		let n = newBox;
+		let zoomFactor = Math.min( (e.latmax - e.latmin)/(n.latmax-n.latmin), (e.lonmax - e.lonmin)/(n.lonmax-n.lonmin));
+		let panlat = (n.latmax + n.latmin)/2.0 - (e.latmax + e.latmin)/2.0;
+		let panlon = (n.lonmax + n.lonmin)/2.0 - (e.lonmax + e.lonmin)/2.0 ;
+		this.zoomAndPan(zoomFactor * marginFactor, panlat, panlon);
+	}
+	
 	px(ll){
 		let c = this.canvasElementSize;
 		let r = this.axisRanges;		
-		let x = c.w * (ll[1]-r.lon0)/(r.lon1-r.lon0);
-		let y = c.h - c.h * (ll[0]-r.lat0)/(r.lat1-r.lat0);
+		let x = c.w * (ll[1]-r.lonmin)/(r.lonmax-r.lonmin);
+		let y = c.h - c.h * (ll[0]-r.latmin)/(r.latmax-r.latmin);
 		return [x,y];
 	}
 	

@@ -3,6 +3,13 @@ import {updateTile} from './pageMgr.js'
 
 let dataVignettes = new Map();
 
+function _updateBounds(bounds, ll) {
+	bounds.latmax = (ll[0]>bounds.latmax)? ll[0]:bounds.latmax;
+	bounds.latmin = (ll[0]<bounds.latmin)? ll[0]:bounds.latmin;
+	bounds.lonmax = (ll[1]>bounds.lonmax)? ll[1]:bounds.lonmax;
+	bounds.lonmin = (ll[1]<bounds.lonmin)? ll[1]:bounds.lonmin;
+}
+
 export function getDataVignette(bandMode){
 	return dataVignettes.get(bandMode);
 }
@@ -13,6 +20,7 @@ export class DataVignette{
 		let band = this.bandMode.split(' ')[0];
 		this.wavelength = parseInt(band.split("m")[0]);
 		if (band.search("cm") > 0) this.wavelength /= 100;
+		this.geoRange = {'latmin':90, 'latmax':-90, 'lonmin':180, 'lonmax':-180};
 		this.stats = {};
 		this.callsignRecords = new Map();
 		this.connectionStrings = [];
@@ -75,6 +83,7 @@ export class DataVignette{
 		
 		if (noLatLong){
 			cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
+			_updateBounds(this.geoRange, cRecordNew.latlong);
 			changed = true;
 		}
 		

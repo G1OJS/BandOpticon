@@ -4,6 +4,7 @@ import {addSpot} from './dataMgr.js'
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
 var mqttClient = null;
+export var mqttStatus = 'connecting';
 
 export function connectToFeed(bands) {
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
@@ -33,12 +34,17 @@ function subscribe(bands) {
 		}
 	}
     // now subscribe to the topics
+	mqttStatus = 'subscribed';
 	Array.from(topics).forEach((t) => {
 		console.log("Subscribe to " + t);
 		mqttClient.subscribe(t, (error) => {
-			if (error) {console.error('subscription failed to ' + t, error)}
+			if (error) {
+				mqttStatus = 'error';
+				console.error('subscription failed to ' + t, error)
+			}
 		});
 	});
+	
 }
 
 function onMessage(msg) {
@@ -52,4 +58,6 @@ function onMessage(msg) {
 	let sh = squareIsInHome(spot.sl);
 	let rh = squareIsInHome(spot.rl);
 	if(sh || rh) addSpot(spot, sh, rh);
+	
+	mqttStatus = 'receiving';
 }

@@ -1,12 +1,24 @@
 import {myCall, setMyCall, setSquaresList, colours} from './config.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
+import {mqttStatus} from './mqtt.js';
 
 const tileTrayGrid = document.querySelector('#tileTrayGrid');
 const mainViewCanvasElement = document.getElementById('mainCanvas');
+const fullEarth = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
+const europeTest = {'latmin':45, 'latmax':55, 'lonmin':-5, 'lonmax':5};
+
 let geoViews = new Map();
 let mainBandMode = null;
 let mainView = null;
+
+async function waitForMqtt(){
+	while (mqttStatus != 'receiving') {
+		document.getElementById('mqttStatus').innerText = mqttStatus;
+		await new Promise(r => setTimeout(r, 250));
+	}
+	document.getElementById('mqttStatus').innerText ='';	
+}
 
 export function initialisePage(){
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -43,14 +55,15 @@ export function initialisePage(){
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
 		if (mainView){
-			if (e.target.dataset.action == 'zoomFullEarth') {mainView.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};}
-			if (e.target.dataset.action == 'zoomToData') {mainView.axisRanges = {'lat0':-45, 'lat1':45, 'lon0':-90, 'lon1':90};}
-			if (e.target.dataset.action == 'zoomOut') {mainView.axisRanges = {'lat0':-90, 'lat1':90, 'lon0':-180, 'lon1':180};}
+			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomToBox(fullEarth, 1.0);}
+			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToBox(getDataVignette(mainBandMode).geoRange, 0.8);}
+			if (e.target.dataset.action == 'zoomOut') {mainView.zoomAndPan(1.0/1.2, 0, 0);}
+			if (e.target.dataset.action == 'zoomIn') {mainView.zoomAndPan(1.2, 0, 0);}
 			updateMain(true);
 		}
 	});
 	
-	
+	waitForMqtt();
 }
 
 function modeFilter(md){
@@ -70,10 +83,6 @@ function updateHoveringOver(e){
 		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
 		updateMain(true);
 	}
-}
-
-function zoom(zoomAction, e){
-
 }
 
 function redrawAllTiles(){
