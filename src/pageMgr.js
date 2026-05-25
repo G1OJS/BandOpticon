@@ -68,13 +68,16 @@ export function initialisePage(){
 	
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
 		if (mainView){
-			mainView.rebase();
 			document.getElementById('zoomMainToData').checked = false;
 			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomToBox(fullEarth, 1.0);}
 			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToBox(getDataVignette(mainBandMode).geoRange, 0.8);}
 			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
 			updateMain(true);
 		}
+	});
+	
+	document.getElementById('zoomMainToData').addEventListener('change', (e) => {
+		if (mainView){updateMain(true);}
 	});
 
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
@@ -169,6 +172,7 @@ function _drawConnections(canvasElement, bandMode, isMain, zoomToData, full_draw
 
 	let viewName = isMain? bandMode+'main': bandMode;
 	let view = geoViews.get(viewName);
+	
 	if (!view) {
 		view = new GeoView(canvasElement);
 		geoViews.set(viewName, view);		
@@ -176,6 +180,7 @@ function _drawConnections(canvasElement, bandMode, isMain, zoomToData, full_draw
 	}
 	if (zoomToData) {
 		view.zoomToBox(dataVignette.geoRange, 0.8);
+		full_draw_needed = true;
 	}
 	if (!zoomToData && canvasElement != mainViewCanvasElement){
 		view.zoomToBox(fullEarth, 1.0);
