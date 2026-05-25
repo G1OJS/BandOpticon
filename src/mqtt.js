@@ -34,7 +34,7 @@ function subscribe(bands) {
 		}
 	}
     // now subscribe to the topics
-	mqttStatus = 'subscribed';
+	mqttStatus = 'subscribed - waiting for data';
 	Array.from(topics).forEach((t) => {
 		console.log("Subscribe to " + t);
 		mqttClient.subscribe(t, (error) => {

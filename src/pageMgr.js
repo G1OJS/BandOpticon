@@ -31,11 +31,7 @@ export function initialisePage(){
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
 	document.getElementById('legendMarkerRx').style.background = colours.rx;
 	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
-	
-	document.getElementById('modeFilters').addEventListener('change', () => {
-		redrawAllTiles();
-	});	
-	
+		
 	document.getElementById('myCallInput').addEventListener('change', () => {
 		let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCallNew;
@@ -52,7 +48,11 @@ export function initialisePage(){
 		console.log("homeCallFilters.change");
 		redrawAllTiles();
 	});	
-	
+
+	document.getElementById('modeFilters').addEventListener('change', () => {
+		redrawAllTiles();
+	});	
+
 	document.getElementById('zoomTilesToData').addEventListener('change', () => {
 		console.log("zoomTilesToData.change");
 		redrawAllTiles();
@@ -74,7 +74,11 @@ export function initialisePage(){
 		}
 	});
 
-	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
+	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
+		mainView?.updateHoveringOver(e);
+		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
+		updateMain(true);
+	});
 	document.getElementById('mainCanvas').addEventListener('click', (e) => {
 		let ll = mainView.getPointerLatLon(e);
 		mainView.setCentre(ll);
@@ -84,8 +88,6 @@ export function initialisePage(){
 
 	waitForMqtt();
 }
-
-
 
 function modeFilter(md){
 	let vis = false;
@@ -98,19 +100,13 @@ function modeFilter(md){
 	return vis;	
 }
 
-function updateHoveringOver(e){
-	if (mainView){
-		mainView.updateHoveringOver(e);
-		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
-		updateMain(true);
-	}
-}
-
 function redrawAllTiles(){
 	for (const tileElement of document.querySelectorAll('.tile')) {
 		if (modeFilter(tileElement.id.split(' ')[1])) {
 			console.log("Update "+tileElement.id);
 			updateTile(tileElement.id, true);
+		} else {
+			tileElement.classList.add('hidden');
 		}
 	}
 	updateMain(true);
@@ -138,9 +134,14 @@ function updateTile(bandMode, full_draw_needed){
 function updateMain(full_draw_needed){
 	const mainViewTitleElement = document.getElementById('mainViewTitle');	
 	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
-	mainViewTitleElement.innerText = mainBandMode;
-	let zoomToData = document.getElementById('zoomMainToData').checked;	
-	_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, mainViewCanvasElement.title);	
+	if (modeFilter(mainBandMode?.split(' ')[1])) {
+		mainViewTitleElement.innerText = mainBandMode;
+		let zoomToData = document.getElementById('zoomMainToData').checked;	
+		_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, mainViewCanvasElement.title);	
+	} else {
+		mainViewTitleElement.innerText = '';
+		mainView?.rebase();
+	}
 }
 
 function _drawConnections(canvasElement, bandMode, isMain, zoomToData, full_draw_needed, highlightCall){
