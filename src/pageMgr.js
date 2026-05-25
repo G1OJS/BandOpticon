@@ -52,16 +52,23 @@ export function initialisePage(){
 		updateMain(true);
 	});	
 	
-	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
 		if (mainView){
 			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomToBox(fullEarth, 1.0);}
 			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToBox(getDataVignette(mainBandMode).geoRange, 0.8);}
-			if (e.target.dataset.action == 'zoomOut') {mainView.zoomAndPan(1.0/1.2, 0, 0);}
-			if (e.target.dataset.action == 'zoomIn') {mainView.zoomAndPan(1.2, 0, 0);}
+			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
 			updateMain(true);
 		}
 	});
+
+	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => updateHoveringOver(e));
+	document.getElementById('mainCanvas').addEventListener('click', (e) => {
+		let ll = mainView.getPointerLatLon(e);
+		mainView.setCentre(ll);
+		mainView.setZoom(1.2);
+		updateMain(true);
+	});
+
 	
 	waitForMqtt();
 }
