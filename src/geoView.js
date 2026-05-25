@@ -1,13 +1,17 @@
 
-import {colours} from './config.js'
+import {colours, mapcolours} from './config.js'
 
-let worldGeoJSON = null;
+let landPolys110m = null;
+let landPolys50m = null;
 
-fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_coastline.geojson')
-.then(resp => resp.json())
-.then(data => {
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson').then(resp => resp.json()).then(data => {
 	console.log("GeoJSON loaded:", data);
-worldGeoJSON = data;
+	landPolys110m = data;
+});
+
+fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geojson').then(resp => resp.json()).then(data => {
+	console.log("GeoJSON loaded:", data);
+	landPolys50m = data;
 });
 
 export class GeoView{
@@ -96,9 +100,10 @@ export class GeoView{
 		
 	}
 
-	rebase(){
+	rebase(res){
 		this.drawnCalls = new Map();
-		this._drawMap();
+		if (res == 110) this._drawMap(landPolys110m);
+		if (res == 50) this._drawMap(landPolys50m);
 	}
 	
 	updateHoveringOver(e){
@@ -121,15 +126,22 @@ export class GeoView{
 		}
 	}
 	
-	_drawMap(){
+	_drawMap(landPolys){
 		this.ctx.clearRect(0,0, this.canvasElementSize.w, this.canvasElementSize.h);
 		this.ctx.strokeStyle = colours.map;
 		this.ctx.lineWidth = 2;
-		worldGeoJSON?.features.forEach(feature => {
+		landPolys?.features.forEach(feature => {
 			const geom = feature.geometry;
 			if (geom.type === 'LineString') {
 				this._drawLineString(geom.coordinates);
 			}
+			if (geom.type === 'Polygon') {
+				this._drawPolygons(geom.coordinates);
+			}
+			if (geom.type === 'MultiPolygon') {
+				geom.coordinates.forEach(polygon => this._drawPolygons(polygon));
+			}			
+			
 		});
 	}
 
@@ -142,6 +154,19 @@ export class GeoView{
 		this.ctx.stroke();
 	}
 	
+	_drawPolygons(polys) {
+		polys.forEach(poly => {
+			this.ctx.beginPath();
+			poly.forEach(([lon, lat], i) => {
+			let p = this.getPix([lat, lon]);
+				i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
+			});
+			this.ctx.closePath();
+			this.ctx.fillStyle = mapcolours.land;
+			this.ctx.fill();
+			//this.ctx.stroke();
+		});
+	}
 
 
 }

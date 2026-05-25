@@ -1,4 +1,4 @@
-import {myCall, setMyCall, setSquaresList, colours} from './config.js';
+import {setMyCall, setSquaresList, colours} from './config.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
 import {mqttStatus} from './mqtt.js';
@@ -38,26 +38,26 @@ export function initialisePage(){
 		let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCallNew;
 		setMyCall(myCallNew); 
-		redrawAllTiles();
+		redrawAllVisible();
 	});
 
 	document.getElementById('homeSquaresInput').addEventListener('change', () => {
 		setSquaresList(); 
-		redrawAllTiles();
+		redrawAllVisible();
 	});	
 
 	document.getElementById('homeCallFilters').addEventListener('change', () => {
 		console.log("homeCallFilters.change");
-		redrawAllTiles();
+		redrawAllVisible();
 	});	
 
 	document.getElementById('modeFilters').addEventListener('change', () => {
-		redrawAllTiles();
+		redrawAllVisible();
 	});	
 
 	document.getElementById('zoomTilesToData').addEventListener('change', () => {
 		console.log("zoomTilesToData.change");
-		redrawAllTiles();
+		redrawAllVisible();
 	});	
 	
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
@@ -83,6 +83,7 @@ export function initialisePage(){
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		if (mainView) {
 			mainView.updateHoveringOver(e);
+			let myCall = document.getElementById('myCallInput').value;
 			highlightCall = mainView.currentHover? mainView.currentHover: myCall;
 			mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
 			updateMain(true);
@@ -90,6 +91,7 @@ export function initialisePage(){
 	});
 	document.getElementById('mainCanvas').addEventListener('click', (e) => {
 		if (mainView) {
+			document.getElementById('zoomMainToData').checked = false;
 			let ll = mainView.getPointerLatLon(e);
 			mainView.setCentre(ll);
 			mainView.setZoom(1.2);
@@ -111,7 +113,8 @@ function modeFilter(md){
 	return vis;	
 }
 
-function redrawAllTiles(){
+function redrawAllVisible(){
+	highlightCall = document.getElementById('myCallInput').value;
 	for (const tileElement of document.querySelectorAll('.tile')) {
 		updateTile(tileElement.id, true);
 	}
@@ -161,7 +164,7 @@ function updateMain(full_draw_needed){
 		_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, highlightCall);	
 	} else {
 		mainViewTitleElement.innerText = '';
-		mainView?.rebase();
+		mainView?.rebase(50);
 	}
 }
 
@@ -190,8 +193,8 @@ function _drawConnections(canvasElement, bandMode, isMain, zoomToData, full_draw
 	}
 	let connsToDraw = connectionStrings.slice(-1);
 	if (full_draw_needed){
-		console.log("Full draw for " + viewName);
-		view.rebase();
+		//console.log("Full draw for " + viewName);
+		view.rebase(isMain? 50:110);
 		connsToDraw = connectionStrings;
 	}
 	for (const connectionString of connsToDraw){

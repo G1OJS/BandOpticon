@@ -3,11 +3,12 @@ const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 
 export var squaresArr = []; // contains the full list of every square (level 4, 6, 8, 10) that we want to watch, generated from squaresList
 export var squaresList = ""; // the human-firendly list of squares to watch
-export var myCall = "";
 
-export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(51, 153, 255, 0.5)',
-						conn:'rgba(20, 20, 20, 1)' ,
-						map:'rgba(0,0,0,0.3)'};
+export const colours =   {tx:'rgba(200, 30, 30, 0.5)', 	rx:		'rgba(30, 200, 30, 0.5)',	txrx:'rgba(51, 153, 255, 0.5)', 
+						  conn:'rgba(20, 20, 20, 1)'};
+						
+export const mapcolours =  {land:'rgba(180,200,180,0.5)', sea:'rgba(240,240,250,0.5)'}
+						
 
 export function setMyCall(myCall) {
     localStorage.setItem('myCall', myCall);
@@ -48,7 +49,6 @@ export function loadConfig() {
 	if (myCallStorred) { 
 		console.log("Loaded my call " + myCallStorred); 
 		document.getElementById('myCallInput').value = myCallStorred.toUpperCase();
-		myCall = document.getElementById('myCallInput').value;
 	}
 
 }

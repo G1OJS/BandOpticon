@@ -2,6 +2,7 @@
   --background-color: #f7f9fc;
   --main-font-color: #333;
   --muted-font-color: #888;
+  --important-font-color: red;
   --text-dark: #333;
   --main-paper-color: #eeeeee;
   --light-paper-color: #ffffff;
@@ -84,7 +85,7 @@ button.active 		{border-width: 1px; font-weight: 600; color: var(--controls-colo
 button:hover:not(.active) 
 					{border-color: var(--main-paper-color);color: var(--controls-color);}
 					
-.statusMessage		{font-size: var(--font-size-xsm); font-weight: 400; var(--muted-font-color);}
+.statusMessage		{font-size: var(--font-size-xsm); font-weight: 400; color: var(--important-font-color);}
 label 				{font-size: var(--font-size-base); font-weight: 600; color: var(--main-font-color); padding-right:3px; }
 input				{font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius:6px; padding-top:1px; margin-top:2px; }
 input:invalid 		{border-color: #e66;background-color: #fee;}
@@ -94,8 +95,8 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 .legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-3px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-base); height:var(--font-size-base); margin-left:5px; margin-right:3px; border: 1px solid grey;}
 #tileTrayScrollContainer	{display:inline-block; max-width:100%; overflow-x:scroll; overflow-y:hidden;}
-#tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 140px); grid-template-rows: 1fr; }		
-#tileTrayGrid > div {border: 1px solid black;  }	 
+#tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 140px); grid-template-rows: 1fr; gap: var(--spacing-xsm);}		
+#tileTrayGrid > div {border: 1px solid grey; padding: 0; border-radius: 8px; overflow:clip;}	 
 				
 .windowBarButton	{display:inline-block; margin:0px;  box-shadow:1px 1px 1px 1px rgb(0 0 255 / .2); padding:0px 4px 2px 4px;}
 .right				{float:right;}
