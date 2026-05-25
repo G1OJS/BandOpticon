@@ -75,15 +75,19 @@ export function initialisePage(){
 	});
 
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
-		mainView?.updateHoveringOver(e);
-		mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
-		updateMain(true);
+		if (mainView) {
+			mainView.updateHoveringOver(e);
+			mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
+			updateMain(true);
+		}
 	});
 	document.getElementById('mainCanvas').addEventListener('click', (e) => {
-		let ll = mainView.getPointerLatLon(e);
-		mainView.setCentre(ll);
-		mainView.setZoom(1.2);
-		updateMain(true);
+		if (mainView) {
+			let ll = mainView.getPointerLatLon(e);
+			mainView.setCentre(ll);
+			mainView.setZoom(1.2);
+			updateMain(true);
+		}
 	});
 
 	waitForMqtt();
@@ -102,32 +106,42 @@ function modeFilter(md){
 
 function redrawAllTiles(){
 	for (const tileElement of document.querySelectorAll('.tile')) {
-		if (modeFilter(tileElement.id.split(' ')[1])) {
-			console.log("Update "+tileElement.id);
-			updateTile(tileElement.id, true);
-		} else {
-			tileElement.classList.add('hidden');
-		}
+		updateTile(tileElement.id, true);
 	}
 	updateMain(true);
 }
 
-function updateTile(bandMode, full_draw_needed){
-	if (modeFilter(bandMode.split(' ')[1])) {
-		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
-		if (!tileElement) {
-			console.log("Create tile "+bandMode);
-			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
-			tileTrayGrid.append(tileElement);				
-			tileElement.querySelector('.tileTitle').textContent = bandMode;  
-			tileElement.id = bandMode;
-			full_draw_needed = true;
+function create_tile(bandMode){
+	console.log("Create tile "+bandMode);
+	const wavelength = getDataVignette(bandMode).wavelength;
+	let insert = null;
+	for (const tile of document.querySelectorAll('.tile')){
+		if (wavelength > tile.dataset.value) {
+			insert = tile;
+			break;
 		}
-		
-		const canvasElement = tileElement.querySelector('canvas');				
+	}
+	const tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
+	tileElement.dataset.value = wavelength;
+	tileTrayGrid.insertBefore(tileElement, insert);
+	
+	tileElement.querySelector('.tileTitle').textContent = bandMode;  
+	tileElement.id = bandMode;
+	return tileElement;
+}
+
+function updateTile(bandMode, full_draw_needed){
+	let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
+	if (modeFilter(bandMode.split(' ')[1])) {
+		if (!tileElement) {
+			tileElement = create_tile(bandMode);
+			full_draw_needed = true;
+		}			
 		tileElement.classList.remove('hidden');	
 		let zoomToData = document.getElementById('zoomTilesToData').checked;	
-		_drawConnections(canvasElement, bandMode, false, zoomToData, full_draw_needed, myCall);
+		_drawConnections(tileElement.querySelector('canvas'), bandMode, false, zoomToData, full_draw_needed, myCall);
+	} else {
+		tileElement?.classList.add('hidden');
 	}
 }
 
