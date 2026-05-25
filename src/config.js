@@ -44,10 +44,11 @@ export function loadConfig() {
     document.getElementById("homeSquaresInput").value = squaresList;
     squaresArr = parseSquares(squaresList);
 
-	let myCall = localStorage.getItem('myCall');
-	if (myCall) { 
-		console.log("Loaded my call " + myCall); 
-		document.getElementById('myCallInput').value = myCall.toUpperCase();;
+	let myCallStorred = localStorage.getItem('myCall');
+	if (myCallStorred) { 
+		console.log("Loaded my call " + myCallStorred); 
+		document.getElementById('myCallInput').value = myCallStorred.toUpperCase();
+		myCall = document.getElementById('myCallInput').value;
 	}
 
 }

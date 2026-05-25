@@ -11,6 +11,8 @@ const europeTest = {'latmin':45, 'latmax':55, 'lonmin':-5, 'lonmax':5};
 let geoViews = new Map();
 let mainBandMode = null;
 let mainView = null;
+let highlightCall = null;
+
 
 export function onDataUpdate(bandMode){
 	updateTile(bandMode, false);
@@ -66,6 +68,7 @@ export function initialisePage(){
 	
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
 		if (mainView){
+			mainView.rebase();
 			document.getElementById('zoomMainToData').checked = false;
 			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomToBox(fullEarth, 1.0);}
 			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToBox(getDataVignette(mainBandMode).geoRange, 0.8);}
@@ -77,6 +80,7 @@ export function initialisePage(){
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		if (mainView) {
 			mainView.updateHoveringOver(e);
+			highlightCall = mainView.currentHover? mainView.currentHover: myCall;
 			mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
 			updateMain(true);
 		}
@@ -139,7 +143,7 @@ function updateTile(bandMode, full_draw_needed){
 		}			
 		tileElement.classList.remove('hidden');	
 		let zoomToData = document.getElementById('zoomTilesToData').checked;	
-		_drawConnections(tileElement.querySelector('canvas'), bandMode, false, zoomToData, full_draw_needed, myCall);
+		_drawConnections(tileElement.querySelector('canvas'), bandMode, false, zoomToData, full_draw_needed, '');
 	} else {
 		tileElement?.classList.add('hidden');
 	}
@@ -151,7 +155,7 @@ function updateMain(full_draw_needed){
 	if (modeFilter(mainBandMode?.split(' ')[1])) {
 		mainViewTitleElement.innerText = mainBandMode;
 		let zoomToData = document.getElementById('zoomMainToData').checked;	
-		_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, mainViewCanvasElement.title);	
+		_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, highlightCall);	
 	} else {
 		mainViewTitleElement.innerText = '';
 		mainView?.rebase();
