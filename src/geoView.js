@@ -15,17 +15,31 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 });
 
 export class GeoView{
-	constructor(canvasElement) {
+	constructor(dataVignette, canvasElement) {
+		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
 		this.axisRanges = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
 		this.drawnCalls = new Map();
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:canvasElement.width, h:canvasElement.height};
-		this.bgCol = 'white';
-		this.stats = {};
+		this.dirty = false;
+		this.redrawPending = false;
 		console.log("Created geoView with size "+this.canvasElementSize.w + ", "+ this.canvasElementSize.h);
 	}
+	
+	invalidate(){
+        this.dirty=true;
+        if(this.redrawPending) return;
+        this.redrawPending=true;
+        requestAnimationFrame(()=>{
+            this.redrawPending=false;
+            if(this.dirty){
+                this.dirty=false;
+                this.render();
+            }
+        });
+    }
 	
 	getPointerLatLon(e){
 		let rect = this.canvasElement.getBoundingClientRect();
@@ -99,13 +113,31 @@ export class GeoView{
 		}
 		
 	}
+	
+	render(){
 
-	rebase(res){
+		const callsignRecords = this.dataVignette.getCallsignRecords();
+		const connectionStrings = this.dataVignette.getConnectionStrings(); 
+		const highlightCall = '';
+
 		this.drawnCalls = new Map();
+		const res = 110;
 		if (res == 110) this._drawMap(landPolys110m);
 		if (res == 50) this._drawMap(landPolys50m);
+
+		for (const connectionString of connectionStrings){
+			let vis = false;
+			let endpointCallsigns = connectionString.split('|');
+			let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
+			vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
+			vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
+			if (vis){	
+				this.drawConnection(endpointCallsigns, endpointRecords, highlightCall);
+			}
+		}	
+		
 	}
-	
+
 	updateHoveringOver(e){
 		let hovering_over = null;
 		let rect = this.canvasElement.getBoundingClientRect();
@@ -132,28 +164,12 @@ export class GeoView{
 		this.ctx.lineWidth = 2;
 		landPolys?.features.forEach(feature => {
 			const geom = feature.geometry;
-			if (geom.type === 'LineString') {
-				this._drawLineString(geom.coordinates);
-			}
 			if (geom.type === 'Polygon') {
 				this._drawPolygons(geom.coordinates);
 			}
-			if (geom.type === 'MultiPolygon') {
-				geom.coordinates.forEach(polygon => this._drawPolygons(polygon));
-			}			
-			
 		});
 	}
 
-	_drawLineString(coords) {
-		this.ctx.beginPath();
-		coords.forEach(([lon, lat], i) => {
-			let p = this.getPix([lat, lon]);
-				i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
-			});
-		this.ctx.stroke();
-	}
-	
 	_drawPolygons(polys) {
 		polys.forEach(poly => {
 			this.ctx.beginPath();
