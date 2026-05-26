@@ -10,7 +10,6 @@ const europeTest = {'latmin':45, 'latmax':55, 'lonmin':-5, 'lonmax':5};
 
 let views = new Map();
 let mainBandMode = null;
-let highlightCall = null;
 
 export function onDataUpdate(bandMode){
 	let vis = setTileVisibility(bandMode);
@@ -60,7 +59,7 @@ function _createTileElement(bandMode){
 	tileElement.querySelector('.tileTitle').textContent = bandMode;  
 	tileElement.id = bandMode;
 	const canvasElement = tileElement.querySelector('canvas');
-	views.set(tileElement.id, new GeoView(dataVignette, canvasElement));	
+	views.set(tileElement.id, new GeoView(dataVignette, canvasElement, 110));	
 	return tileElement;
 }
 
@@ -68,7 +67,7 @@ function setMainView(bandMode){
 	document.getElementById('mainViewTitle').innerText = bandMode;
 	const canvasElement = document.getElementById('mainCanvas');
 	const dataVignette = getDataVignette(bandMode);
-	views.set('main', new GeoView(dataVignette, canvasElement));
+	views.set('main', new GeoView(dataVignette, canvasElement, 50));
 	views.get('main').invalidate();
 	mainBandMode = bandMode;
 }
@@ -115,7 +114,7 @@ export function initialisePage(){
 	});
 
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
-
+		views.get('main')?.onMouseMove(e);
 	});
 	document.getElementById('mainCanvas').addEventListener('click', (e) => {
 
