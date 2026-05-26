@@ -2,6 +2,7 @@
 import {parseSquares} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
+import {connectToFeed, mqttStatus} from './mqtt.js';
 
 let zoomTilesToDataCheckBox = null;
 let zoomMainToDataCheckBox = null;
@@ -10,6 +11,31 @@ let mainViewCanvasElement = null;
 	
 let views = new Map();
 let mainBandMode = null;
+
+export function loadApp(){
+	let views = new Map();
+	let mainBandMode = null;
+	let bands = '+';
+	let url = new URL(window.location.href);
+	let params = new URLSearchParams(url.search);
+	if (params){
+		let b = params.get("b");
+		if (b){
+			{bands = b.split(',');}
+		}
+	}
+	initialisePage();
+	connectToFeed(bands); 
+	showMQTTInitialisation();
+}
+
+async function showMQTTInitialisation(){
+	while (mqttStatus != 'receiving') {
+		document.getElementById('mqttStatus').innerText = mqttStatus;
+		await new Promise(r => setTimeout(r, 250));
+	}
+	document.getElementById('mqttStatus').innerText ='';	
+}
 
 export function onDataUpdate(bandMode){
 	let vis = setTileVisibility(bandMode);
@@ -72,6 +98,22 @@ function setMainView(bandMode){
 	mainBandMode = bandMode;
 }
 
+function loadSquaresList(homeSquaresInput){
+	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
+	let squaresList = localStorage.getItem('squaresList');
+	if (squaresList){
+		try {squaresList = JSON.parse(squaresList);} catch (e) {squaresList = false;} 
+	}	
+	if (squaresList){
+		console.log("Loaded squares list "+squaresList); 
+	} else {
+		squaresList = defaultSquaresList;
+		localStorage.setItem('squaresList', JSON.stringify(squaresList));
+		console.log("No local config data found for squares list: defaults applied.");
+	}	
+	homeSquaresInput.value = squaresList;
+}
+
 export function initialisePage(){
 	zoomTilesToDataCheckBox = document.getElementById('zoomTilesToDataCheckBox');
 	zoomMainToDataCheckBox = document.getElementById('zoomMainToDataCheckBox');
@@ -92,30 +134,21 @@ export function initialisePage(){
 	});
 
 	// load any stored values of squares list
-	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
-	let squaresList = localStorage.getItem('squaresList');
-	if (squaresList){
-		try {squaresList = JSON.parse(squaresList);} catch (e) {squaresList = false;} 
-	}	
-	if (squaresList){
-		console.log("Loaded squares list "+squaresList); 
-	} else {
-		squaresList = defaultSquaresList;
-		localStorage.setItem('squaresList', JSON.stringify(squaresList));
-		console.log("No local config data found for squares list: defaults applied.");
-	}
-	document.getElementById("homeSquaresInput").value = squaresList;
-	document.getElementById('homeSquaresInput').addEventListener('change', () => {
-		const squaresList = document.getElementById('homeSquaresInput').value; 
+	const homeSquaresInput = document.getElementById('homeSquaresInput')
+	loadSquaresList(homeSquaresInput)
+	
+	// listener for changed squares list
+	homeSquaresInput.addEventListener('change', () => {
+		const squaresList = homeSquaresInput.value; 
 		if (parseSquares(squaresList) == "Err") {
-			input.setCustomValidity("Invalid grid square format");
+			homeSquaresInput.setCustomValidity("Invalid grid square format");
 		} else {
-			input.setCustomValidity("");
-			setConfig('squaresList', JSON.stringify(squaresList));
+			homeSquaresInput.setCustomValidity("");
+			localStorage.setItem('squaresList', JSON.stringify(squaresList));
 			console.log("Saved Squares List: " + squaresList);
 		}
-		input.reportValidity();
-		invalidateAllVisible();
+		homeSquaresInput.reportValidity();
+		loadApp();
 	});	
 
 	//set colours for legend items
