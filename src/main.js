@@ -3,7 +3,15 @@ localStorage.setItem('mapcolours', JSON.stringify({land:'rgba(180,200,180,0.5)',
 
 import {connectToFeed} from './mqtt.js';
 import {initialisePage} from './pageMgr.js';
+import {mqttStatus} from './mqtt.js';
 
+async function showMQTTInitialisation(){
+	while (mqttStatus != 'receiving') {
+		document.getElementById('mqttStatus').innerText = mqttStatus;
+		await new Promise(r => setTimeout(r, 250));
+	}
+	document.getElementById('mqttStatus').innerText ='';	
+}
 
 let bands = '+';
 
@@ -18,5 +26,6 @@ if (params){
 
 document.addEventListener('DOMContentLoaded', () => {
   initialisePage();
-  connectToFeed(bands);
+  connectToFeed(bands); 
+  showMQTTInitialisation();
 });

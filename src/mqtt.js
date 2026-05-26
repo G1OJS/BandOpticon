@@ -26,7 +26,6 @@ function subscribe(bands) {
     let topics = new Set;
 	squaresArr = parseSquares(JSON.parse(localStorage.getItem('squaresList')));
 
-
 	for (const b of bands) {
 		if (validate_band(b) || b=='+') {
 			for (let i = 0; i < squaresArr.length; i++) {

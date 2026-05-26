@@ -2,13 +2,12 @@
 import {parseSquares} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
-import {mqttStatus} from './mqtt.js';
 
-const tileTrayGrid = document.querySelector('#tileTrayGrid');
-const mainViewCanvasElement = document.getElementById('mainCanvas');
-const fullEarth = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
-const europeTest = {'latmin':45, 'latmax':55, 'lonmin':-5, 'lonmax':5};
-
+let zoomTilesToDataCheckBox = null;
+let zoomMainToDataCheckBox = null;
+let tileTrayGrid = null;
+let mainViewCanvasElement = null;
+	
 let views = new Map();
 let mainBandMode = null;
 
@@ -60,7 +59,7 @@ function _createTileElement(bandMode){
 	tileElement.querySelector('.tileTitle').textContent = bandMode;  
 	tileElement.id = bandMode;
 	const canvasElement = tileElement.querySelector('canvas');
-	views.set(tileElement.id, new GeoView(dataVignette, canvasElement, 110));	
+	views.set(tileElement.id, new GeoView(dataVignette, canvasElement, 'zoomTilesToDataCheckBoxChecked', 110));	
 	return tileElement;
 }
 
@@ -68,19 +67,31 @@ function setMainView(bandMode){
 	document.getElementById('mainViewTitle').innerText = bandMode;
 	const canvasElement = document.getElementById('mainCanvas');
 	const dataVignette = getDataVignette(bandMode);
-	views.set('main', new GeoView(dataVignette, canvasElement, 50));
+	views.set('main', new GeoView(dataVignette, canvasElement, 'zoomMainToDataCheckBoxChecked', 50));
 	views.get('main').invalidate();
 	mainBandMode = bandMode;
 }
 
 export function initialisePage(){
+	zoomTilesToDataCheckBox = document.getElementById('zoomTilesToDataCheckBox');
+	zoomMainToDataCheckBox = document.getElementById('zoomMainToDataCheckBox');
+	tileTrayGrid = document.querySelector('#tileTrayGrid');
+	mainViewCanvasElement = document.getElementById('mainCanvas');
+	
+	// load any stored values of myCall
 	const myCall = localStorage.getItem('myCall');
 	if (myCall) { 
 		console.log("Loaded my call " + myCall); 
 		document.getElementById('myCallInput').value = myCall.toUpperCase();
 	}
-	
-	// move to geofuncs as 'validate squares'
+	document.getElementById('myCallInput').addEventListener('change', () => {
+		const myCall = document.getElementById('myCallInput').value.toUpperCase();
+		document.getElementById('myCallInput').value = myCall;
+		localStorage.setItem('myCall',myCall); 
+		invalidateAllVisible();
+	});
+
+	// load any stored values of squares list
 	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 	let squaresList = localStorage.getItem('squaresList');
 	if (squaresList){
@@ -94,21 +105,6 @@ export function initialisePage(){
 		console.log("No local config data found for squares list: defaults applied.");
 	}
 	document.getElementById("homeSquaresInput").value = squaresList;
-
-	const colours = JSON.parse(localStorage.getItem('colours'));
-	document.getElementById('legendMarkerTx').style.background = colours.tx;
-	document.getElementById('legendMarkerRx').style.background = colours.rx;
-	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
-	
-
-		
-	document.getElementById('myCallInput').addEventListener('change', () => {
-		const myCall = document.getElementById('myCallInput').value.toUpperCase();
-		document.getElementById('myCallInput').value = myCall;
-		localStorage.setItem('myCall',myCall); 
-		invalidateAllVisible();
-	});
-
 	document.getElementById('homeSquaresInput').addEventListener('change', () => {
 		const squaresList = document.getElementById('homeSquaresInput').value; 
 		if (parseSquares(squaresList) == "Err") {
@@ -122,40 +118,72 @@ export function initialisePage(){
 		invalidateAllVisible();
 	});	
 
-	document.getElementById('homeCallFilters').addEventListener('change', () => {invalidateAllVisible();});	
-	document.getElementById('modeFilters').addEventListener('change', () => {invalidateAllVisible();});	
-	document.getElementById('zoomTilesToData').addEventListener('change', () => {invalidateAllVisible();});	
+	//set colours for legend items
+	const colours = JSON.parse(localStorage.getItem('colours'));
+	document.getElementById('legendMarkerTx').style.background = colours.tx;
+	document.getElementById('legendMarkerRx').style.background = colours.rx;
+	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 	
+	document.getElementById('homeCallFilters').addEventListener('change', () => {invalidateAllVisible();});	
+	document.getElementById('modeFilters').addEventListener('change', () => {invalidateAllVisible();});		
+	
+	// handlers for carousel controls	
+	if (localStorage.getItem('zoomTilesToDataCheckBoxChecked') == 'true') zoomTilesToDataCheckBox.checked = true;
+	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
+		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
+		if (zoomTilesToDataCheckBox.checked){
+			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomToData();}
+		} else {
+			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomFullEarth();}
+		}	
+		invalidateAllVisible();
+	});
+	
+	// carousel tile click
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		setMainView(e.target.closest('.tile').id);
 	});	
 	
+	// handlers for clicks to main view controls
+	if (localStorage.getItem('zoomMainToDataCheckBoxChecked') == 'true') zoomMainToDataCheckBox.checked = true;
+	zoomMainToDataCheckBox.addEventListener('change', (e) => {
+		localStorage.setItem('zoomMainToDataCheckBoxChecked', zoomMainToDataCheckBox.checked);
+		if (zoomMainToDataCheckBox.checked) {
+			views.get('main')?.zoomToData();
+		} else {
+			views.get('main')?.zoomFullEarth();
+		}
+		views.get('main')?.invalidate();
+	});
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
-		const view = views.get('main')
-		if (view){
-			document.getElementById('zoomMainToData').checked = false;
-			if (e.target.dataset.action == 'zoomFullEarth') {view.zoomToBox(fullEarth, 1.0);}
-			if (e.target.dataset.action == 'zoomToData') {view.zoomToData();}
-			if (e.target.dataset.action == 'zoomOut') {view.setZoom(1.0/1.2);}
-			view.invalidate();
+		const mainView = views.get('main')
+		if (mainView){
+			zoomMainToDataCheckBox.checked = false;
+			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
+			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomFullEarth();}
+			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToData();}
+			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
+			mainView.invalidate();
 		}
 	});
 	
-	document.getElementById('zoomMainToData').addEventListener('change', (e) => {
-		setConfig(document.getElementById('zoomMainToData').checked);
-	});
-
+	// handlers for main view click & hover
+	document.getElementById('mainCanvas').addEventListener('click', (e) => {
+		const mainView = views.get('main')
+		if (mainView){
+			zoomMainToDataCheckBox.checked = false;
+			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
+			mainView.setZoomAtPointerPos(e, 1.2);
+			mainView.invalidate();
+		}
+	});	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		views.get('main')?.onMouseMove(e);
 	});
-	document.getElementById('mainCanvas').addEventListener('click', (e) => {
-		const view = views.get('main')
-		if (view){
-			document.getElementById('zoomMainToData').checked = false;
-			view.setZoom(1.2);
-			view.invalidate();
-		}
-	});
+
+
+
+
 
 }
 

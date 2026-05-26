@@ -16,9 +16,10 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 });
 
 export class GeoView{
-	constructor(dataVignette, canvasElement, mapres) {
+	constructor(dataVignette, canvasElement, zoomControlCheckBox, mapres) {
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
+		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
 		this.axisRanges = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
 		this.drawnCalls = null;
@@ -49,6 +50,9 @@ export class GeoView{
 		const connectionStrings = this.dataVignette.getConnectionStrings(); 
 		myCall = localStorage.getItem('myCall');
 
+		if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
+			this.zoomToData();
+		} 
 		this.drawnCalls = new Map();
 		if (this.mapres == 110) this._drawMap(landPolys110m);
 		if (this.mapres == 50) this._drawMap(landPolys50m);
@@ -68,9 +72,7 @@ export class GeoView{
 	
 	onMouseMove(e){
 		let hovering_over = null;
-		let rect = this.canvasElement.getBoundingClientRect();
-		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
-		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
+		let [x,y] = this.getPointerPix(e);
 
 		for (const [call, pos] of this.drawnCalls.entries()) { 
 			if(Math.abs(x - pos[0]) < 5 && Math.abs(y - pos[1])<5) {
@@ -87,12 +89,27 @@ export class GeoView{
 		}
 	}
 	
+	getPointerPix(e){
+		let rect = this.canvasElement.getBoundingClientRect();
+		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
+		return [x,y];
+	}
+	
 	getPix(ll){
 		let c = this.canvasElementSize;
 		let r = this.axisRanges;		
 		let x = c.w * (ll[1]-r.lonmin)/(r.lonmax-r.lonmin);
 		let y = c.h - c.h * (ll[0]-r.latmin)/(r.latmax-r.latmin);
 		return [x,y];
+	}
+	
+	getLatLon(xy){
+		let c = this.canvasElementSize;
+		let r = this.axisRanges;		
+		let lat = r.latmin + ((c.h-xy[1])/c.h) * (r.latmax-r.latmin);
+		let lon = r.lonmin + (xy[0]/c.w) * (r.lonmax-r.lonmin);
+		return [lat,lon];
 	}
 	
 	setCentre([lat0, lon0]){
@@ -121,6 +138,22 @@ export class GeoView{
 		this.setCentre([(n.latmax + n.latmin)/2.0, (n.lonmax + n.lonmin)/2.0]);
 		let zoomFactor = Math.min( (e.latmax - e.latmin)/(n.latmax-n.latmin), (e.lonmax - e.lonmin)/(n.lonmax-n.lonmin));
 		this.setZoom(zoomFactor * marginFactor);
+	}
+	
+	zoomFullEarth(){
+		console.log("Zoom full");
+		this.zoomToBox({'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180}, 1.0);
+	}
+	
+	zoomToData(){
+		this.zoomToBox(this.dataVignette.geoRange, 0.8)	
+	}
+	
+	setZoomAtPointerPos(e, zoomFactor){
+		let xy = this.getPointerPix(e);
+		let ll = this.getLatLon(xy);
+		this.setCentre(ll);
+		this.setZoom(zoomFactor);
 	}
 	
 	_drawConnection(endpointRecords){
