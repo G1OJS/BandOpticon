@@ -1,27 +1,35 @@
-import {setMyCall, setSquaresList, colours} from './config.js';
+
+import {parseSquares} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
-import {mqttStatus} from './mqtt.js';
+import {connectToFeed, mqttStatus} from './mqtt.js';
 
-const tileTrayGrid = document.querySelector('#tileTrayGrid');
-const mainViewCanvasElement = document.getElementById('mainCanvas');
-const fullEarth = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
-const europeTest = {'latmin':45, 'latmax':55, 'lonmin':-5, 'lonmax':5};
-
-let geoViews = new Map();
+let zoomTilesToDataCheckBox = null;
+let zoomMainToDataCheckBox = null;
+let tileTrayGrid = null;
+let mainViewCanvasElement = null;
+	
+let views = new Map();
 let mainBandMode = null;
-let mainView = null;
-let highlightCall = null;
 
-
-export function onDataUpdate(bandMode){
-	updateTile(bandMode, false);
-	if (bandMode == mainBandMode){
-		updateMain(false);
+export function loadApp(){
+	let views = new Map();
+	let mainBandMode = null;
+	let bands = '+';
+	let url = new URL(window.location.href);
+	let params = new URLSearchParams(url.search);
+	if (params){
+		let b = params.get("b");
+		if (b){
+			{bands = b.split(',');}
+		}
 	}
+	initialisePage();
+	connectToFeed(bands); 
+	showMQTTInitialisation();
 }
 
-async function waitForMqtt(){
+async function showMQTTInitialisation(){
 	while (mqttStatus != 'receiving') {
 		document.getElementById('mqttStatus').innerText = mqttStatus;
 		await new Promise(r => setTimeout(r, 250));
@@ -29,80 +37,19 @@ async function waitForMqtt(){
 	document.getElementById('mqttStatus').innerText ='';	
 }
 
-export function initialisePage(){
-	document.getElementById('legendMarkerTx').style.background = colours.tx;
-	document.getElementById('legendMarkerRx').style.background = colours.rx;
-	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
-		
-	document.getElementById('myCallInput').addEventListener('change', () => {
-		let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
-		document.getElementById('myCallInput').value = myCallNew;
-		setMyCall(myCallNew); 
-		redrawAllVisible();
-	});
-
-	document.getElementById('homeSquaresInput').addEventListener('change', () => {
-		setSquaresList(); 
-		redrawAllVisible();
-	});	
-
-	document.getElementById('homeCallFilters').addEventListener('change', () => {
-		console.log("homeCallFilters.change");
-		redrawAllVisible();
-	});	
-
-	document.getElementById('modeFilters').addEventListener('change', () => {
-		redrawAllVisible();
-	});	
-
-	document.getElementById('zoomTilesToData').addEventListener('change', () => {
-		console.log("zoomTilesToData.change");
-		redrawAllVisible();
-	});	
-	
-	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
-		console.log("tileTrayGrid.click");
-		mainBandMode = e.target.closest('.tile').id;
-		updateMain(true);
-	});	
-	
-	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
-		if (mainView){
-			document.getElementById('zoomMainToData').checked = false;
-			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomToBox(fullEarth, 1.0);}
-			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToBox(getDataVignette(mainBandMode).geoRange, 0.8);}
-			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
-			updateMain(true);
-		}
-	});
-	
-	document.getElementById('zoomMainToData').addEventListener('change', (e) => {
-		if (mainView){updateMain(true);}
-	});
-
-	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
-		if (mainView) {
-			mainView.updateHoveringOver(e);
-			let myCall = document.getElementById('myCallInput').value;
-			highlightCall = mainView.currentHover? mainView.currentHover: myCall;
-			mainViewCanvasElement.title = mainView.currentHover? mainView.currentHover:'';
-			updateMain(true);
-		}
-	});
-	document.getElementById('mainCanvas').addEventListener('click', (e) => {
-		if (mainView) {
-			document.getElementById('zoomMainToData').checked = false;
-			let ll = mainView.getPointerLatLon(e);
-			mainView.setCentre(ll);
-			mainView.setZoom(1.2);
-			updateMain(true);
-		}
-	});
-
-	waitForMqtt();
+export function onDataUpdate(bandMode){
+	let vis = setTileVisibility(bandMode);
+	if (vis) views.get(bandMode).invalidate();
+	if (bandMode == mainBandMode) views.get('main').invalidate();
 }
 
-function modeFilter(md){
+function invalidateAllVisible(){
+	for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ 
+		onDataUpdate(tileElement.id);
+	}
+}
+function setTileVisibility(bandMode){
+	const md = bandMode.split(' ')[1];
 	let vis = false;
 	vis |= (md == 'FT8' && document.getElementById('FT8').checked);
 	vis |= (md == 'FT4' && document.getElementById('FT4').checked);
@@ -110,20 +57,21 @@ function modeFilter(md){
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
 	
-	return vis;	
-}
-
-function redrawAllVisible(){
-	highlightCall = document.getElementById('myCallInput').value;
-	for (const tileElement of document.querySelectorAll('.tile')) {
-		updateTile(tileElement.id, true);
+	if (vis) {
+		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
+		if (!tileElement) tileElement = _createTileElement(bandMode);
+		tileElement.classList.remove('hidden');
+	} else {
+		tileTrayGrid.querySelector("[id='"+bandMode+"']")?.classList.add('hidden');
 	}
-	updateMain(true);
+	
+	return vis;
 }
 
-function create_tile(bandMode){
+function _createTileElement(bandMode){
 	console.log("Create tile "+bandMode);
-	const wavelength = getDataVignette(bandMode).wavelength;
+	const dataVignette = getDataVignette(bandMode);
+	const wavelength = dataVignette.wavelength;
 	let insert = null;
 	for (const tile of document.querySelectorAll('.tile')){
 		if (wavelength > tile.dataset.value) {
@@ -134,78 +82,146 @@ function create_tile(bandMode){
 	const tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 	tileElement.dataset.value = wavelength;
 	tileTrayGrid.insertBefore(tileElement, insert);
-	
 	tileElement.querySelector('.tileTitle').textContent = bandMode;  
 	tileElement.id = bandMode;
+	const canvasElement = tileElement.querySelector('canvas');
+	views.set(tileElement.id, new GeoView(dataVignette, canvasElement, 'zoomTilesToDataCheckBoxChecked', 110));	
 	return tileElement;
 }
 
-function updateTile(bandMode, full_draw_needed){
-	let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
-	if (modeFilter(bandMode.split(' ')[1])) {
-		if (!tileElement) {
-			tileElement = create_tile(bandMode);
-			full_draw_needed = true;
-		}			
-		tileElement.classList.remove('hidden');	
-		let zoomToData = document.getElementById('zoomTilesToData').checked;	
-		_drawConnections(tileElement.querySelector('canvas'), bandMode, false, zoomToData, full_draw_needed, '');
-	} else {
-		tileElement?.classList.add('hidden');
-	}
+function setMainView(bandMode){
+	document.getElementById('mainViewTitle').innerText = bandMode;
+	const canvasElement = document.getElementById('mainCanvas');
+	const dataVignette = getDataVignette(bandMode);
+	views.set('main', new GeoView(dataVignette, canvasElement, 'zoomMainToDataCheckBoxChecked', 50));
+	views.get('main').invalidate();
+	mainBandMode = bandMode;
 }
 
-function updateMain(full_draw_needed){
-	const mainViewTitleElement = document.getElementById('mainViewTitle');	
-	const mainViewSubtitleElement = document.getElementById('mainViewSubtitle');	
-	if (modeFilter(mainBandMode?.split(' ')[1])) {
-		mainViewTitleElement.innerText = mainBandMode;
-		let zoomToData = document.getElementById('zoomMainToData').checked;	
-		_drawConnections(mainViewCanvasElement, mainBandMode, true, zoomToData, full_draw_needed, highlightCall);	
+function loadSquaresList(homeSquaresInput){
+	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
+	let squaresList = localStorage.getItem('squaresList');
+	if (squaresList){
+		try {squaresList = JSON.parse(squaresList);} catch (e) {squaresList = false;} 
+	}	
+	if (squaresList){
+		console.log("Loaded squares list "+squaresList); 
 	} else {
-		mainViewTitleElement.innerText = '';
-		mainView?.rebase(50);
-	}
+		squaresList = defaultSquaresList;
+		localStorage.setItem('squaresList', JSON.stringify(squaresList));
+		console.log("No local config data found for squares list: defaults applied.");
+	}	
+	homeSquaresInput.value = squaresList;
 }
 
-function _drawConnections(canvasElement, bandMode, isMain, zoomToData, full_draw_needed, highlightCall){
-	let dataVignette = getDataVignette(bandMode);
-	let callsignRecords = dataVignette.getCallsignRecords();
-	let connectionStrings = dataVignette.getConnectionStrings(); 
-
-	let viewName = isMain? bandMode+'main': bandMode;
-	let view = geoViews.get(viewName);
+export function initialisePage(){
+	zoomTilesToDataCheckBox = document.getElementById('zoomTilesToDataCheckBox');
+	zoomMainToDataCheckBox = document.getElementById('zoomMainToDataCheckBox');
+	tileTrayGrid = document.querySelector('#tileTrayGrid');
+	mainViewCanvasElement = document.getElementById('mainCanvas');
 	
-	if (!view) {
-		view = new GeoView(canvasElement);
-		geoViews.set(viewName, view);		
-		full_draw_needed = true;
+	// load any stored values of myCall
+	const myCall = localStorage.getItem('myCall');
+	if (myCall) { 
+		console.log("Loaded my call " + myCall); 
+		document.getElementById('myCallInput').value = myCall.toUpperCase();
 	}
-	if (zoomToData) {
-		view.zoomToBox(dataVignette.geoRange, 0.8);
-		full_draw_needed = true;
-	}
-	if (!zoomToData && canvasElement != mainViewCanvasElement){
-		view.zoomToBox(fullEarth, 1.0);
-	}
-	if (canvasElement == mainViewCanvasElement) {
-		mainView = view;
-	}
-	let connsToDraw = connectionStrings.slice(-1);
-	if (full_draw_needed){
-		//console.log("Full draw for " + viewName);
-		view.rebase(isMain? 50:110);
-		connsToDraw = connectionStrings;
-	}
-	for (const connectionString of connsToDraw){
-		let vis = false;
-		let endpointCallsigns = connectionString.split('|');
-		let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
-		vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
-		vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
-		if (vis){	
-			view.drawConnection(endpointCallsigns, endpointRecords, highlightCall);
+	document.getElementById('myCallInput').addEventListener('change', () => {
+		const myCall = document.getElementById('myCallInput').value.toUpperCase();
+		document.getElementById('myCallInput').value = myCall;
+		localStorage.setItem('myCall',myCall); 
+		invalidateAllVisible();
+	});
+
+	// load any stored values of squares list
+	const homeSquaresInput = document.getElementById('homeSquaresInput')
+	loadSquaresList(homeSquaresInput)
+	
+	// listener for changed squares list
+	homeSquaresInput.addEventListener('change', () => {
+		const squaresList = homeSquaresInput.value; 
+		if (parseSquares(squaresList) == "Err") {
+			homeSquaresInput.setCustomValidity("Invalid grid square format");
+		} else {
+			homeSquaresInput.setCustomValidity("");
+			localStorage.setItem('squaresList', JSON.stringify(squaresList));
+			console.log("Saved Squares List: " + squaresList);
 		}
-	}
+		homeSquaresInput.reportValidity();
+		loadApp();
+	});	
+
+	//set colours for legend items
+	const colours = JSON.parse(localStorage.getItem('colours'));
+	document.getElementById('legendMarkerTx').style.background = colours.tx;
+	document.getElementById('legendMarkerRx').style.background = colours.rx;
+	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+	
+	document.getElementById('homeCallFilters').addEventListener('change', () => {invalidateAllVisible();});	
+	document.getElementById('modeFilters').addEventListener('change', () => {invalidateAllVisible();});		
+	
+	// handlers for carousel controls	
+	if (localStorage.getItem('zoomTilesToDataCheckBoxChecked') == 'true') zoomTilesToDataCheckBox.checked = true;
+	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
+		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
+		if (zoomTilesToDataCheckBox.checked){
+			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomToData();}
+		} else {
+			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomFullEarth();}
+		}	
+		invalidateAllVisible();
+	});
+	
+	// carousel tile click
+	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
+		setMainView(e.target.closest('.tile').id);
+	});	
+	
+	// handlers for clicks to main view controls
+	if (localStorage.getItem('zoomMainToDataCheckBoxChecked') == 'true') zoomMainToDataCheckBox.checked = true;
+	zoomMainToDataCheckBox.addEventListener('change', (e) => {
+		localStorage.setItem('zoomMainToDataCheckBoxChecked', zoomMainToDataCheckBox.checked);
+		if (zoomMainToDataCheckBox.checked) {
+			views.get('main')?.zoomToData();
+		} else {
+			views.get('main')?.zoomFullEarth();
+		}
+		views.get('main')?.invalidate();
+	});
+	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
+		const mainView = views.get('main')
+		if (mainView){
+			zoomMainToDataCheckBox.checked = false;
+			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
+			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomFullEarth();}
+			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToData();}
+			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
+			mainView.invalidate();
+		}
+	});
+	
+	// handlers for main view click & hover
+	document.getElementById('mainCanvas').addEventListener('click', (e) => {
+		const mainView = views.get('main')
+		if (mainView){
+			zoomMainToDataCheckBox.checked = false;
+			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
+			mainView.setZoomAtPointerPos(e, 1.2);
+			mainView.invalidate();
+		}
+	});	
+	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
+		views.get('main')?.onMouseMove(e);
+	});
+
+
+
+
+
 }
+
+
+
+
+
 

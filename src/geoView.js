@@ -1,8 +1,9 @@
-
-import {colours, mapcolours} from './config.js'
+const colours = JSON.parse(localStorage.getItem('colours'));
+const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
 
 let landPolys110m = null;
 let landPolys50m = null;
+let myCall = null;
 
 fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson').then(resp => resp.json()).then(data => {
 	console.log("GeoJSON loaded:", data);
@@ -15,23 +16,84 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 });
 
 export class GeoView{
-	constructor(canvasElement) {
+	constructor(dataVignette, canvasElement, zoomControlCheckBox, mapres) {
+		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
+		this.zoomControlCheckBox = zoomControlCheckBox;
+		this.mapres = mapres;
 		this.axisRanges = {'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180};
-		this.drawnCalls = new Map();
+		this.drawnCalls = null;
+		this.highlightCall = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.canvasElementSize = {w:canvasElement.width, h:canvasElement.height};
-		this.bgCol = 'white';
-		this.stats = {};
+		this.dirty = false;
+		this.redrawPending = false;
 		console.log("Created geoView with size "+this.canvasElementSize.w + ", "+ this.canvasElementSize.h);
 	}
 	
-	getPointerLatLon(e){
+	invalidate(){
+        this.dirty=true;
+        if(this.redrawPending) return;
+        this.redrawPending=true;
+        requestAnimationFrame(()=>{
+            this.redrawPending=false;
+            if(this.dirty){
+                this.dirty=false;
+                this.render();
+            }
+        });
+    }
+	
+	render(){
+		const callsignRecords = this.dataVignette.getCallsignRecords();
+		const connectionStrings = this.dataVignette.getConnectionStrings(); 
+		myCall = localStorage.getItem('myCall');
+
+		if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
+			this.zoomToData();
+		} 
+		this.drawnCalls = new Map();
+		if (this.mapres == 110) this._drawMap(landPolys110m);
+		if (this.mapres == 50) this._drawMap(landPolys50m);
+
+		for (const connectionString of connectionStrings){
+			let vis = false;
+			let endpointCallsigns = connectionString.split('|');
+			let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
+			vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
+			vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
+			if (vis){	
+				this._drawConnection(endpointRecords);
+			}
+		}	
+		
+	}
+	
+	onMouseMove(e){
+		let hovering_over = null;
+		let [x,y] = this.getPointerPix(e);
+
+		for (const [call, pos] of this.drawnCalls.entries()) { 
+			if(Math.abs(x - pos[0]) < 5 && Math.abs(y - pos[1])<5) {
+				this.canvasElement.style = 'cursor:default;';
+				this.canvasElement.title = call;
+				hovering_over = call;
+				break;
+			}
+		}
+		if (hovering_over !== this.currentHover) {
+			this.currentHover = hovering_over;
+			this.highlightCall = this.currentHover? this.currentHover: myCall;
+			this.invalidate();
+		}
+	}
+	
+	getPointerPix(e){
 		let rect = this.canvasElement.getBoundingClientRect();
-		let norms = [(e.clientX - rect.left)/(rect.right-rect.left), (rect.bottom - e.clientY) / (rect.bottom-rect.top)];
-		let r = this.axisRanges;	
-		return [r.latmin + norms[1]*(r.latmax-r.latmin), r.lonmin + norms[0]*(r.lonmax-r.lonmin)];
+		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
+		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
+		return [x,y];
 	}
 	
 	getPix(ll){
@@ -40,6 +102,14 @@ export class GeoView{
 		let x = c.w * (ll[1]-r.lonmin)/(r.lonmax-r.lonmin);
 		let y = c.h - c.h * (ll[0]-r.latmin)/(r.latmax-r.latmin);
 		return [x,y];
+	}
+	
+	getLatLon(xy){
+		let c = this.canvasElementSize;
+		let r = this.axisRanges;		
+		let lat = r.latmin + ((c.h-xy[1])/c.h) * (r.latmax-r.latmin);
+		let lon = r.lonmin + (xy[0]/c.w) * (r.lonmax-r.lonmin);
+		return [lat,lon];
 	}
 	
 	setCentre([lat0, lon0]){
@@ -70,90 +140,69 @@ export class GeoView{
 		this.setZoom(zoomFactor * marginFactor);
 	}
 	
-	drawConnection(endpointCallsigns, endpointRecords, highlightCall){
-		
-		for (const cRecord of endpointRecords) {
-			cRecord.p = this.getPix(cRecord.latlong); // with p back in cRecord, do I still need this.drawnCalls? Maybe yes as it's a subset of cRecords?
-			this.drawnCalls.set(cRecord.call, cRecord.p);
-			this.ctx.beginPath();
-			this.ctx.arc(cRecord.p[0], cRecord.p[1], 6, 0, 6.282);
-			this.ctx.fillStyle = (cRecord.tx && cRecord.rx)? colours.txrx: (cRecord.tx? colours.tx: colours.rx);
-			this.ctx.fill();
-		}
-		
-		if (endpointCallsigns.includes(highlightCall)) {
-			let [sRecord, rRecord] = endpointRecords;
-			this.ctx.strokeStyle = colours.rx;
-			if (endpointCallsigns[0] == highlightCall) this.ctx.strokeStyle = colours.tx;
-			this.ctx.lineWidth=2;
-			this.ctx.beginPath();
-			this.ctx.moveTo(sRecord.p[0],sRecord.p[1]);
-			this.ctx.lineTo(rRecord.p[0],rRecord.p[1]);
-			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(sRecord.p[0], sRecord.p[1], 6, 0, 6.282);
-			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(rRecord.p[0], rRecord.p[1], 6, 0, 6.282);
-			this.ctx.stroke();
-		}
-		
-	}
-
-	rebase(res){
-		this.drawnCalls = new Map();
-		if (res == 110) this._drawMap(landPolys110m);
-		if (res == 50) this._drawMap(landPolys50m);
+	zoomFullEarth(){
+		console.log("Zoom full");
+		this.zoomToBox({'latmin':-90, 'latmax':90, 'lonmin':-180, 'lonmax':180}, 1.0);
 	}
 	
-	updateHoveringOver(e){
-		let hovering_over = null;
-		let rect = this.canvasElement.getBoundingClientRect();
-		let x = this.canvasElementSize.w * (e.clientX - rect.left) / (rect.right-rect.left);
-		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
-
-		for (const [call, pos] of this.drawnCalls.entries()) { 
-			//console.log(x, pos[0], y, pos[1]);
-			if(Math.abs(x - pos[0]) < 5 && Math.abs(y - pos[1])<5) {
-				this.canvasElement.style = 'cursor:default;';
-				this.canvasElement.title = call;
-				hovering_over = call;
-				break;
+	zoomToData(){
+		this.zoomToBox(this.dataVignette.geoRange, 0.8)	
+	}
+	
+	setZoomAtPointerPos(e, zoomFactor){
+		let xy = this.getPointerPix(e);
+		let ll = this.getLatLon(xy);
+		this.setCentre(ll);
+		this.setZoom(zoomFactor);
+	}
+	
+	_drawConnection(endpointRecords){
+		
+		let epPos = [];
+		let showConnection = false;
+		
+		for (const epRecord of endpointRecords) {
+			const p = this.getPix(epRecord.latlong);
+			this.drawnCalls.set(epRecord.call, p);
+			epPos.push(p)
+			this.ctx.beginPath();
+			this.ctx.arc(p[0], p[1], 6, 0, 6.282);
+			this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
+			this.ctx.fill();
+			if (epRecord.call == this.highlightCall){
+				showConnection = true;
+				this.ctx.strokeStyle = this.ctx.fillStyle;
 			}
 		}
-		if (hovering_over !== this.currentHover) {
-			this.currentHover = hovering_over;
+		
+		if (showConnection) {
+			this.ctx.lineWidth=2;
+			this.ctx.beginPath();
+			this.ctx.moveTo(epPos[0][0], epPos[0][1]);
+			this.ctx.lineTo(epPos[1][0], epPos[1][1]);
+			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.arc(epPos[0][0], epPos[0][1], 6, 0, 6.282);
+			this.ctx.stroke();
+			this.ctx.beginPath();
+			this.ctx.arc(epPos[1][0], epPos[1][1], 6, 0, 6.282);
+			this.ctx.stroke();
 		}
+		
 	}
 	
 	_drawMap(landPolys){
 		this.ctx.clearRect(0,0, this.canvasElementSize.w, this.canvasElementSize.h);
-		this.ctx.strokeStyle = colours.map;
+		this.ctx.strokeStyle = mapcolours.land;
 		this.ctx.lineWidth = 2;
 		landPolys?.features.forEach(feature => {
 			const geom = feature.geometry;
-			if (geom.type === 'LineString') {
-				this._drawLineString(geom.coordinates);
-			}
 			if (geom.type === 'Polygon') {
 				this._drawPolygons(geom.coordinates);
 			}
-			if (geom.type === 'MultiPolygon') {
-				geom.coordinates.forEach(polygon => this._drawPolygons(polygon));
-			}			
-			
 		});
 	}
 
-	_drawLineString(coords) {
-		this.ctx.beginPath();
-		coords.forEach(([lon, lat], i) => {
-			let p = this.getPix([lat, lon]);
-				i === 0 ? this.ctx.moveTo(p[0], p[1]) : this.ctx.lineTo(p[0], p[1]);
-			});
-		this.ctx.stroke();
-	}
-	
 	_drawPolygons(polys) {
 		polys.forEach(poly => {
 			this.ctx.beginPath();
@@ -164,7 +213,6 @@ export class GeoView{
 			this.ctx.closePath();
 			this.ctx.fillStyle = mapcolours.land;
 			this.ctx.fill();
-			//this.ctx.stroke();
 		});
 	}
 

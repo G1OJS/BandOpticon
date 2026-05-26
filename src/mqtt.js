@@ -1,8 +1,8 @@
-import {squareIsInHome} from './geoFuncs.js';
-import {squaresArr} from './config.js';
+import {parseSquares, squareIsInHome} from './geoFuncs.js';
 import {addSpot} from './dataMgr.js'
-import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
 
+import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
+let squaresArr = null;
 var mqttClient = null;
 export var mqttStatus = 'connecting';
 
@@ -24,7 +24,8 @@ function validate_band(band){
 function subscribe(bands) {
     // find the topics for the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
     let topics = new Set;
-	
+	squaresArr = parseSquares(JSON.parse(localStorage.getItem('squaresList')));
+
 	for (const b of bands) {
 		if (validate_band(b) || b=='+') {
 			for (let i = 0; i < squaresArr.length; i++) {
@@ -54,10 +55,8 @@ function onMessage(msg) {
         let kvp = v.split(":");
         spot[kvp[0]] = kvp[1];
     });
-
-	let sh = squareIsInHome(spot.sl);
-	let rh = squareIsInHome(spot.rl);
+	let sh = squareIsInHome(spot.sl, squaresArr);
+	let rh = squareIsInHome(spot.rl, squaresArr);
 	if(sh || rh) addSpot(spot, sh, rh);
-	
 	mqttStatus = 'receiving';
 }

@@ -3,11 +3,17 @@ import {onDataUpdate} from './pageMgr.js'
 
 let dataVignettes = new Map();
 
-function _updateBounds(bounds, ll) {
-	bounds.latmax = (ll[0]>bounds.latmax)? ll[0]:bounds.latmax;
-	bounds.latmin = (ll[0]<bounds.latmin)? ll[0]:bounds.latmin;
-	bounds.lonmax = (ll[1]>bounds.lonmax)? ll[1]:bounds.lonmax;
-	bounds.lonmin = (ll[1]<bounds.lonmin)? ll[1]:bounds.lonmin;
+export function addSpot(spot, senderIsInHome, receiverIsInHome) {
+	if (spot.sl && spot.rl){
+		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
+		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
+		const bandMode = spot.b+" "+spot.md;
+		if(!dataVignettes.get(bandMode)) {
+			console.log("Create data vignette "+bandMode);
+			dataVignettes.set(bandMode, new DataVignette(bandMode));
+		}
+		dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
+	}
 }
 
 export function getDataVignette(bandMode){
@@ -95,15 +101,10 @@ export class DataVignette{
 		
 }
 
-export function addSpot(spot, senderIsInHome, receiverIsInHome) {
-	if (spot.sl && spot.rl){
-		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, p:null, isInHome:senderIsInHome};
-		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, p:null, isInHome:receiverIsInHome};
-		const bandMode = spot.b+" "+spot.md;
-		if(!dataVignettes.get(bandMode)) {
-			console.log("Create data vignette "+bandMode);
-			dataVignettes.set(bandMode, new DataVignette(bandMode));
-		}
-		dataVignettes.get(bandMode).recordConnection(sRecord, rRecord);
-	}
+function _updateBounds(bounds, ll) {
+	bounds.latmax = (ll[0]>bounds.latmax)? ll[0]:bounds.latmax;
+	bounds.latmin = (ll[0]<bounds.latmin)? ll[0]:bounds.latmin;
+	bounds.lonmax = (ll[1]>bounds.lonmax)? ll[1]:bounds.lonmax;
+	bounds.lonmin = (ll[1]<bounds.lonmin)? ll[1]:bounds.lonmin;
 }
+
