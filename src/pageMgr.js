@@ -12,7 +12,7 @@ let mainViewCanvasElement = null;
 let views = new Map();
 let mainBandMode = null;
 
-export function loadApp(){
+export async function  loadApp(){
 	let views = new Map();
 	let mainBandMode = null;
 	let bands = '+';
@@ -26,10 +26,7 @@ export function loadApp(){
 	}
 	initialisePage();
 	connectToFeed(bands); 
-	showMQTTInitialisation();
-}
-
-async function showMQTTInitialisation(){
+	
 	while (mqttStatus != 'receiving') {
 		document.getElementById('mqttStatus').innerText = mqttStatus;
 		await new Promise(r => setTimeout(r, 250));
@@ -206,16 +203,13 @@ export function initialisePage(){
 		if (mainView){
 			zoomMainToDataCheckBox.checked = false;
 			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
-			mainView.setZoomAtPointerPos(e, 1.2);
+			mainView.zoomToPointerPos(e, 1.2);
 			mainView.invalidate();
 		}
 	});	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		views.get('main')?.onMouseMove(e);
 	});
-
-
-
 
 
 }
