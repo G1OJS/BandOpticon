@@ -1,8 +1,9 @@
-
-import {colours, mapcolours, myCall} from './config.js'
+const colours = JSON.parse(localStorage.getItem('colours'));
+const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
 
 let landPolys110m = null;
 let landPolys50m = null;
+let myCall = null;
 
 fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson').then(resp => resp.json()).then(data => {
 	console.log("GeoJSON loaded:", data);
@@ -46,6 +47,7 @@ export class GeoView{
 	render(){
 		const callsignRecords = this.dataVignette.getCallsignRecords();
 		const connectionStrings = this.dataVignette.getConnectionStrings(); 
+		myCall = localStorage.getItem('myCall');
 
 		this.drawnCalls = new Map();
 		if (this.mapres == 110) this._drawMap(landPolys110m);
@@ -71,7 +73,6 @@ export class GeoView{
 		let y = this.canvasElementSize.h * (e.clientY - rect.top)/ (rect.bottom-rect.top);
 
 		for (const [call, pos] of this.drawnCalls.entries()) { 
-			//console.log(x, pos[0], y, pos[1]);
 			if(Math.abs(x - pos[0]) < 5 && Math.abs(y - pos[1])<5) {
 				this.canvasElement.style = 'cursor:default;';
 				this.canvasElement.title = call;
@@ -157,10 +158,9 @@ export class GeoView{
 		
 	}
 	
-	
 	_drawMap(landPolys){
 		this.ctx.clearRect(0,0, this.canvasElementSize.w, this.canvasElementSize.h);
-		this.ctx.strokeStyle = colours.map;
+		this.ctx.strokeStyle = mapcolours.land;
 		this.ctx.lineWidth = 2;
 		landPolys?.features.forEach(feature => {
 			const geom = feature.geometry;
@@ -180,7 +180,6 @@ export class GeoView{
 			this.ctx.closePath();
 			this.ctx.fillStyle = mapcolours.land;
 			this.ctx.fill();
-			//this.ctx.stroke();
 		});
 	}
 

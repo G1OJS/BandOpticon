@@ -1,4 +1,5 @@
-import {setMyCall, setSquaresList, colours} from './config.js';
+
+import {parseSquares} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette} from './dataMgr.js';
 import {mqttStatus} from './mqtt.js';
@@ -72,28 +73,52 @@ function setMainView(bandMode){
 	mainBandMode = bandMode;
 }
 
-async function waitForMqtt(){
-	while (mqttStatus != 'receiving') {
-		document.getElementById('mqttStatus').innerText = mqttStatus;
-		await new Promise(r => setTimeout(r, 250));
-	}
-	document.getElementById('mqttStatus').innerText ='';	
-}
-
 export function initialisePage(){
+	const myCall = localStorage.getItem('myCall');
+	if (myCall) { 
+		console.log("Loaded my call " + myCall); 
+		document.getElementById('myCallInput').value = myCall.toUpperCase();
+	}
+	
+	// move to geofuncs as 'validate squares'
+	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
+	let squaresList = localStorage.getItem('squaresList');
+	if (squaresList){
+		try {squaresList = JSON.parse(squaresList);} catch (e) {squaresList = false;} 
+	}	
+	if (squaresList){
+		console.log("Loaded squares list "+squaresList); 
+	} else {
+		squaresList = defaultSquaresList;
+		localStorage.setItem('squaresList', JSON.stringify(squaresList));
+		console.log("No local config data found for squares list: defaults applied.");
+	}
+	document.getElementById("homeSquaresInput").value = squaresList;
+
+	const colours = JSON.parse(localStorage.getItem('colours'));
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
 	document.getElementById('legendMarkerRx').style.background = colours.rx;
 	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+	
+
 		
 	document.getElementById('myCallInput').addEventListener('change', () => {
-		let myCallNew = document.getElementById('myCallInput').value.toUpperCase();
-		document.getElementById('myCallInput').value = myCallNew;
-		setMyCall(myCallNew); 
+		const myCall = document.getElementById('myCallInput').value.toUpperCase();
+		document.getElementById('myCallInput').value = myCall;
+		localStorage.setItem('myCall',myCall); 
 		invalidateAllVisible();
 	});
 
 	document.getElementById('homeSquaresInput').addEventListener('change', () => {
-		setSquaresList(); 
+		const squaresList = document.getElementById('homeSquaresInput').value; 
+		if (parseSquares(squaresList) == "Err") {
+			input.setCustomValidity("Invalid grid square format");
+		} else {
+			input.setCustomValidity("");
+			setConfig('squaresList', JSON.stringify(squaresList));
+			console.log("Saved Squares List: " + squaresList);
+		}
+		input.reportValidity();
 		invalidateAllVisible();
 	});	
 
@@ -106,21 +131,32 @@ export function initialisePage(){
 	});	
 	
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
-
+		const view = views.get('main')
+		if (view){
+			document.getElementById('zoomMainToData').checked = false;
+			if (e.target.dataset.action == 'zoomFullEarth') {view.zoomToBox(fullEarth, 1.0);}
+			if (e.target.dataset.action == 'zoomToData') {view.zoomToData();}
+			if (e.target.dataset.action == 'zoomOut') {view.setZoom(1.0/1.2);}
+			view.invalidate();
+		}
 	});
 	
 	document.getElementById('zoomMainToData').addEventListener('change', (e) => {
-		
+		setConfig(document.getElementById('zoomMainToData').checked);
 	});
 
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		views.get('main')?.onMouseMove(e);
 	});
 	document.getElementById('mainCanvas').addEventListener('click', (e) => {
-
+		const view = views.get('main')
+		if (view){
+			document.getElementById('zoomMainToData').checked = false;
+			view.setZoom(1.2);
+			view.invalidate();
+		}
 	});
 
-	waitForMqtt();
 }
 
 
