@@ -3,7 +3,6 @@ localStorage.setItem('mapcolours', JSON.stringify({land:'rgba(180,200,180,0.5)',
 
 import {loadApp} from './pageMgr.js';
 
-
 document.addEventListener('DOMContentLoaded', () => {
 	loadApp();
 });
