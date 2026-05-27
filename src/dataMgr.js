@@ -26,26 +26,31 @@ export class DataVignette{
 		let band = this.bandMode.split(' ')[0];
 		this.wavelength = parseInt(band.split("m")[0]);
 		if (band.search("cm") > 0) this.wavelength /= 100;
-		this.stats = {};
 		this.srRecords = new Map();
 		this.connectionStrings = [];
 	}
 	
 	getStats(){ 
-		let totalTx = 0, totalRx = 0, total = 0;
+		let stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
 		for (const call of this.srRecords.keys()) {
+			stats.calls +=1;
 			let crec = this.srRecords.get(call);
 			if (crec.isInHome){
-				total +=1;
-				if(crec.tx) totalTx +=1;
-				if(crec.rx) totalRx +=1;
+				if ((crec.tx) && (crec.tx)) {
+					this.stats.callsHomeTxRx +=1;
+				} else {
+					if(crec.tx) stats.callsHomeTx +=1;
+					if(crec.rx) stats.callsHomeRx +=1;
+				}
 			}
 		}
-		this.stats = {
-		  cls: total,
-		  tx_pc: Math.round(100*totalTx/total),
-		  rx_pc: Math.round(100*totalRx/total)
-		};
+		for (const connectionString of this.connectionStrings){
+			const epCallsigns = connectionString.split('|');
+			const epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+			if (epRecords[0].isInHome) stats.connsHomeTx +=1;
+			if (epRecords[1].isInHome) stats.connsHomeRx +=1;
+		}
+		return stats;
 	}
 	
 	getConnectionStrings(){
