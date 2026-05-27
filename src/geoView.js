@@ -106,16 +106,15 @@ export class GeoView{
 	
 	setZoomToData(){
 		if (this.drawnCalls.size > 0) {
-			let usedNDC = {'x0':1, 'w':0.001, 'y0':1, 'h':0.001}; 
+			let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
 			for (const [call, dc] of this.drawnCalls.entries()) { 
-				const pNDC = dc.ndc;
-				usedNDC.x0 = Math.min(usedNDC.x0, pNDC.x);
-				usedNDC.y0 = Math.min(usedNDC.y0, pNDC.y);
-				usedNDC.w = Math.max(usedNDC.w, pNDC.x - usedNDC.x0);
-				usedNDC.h = Math.max(usedNDC.h, pNDC.y - usedNDC.y0);
+				usedNDC.x0 = Math.min(usedNDC.x0, dc.ndc.x);
+				usedNDC.y0 = Math.min(usedNDC.y0, dc.ndc.y);
+				usedNDC.x1 = Math.max(usedNDC.x1, dc.ndc.x);
+				usedNDC.y1 = Math.max(usedNDC.y1, dc.ndc.y);
 			}
-			const usedNDCCentre = {'x': usedNDC.x0 + usedNDC.w/2, 'y':usedNDC.y0 + usedNDC.h/2};
-			this.viewNDC = usedNDC;
+			const usedNDCCentre = {'x': (usedNDC.x0 + usedNDC.x1)/2, 'y':(usedNDC.y0 + usedNDC.y1)/2};
+			this.viewNDC = {'x0':usedNDC.x0, 'y0':usedNDC.y0, 'w':usedNDC.x1 - usedNDC.x0, 'h':usedNDC.y1 - usedNDC.y0};
 			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
 			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
 			this.setZoom(0.8, usedNDCCentre);
@@ -154,7 +153,7 @@ export class GeoView{
 						this.ctx.fill();
 						if (epRecord.call == this.highlightCall){
 							showConnection = true;
-							this.ctx.strokeStyle = epRecord.tx? colours.tx: colours.rx;
+							this.ctx.strokeStyle = (epRecord == epRecords[0])? colours.tx: colours.rx;
 						}
 					}
 				}
