@@ -115,8 +115,8 @@ export class GeoView{
 			}
 			const usedNDCCentre = {'x': (usedNDC.x0 + usedNDC.x1)/2, 'y':(usedNDC.y0 + usedNDC.y1)/2};
 			this.viewNDC = {'x0':usedNDC.x0, 'y0':usedNDC.y0, 'w':usedNDC.x1 - usedNDC.x0, 'h':usedNDC.y1 - usedNDC.y0};
-			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
-			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
+			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h, 0.01);
+			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w, 0.01);
 			this.setZoom(0.8, usedNDCCentre);
 		}
 	}
