@@ -40,6 +40,7 @@ html {height:100vh;}
 body {
   background: var(--background-color);
   color: var(--main-font-color);
+  
   font-family: system-ui, "Segoe UI Emoji", "Noto Color Emoji", "Apple Color Emoji", sans-serif;
   font-weight: 400;
   margin: 0;
@@ -67,8 +68,8 @@ p {
   background: var(--main-paper-color);
   border-radius: var(--border-radius);
   padding: var(--spacing);
-  margin-bottom: var(--spacing);
   box-shadow: var(--box-shadow);
+  margin-bottom: var(--spacing);
 }
 
 #app {
@@ -92,18 +93,21 @@ input:invalid 		{border-color: #e66;background-color: #fee;}
 
 .control:hover:not(.inactive) 	{border-color: var(--main-paper-color); background: var(--dark-paper-color);  cursor: pointer;}		
 .control.inactive 	{color: var(--muted-font-color); opacity:0.4;}			
-.legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-3px;}
+.controlGroup		{display:inline-block; border: 1px solid var(--border-color); border-radius:6px; margin-bottom:3px;
+						font-size: var(--font-size-base); font-weight: 600; color: var(--main-font-color); padding-right:3px;  padding-left:3px; } 
+
+.legendItem 		{display:inline-block; margin-right:3px; vertical-align:bottom; margin-bottom:-1px;}
 .legendMarker 		{display:inline-block; width:var(--font-size-base); height:var(--font-size-base); margin-left:5px; margin-right:3px; border: 1px solid grey;}
+
 #tileTrayScrollContainer	{display:inline-block; max-width:100%; overflow-x:scroll; overflow-y:hidden;}
 #tileTrayGrid		{display: grid; grid-template-columns: repeat(30, 140px); grid-template-rows: 1fr; gap: var(--spacing-xsm);}		
 #tileTrayGrid > div {border: 1px solid grey; padding: 0; border-radius: 8px; overflow:clip;}	 
-				
+						
+.windowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:1px; margin:0px; margin-bottom:1px;} 
 .windowBarButton	{display:inline-block; margin:0px;  box-shadow:1px 1px 1px 1px rgb(0 0 255 / .2); padding:0px 4px 2px 4px;}
-.right				{float:right;}
-				
-.tileWindowBar		{display:inline-block; width:100%; font-size: var(--font-size-base); background:var(--main-paper-color); height:max-content; padding:1px; margin:0px; margin-bottom:1px;} 
+
 .tileTitle			{font-size: var(--font-size-base); font-weight:600; }
-.tileSubtitle	{font-size: var(--font-size-xsm); font-weight:400;}
+.tileSubtitle		{font-size: var(--font-size-xsm); font-weight:400;}
 
 .canvas-container	{padding:0px; padding-bottom:0px; min-width:0; overflow:hidden;}
 canvas				{width:100%; }

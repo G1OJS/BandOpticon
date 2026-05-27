@@ -31,7 +31,8 @@ export async function  loadApp(){
 		document.getElementById('mqttStatus').innerText = mqttStatus;
 		await new Promise(r => setTimeout(r, 250));
 	}
-	document.getElementById('mqttStatus').innerText ='';	
+	document.getElementById('mqttStatus').innerText ='';
+	document.getElementById('clickTileMessage').classList.remove('hidden');
 }
 
 export function onDataUpdate(bandMode){
@@ -88,6 +89,7 @@ function _createTileElement(bandMode){
 
 function setMainView(bandMode){
 	document.getElementById('mainViewTitle').innerText = bandMode;
+	document.getElementById('clickTileMessage').classList.add('hidden');
 	const canvasElement = document.getElementById('mainCanvas');
 	const dataVignette = getDataVignette(bandMode);
 	views.set('main', new GeoView(dataVignette, canvasElement, 'zoomMainToDataCheckBoxChecked', 50));
