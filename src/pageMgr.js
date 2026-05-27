@@ -36,9 +36,23 @@ export async function  loadApp(){
 }
 
 export function onDataUpdate(bandMode){
+	//note stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
 	let vis = setTileVisibility(bandMode);
-	if (vis) views.get(bandMode).invalidate();
-	if (bandMode == mainBandMode) views.get('main').invalidate();
+	if (vis) { 
+		const dataVignette = getDataVignette(bandMode)
+		const stats = dataVignette.getStats();
+		const tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
+		const tileSubtitleElement = tileElement.querySelector('.tileSubtitle');
+		tileSubtitleElement.innerText = `Total Calls:${stats.calls}`;
+		const view = views.get(bandMode);
+		view.invalidate();
+		if (bandMode == mainBandMode) {
+			const mainViewSubTitleElement = document.getElementById('mainViewSubTitle');
+			mainViewSubTitleElement.innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;
+			const mainView = views.get('main');
+			mainView.invalidate();
+		}
+	}
 }
 
 function invalidateAllVisible(){
@@ -173,7 +187,8 @@ export function initialisePage(){
 	
 	// carousel tile click
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
-		setMainView(e.target.closest('.tile').id);
+		const bandMode = e.target.closest('.tile')?.id;
+		if (bandMode) setMainView(bandMode);
 	});	
 	
 	// handlers for clicks to main view controls

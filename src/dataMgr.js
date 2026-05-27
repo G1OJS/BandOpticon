@@ -37,7 +37,7 @@ export class DataVignette{
 			let crec = this.srRecords.get(call);
 			if (crec.isInHome){
 				if ((crec.tx) && (crec.tx)) {
-					this.stats.callsHomeTxRx +=1;
+					stats.callsHomeTxRx +=1;
 				} else {
 					if(crec.tx) stats.callsHomeTx +=1;
 					if(crec.rx) stats.callsHomeRx +=1;
@@ -46,7 +46,7 @@ export class DataVignette{
 		}
 		for (const connectionString of this.connectionStrings){
 			const epCallsigns = connectionString.split('|');
-			const epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+			const epRecords = [this.srRecords.get(epCallsigns[0]), this.srRecords.get(epCallsigns[1])];
 			if (epRecords[0].isInHome) stats.connsHomeTx +=1;
 			if (epRecords[1].isInHome) stats.connsHomeRx +=1;
 		}
