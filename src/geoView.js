@@ -3,7 +3,6 @@ const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
 
 let landPolys110m = null;
 let landPolys50m = null;
-let myCall = null;
 
 fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_110m_land.geojson').then(resp => resp.json()).then(data => {
 	console.log("GeoJSON loaded:", data);
@@ -38,39 +37,26 @@ export class GeoView{
             this.redrawPending=false;
             if(this.dirty){
                 this.dirty=false;
-				if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
-					this.render(false);
-					this.setZoomToData();
-				} 
-                this.render(true);
+                this.render();
             }
         });
     }
 	
-	render(updateCanvas){
-		const srRecords = this.dataVignette.getsrRecords();
-		const connectionStrings = this.dataVignette.getConnectionStrings(); 
-		myCall = localStorage.getItem('myCall');
-
+	render(){
 		this.drawnCalls = new Map();
+		if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
+			this._drawConnections(false);
+			this.setZoomToData();
+		} 
 		if (this.mapres == 110) this._drawMap(landPolys110m);
 		if (this.mapres == 50) this._drawMap(landPolys50m);
-
-		for (const connectionString of connectionStrings){
-			let vis = false;
-			let epCallsigns = connectionString.split('|');
-			let epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
-			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
-			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
-			if (vis){	
-				this._drawConnection(epRecords, updateCanvas);
-			}
-		}	
+		this._drawConnections(true);	
 	}
 	
 	onMouseMove(e){
 		let hovering_over = null;
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
+		const myCall = localStorage.getItem('myCall');	
 
 		for (const [call, dc] of this.drawnCalls.entries()) { 
 			const pCanv = dc.canv;
@@ -119,19 +105,21 @@ export class GeoView{
 	}
 	
 	setZoomToData(){
-		let usedNDC = {'x0':1, 'w':0, 'y0':1, 'h':0};
-		for (const [call, dc] of this.drawnCalls.entries()) { 
-			const pNDC = dc.ndc;
-			usedNDC.x0 = Math.min(usedNDC.x0, pNDC.x);
-			usedNDC.y0 = Math.min(usedNDC.y0, pNDC.y);
-			usedNDC.w = Math.max(usedNDC.w, pNDC.x - usedNDC.x0);
-			usedNDC.h = Math.max(usedNDC.h, pNDC.y - usedNDC.y0);
+		if (this.drawnCalls.size > 0) {
+			let usedNDC = {'x0':1, 'w':0.1, 'y0':1, 'h':0.1};
+			for (const [call, dc] of this.drawnCalls.entries()) { 
+				const pNDC = dc.ndc;
+				usedNDC.x0 = Math.min(usedNDC.x0, pNDC.x);
+				usedNDC.y0 = Math.min(usedNDC.y0, pNDC.y);
+				usedNDC.w = Math.max(usedNDC.w, pNDC.x - usedNDC.x0);
+				usedNDC.h = Math.max(usedNDC.h, pNDC.y - usedNDC.y0);
+			}
+			const usedNDCCentre = {'x': usedNDC.x0 + usedNDC.w/2, 'y':usedNDC.y0 + usedNDC.h/2};
+			this.viewNDC = usedNDC;
+			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
+			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
+			this.setZoom(0.8, usedNDCCentre);
 		}
-		const usedNDCCentre = {'x': usedNDC.x0 + usedNDC.w/2, 'y':usedNDC.y0 + usedNDC.h/2};
-		this.viewNDC = usedNDC;
-		this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
-		this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
-		this.setZoom(0.8, usedNDCCentre);
 	}
 	
 	zoomFullEarth(){
@@ -143,43 +131,49 @@ export class GeoView{
 		this.setZoom(zoomFactor, xy);
 	}
 	
-	_drawConnection(srRecords, updateCanvas){
-		
-		let epCanv = [];
-		let showConnection = false;
-		
-		for (const epRecord of srRecords) {
-			const pNDC = this.getNDC(epRecord.latlong);
-			const pCanv = this.getCanv(pNDC);
-			this.drawnCalls.set(epRecord.call, {'canv':pCanv, 'ndc':pNDC});
-			if (updateCanvas) {
-				epCanv.push(pCanv)
-				this.ctx.beginPath();
-				this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
-				this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
-				this.ctx.fill();
-				if (epRecord.call == this.highlightCall){
-					showConnection = true;
-					this.ctx.strokeStyle = this.ctx.fillStyle;
+	_drawConnections(updateCanvas){
+		const srRecords = this.dataVignette.getsrRecords();		
+		for (const connectionString of this.dataVignette.getConnectionStrings()){
+			let vis = false;
+			const epCallsigns = connectionString.split('|');
+			const epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
+			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
+			if (vis){	
+				let epCanv = [];
+				let showConnection = false;
+				for (const epRecord of epRecords) {
+					const pNDC = this.getNDC(epRecord.latlong);
+					const pCanv = this.getCanv(pNDC);
+					this.drawnCalls.set(epRecord.call, {'canv':pCanv, 'ndc':pNDC});
+					if (updateCanvas) {
+						epCanv.push(pCanv)
+						this.ctx.beginPath();
+						this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
+						this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
+						this.ctx.fill();
+						if (epRecord.call == this.highlightCall){
+							showConnection = true;
+							this.ctx.strokeStyle = this.ctx.fillStyle;
+						}
+					}
+				}
+				if (showConnection) {
+					const epts = {'s':epCanv[0], 'r':epCanv[1]};
+					this.ctx.lineWidth=2;
+					this.ctx.beginPath();
+					this.ctx.moveTo(epts.s.x, epts.s.y);
+					this.ctx.lineTo(epts.r.x, epts.r.y);
+					this.ctx.stroke();
+					this.ctx.beginPath();
+					this.ctx.arc(epts.s.x, epts.s.y, 6, 0, 6.282);
+					this.ctx.stroke();
+					this.ctx.beginPath();
+					this.ctx.arc(epts.r.x, epts.r.y, 6, 0, 6.282);
+					this.ctx.stroke();
 				}
 			}
 		}
-		
-		if (showConnection) {
-			const epts = {'s':epCanv[0], 'r':epCanv[1]};
-			this.ctx.lineWidth=2;
-			this.ctx.beginPath();
-			this.ctx.moveTo(epts.s.x, epts.s.y);
-			this.ctx.lineTo(epts.r.x, epts.r.y);
-			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(epts.s.x, epts.s.y, 6, 0, 6.282);
-			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(epts.r.x, epts.r.y, 6, 0, 6.282);
-			this.ctx.stroke();
-		}
-		
 	}
 	
 	_drawMap(landPolys){

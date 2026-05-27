@@ -66,7 +66,7 @@ function setTileVisibility(bandMode){
 }
 
 function _createTileElement(bandMode){
-	console.log("Create tile "+bandMode);
+	//console.log("Create tile "+bandMode);
 	const dataVignette = getDataVignette(bandMode);
 	const wavelength = dataVignette.wavelength;
 	let insert = null;
