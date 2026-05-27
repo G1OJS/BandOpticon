@@ -21,11 +21,10 @@ export class GeoView{
 		this.canvasElement = canvasElement;
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
-		this.drawnCallsCanv = null;
+		this.drawnCalls = null;
 		this.highlightCall = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
-		this.usedNDC = {'x0':1,'w':0, 'y0':1, 'h':0};
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
 		this.redrawPending = false;
@@ -39,29 +38,21 @@ export class GeoView{
             this.redrawPending=false;
             if(this.dirty){
                 this.dirty=false;
-                this.render();
 				if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
-					this.zoomToData();
-					this.invalidate();
+					this.render(false);
+					this.setZoomToData();
 				} 
+                this.render(true);
             }
         });
     }
 	
-	updateUsedNDC(pNDC){
-		let u = this.usedNDC;
-		u.x0 = Math.min(u.x0, pNDC.x);
-		u.y0 = Math.min(u.y0, pNDC.y);
-		u.w = Math.max(u.w, pNDC.x - u.x0);
-		u.h = Math.max(u.h, pNDC.y - u.y0);
-	}
-	
-	render(){
+	render(updateCanvas){
 		const srRecords = this.dataVignette.getsrRecords();
 		const connectionStrings = this.dataVignette.getConnectionStrings(); 
 		myCall = localStorage.getItem('myCall');
 
-		this.drawnCallsCanv = new Map();
+		this.drawnCalls = new Map();
 		if (this.mapres == 110) this._drawMap(landPolys110m);
 		if (this.mapres == 50) this._drawMap(landPolys50m);
 
@@ -72,17 +63,17 @@ export class GeoView{
 			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
 			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
 			if (vis){	
-				this._drawConnection(epRecords);
+				this._drawConnection(epRecords, updateCanvas);
 			}
 		}	
-		
 	}
 	
 	onMouseMove(e){
 		let hovering_over = null;
-		const ptrCanv = this.getPtrNDC(e);
+		const ptrCanv = this.getCanv(this.getPtrNDC(e));
 
-		for (const [call, pCanv] of this.drawnCallsCanv.entries()) { 
+		for (const [call, dc] of this.drawnCalls.entries()) { 
+			const pCanv = dc.canv;
 			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.x - pCanv.x)<5) {
 				this.canvasElement.style = 'cursor:default;';
 				this.canvasElement.title = call;
@@ -127,11 +118,19 @@ export class GeoView{
 		vn.h -= (zoomFactor-1) * vn.h;
 	}
 	
-	zoomToData(){
-		this.viewNDC = structuredClone(this.usedNDC);
+	setZoomToData(){
+		let usedNDC = {'x0':1, 'w':0, 'y0':1, 'h':0};
+		for (const [call, dc] of this.drawnCalls.entries()) { 
+			const pNDC = dc.ndc;
+			usedNDC.x0 = Math.min(usedNDC.x0, pNDC.x);
+			usedNDC.y0 = Math.min(usedNDC.y0, pNDC.y);
+			usedNDC.w = Math.max(usedNDC.w, pNDC.x - usedNDC.x0);
+			usedNDC.h = Math.max(usedNDC.h, pNDC.y - usedNDC.y0);
+		}
+		const usedNDCCentre = {'x': usedNDC.x0 + usedNDC.w/2, 'y':usedNDC.y0 + usedNDC.h/2};
+		this.viewNDC = usedNDC;
 		this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
 		this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
-		const usedNDCCentre = {'x': this.usedNDC.x0 + this.usedNDC.w/2, 'y':this.usedNDC.y0 + this.usedNDC.h/2};
 		this.setZoom(0.8, usedNDCCentre);
 	}
 	
@@ -144,24 +143,25 @@ export class GeoView{
 		this.setZoom(zoomFactor, xy);
 	}
 	
-	_drawConnection(srRecords){
+	_drawConnection(srRecords, updateCanvas){
 		
 		let epCanv = [];
 		let showConnection = false;
 		
 		for (const epRecord of srRecords) {
 			const pNDC = this.getNDC(epRecord.latlong);
-			this.updateUsedNDC(pNDC);
 			const pCanv = this.getCanv(pNDC);
-			this.drawnCallsCanv.set(epRecord.call, pCanv);
-			epCanv.push(pCanv)
-			this.ctx.beginPath();
-			this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
-			this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
-			this.ctx.fill();
-			if (epRecord.call == this.highlightCall){
-				showConnection = true;
-				this.ctx.strokeStyle = this.ctx.fillStyle;
+			this.drawnCalls.set(epRecord.call, {'canv':pCanv, 'ndc':pNDC});
+			if (updateCanvas) {
+				epCanv.push(pCanv)
+				this.ctx.beginPath();
+				this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
+				this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
+				this.ctx.fill();
+				if (epRecord.call == this.highlightCall){
+					showConnection = true;
+					this.ctx.strokeStyle = this.ctx.fillStyle;
+				}
 			}
 		}
 		
