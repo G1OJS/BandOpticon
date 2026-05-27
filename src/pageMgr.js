@@ -12,6 +12,10 @@ let mainViewCanvasElement = null;
 let views = new Map();
 let mainBandMode = null;
 
+const tickleMain = setInterval(() => {
+	if (mainBandMode) onDataUpdate(mainBandMode);
+}, 5000);
+
 export async function  loadApp(){
 	let views = new Map();
 	let mainBandMode = null;
@@ -189,6 +193,7 @@ export function initialisePage(){
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		const bandMode = e.target.closest('.tile')?.id;
 		if (bandMode) setMainView(bandMode);
+		if (mainBandMode) onDataUpdate(mainBandMode);
 	});	
 	
 	// handlers for clicks to main view controls
