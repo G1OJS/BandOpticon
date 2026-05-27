@@ -2,6 +2,13 @@ import {mhToLatLong} from './geoFuncs.js'
 import {onDataUpdate} from './pageMgr.js'
 
 let dataVignettes = new Map();
+const ttl = 300000;
+
+const purge = setInterval(() => {
+  for (const dataVignette of dataVignettes.keys()){
+	  dataVignettes.get(dataVignette).purgeStale();
+  }
+}, 5000);
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	if (spot.sl && spot.rl){
@@ -32,6 +39,7 @@ export class DataVignette{
 	
 	getStats(){ 
 		let stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
+		
 		for (const call of this.srRecords.keys()) {
 			stats.calls +=1;
 			let crec = this.srRecords.get(call);
@@ -74,6 +82,26 @@ export class DataVignette{
 			onDataUpdate(this.bandMode);
 		}
 	}
+
+	_isCurrent(epRecord){
+		return ((Date.now() - epRecord.lastSeen) < ttl)
+	}
+
+	purgeStale(){
+		let srRecordsCurrent = new Map();
+		for (const [call, rec] of this.srRecords.entries()) {
+			if (this._isCurrent(rec)) srRecordsCurrent.set(call, rec);
+		}
+		let connectionStringsCurrent = [];
+		for (const connectionString of this.connectionStrings){
+			let epts = connectionString.split('|');
+			if (this._isCurrent(this.srRecords.get(epts[0])) &&  this._isCurrent(this.srRecords.get(epts[1])) ){
+				connectionStringsCurrent.push(connectionString);
+			}
+		}
+		this.srRecords = structuredClone(srRecordsCurrent);
+		this.connectionStrings = structuredClone(connectionStringsCurrent);
+	}
 	
 	_update_srRecords(srRecordNew){
 		let call = srRecordNew.call;
@@ -96,9 +124,9 @@ export class DataVignette{
 			changed = true;
 		}
 		
-		if (changed) {
-			this.srRecords.set(call, srRecordNew);
-		}
+		srRecordNew.lastSeen = Date.now();
+		this.srRecords.set(call, srRecordNew);
+		
 		return changed;
 	}
 		

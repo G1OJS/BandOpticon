@@ -133,9 +133,10 @@ export class GeoView{
 	_drawConnections(updateCanvas){
 		const srRecords = this.dataVignette.getsrRecords();		
 		for (const connectionString of this.dataVignette.getConnectionStrings()){
-			let vis = false;
+
 			const epCallsigns = connectionString.split('|');
 			const epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+			let vis = false; 
 			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
 			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
 			if (vis){	
