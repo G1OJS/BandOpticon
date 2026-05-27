@@ -21,7 +21,7 @@ export class GeoView{
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
 		this.drawnCalls = null;
-		this.highlightCall = null;
+		this.highlightCall = localStorage.getItem('myCall');
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
