@@ -114,23 +114,25 @@ export class GeoView{
 				'y': vp.y0 + vp.h*(rect.bottom - e.clientY)/ (rect.bottom-rect.top)};
 	}
 
-	setZoom(zoomFactor, xy){
-		const vp = this.viewNDC;
-		if (xy) {
-			vp.x0 = xy.x - vp.w/2;
-			vp.y0 = xy.y - vp.h/2;			
+	setZoom(zoomFactor, centreNDC){
+		const vn = this.viewNDC;
+		if (centreNDC) {
+			const cn = centreNDC;			
+			vn.x0 = cn.x - vn.w/2;
+			vn.y0 = cn.y - vn.h/2;			
 		}
-		vp.x0 += (zoomFactor-1) * vp.w / 2;
-		vp.y0 += (zoomFactor-1) * vp.h / 2;
-		vp.w -= (zoomFactor-1) * vp.w;
-		vp.h -= (zoomFactor-1) * vp.h;
+		vn.x0 += (zoomFactor-1) * vn.w / 2;
+		vn.y0 += (zoomFactor-1) * vn.h / 2;
+		vn.w -= (zoomFactor-1) * vn.w;
+		vn.h -= (zoomFactor-1) * vn.h;
 	}
 	
 	zoomToData(){
 		this.viewNDC = structuredClone(this.usedNDC);
 		this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
 		this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
-		this.setZoom(0.8, null);
+		const usedNDCCentre = {'x': this.usedNDC.x0 + this.usedNDC.w/2, 'y':this.usedNDC.y0 + this.usedNDC.h/2};
+		this.setZoom(0.8, usedNDCCentre);
 	}
 	
 	zoomFullEarth(){
