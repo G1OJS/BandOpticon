@@ -154,7 +154,7 @@ export class GeoView{
 						this.ctx.fill();
 						if (epRecord.call == this.highlightCall){
 							showConnection = true;
-							this.ctx.strokeStyle = this.ctx.fillStyle;
+							this.ctx.strokeStyle = epRecord.tx? colours.tx: colours.rx;
 						}
 					}
 				}
