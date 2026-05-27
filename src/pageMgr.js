@@ -12,7 +12,7 @@ let mainViewCanvasElement = null;
 let views = new Map();
 let mainBandMode = null;
 
-export function loadApp(){
+export async function  loadApp(){
 	let views = new Map();
 	let mainBandMode = null;
 	let bands = '+';
@@ -26,10 +26,7 @@ export function loadApp(){
 	}
 	initialisePage();
 	connectToFeed(bands); 
-	showMQTTInitialisation();
-}
-
-async function showMQTTInitialisation(){
+	
 	while (mqttStatus != 'receiving') {
 		document.getElementById('mqttStatus').innerText = mqttStatus;
 		await new Promise(r => setTimeout(r, 250));
@@ -69,7 +66,7 @@ function setTileVisibility(bandMode){
 }
 
 function _createTileElement(bandMode){
-	console.log("Create tile "+bandMode);
+	//console.log("Create tile "+bandMode);
 	const dataVignette = getDataVignette(bandMode);
 	const wavelength = dataVignette.wavelength;
 	let insert = null;
@@ -165,7 +162,7 @@ export function initialisePage(){
 	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
 		if (zoomTilesToDataCheckBox.checked){
-			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomToData();}
+			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.setZoomToData();}
 		} else {
 			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomFullEarth();}
 		}	
@@ -182,7 +179,7 @@ export function initialisePage(){
 	zoomMainToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomMainToDataCheckBoxChecked', zoomMainToDataCheckBox.checked);
 		if (zoomMainToDataCheckBox.checked) {
-			views.get('main')?.zoomToData();
+			views.get('main')?.setZoomToData();
 		} else {
 			views.get('main')?.zoomFullEarth();
 		}
@@ -194,8 +191,8 @@ export function initialisePage(){
 			zoomMainToDataCheckBox.checked = false;
 			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
 			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomFullEarth();}
-			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToData();}
-			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
+			if (e.target.dataset.action == 'setZoomToData') {mainView.setZoomToData();}
+			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2, null);}
 			mainView.invalidate();
 		}
 	});
@@ -206,16 +203,13 @@ export function initialisePage(){
 		if (mainView){
 			zoomMainToDataCheckBox.checked = false;
 			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
-			mainView.setZoomAtPointerPos(e, 1.2);
+			mainView.zoomToPointerPos(e, 1.2);
 			mainView.invalidate();
 		}
 	});	
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
 		views.get('main')?.onMouseMove(e);
 	});
-
-
-
 
 
 }

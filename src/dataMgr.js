@@ -26,16 +26,15 @@ export class DataVignette{
 		let band = this.bandMode.split(' ')[0];
 		this.wavelength = parseInt(band.split("m")[0]);
 		if (band.search("cm") > 0) this.wavelength /= 100;
-		this.geoRange = {'latmin':90, 'latmax':-90, 'lonmin':180, 'lonmax':-180};
 		this.stats = {};
-		this.callsignRecords = new Map();
+		this.srRecords = new Map();
 		this.connectionStrings = [];
 	}
 	
 	getStats(){ 
 		let totalTx = 0, totalRx = 0, total = 0;
-		for (const call of this.callsignRecords.keys()) {
-			let crec = this.callsignRecords.get(call);
+		for (const call of this.srRecords.keys()) {
+			let crec = this.srRecords.get(call);
 			if (crec.isInHome){
 				total +=1;
 				if(crec.tx) totalTx +=1;
@@ -53,15 +52,15 @@ export class DataVignette{
 		return this.connectionStrings;	
 	}
 	
-	getCallsignRecords(){
-		return this.callsignRecords;
+	getsrRecords(){
+		return this.srRecords;
 	}
 	
 	recordConnection(sRecord, rRecord){
 		let changed = false;
 		let connectionString = sRecord.call+"|"+rRecord.call;
-		changed |= this._update_cRecords(sRecord);  
-		changed |= this._update_cRecords(rRecord);
+		changed |= this._update_srRecords(sRecord);  
+		changed |= this._update_srRecords(rRecord);
 		if(!this.connectionStrings.includes(connectionString)) {	
 			this.connectionStrings.push(connectionString);
 			changed = true;
@@ -71,40 +70,33 @@ export class DataVignette{
 		}
 	}
 	
-	_update_cRecords(cRecordNew){
-		let call = cRecordNew.call;
-		let cRecordExisting = this.callsignRecords.get(call);
+	_update_srRecords(srRecordNew){
+		let call = srRecordNew.call;
+		let srRecordExisting = this.srRecords.get(call);
 		let changed = false;
 		let noLatLong = false;
 		
-		if(cRecordExisting === undefined) {
+		if(srRecordExisting === undefined) {
 			noLatLong = true;
 		} else {
-			noLatLong |= (cRecordNew.latlong === undefined);
-			changed |= (cRecordNew.tx != cRecordExisting.tx)
-			changed |= (cRecordNew.rx != cRecordExisting.rx)
-			cRecordNew.tx |= cRecordExisting.tx;
-			cRecordNew.rx |= cRecordExisting.rx;
+			noLatLong |= (srRecordNew.latlong === undefined);
+			changed |= (srRecordNew.tx != srRecordExisting.tx)
+			changed |= (srRecordNew.rx != srRecordExisting.rx)
+			srRecordNew.tx |= srRecordExisting.tx;
+			srRecordNew.rx |= srRecordExisting.rx;
 		}
 		
 		if (noLatLong){
-			cRecordNew.latlong = mhToLatLong(cRecordNew.sq);
-			_updateBounds(this.geoRange, cRecordNew.latlong);
+			srRecordNew.latlong = mhToLatLong(srRecordNew.sq);
 			changed = true;
 		}
 		
 		if (changed) {
-			this.callsignRecords.set(call, cRecordNew);
+			this.srRecords.set(call, srRecordNew);
 		}
 		return changed;
 	}
 		
 }
 
-function _updateBounds(bounds, ll) {
-	bounds.latmax = (ll[0]>bounds.latmax)? ll[0]:bounds.latmax;
-	bounds.latmin = (ll[0]<bounds.latmin)? ll[0]:bounds.latmin;
-	bounds.lonmax = (ll[1]>bounds.lonmax)? ll[1]:bounds.lonmax;
-	bounds.lonmin = (ll[1]<bounds.lonmin)? ll[1]:bounds.lonmin;
-}
 

@@ -60,7 +60,7 @@ export function mhToLatLong(Sq_mixedCase, inRadians = false) {
         lon += (Sq.charCodeAt(4) - 65) / 12 -1 + 1/24;
     }
     if (inRadians) { lat = lat * Math.PI / 180;  lon = lon * Math.PI / 180;}
-    return [lat, lon];
+    return {'lat':lat, 'lon':lon};
 }
 
 export function squaresToKmDeg(SqA, SqB) {
