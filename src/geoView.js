@@ -106,7 +106,7 @@ export class GeoView{
 	
 	setZoomToData(){
 		if (this.drawnCalls.size > 0) {
-			let usedNDC = {'x0':1, 'w':0.01, 'y0':1, 'h':0.01}; 
+			let usedNDC = {'x0':1, 'w':0.001, 'y0':1, 'h':0.001}; 
 			for (const [call, dc] of this.drawnCalls.entries()) { 
 				const pNDC = dc.ndc;
 				usedNDC.x0 = Math.min(usedNDC.x0, pNDC.x);
