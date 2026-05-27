@@ -60,7 +60,7 @@ export class GeoView{
 
 		for (const [call, dc] of this.drawnCalls.entries()) { 
 			const pCanv = dc.canv;
-			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.x - pCanv.x)<5) {
+			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.y - pCanv.y) < 5) {
 				this.canvasElement.style = 'cursor:default;';
 				this.canvasElement.title = call;
 				hovering_over = call;
