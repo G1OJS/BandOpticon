@@ -192,7 +192,7 @@ export function initialisePage(){
 			localStorage.setItem('zoomMainToDataCheckBoxChecked', false);
 			if (e.target.dataset.action == 'zoomFullEarth') {mainView.zoomFullEarth();}
 			if (e.target.dataset.action == 'zoomToData') {mainView.zoomToData();}
-			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2);}
+			if (e.target.dataset.action == 'zoomOut') {mainView.setZoom(1.0/1.2, null);}
 			mainView.invalidate();
 		}
 	});

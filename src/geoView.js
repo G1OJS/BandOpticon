@@ -21,16 +21,16 @@ export class GeoView{
 		this.canvasElement = canvasElement;
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
-		this.drawnCalls = null;
+		this.drawnCallsCanv = null;
 		this.highlightCall = null;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
-		this.canvasElementSize = {w:this.canvasElement.width, h:this.canvasElement.height};
-		this.pixViewBox = {'x0':0, 'w':this.canvasElement.width, 'y0':0, 'h':this.canvasElement.height};
+		this.usedNDC = {'x0':1,'w':0, 'y0':1, 'h':0};
+		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
 		this.redrawPending = false;
 	}
-	
+
 	invalidate(){
         this.dirty=true;
         if(this.redrawPending) return;
@@ -40,30 +40,39 @@ export class GeoView{
             if(this.dirty){
                 this.dirty=false;
                 this.render();
+				if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
+					this.zoomToData();
+					this.invalidate();
+				} 
             }
         });
     }
 	
+	updateUsedNDC(pNDC){
+		let u = this.usedNDC;
+		u.x0 = Math.min(u.x0, pNDC.x);
+		u.y0 = Math.min(u.y0, pNDC.y);
+		u.w = Math.max(u.w, pNDC.x - u.x0);
+		u.h = Math.max(u.h, pNDC.y - u.y0);
+	}
+	
 	render(){
-		const callsignRecords = this.dataVignette.getCallsignRecords();
+		const srRecords = this.dataVignette.getsrRecords();
 		const connectionStrings = this.dataVignette.getConnectionStrings(); 
 		myCall = localStorage.getItem('myCall');
 
-		if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
-			this.zoomToData();
-		} 
-		this.drawnCalls = new Map();
+		this.drawnCallsCanv = new Map();
 		if (this.mapres == 110) this._drawMap(landPolys110m);
 		if (this.mapres == 50) this._drawMap(landPolys50m);
 
 		for (const connectionString of connectionStrings){
 			let vis = false;
-			let endpointCallsigns = connectionString.split('|');
-			let endpointRecords = [callsignRecords.get(endpointCallsigns[0]), callsignRecords.get(endpointCallsigns[1])];
-			vis |= (endpointRecords[0].isInHome && document.getElementById('homeTx').checked); 
-			vis |= (endpointRecords[1].isInHome && document.getElementById('homeRx').checked);
+			let epCallsigns = connectionString.split('|');
+			let epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
+			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
 			if (vis){	
-				this._drawConnection(endpointRecords);
+				this._drawConnection(epRecords);
 			}
 		}	
 		
@@ -71,10 +80,10 @@ export class GeoView{
 	
 	onMouseMove(e){
 		let hovering_over = null;
-		let xy = this.getPointerPix(e);
+		const ptrCanv = this.getPtrNDC(e);
 
-		for (const [call, pos] of this.drawnCalls.entries()) { 
-			if(Math.abs(xy.x - p.x) < 5 && Math.abs(xy.x - p.x)<5) {
+		for (const [call, pCanv] of this.drawnCallsCanv.entries()) { 
+			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.x - pCanv.x)<5) {
 				this.canvasElement.style = 'cursor:default;';
 				this.canvasElement.title = call;
 				hovering_over = call;
@@ -88,29 +97,29 @@ export class GeoView{
 		}
 	}
 	
-	getPix(latlon){
-		const nm = {'x':(latlon.lon+180)/360, 'y':(latlon.lat+90)/180};
-		const vp = this.pixViewBox;
-		const cv = this.canvasElementSize;
-		const xy = {'x':cv.w*nm.x, 'y':cv.h - cv.h*nm.y};
-		return {'x':(xy.x-vp.x0)*cv.w/vp.w, 'y':(xy.y-vp.y0)*cv.h/vp.h}; 
+	getNDC(latlon){
+		return {'x':latlon.lon/180, 'y':latlon.lat/90};
 	}
 	
-	getPointerPix(e){
-		let rect = this.canvasElement.getBoundingClientRect();
-		let vp = this.pixViewBox;
+	getCanv(pNDC){
+		const vp = this.viewNDC;
+		const cv = {w:this.canvasElement.width, h:this.canvasElement.height};
+		return {'x':cv.w * (pNDC.x - vp.x0)/vp.w, 'y':cv.h - cv.h * (pNDC.y - vp.y0)/vp.h}; 
+	}
+	
+	getPtrNDC(e){
+		const rect = this.canvasElement.getBoundingClientRect();
+		const vp = this.viewNDC;
 		return {'x': vp.x0 + vp.w*(e.clientX - rect.left) / (rect.right-rect.left), 
-				'y': vp.y0 + vp.h - vp.h*(rect.bottom - e.clientY)/ (rect.bottom-rect.top)};
+				'y': vp.y0 + vp.h*(rect.bottom - e.clientY)/ (rect.bottom-rect.top)};
 	}
-	
-	setCentre(xy){
-		let vp = this.pixViewBox;
-		vp.x0 = xy.x - vp.w/2;
-		vp.y0 = xy.y - vp.h/2;
-	}
-	
-	setZoom(zoomFactor){
-		let vp = this.pixViewBox;
+
+	setZoom(zoomFactor, xy){
+		const vp = this.viewNDC;
+		if (xy) {
+			vp.x0 = xy.x - vp.w/2;
+			vp.y0 = xy.y - vp.h/2;			
+		}
 		vp.x0 += (zoomFactor-1) * vp.w / 2;
 		vp.y0 += (zoomFactor-1) * vp.h / 2;
 		vp.w -= (zoomFactor-1) * vp.w;
@@ -118,31 +127,34 @@ export class GeoView{
 	}
 	
 	zoomToData(){
-		//this.axisRanges = this.dataVignette.geoRange;	
-		//this.setZoom(0.8);
+		this.viewNDC = structuredClone(this.usedNDC);
+		this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h);
+		this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w);
+		this.setZoom(0.8, null);
 	}
 	
 	zoomFullEarth(){
-		this.pixViewBox = {'x0':0, 'w':this.canvasElement.width, 'y0':0, 'h':this.canvasElement.height};
+		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 	}
 	
 	zoomToPointerPos(e, zoomFactor){
-		let xy = this.getPointerPix(e);
-		this.setCentre(xy);
-		this.setZoom(zoomFactor);
+		let xy = this.getPtrNDC(e);
+		this.setZoom(zoomFactor, xy);
 	}
 	
-	_drawConnection(endpointRecords){
+	_drawConnection(srRecords){
 		
-		let epPos = [];
+		let epCanv = [];
 		let showConnection = false;
 		
-		for (const epRecord of endpointRecords) {
-			const p = this.getPix(epRecord.latlong);
-			this.drawnCalls.set(epRecord.call, p);
-			epPos.push(p)
+		for (const epRecord of srRecords) {
+			const pNDC = this.getNDC(epRecord.latlong);
+			this.updateUsedNDC(pNDC);
+			const pCanv = this.getCanv(pNDC);
+			this.drawnCallsCanv.set(epRecord.call, pCanv);
+			epCanv.push(pCanv)
 			this.ctx.beginPath();
-			this.ctx.arc(p.x, p.y, 6, 0, 6.282);
+			this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
 			this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
 			this.ctx.fill();
 			if (epRecord.call == this.highlightCall){
@@ -152,23 +164,24 @@ export class GeoView{
 		}
 		
 		if (showConnection) {
+			const epts = {'s':epCanv[0], 'r':epCanv[1]};
 			this.ctx.lineWidth=2;
 			this.ctx.beginPath();
-			this.ctx.moveTo(epPos[0].x, epPos[0].y);
-			this.ctx.lineTo(epPos[1].x, epPos[1].y);
+			this.ctx.moveTo(epts.s.x, epts.s.y);
+			this.ctx.lineTo(epts.r.x, epts.r.y);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epPos[0].x, epPos[0].y, 6, 0, 6.282);
+			this.ctx.arc(epts.s.x, epts.s.y, 6, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epPos[1].x, epPos[1].y, 6, 0, 6.282);
+			this.ctx.arc(epts.r.x, epts.r.y, 6, 0, 6.282);
 			this.ctx.stroke();
 		}
 		
 	}
 	
 	_drawMap(landPolys){
-		this.ctx.clearRect(0,0, this.canvasElementSize.w, this.canvasElementSize.h);
+		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 		this.ctx.strokeStyle = mapcolours.land;
 		this.ctx.lineWidth = 2;
 		landPolys?.features.forEach(feature => {
@@ -183,8 +196,9 @@ export class GeoView{
 		polys.forEach(poly => {
 			this.ctx.beginPath();
 			poly.forEach(([lon, lat], i) => {
-				let p = this.getPix({'lat':lat, 'lon':lon});
-				i === 0 ? this.ctx.moveTo(p.x, p.y) : this.ctx.lineTo(p.x, p.y);
+				const pNDC = this.getNDC({'lat':lat, 'lon':lon});
+				const pCanv = this.getCanv(pNDC);
+				i === 0 ? this.ctx.moveTo(pCanv.x, pCanv.y) : this.ctx.lineTo(pCanv.x, pCanv.y);
 			});
 			this.ctx.closePath();
 			this.ctx.fillStyle = mapcolours.land;
