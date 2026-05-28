@@ -162,8 +162,8 @@ export function initialisePage(){
 	tileTrayGrid = document.querySelector('#tileTrayGrid');
 	mainViewCanvasElement = document.getElementById('mainCanvas');
 
-	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel();});	
-	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel();});		
+	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});	
+	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
 	
 	// show all connections changed
 	document.getElementById('showAllConnections').addEventListener('change', (e) => {
