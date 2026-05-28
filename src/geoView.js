@@ -22,6 +22,7 @@ export class GeoView{
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
 		this.drawnCalls = new Map();
+		this.myCall = localStorage.getItem('myCall');
 		this.highlightCall = localStorage.getItem('myCall');
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
@@ -57,8 +58,7 @@ export class GeoView{
 	onMouseMove(e){
 		let hovering_over = null;
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
-		const myCall = localStorage.getItem('myCall');	
-
+			
 		for (const [call, dc] of this.drawnCalls.entries()) { 
 			const pCanv = dc.canv;
 			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.y - pCanv.y) < 5) {
@@ -70,7 +70,7 @@ export class GeoView{
 		}
 		if (hovering_over !== this.currentHover) {
 			this.currentHover = hovering_over;
-			this.highlightCall = this.currentHover? this.currentHover: myCall;
+			this.highlightCall = this.currentHover? this.currentHover: this.myCall;
 			this.invalidate();
 		}
 	}

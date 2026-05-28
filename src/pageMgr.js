@@ -67,6 +67,8 @@ function refreshTile(bandMode){
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
 		const view = views.get(bandMode);
 		zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
+		view.myCall = localStorage.getItem('myCall');
+		view.highlightCall = localStorage.getItem('myCall');
 		view.invalidate();
 		tileElement.classList.remove('hidden');
 	} else {
@@ -88,6 +90,8 @@ function refreshMain(bandMode){
 		const stats = getDataVignette(bandMode).getStats();
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
 		const view = views.get('main');
+		view.myCall = localStorage.getItem('myCall');
+		view.highlightCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
 	} else {
@@ -138,6 +142,19 @@ function loadSquaresList(homeSquaresInput){
 }
 
 export function initialisePage(){
+
+	// load any stored values of squares list and myCall	
+	const myCall = localStorage.getItem('myCall');
+	document.getElementById('myCallInput').value = myCall?.toUpperCase();
+	const homeSquaresInput = document.getElementById('homeSquaresInput')
+	loadSquaresList(homeSquaresInput)
+	
+	//set colours for legend items
+	const colours = JSON.parse(localStorage.getItem('colours'));
+	document.getElementById('legendMarkerTx').style.background = colours.tx;
+	document.getElementById('legendMarkerRx').style.background = colours.rx;
+	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
+	
 	zoomTilesToDataCheckBox = document.getElementById('zoomTilesToDataCheckBox');
 	zoomMainToDataCheckBox = document.getElementById('zoomMainToDataCheckBox');
 	if (localStorage.getItem('zoomTilesToDataCheckBoxChecked') == 'true') zoomTilesToDataCheckBox.checked = true;
@@ -145,23 +162,23 @@ export function initialisePage(){
 	tileTrayGrid = document.querySelector('#tileTrayGrid');
 	mainViewCanvasElement = document.getElementById('mainCanvas');
 
-	// load any stored values of myCall
-	const myCall = localStorage.getItem('myCall');
-	if (myCall) { 
-		console.log("Loaded my call " + myCall); 
-		document.getElementById('myCallInput').value = myCall.toUpperCase();
-	}
+	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel();});	
+	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel();});		
+	
+	// show all connections changed
+	document.getElementById('showAllConnections').addEventListener('change', (e) => {
+		refreshCarousel();
+		refreshMain(null);
+	});
+	// myCall changed
 	document.getElementById('myCallInput').addEventListener('change', () => {
 		const myCall = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCall;
-		localStorage.setItem('myCall',myCall); 
+		localStorage.setItem('myCall', myCall); 
 		refreshCarousel();
+		refreshMain(null);
 	});
 
-	// load any stored values of squares list
-	const homeSquaresInput = document.getElementById('homeSquaresInput')
-	loadSquaresList(homeSquaresInput)
-	
 	// listener for changed squares list
 	homeSquaresInput.addEventListener('change', () => {
 		const squaresList = homeSquaresInput.value; 
@@ -176,15 +193,6 @@ export function initialisePage(){
 		loadApp();
 	});	
 
-	//set colours for legend items
-	const colours = JSON.parse(localStorage.getItem('colours'));
-	document.getElementById('legendMarkerTx').style.background = colours.tx;
-	document.getElementById('legendMarkerRx').style.background = colours.rx;
-	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
-	
-	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel();});	
-	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel();});		
-	
 	// handlers for carousel controls	
 	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
@@ -201,12 +209,6 @@ export function initialisePage(){
 			refreshMain(bandMode);
 		}	
 	});	
-	
-	//show all connections changed
-	document.getElementById('showAllConnections').addEventListener('change', (e) => {
-		refreshCarousel();
-		refreshMain(null);
-	});
 	
 	// handlers for clicks to main view zoom controls
 	zoomMainToDataCheckBox.addEventListener('change', (e) => {
