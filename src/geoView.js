@@ -21,7 +21,7 @@ export class GeoView{
 		this.canvasElement = canvasElement;
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
-		this.drawnCalls = null;
+		this.drawnCalls = new Map();
 		this.highlightCall = localStorage.getItem('myCall');
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
@@ -132,7 +132,7 @@ export class GeoView{
 	}
 	
 	_drawConnections(updateCanvas){
-		const showAllConnections = false;
+		const showAllConnections = document.getElementById('showAllConnections').checked;
 		const srRecords = this.dataVignette.getsrRecords();	
 		let homeCalls = new Set();
 		for (const connectionString of this.dataVignette.getConnectionStrings()){

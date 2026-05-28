@@ -12,10 +12,6 @@ let mainViewCanvasElement = null;
 let views = new Map();
 let mainBandMode = null;
 
-const tickleMain = setInterval(() => {
-	if (mainBandMode) onDataUpdate(mainBandMode);
-}, 5000);
-
 export async function  loadApp(){
 	let views = new Map();
 	let mainBandMode = null;
@@ -41,30 +37,13 @@ export async function  loadApp(){
 
 export function onDataUpdate(bandMode){
 	//note stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
-	let vis = setTileVisibility(bandMode);
-	if (vis) { 
-		const dataVignette = getDataVignette(bandMode)
-		const stats = dataVignette.getStats();
-		const tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
-		const tileSubtitleElement = tileElement.querySelector('.tileSubtitle');
-		tileSubtitleElement.innerText = `Total Calls:${stats.calls}`;
-		const view = views.get(bandMode);
-		view.invalidate();
-		if (bandMode == mainBandMode) {
-			const mainViewSubTitleElement = document.getElementById('mainViewSubTitle');
-			mainViewSubTitleElement.innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;
-			const mainView = views.get('main');
-			mainView.invalidate();
-		}
+	refreshTile(bandMode);
+	if (bandMode == mainBandMode) {
+		refreshMain(null);
 	}
 }
 
-function invalidateAllVisible(){
-	for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ 
-		onDataUpdate(tileElement.id);
-	}
-}
-function setTileVisibility(bandMode){
+function refreshTile(bandMode){
 	const md = bandMode.split(' ')[1];
 	let vis = false;
 	vis |= (md == 'FT8' && document.getElementById('FT8').checked);
@@ -72,16 +51,35 @@ function setTileVisibility(bandMode){
 	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
-	
 	if (vis) {
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) tileElement = _createTileElement(bandMode);
+		const dataVignette = getDataVignette(bandMode)
+		const stats = dataVignette.getStats()
+		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
+		const view = views.get(bandMode);
+		zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
+		view.invalidate();
 		tileElement.classList.remove('hidden');
 	} else {
 		tileTrayGrid.querySelector("[id='"+bandMode+"']")?.classList.add('hidden');
+	}	
+}
+
+function refreshMain(bandMode){
+	document.getElementById('clickTileMessage').classList.add('hidden');
+	if(bandMode){
+		mainBandMode = bandMode;
+		document.getElementById('mainViewTitle').innerText = bandMode;
+		views.set('main', new GeoView(getDataVignette(bandMode), document.getElementById('mainCanvas'), 'zoomMainToDataCheckBoxChecked', 50));	
+	} else {
+		bandMode = mainBandMode;
 	}
-	
-	return vis;
+	const stats = getDataVignette(bandMode).getStats();
+	document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
+	const view = views.get('main');
+	if (zoomMainToDataCheckBox.checked) view.setZoomToData();
+	view.invalidate();
 }
 
 function _createTileElement(bandMode){
@@ -105,16 +103,6 @@ function _createTileElement(bandMode){
 	return tileElement;
 }
 
-function setMainView(bandMode){
-	document.getElementById('mainViewTitle').innerText = bandMode;
-	document.getElementById('clickTileMessage').classList.add('hidden');
-	const canvasElement = document.getElementById('mainCanvas');
-	const dataVignette = getDataVignette(bandMode);
-	views.set('main', new GeoView(dataVignette, canvasElement, 'zoomMainToDataCheckBoxChecked', 50));
-	views.get('main').invalidate();
-	mainBandMode = bandMode;
-}
-
 function loadSquaresList(homeSquaresInput){
 	const defaultSquaresList = "IO50:99,JO01,JO02,JO03";
 	let squaresList = localStorage.getItem('squaresList');
@@ -134,9 +122,11 @@ function loadSquaresList(homeSquaresInput){
 export function initialisePage(){
 	zoomTilesToDataCheckBox = document.getElementById('zoomTilesToDataCheckBox');
 	zoomMainToDataCheckBox = document.getElementById('zoomMainToDataCheckBox');
+	if (localStorage.getItem('zoomTilesToDataCheckBoxChecked') == 'true') zoomTilesToDataCheckBox.checked = true;
+	if (localStorage.getItem('zoomMainToDataCheckBoxChecked') == 'true') zoomMainToDataCheckBox.checked = true;
 	tileTrayGrid = document.querySelector('#tileTrayGrid');
 	mainViewCanvasElement = document.getElementById('mainCanvas');
-	
+
 	// load any stored values of myCall
 	const myCall = localStorage.getItem('myCall');
 	if (myCall) { 
@@ -147,7 +137,7 @@ export function initialisePage(){
 		const myCall = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCall;
 		localStorage.setItem('myCall',myCall); 
-		invalidateAllVisible();
+		refreshCarousel();
 	});
 
 	// load any stored values of squares list
@@ -174,38 +164,38 @@ export function initialisePage(){
 	document.getElementById('legendMarkerRx').style.background = colours.rx;
 	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 	
-	document.getElementById('homeCallFilters').addEventListener('change', () => {invalidateAllVisible();});	
-	document.getElementById('modeFilters').addEventListener('change', () => {invalidateAllVisible();});		
+	document.getElementById('homeCallFilters').addEventListener('change', () => {refreshCarousel();});	
+	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel();});		
 	
 	// handlers for carousel controls	
-	if (localStorage.getItem('zoomTilesToDataCheckBoxChecked') == 'true') zoomTilesToDataCheckBox.checked = true;
 	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
-		if (zoomTilesToDataCheckBox.checked){
-			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.setZoomToData();}
-		} else {
-			for (const tileElement of tileTrayGrid.querySelectorAll('.tile')){ views.get(tileElement.id)?.zoomFullEarth();}
-		}	
-		invalidateAllVisible();
+		for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);
 	});
 	
 	// carousel tile click
 	document.getElementById('tileTrayGrid').addEventListener('click', (e) => {
 		const bandMode = e.target.closest('.tile')?.id;
-		if (bandMode) setMainView(bandMode);
-		if (mainBandMode) onDataUpdate(mainBandMode);
+		if (bandMode) {
+			const canvasElement = document.getElementById('mainCanvas');
+			const dataVignette = getDataVignette(bandMode);
+			views.set('main', new GeoView(dataVignette, canvasElement, 'zoomMainToDataCheckBoxChecked', 50));
+			refreshMain(bandMode);
+		}	
 	});	
 	
-	// handlers for clicks to main view controls
-	if (localStorage.getItem('zoomMainToDataCheckBoxChecked') == 'true') zoomMainToDataCheckBox.checked = true;
+	//show all connections changed
+	document.getElementById('showAllConnections').addEventListener('change', (e) => {
+		for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);
+		refreshMain(null);
+	});
+	
+	// handlers for clicks to main view zoom controls
 	zoomMainToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomMainToDataCheckBoxChecked', zoomMainToDataCheckBox.checked);
-		if (zoomMainToDataCheckBox.checked) {
-			views.get('main')?.setZoomToData();
-		} else {
-			views.get('main')?.zoomFullEarth();
-		}
-		views.get('main')?.invalidate();
+		const mainView = views.get('main');
+		zoomMainToDataCheckBox.checked? mainView.setZoomToData():mainView.zoomFullEarth();
+		mainView.invalidate();
 	});
 	document.getElementById('mainViewWindowBar').addEventListener('click', (e) => {
 		const mainView = views.get('main')
