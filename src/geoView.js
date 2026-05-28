@@ -1,5 +1,6 @@
 const colours = JSON.parse(localStorage.getItem('colours'));
 const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
+const connectionColours = ['black','red','green','blue','purple','yellow','orange','cyan','grey'];
 
 let landPolys110m = null;
 let landPolys50m = null;
@@ -131,7 +132,9 @@ export class GeoView{
 	}
 	
 	_drawConnections(updateCanvas){
-		const srRecords = this.dataVignette.getsrRecords();		
+		const showAllConnections = false;
+		const srRecords = this.dataVignette.getsrRecords();	
+		let homeCalls = new Set();
 		for (const connectionString of this.dataVignette.getConnectionStrings()){
 
 			const epCallsigns = connectionString.split('|');
@@ -139,6 +142,8 @@ export class GeoView{
 			let vis = false; 
 			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
 			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
+			if (epRecords[0].isInHome) homeCalls.add(epRecords[0]);
+			if (epRecords[1].isInHome) homeCalls.add(epRecords[1]);
 			if (vis){	
 				let epCanv = [];
 				let showConnection = false;
@@ -152,12 +157,18 @@ export class GeoView{
 						this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
 						this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
 						this.ctx.fill();
-						if (epRecord.call == this.highlightCall){
+						if (epRecord.call == this.highlightCall || showAllConnections){
 							showConnection = true;
 							this.ctx.strokeStyle = (epRecord == epRecords[0])? colours.tx: colours.rx;
 						}
+						if (showAllConnections){
+							showConnection = true;
+							let origin = epRecords[0].isInHome? epRecords[0]:epRecords[1];
+							this.ctx.strokeStyle = connectionColours[[...homeCalls].indexOf(origin) % connectionColours.length];
+						}					
 					}
 				}
+
 				if (showConnection) {
 					const epts = {'s':epCanv[0], 'r':epCanv[1]};
 					this.ctx.lineWidth=2;
@@ -205,8 +216,3 @@ export class GeoView{
 
 }
 
-
-
-
-
- 
