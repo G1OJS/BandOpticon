@@ -1,7 +1,7 @@
 
 import {parseSquares} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
-import {getDataVignette} from './dataMgr.js';
+import {getDataVignette, clearAllVignettes} from './dataMgr.js';
 import {connectToFeed, mqttStatus} from './mqtt.js';
 
 let zoomTilesToDataCheckBox = null;
@@ -14,6 +14,7 @@ let mainBandMode = null;
 
 export async function  loadApp(){
 	let views = new Map();
+	clearAllVignettes();
 	let mainBandMode = null;
 	let bands = '+';
 	let url = new URL(window.location.href);
@@ -25,6 +26,8 @@ export async function  loadApp(){
 		}
 	}
 	initialisePage();
+	refreshCarousel();
+	refreshMain();
 	connectToFeed(bands); 
 	
 	while (mqttStatus != 'receiving') {
@@ -43,6 +46,10 @@ export function onDataUpdate(bandMode){
 	}
 }
 
+function refreshCarousel(){
+	for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);	
+}
+
 function refreshTile(bandMode){
 	const md = bandMode.split(' ')[1];
 	let vis = false;
@@ -51,10 +58,11 @@ function refreshTile(bandMode){
 	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
+	let dataVignette = getDataVignette(bandMode);
+	vis &= (dataVignette != undefined);
 	if (vis) {
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) tileElement = _createTileElement(bandMode);
-		const dataVignette = getDataVignette(bandMode)
 		const stats = dataVignette.getStats()
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
 		const view = views.get(bandMode);
@@ -67,7 +75,6 @@ function refreshTile(bandMode){
 }
 
 function refreshMain(bandMode){
-	document.getElementById('clickTileMessage').classList.add('hidden');
 	if(bandMode){
 		mainBandMode = bandMode;
 		document.getElementById('mainViewTitle').innerText = bandMode;
@@ -75,11 +82,22 @@ function refreshMain(bandMode){
 	} else {
 		bandMode = mainBandMode;
 	}
-	const stats = getDataVignette(bandMode).getStats();
-	document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
-	const view = views.get('main');
-	if (zoomMainToDataCheckBox.checked) view.setZoomToData();
-	view.invalidate();
+	let dataVignette = getDataVignette(bandMode);
+	if (dataVignette != undefined){
+		document.getElementById('clickTileMessage').classList.add('hidden');
+		const stats = getDataVignette(bandMode).getStats();
+		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
+		const view = views.get('main');
+		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
+		view.invalidate();
+	} else {
+		const canvas = document.getElementById("mainCanvas");
+		const ctx = canvas.getContext("2d");
+		ctx.clearRect(0, 0, canvas.width, canvas.height);		
+		document.getElementById('mainViewTitle').innerText = ''
+		document.getElementById('mainViewSubTitle').innerText = ''
+		document.getElementById('clickTileMessage').classList.remove('hidden');
+	}
 }
 
 function _createTileElement(bandMode){
@@ -164,13 +182,13 @@ export function initialisePage(){
 	document.getElementById('legendMarkerRx').style.background = colours.rx;
 	document.getElementById('legendMarkerTxRx').style.background = colours.txrx;
 	
-	document.getElementById('homeCallFilters').addEventListener('change', () => {refreshCarousel();});	
+	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel();});	
 	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel();});		
 	
 	// handlers for carousel controls	
 	zoomTilesToDataCheckBox.addEventListener('change', (e) => {
 		localStorage.setItem('zoomTilesToDataCheckBoxChecked', zoomTilesToDataCheckBox.checked);
-		for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);
+		refreshCarousel();
 	});
 	
 	// carousel tile click
@@ -186,7 +204,7 @@ export function initialisePage(){
 	
 	//show all connections changed
 	document.getElementById('showAllConnections').addEventListener('change', (e) => {
-		for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);
+		refreshCarousel();
 		refreshMain(null);
 	});
 	

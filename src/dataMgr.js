@@ -23,6 +23,10 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	}
 }
 
+export function clearAllVignettes(bandMode){
+	dataVignettes = new Map();
+}
+
 export function getDataVignette(bandMode){
 	return dataVignettes.get(bandMode);
 }

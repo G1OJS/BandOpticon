@@ -19,17 +19,23 @@
 	<div id='ribbon' class="windowBar hideForMaxView ">
 		<h1>BandOpticon Geo</h1>
 		<div class= 'statusMessage' id = 'mqttStatus'></div>
-		<span><label for="homeSquaresInput">To/from:</label><input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'></span>
-		<span><label for="myCallInput">My Call:</label><input style='width:7em;' id='myCallInput' type="text" title='Spots involving this callsign display in stronger colours'></span>
-		<span id='homeCallFilters' class = 'controlGroup' >
-			Show spots involving:
+		<span id='homeFilters' class = 'controlGroup' >
+			Show spots involving
 			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Home Tx</label></span>
 			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Home Rx</label></span>
+			<span>
+				<label for="homeSquaresInput">to or from</label>
+				<input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'>
+			</span>
 		</span>
 		<span id='connectionsFilters' class = 'controlGroup' >
+			<span>
+				<label for="myCallInput">Show connections for callsign:</label>
+				<input style='width:7em;' id='myCallInput' type="text">
+			</span>
 			<span class = 'control ' >
 				<input type="checkbox" id="showAllConnections" checked />
-				<label for="showAllConnections">Show all connections</label>
+				<label for="showAllConnections">or show all connections</label>
 			</span>
 		</span>		<br>
 		<span class='controlGroup'>
