@@ -21,22 +21,28 @@
 		<div class= 'statusMessage' id = 'mqttStatus'></div>
 		<span id='homeFilters' class = 'controlGroup' >
 			Show spots involving
-			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Home Tx</label></span>
-			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Home Rx</label></span>
+			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Tx</label></span>
+			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Rx</label></span>
 			<span>
-				<label for="homeSquaresInput">to or from</label>
+				<label for="homeSquaresInput">in</label>
 				<input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'>
+				(home)
 			</span>
 		</span>
 		<span id='connectionsFilters' class = 'controlGroup' >
-			<span>
-				<label for="myCallInput">Show connections for callsign:</label>
-				<input style='width:7em;' id='myCallInput' type="text">
+			Show connections for 
+			<span class = 'control ' >
+				<input type="checkbox" id="showAllConnections" checked/>
+				<label for="showAllConnections">all home calls</label>
 			</span>
 			<span class = 'control ' >
-				<input type="checkbox" id="showAllConnections" checked />
-				<label for="showAllConnections">or show all connections</label>
+				<input type="checkbox" id="showConnectionsForCallsign"/>
+				<label for="showConnectionsForCallsign">this callsign:</label>
 			</span>
+			<span>
+				<input style='width:7em;' id='myCallInput' type="text">
+			</span>
+
 		</span>		<br>
 		<span class='controlGroup'>
 			Legend:

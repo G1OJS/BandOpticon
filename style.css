@@ -86,7 +86,7 @@ button.active 		{border-width: 1px; font-weight: 600; color: var(--controls-colo
 button:hover:not(.active) 
 					{border-color: var(--main-paper-color);color: var(--controls-color);}
 					
-.statusMessage		{font-size: var(--font-size-xsm); font-weight: 400; color: var(--important-font-color);}
+.statusMessage		{font-size: var(--font-size-base); font-weight: 400; color: var(--important-font-color);}
 label 				{font-size: var(--font-size-base); font-weight: 600; color: var(--main-font-color); padding-right:3px; }
 input				{font-size: var(--font-size-base); border: 1px solid var(--border-color); border-radius:6px; padding-top:1px; margin-top:2px; }
 input:invalid 		{border-color: #e66;background-color: #fee;}

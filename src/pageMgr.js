@@ -163,11 +163,18 @@ export function initialisePage(){
 	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
 	
 	// show all connections changed
-	document.getElementById('showAllConnections').addEventListener('change', (e) => {
+	const showAllConnectionsCheckBox = document.getElementById('showAllConnections');
+	const showConnectionsForCallsignCheckBox = document.getElementById('showConnectionsForCallsign');
+	showAllConnectionsCheckBox.addEventListener('change', (e) => {
+		showConnectionsForCallsignCheckBox.checked = !showAllConnectionsCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
 	});
-	// myCall changed
+	showConnectionsForCallsignCheckBox.addEventListener('change', (e) => {
+		showAllConnectionsCheckBox.checked = !showConnectionsForCallsignCheckBox.checked;
+		refreshCarousel();
+		refreshMain(null);
+	});	// myCall changed
 	document.getElementById('myCallInput').addEventListener('change', () => {
 		const myCall = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCall;
