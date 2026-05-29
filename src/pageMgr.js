@@ -58,12 +58,11 @@ function refreshTile(bandMode){
 	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
-	let dataVignette = getDataVignette(bandMode);
-	vis &= (dataVignette != undefined);
+	const stats = getDataVignette(bandMode)?.getStats();
+	if (stats) vis &= (stats.calls >0);
 	if (vis) {
 		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 		if (!tileElement) tileElement = _createTileElement(bandMode);
-		const stats = dataVignette.getStats()
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
 		const view = views.get(bandMode);
 		zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
