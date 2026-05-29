@@ -52,6 +52,7 @@ export class GeoView{
 		} 
 		if (this.mapres == 110) this._drawMap(landPolys110m);
 		if (this.mapres == 50) this._drawMap(landPolys50m);
+		this.highlightCall = this.currentHover? this.currentHover: this.myCall;
 		this._drawConnections(true);	
 	}
 	
@@ -157,7 +158,7 @@ export class GeoView{
 						this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
 						this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
 						this.ctx.fill();
-						if (epRecord.call == this.highlightCall || showAllConnections){
+						if (epRecord.call == this.highlightCall){
 							showConnection = true;
 							this.ctx.strokeStyle = (epRecord == epRecords[0])? colours.tx: colours.rx;
 						}

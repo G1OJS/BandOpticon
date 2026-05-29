@@ -35,7 +35,6 @@ export async function  loadApp(){
 		await new Promise(r => setTimeout(r, 250));
 	}
 	document.getElementById('mqttStatus').innerText ='';
-	//document.getElementById('clickTileMessage').classList.remove('hidden');
 }
 
 export function onDataUpdate(bandMode){
@@ -67,7 +66,6 @@ function refreshTile(bandMode){
 		const view = views.get(bandMode);
 		zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
 		view.myCall = localStorage.getItem('myCall');
-		view.highlightCall = localStorage.getItem('myCall');
 		view.invalidate();
 		tileElement.classList.remove('hidden');
 		if (!mainBandMode){
@@ -93,7 +91,6 @@ function refreshMain(bandMode){
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
 		const view = views.get('main');
 		view.myCall = localStorage.getItem('myCall');
-		view.highlightCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
 	} else {
@@ -106,7 +103,6 @@ function refreshMain(bandMode){
 }
 
 function _createTileElement(bandMode){
-	//console.log("Create tile "+bandMode);
 	const dataVignette = getDataVignette(bandMode);
 	const wavelength = dataVignette.wavelength;
 	let insert = null;
@@ -176,6 +172,7 @@ export function initialisePage(){
 		const myCall = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCall;
 		localStorage.setItem('myCall', myCall); 
+		//if (views.get('main')) views.get('main').highlightCall = myCall;
 		refreshCarousel();
 		refreshMain(null);
 	});
