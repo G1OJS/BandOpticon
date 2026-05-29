@@ -58,22 +58,24 @@ function refreshTile(bandMode){
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
 	const stats = getDataVignette(bandMode)?.getStats();
-	if (stats) vis &= (stats.calls >0);
-	if (vis) {
-		let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
-		if (!tileElement) tileElement = _createTileElement(bandMode);
-		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
-		const view = views.get(bandMode);
-		zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
-		view.myCall = localStorage.getItem('myCall');
-		view.invalidate();
-		tileElement.classList.remove('hidden');
-		if (!mainBandMode){
-			document.getElementById('clickTileMessage').classList.remove('hidden');	
-		}		
-	} else {
-		tileTrayGrid.querySelector("[id='"+bandMode+"']")?.classList.add('hidden');
-	}	
+	if (stats){
+		vis &= (stats.calls >0);
+		if(vis){
+			let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
+			if (!tileElement) tileElement = _createTileElement(bandMode);
+			tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
+			const view = views.get(bandMode);
+			zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
+			view.myCall = localStorage.getItem('myCall');
+			view.invalidate();
+			tileElement.classList.remove('hidden');
+			if (!mainBandMode){
+				document.getElementById('clickTileMessage').classList.remove('hidden');	
+			}		
+		} else {
+			tileTrayGrid.querySelector("[id='"+bandMode+"']")?.classList.add('hidden');
+		}	
+	}
 }
 
 function refreshMain(bandMode){
