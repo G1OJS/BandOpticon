@@ -1,14 +1,23 @@
 # BandOpticon Geo
-### What's it for? [Click here](https://g1ojs.github.io/BandOpticon/Uses)
-### A live, visual, geographic view showing all bands and modes at once across the whole world, a filtered view, or a single connection:
+### A live, visual, geographic view showing all bands and modes at once across the whole world, plus band detail.
+This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously, and you can filter and zoom in as much or as little as you need. The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
 
-<img width="915" height="901" alt="Capture" src="https://github.com/user-attachments/assets/a0522748-8a65-4c07-bb1e-fa6a5ca74281" />
+## All activity Carousel
+The carousel near the top of the page gives an instant impression of activity on your selected mode(s), with a choice of full-world view or automated 'zoom to activity'.
+<img width="982" height="514" alt="carousel" src="https://github.com/user-attachments/assets/4c902365-c1a2-420f-bbc4-e4c9495e4a9f" />
+
+## Band detail view
+Click on any tile in the carousel to see a bigger view here, again either zoomed out to the whole world or zoomed to activity. In this view, a 'zoom to activity once' option is also available ('=' button) which doesn't change zoom as new spots arrive.
+
+Connections are shown for all home callsigns, coloured differently for each home callsign, or for a single callsign coloured according to transmit or receive. The single callsign is specified in the input at the top of the page, and can be temporarily changed by hovering the mouse over another callsign spot.
+
+#### Example of single callsign connections:
+<img width="948" height="541" alt="single call connections e g" src="https://github.com/user-attachments/assets/0bab608a-8285-4026-b40c-1016031f8088" />
+
+#### Example of all callsign connections:
+<img width="868" height="475" alt="2m connectivity e g" src="https://github.com/user-attachments/assets/192bc8a6-e249-4ff5-91ad-118a9ee6eb7c" />
 
 
-### What is the activity like on each band to and from *my* local area? What modes are being used? What is the coverage like on those bands? Is it reciprocal? Where am I hearing and/or being heard by compared to others in my area?
-This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously, and you can filter and zoom in as much or as little as you need.
-
-The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
 
 [GitHub repo](https://github.com/G1OJS/BandOpticon/)
 
@@ -17,16 +26,6 @@ The software runs in Javascript on your machine and requires no downloads. Just 
 ### A mention in The Communicator
 Thanks to Editor John Schouten VE7TI [communicator@VE7SAR.net](communicator@VE7SAR.net) for mentioning an [early version](https://github.com/G1OJS/BandOpticon/releases/tag/V2.0.0) of BandOpticon in the March/April 2025 issue of [The Communicator - the magazine for Canada's Surrey Amateur Radio Society (SARC)](https://www.ve7sar.net/communicator). I've bookmarked this magazine & encourage you to check it out; free, readable online, packed with really good & succinct articles!
 
-<!--
 
-### Screenshots
-
-Click the thumbnails below to see the full size version. 
-
-Main Screen                       |  Band Detail - Calls and Squares  | Band Detail - Call to Call Spots
-:--------------------------------:|:---------------------------------:|:--------------------------------:
-![BandOpticon 02-10-2024 test version Screenshot 1](https://github.com/user-attachments/assets/2577113d-ea35-4c80-8965-3c82003597d6)|![BandOpticon 02-10-2024 test version Screenshot 2](https://github.com/user-attachments/assets/703332ef-7534-44a2-ba62-7e59b1824436)|![BandOpticon 02-10-2024 test version Screenshot 3](https://github.com/user-attachments/assets/94f4b0f7-7b5e-4f1b-aef7-12db135ff2a9)
-
--->
 
 
