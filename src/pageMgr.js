@@ -60,7 +60,7 @@ function refreshTile(bandMode){
 	const stats = getDataVignette(bandMode)?.getStats();
 	if (stats){
 		vis &= (stats.calls >0);
-		if(vis){
+		if (vis){
 			let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 			if (!tileElement) tileElement = _createTileElement(bandMode);
 			tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
