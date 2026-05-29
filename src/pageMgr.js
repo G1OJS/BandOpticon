@@ -35,7 +35,7 @@ export async function  loadApp(){
 		await new Promise(r => setTimeout(r, 250));
 	}
 	document.getElementById('mqttStatus').innerText ='';
-	document.getElementById('clickTileMessage').classList.remove('hidden');
+	//document.getElementById('clickTileMessage').classList.remove('hidden');
 }
 
 export function onDataUpdate(bandMode){
@@ -71,6 +71,9 @@ function refreshTile(bandMode){
 		view.highlightCall = localStorage.getItem('myCall');
 		view.invalidate();
 		tileElement.classList.remove('hidden');
+		if (!mainBandMode){
+			document.getElementById('clickTileMessage').classList.remove('hidden');	
+		}		
 	} else {
 		tileTrayGrid.querySelector("[id='"+bandMode+"']")?.classList.add('hidden');
 	}	
@@ -100,7 +103,6 @@ function refreshMain(bandMode){
 		ctx.clearRect(0, 0, canvas.width, canvas.height);		
 		document.getElementById('mainViewTitle').innerText = ''
 		document.getElementById('mainViewSubTitle').innerText = ''
-		document.getElementById('clickTileMessage').classList.remove('hidden');
 	}
 }
 
