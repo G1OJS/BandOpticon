@@ -102,6 +102,7 @@ function refreshMain(bandMode){
 		const view = views.get('main');
 		view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 		view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
+		view.showAllConnections = document.getElementById('showAllConnections').checked;
 		view.myCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();

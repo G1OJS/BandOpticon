@@ -24,6 +24,7 @@ export class GeoView{
 		this.canvasElement = canvasElement;
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
+		this.showAllConnections = false;
 		this.drawnCalls = new Map();
 		this.myCall = localStorage.getItem('myCall');
 		this.highlightCall = localStorage.getItem('myCall');
@@ -147,7 +148,6 @@ export class GeoView{
 	}
 	
 	_drawConnections(updateCanvas){
-		const showAllConnections = document.getElementById('showAllConnections').checked;
 		const srRecords = this.dataVignette.getsrRecords();	
 		let homeCalls = new Set();
 		for (const connectionString of this.dataVignette.getConnectionStrings()){
@@ -176,7 +176,7 @@ export class GeoView{
 							showConnection = true;
 							this.ctx.strokeStyle = (epRecord == epRecords[0])? colours.tx: colours.rx;
 						}
-						if (showAllConnections){
+						if (this.showAllConnections){
 							showConnection = true;
 							let origin = epRecords[0].isInHome? epRecords[0]:epRecords[1];
 							this.ctx.strokeStyle = connectionColours[[...homeCalls].indexOf(origin) % connectionColours.length];

@@ -28,21 +28,7 @@
 				<input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'>
 				(home)
 			</span>
-		</span>
-		<span id='connectionsFilters' class = 'controlGroup' >
-			Show connections for 
-			<span class = 'control ' >
-				<input type="checkbox" id="showAllConnections" checked/>
-				<label for="showAllConnections">all home calls</label>
-			</span>
-			<span class = 'control ' >
-				<input type="checkbox" id="showConnectionsForCallsign"/>
-				<label for="showConnectionsForCallsign">this callsign:</label>
-			</span>
-			<span>
-				<input style='width:7em;' id='myCallInput' type="text">
-			</span>
-		</span>		
+		</span>	
 		<br>
 		<span id='mapSettings' class = 'controlGroup' >
 			<span class = 'control ' >
@@ -101,6 +87,20 @@
 						<label for="zoomMainToDataCheckBox"> Zoom to activity</label>
 					</span>
 				</span>
+				<span id='connectionsFilters' class = 'controlGroup' >
+					Show connections for 
+					<span class = 'control ' >
+						<input type="checkbox" id="showAllConnections" checked/>
+						<label for="showAllConnections">all home calls</label>
+					</span>
+					<span class = 'control ' >
+						<input type="checkbox" id="showConnectionsForCallsign"/>
+						<label for="showConnectionsForCallsign">this callsign:</label>
+					</span>
+					<span>
+						<input style='width:7em;' id='myCallInput' type="text">
+					</span>
+				</span>	
 				<div class = 'windowBar', id='mainViewWindowBar'>
 					<span class="control windowBarButton" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
 					<span class="control windowBarButton" data-action='setZoomToData' title = 'Set Zoom to Current Activity'>=</span>
