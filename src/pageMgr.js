@@ -11,6 +11,7 @@ let mainViewCanvasElement = null;
 	
 let views = new Map();
 let mainBandMode = null;
+let pendingUpdates = new Set();
 
 export async function  loadApp(){
 	let views = new Map();
@@ -38,12 +39,18 @@ export async function  loadApp(){
 }
 
 export function onDataUpdate(bandMode){
-	//note stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
-	refreshTile(bandMode);
-	if (bandMode == mainBandMode) {
-		refreshMain(null);
-	}
+	pendingUpdates.add(bandMode);
 }
+
+const refresh = setInterval(() => {
+	for (const bandMode of pendingUpdates){
+		refreshTile(bandMode);
+		if (bandMode == mainBandMode) {
+			refreshMain(null);
+		}
+	}
+	pendingUpdates = new Set();
+}, 250);
 
 function refreshCarousel(){
 	for (const tileElement of tileTrayGrid.querySelectorAll('.tile')) refreshTile(tileElement.id);	
@@ -72,6 +79,8 @@ function refreshTile(bandMode){
 			view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 			view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 			zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
+			view.showAllConnections = document.getElementById('showAllConnections').checked;
+			view.showReciprocalConnections = document.getElementById('showReciprocalConnections').checked;
 			view.myCall = localStorage.getItem('myCall');
 			view.invalidate();
 			tileElement.classList.remove('hidden');
@@ -104,6 +113,7 @@ function refreshMain(bandMode){
 		view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 		view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 		view.showAllConnections = document.getElementById('showAllConnections').checked;
+		view.showReciprocalConnections = document.getElementById('showReciprocalConnections').checked;
 		view.myCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
@@ -185,14 +195,23 @@ export function initialisePage(){
 	
 	// show all connections changed
 	const showAllConnectionsCheckBox = document.getElementById('showAllConnections');
+	const showReciprocalConnectionsCheckBox = document.getElementById('showReciprocalConnections');
 	const showConnectionsForCallsignCheckBox = document.getElementById('showConnectionsForCallsign');
 	showAllConnectionsCheckBox.addEventListener('change', (e) => {
-		showConnectionsForCallsignCheckBox.checked = !showAllConnectionsCheckBox.checked;
+		showConnectionsForCallsignCheckBox.checked &= !showAllConnectionsCheckBox.checked;
+		showReciprocalConnectionsCheckBox.checked &= !showAllConnectionsCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
 	});
+	showReciprocalConnectionsCheckBox.addEventListener('change', (e) => {
+		showAllConnectionsCheckBox.checked &= !showReciprocalConnectionsCheckBox.checked;
+		showConnectionsForCallsignCheckBox.checked &= !showReciprocalConnectionsCheckBox.checked;
+		refreshCarousel();
+		refreshMain(null);
+	});	
 	showConnectionsForCallsignCheckBox.addEventListener('change', (e) => {
-		showAllConnectionsCheckBox.checked = !showConnectionsForCallsignCheckBox.checked;
+		showAllConnectionsCheckBox.checked &= !showConnectionsForCallsignCheckBox.checked;
+		showReciprocalConnectionsCheckBox.checked &= !showConnectionsForCallsignCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
 	});	

@@ -25,6 +25,7 @@ export class GeoView{
 		this.zoomControlCheckBox = zoomControlCheckBox;
 		this.mapres = mapres;
 		this.showAllConnections = false;
+		this.showReciprocalConnections = false;
 		this.drawnCalls = new Map();
 		this.myCall = localStorage.getItem('myCall');
 		this.highlightCall = localStorage.getItem('myCall');
@@ -147,22 +148,28 @@ export class GeoView{
 		this.setZoom(zoomFactor, xy);
 	}
 	
+	_hasReciprocal(connections, connection){
+		for (const conn of connections){
+			if (conn.s == connection.r && conn.r == connection.s) return true;
+		}
+		return false;
+	}
+	
 	_drawConnections(updateCanvas){
 		const srRecords = this.dataVignette.getsrRecords();	
+		const connections = this.dataVignette.getconnections();
 		let homeCalls = new Set();
-		for (const connectionString of this.dataVignette.getConnectionStrings()){
-
-			const epCallsigns = connectionString.split('|');
-			const epRecords = [srRecords.get(epCallsigns[0]), srRecords.get(epCallsigns[1])];
+		for (const connection of connections){
+			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
 			let vis = false; 
-			vis |= (epRecords[0].isInHome && document.getElementById('homeTx').checked); 
-			vis |= (epRecords[1].isInHome && document.getElementById('homeRx').checked);
-			if (epRecords[0].isInHome) homeCalls.add(epRecords[0]);
-			if (epRecords[1].isInHome) homeCalls.add(epRecords[1]);
+			vis |= (txRecord.isInHome && document.getElementById('homeTx').checked); 
+			vis |= (rxRecord.isInHome && document.getElementById('homeRx').checked);
+			if (txRecord.isInHome) homeCalls.add(connection.s);
+			if (rxRecord.isInHome) homeCalls.add(connection.r);
 			if (vis){	
 				let epCanv = [];
-				let showConnection = false;
-				for (const epRecord of epRecords) {
+				let showConnection = false;    
+				for (const epRecord of [txRecord, rxRecord]) {
 					const pNDC = this.getNDC(epRecord.latlong);
 					const pCanv = this.getCanv(pNDC);
 					this.drawnCalls.set(epRecord.call, {'canv':pCanv, 'ndc':pNDC});
@@ -174,11 +181,15 @@ export class GeoView{
 						this.ctx.fill();
 						if (epRecord.call == this.highlightCall){
 							showConnection = true;
-							this.ctx.strokeStyle = (epRecord == epRecords[0])? colours.tx: colours.rx;
+							this.ctx.strokeStyle = (connection.reciprocal)? colours.txrx: ((epRecord.call == connection.s)? colours.tx: colours.rx);
 						}
+						if (this.showReciprocalConnections && this._hasReciprocal(connections, connection)){
+							showConnection = true;
+							this.ctx.strokeStyle = colours.txrx;
+						}						
 						if (this.showAllConnections){
 							showConnection = true;
-							let origin = epRecords[0].isInHome? epRecords[0]:epRecords[1];
+							let origin = connection.s.isInHome? connection.s:connection.r;
 							this.ctx.strokeStyle = connectionColours[[...homeCalls].indexOf(origin) % connectionColours.length];
 						}					
 					}
@@ -186,7 +197,7 @@ export class GeoView{
 
 				if (showConnection) {
 					const epts = {'s':epCanv[0], 'r':epCanv[1]};
-					this.ctx.lineWidth=2;
+					this.ctx.lineWidth=4;
 					this.ctx.beginPath();
 					this.ctx.moveTo(epts.s.x, epts.s.y);
 					this.ctx.lineTo(epts.r.x, epts.r.y);

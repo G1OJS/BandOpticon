@@ -29,6 +29,24 @@
 				(home)
 			</span>
 		</span>	
+		<span id='connectionsFilters' class = 'controlGroup' >
+			Connections: 
+			<span class = 'control ' >
+				<input type="checkbox" id="showAllConnections"/>
+				<label for="showAllConnections">All</label>
+			</span>
+			<span class = 'control ' >
+				<input type="checkbox" id="showReciprocalConnections" checked/>
+				<label for="showReciprocalConnections">All reciprocal</label>
+			</span>
+			<span class = 'control ' >
+				<input type="checkbox" id="showConnectionsForCallsign"/>
+				<label for="showConnectionsForCallsign">this callsign:</label>
+			</span>
+			<span>
+				<input style='width:7em;' id='myCallInput' type="text">
+			</span>
+		</span>		
 		<br>
 		<span id='mapSettings' class = 'controlGroup' >
 			<span class = 'control ' >
@@ -38,7 +56,8 @@
 			<span>
 				<input style='width:7em;' type="text" id="mapCentreInput" checked/>
 			</span>
-		</span>		
+		</span>	
+			
 		<span class='controlGroup'>
 			Legend:
 			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations receiving'></span>Rx</span>
@@ -88,20 +107,6 @@
 						<label for="zoomMainToDataCheckBox"> Zoom to activity</label>
 					</span>
 				</span>
-				<span id='connectionsFilters' class = 'controlGroup' >
-					Show connections for 
-					<span class = 'control ' >
-						<input type="checkbox" id="showAllConnections" checked/>
-						<label for="showAllConnections">all home calls</label>
-					</span>
-					<span class = 'control ' >
-						<input type="checkbox" id="showConnectionsForCallsign"/>
-						<label for="showConnectionsForCallsign">this callsign:</label>
-					</span>
-					<span>
-						<input style='width:7em;' id='myCallInput' type="text">
-					</span>
-				</span>	
 				<div class = 'windowBar', id='mainViewWindowBar'>
 					<span class="control windowBarButton" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
 					<span class="control windowBarButton" data-action='setZoomToData' title = 'Set Zoom to Current Activity'>=</span>
