@@ -39,7 +39,7 @@ export class DataVignette{
 		this.wavelength = parseInt(band.split("m")[0]);
 		if (band.search("cm") > 0) this.wavelength /= 100;
 		this.srRecords = new Map();
-		this.connectionStrings = [];
+		this.connections = new Set();
 	}
 	
 	getStats(){ 
@@ -57,17 +57,16 @@ export class DataVignette{
 				}
 			}
 		}
-		for (const connectionString of this.connectionStrings){
-			const epCallsigns = connectionString.split('|');
-			const epRecords = [this.srRecords.get(epCallsigns[0]), this.srRecords.get(epCallsigns[1])];
-			if (epRecords[0].isInHome) stats.connsHomeTx +=1;
-			if (epRecords[1].isInHome) stats.connsHomeRx +=1;
+		for (const connection of this.connections){
+			const epRecords = [this.srRecords.get(connection.s), this.srRecords.get(connection.r)];
+			if (connection.s.isInHome) stats.connsHomeTx +=1;
+			if (connection.r.isInHome) stats.connsHomeRx +=1;
 		}
 		return stats;
 	}
 	
-	getConnectionStrings(){
-		return this.connectionStrings;	
+	getconnections(){
+		return this.connections;	
 	}
 	
 	getsrRecords(){
@@ -76,11 +75,20 @@ export class DataVignette{
 	
 	recordConnection(sRecord, rRecord){
 		let changed = false;
-		let connectionString = sRecord.call+"|"+rRecord.call;
+		let connection = {'s':sRecord.call, 'r':rRecord.call};
 		changed |= this._update_srRecords(sRecord);  
 		changed |= this._update_srRecords(rRecord);
-		if(!this.connectionStrings.includes(connectionString)) {	
-			this.connectionStrings.push(connectionString);
+		if(!this.connections.has(connection)) {	
+			this.connections.add(connection);
+			changed = true;
+		}
+		let reverse = {'s':rRecord.call, 'r':sRecord.call};
+		if (this.connections.has(reverse)){
+			console.log(`Reciprocal connection ${this.bandmode} ${sRecord.call} <-> ${rRecord.call}`);
+			this.connections.remove(connection);
+			this.connections.remove(reverse);
+			this.connections.add({'s':sRecord.call, 'r':rRecord.call, 'reciprocal': true})
+			this.connections.add({'s':rRecord.call, 'r':sRecord.call, 'reciprocal': true})
 			changed = true;
 		}
 		if (changed) {
@@ -97,15 +105,14 @@ export class DataVignette{
 		for (const [call, rec] of this.srRecords.entries()) {
 			if (this._isCurrent(rec)) srRecordsCurrent.set(call, rec);
 		}
-		let connectionStringsCurrent = [];
-		for (const connectionString of this.connectionStrings){
-			let epts = connectionString.split('|');
-			if (this._isCurrent(this.srRecords.get(epts[0])) &&  this._isCurrent(this.srRecords.get(epts[1])) ){
-				connectionStringsCurrent.push(connectionString);
+		let connectionsCurrent = new Set();
+		for (const connection of this.connections){
+			if (this._isCurrent(this.srRecords.get(connection.s)) &&  this._isCurrent(this.srRecords.get(connection.r)) ){
+				connectionsCurrent.add(connection);
 			}
 		}
 		this.srRecords = structuredClone(srRecordsCurrent);
-		this.connectionStrings = structuredClone(connectionStringsCurrent);
+		this.connections = structuredClone(connectionsCurrent);
 	}
 	
 	_update_srRecords(srRecordNew){

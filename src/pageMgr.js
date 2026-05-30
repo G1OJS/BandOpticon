@@ -104,6 +104,7 @@ function refreshMain(bandMode){
 		view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 		view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 		view.showAllConnections = document.getElementById('showAllConnections').checked;
+		view.showReciprocalConnections = document.getElementById('showReciprocalConnections').checked;
 		view.myCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
@@ -185,14 +186,23 @@ export function initialisePage(){
 	
 	// show all connections changed
 	const showAllConnectionsCheckBox = document.getElementById('showAllConnections');
+	const showReciprocalConnectionsCheckBox = document.getElementById('showReciprocalConnections');
 	const showConnectionsForCallsignCheckBox = document.getElementById('showConnectionsForCallsign');
 	showAllConnectionsCheckBox.addEventListener('change', (e) => {
 		showConnectionsForCallsignCheckBox.checked = !showAllConnectionsCheckBox.checked;
+		showReciprocalConnectionsCheckBox.checked = !showAllConnectionsCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
 	});
+	showReciprocalConnectionsCheckBox.addEventListener('change', (e) => {
+		showAllConnectionsCheckBox.checked = !showReciprocalConnectionsCheckBox.checked;
+		showConnectionsForCallsignCheckBox.checked = !showReciprocalConnectionsCheckBox.checked;
+		refreshCarousel();
+		refreshMain(null);
+	});	
 	showConnectionsForCallsignCheckBox.addEventListener('change', (e) => {
 		showAllConnectionsCheckBox.checked = !showConnectionsForCallsignCheckBox.checked;
+		showReciprocalConnectionsCheckBox.checked = !showConnectionsForCallsignCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
 	});	
