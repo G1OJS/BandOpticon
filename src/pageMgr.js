@@ -69,6 +69,7 @@ function refreshTile(bandMode){
 			[canvas.width, canvas.height] = AzEq? [400, 400]:[400, 200];
 			const view = views.get(bandMode);
 			view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
+			view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 			zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
 			view.myCall = localStorage.getItem('myCall');
 			view.invalidate();
@@ -100,6 +101,7 @@ function refreshMain(bandMode){
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
 		const view = views.get('main');
 		view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
+		view.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 		view.myCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
@@ -191,12 +193,13 @@ export function initialisePage(){
 		showAllConnectionsCheckBox.checked = !showConnectionsForCallsignCheckBox.checked;
 		refreshCarousel();
 		refreshMain(null);
-	});	// myCall changed
+	});	
+	
+	// myCall changed
 	document.getElementById('myCallInput').addEventListener('change', () => {
 		const myCall = document.getElementById('myCallInput').value.toUpperCase();
 		document.getElementById('myCallInput').value = myCall;
 		localStorage.setItem('myCall', myCall); 
-		//if (views.get('main')) views.get('main').highlightCall = myCall;
 		refreshCarousel();
 		refreshMain(null);
 	});
