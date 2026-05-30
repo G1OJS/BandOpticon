@@ -56,6 +56,7 @@ function refreshTile(bandMode){
 	vis |= (md == 'FT4' && document.getElementById('FT4').checked);
 	vis |= (md == 'FT2' && document.getElementById('FT2').checked);
 	vis |= (md == 'WSPR' && document.getElementById('WSPR').checked);
+	vis |= (md == 'CW' && document.getElementById('CW').checked);
 	vis |= ('FT8FT4FT2WSPR'.search(md) <0 && document.getElementById('Other').checked);	
 	const stats = getDataVignette(bandMode)?.getStats();
 	if (stats){
