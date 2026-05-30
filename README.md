@@ -4,7 +4,8 @@ This software uses data from Pskreporter to present a view of band activity on a
 
 ## All activity Carousel
 The carousel near the top of the page gives an instant impression of activity on your selected mode(s), with a choice of full-world view or automated 'zoom to activity'. This screenshot shows a rectangular map projection being used. You can also select 'great circle' (Azimuthal Equidistant) as shown in the usage example below.
-<img width="982" height="514" alt="carousel" src="https://github.com/user-attachments/assets/4c902365-c1a2-420f-bbc4-e4c9495e4a9f" />
+<img width="1391" height="568" alt="carousel" src="https://github.com/user-attachments/assets/3aef5960-401e-4b42-a9b6-b3e3ab532af5" />
+
 
 ## Band detail view
 Click on any tile in the carousel to see a bigger view here, again either zoomed out to the whole world or zoomed to activity. In this view, a 'zoom to activity once' option is also available ('=' button) which doesn't change zoom as new spots arrive.
