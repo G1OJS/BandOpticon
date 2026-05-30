@@ -58,9 +58,8 @@ export class DataVignette{
 			}
 		}
 		for (const connection of this.connections){
-			const epRecords = [this.srRecords.get(connection.s), this.srRecords.get(connection.r)];
-			if (connection.s.isInHome) stats.connsHomeTx +=1;
-			if (connection.r.isInHome) stats.connsHomeRx +=1;
+			if (this.srRecords.get(connection.s).isInHome) stats.connsHomeTx +=1;
+			if (this.srRecords.get(connection.r).isInHome) stats.connsHomeRx +=1;
 		}
 		return stats;
 	}
