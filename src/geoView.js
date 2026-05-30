@@ -1,3 +1,5 @@
+import {mhToLatLong, latlonToKmDeg} from './geoFuncs.js'
+
 const colours = JSON.parse(localStorage.getItem('colours'));
 const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
 const connectionColours = ['black','red','green','blue','purple','yellow','orange','cyan','grey'];
@@ -15,6 +17,7 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 	landPolys50m = data;
 });
 
+
 export class GeoView{
 	constructor(dataVignette, canvasElement, zoomControlCheckBox, mapres) {
 		this.dataVignette = dataVignette;
@@ -29,6 +32,10 @@ export class GeoView{
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
 		this.redrawPending = false;
+		this.projection = 'AzEq';
+		this.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
+		this.unitCircle = null;
+		this.earthHalfCircumference = latlonToKmDeg({'lat':0,'lon':0}, {'lat':0,'lon':180}).km;
 	}
 
 	invalidate(){
@@ -50,9 +57,11 @@ export class GeoView{
 			this._drawConnections(false);
 			this.setZoomToData();
 		} 
-		if (this.mapres == 110) this._drawMap(landPolys110m);
-		if (this.mapres == 50) this._drawMap(landPolys50m);
 		this.highlightCall = this.currentHover? this.currentHover: this.myCall;
+		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
+		this._drawSea();
+		if (this.mapres == 110) this._drawLand(landPolys110m);
+		if (this.mapres == 50) this._drawLand(landPolys50m);
 		this._drawConnections(true);	
 	}
 	
@@ -77,20 +86,25 @@ export class GeoView{
 	}
 	
 	getNDC(latlon){
-		return {'x':latlon.lon/180, 'y':latlon.lat/90};
+		if (this.projection == 'EqRect') {
+			return {'x':latlon.lon/180, 'y':latlon.lat/90};
+		}
+		if (this.projection == 'AzEq') {
+			const KmDeg = latlonToKmDeg(this.latlonCentre, latlon);
+			const scl = this.earthHalfCircumference;
+			return {'x':KmDeg.km * Math.sin(KmDeg.deg * Math.PI/180) / scl, 'y':KmDeg.km * Math.cos(KmDeg.deg * Math.PI/180) / scl};
+		}
 	}
-	
-	getCanv(pNDC){
-		const vp = this.viewNDC;
-		const cv = {w:this.canvasElement.width, h:this.canvasElement.height};
-		return {'x':cv.w * (pNDC.x - vp.x0)/vp.w, 'y':cv.h - cv.h * (pNDC.y - vp.y0)/vp.h}; 
-	}
-	
-	getPtrNDC(e){
+	getPtrNDC(e) {	
 		const rect = this.canvasElement.getBoundingClientRect();
 		const vp = this.viewNDC;
 		return {'x': vp.x0 + vp.w*(e.clientX - rect.left) / (rect.right-rect.left), 
 				'y': vp.y0 + vp.h*(rect.bottom - e.clientY)/ (rect.bottom-rect.top)};
+	}
+	getCanv(pNDC) {
+		const vp = this.viewNDC;
+		const cv = {'w':this.canvasElement.width, 'h':this.canvasElement.height };
+		return {'x':cv.w * (pNDC.x - vp.x0)/vp.w, 'y':cv.h - cv.h * (pNDC.y - vp.y0)/vp.h};
 	}
 
 	setZoom(zoomFactor, centreNDC){
@@ -188,31 +202,53 @@ export class GeoView{
 		}
 	}
 	
-	_drawMap(landPolys){
-		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
-		this.ctx.strokeStyle = mapcolours.land;
+	_unitCircle(n){
+		let xy = [];
+		const s = 2*Math.PI/n;
+		for (let i = 0; i<n; i++){
+			xy.push([Math.cos(s*i), Math.sin(s*i)]);
+		}
+		return xy;
+	}
+	
+	_drawSea(){
+		this.ctx.fillStyle = mapcolours.sea;
+		this.ctx.beginPath();
+		if (this.projection == 'EqRect'){	
+			[[-1,-1],[-1,1],[1,1],[1,-1]].forEach(([x, y]) => {
+				const pCanv = this.getCanv({'x':x,'y':y});
+				this.ctx.lineTo(pCanv.x, pCanv.y);
+			});	
+		}
+		if (this.projection == 'AzEq'){	
+			if (!this.unitCircle) this.unitCircle = this._unitCircle(64);
+			this.unitCircle.forEach(([x, y]) => {
+				const pCanv = this.getCanv({'x':x,'y':y});
+				this.ctx.lineTo(pCanv.x, pCanv.y);
+			});
+		}					
+		this.ctx.fill();	
+	}
+
+	_drawLand(landPolys){
+		this.ctx.fillStyle = mapcolours.land;
 		this.ctx.lineWidth = 2;
 		landPolys?.features.forEach(feature => {
 			const geom = feature.geometry;
 			if (geom.type === 'Polygon') {
-				this._drawPolygons(geom.coordinates);
+				geom.coordinates.forEach(poly => {
+					this.ctx.beginPath();
+					poly.forEach(([lon, lat]) => {
+						const pNDC = this.getNDC({'lat':lat, 'lon':lon});
+						const pCanv = this.getCanv(pNDC);
+						this.ctx.lineTo(pCanv.x, pCanv.y);
+					});				
+					this.ctx.fill();
+				});
 			}
 		});
 	}
 
-	_drawPolygons(polys) {
-		polys.forEach(poly => {
-			this.ctx.beginPath();
-			poly.forEach(([lon, lat], i) => {
-				const pNDC = this.getNDC({'lat':lat, 'lon':lon});
-				const pCanv = this.getCanv(pNDC);
-				i === 0 ? this.ctx.moveTo(pCanv.x, pCanv.y) : this.ctx.lineTo(pCanv.x, pCanv.y);
-			});
-			this.ctx.closePath();
-			this.ctx.fillStyle = mapcolours.land;
-			this.ctx.fill();
-		});
-	}
 
 
 }

@@ -1,4 +1,4 @@
-import {mhToLatLong} from './geoFuncs.js'
+import {mhToLatLong, squaresToKmDeg} from './geoFuncs.js'
 import {onDataUpdate} from './pageMgr.js'
 
 let dataVignettes = new Map();
@@ -12,8 +12,9 @@ const purge = setInterval(() => {
 
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	if (spot.sl && spot.rl){
-		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
-		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
+		const mapCentre = localStorage.getItem('mapCentre');
+		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome, 'kmDeg':squaresToKmDeg(mapCentre, spot.sl)};
+		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome, 'kmDeg':squaresToKmDeg(mapCentre, spot.rl)};
 		const bandMode = spot.b+" "+spot.md;
 		if(!dataVignettes.get(bandMode)) {
 			console.log("Create data vignette "+bandMode);

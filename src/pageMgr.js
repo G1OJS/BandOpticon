@@ -60,11 +60,15 @@ function refreshTile(bandMode){
 	const stats = getDataVignette(bandMode)?.getStats();
 	if (stats){
 		vis &= (stats.calls >0);
-		if (vis){
+		if (vis) {
 			let tileElement = tileTrayGrid.querySelector("[id='"+bandMode+"']");
 			if (!tileElement) tileElement = _createTileElement(bandMode);
 			tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
+			const canvas = tileElement.querySelector('canvas');
+			const AzEq = document.getElementById('AzEqCheckBox').checked;
+			[canvas.width, canvas.height] = AzEq? [400, 400]:[400, 200];
 			const view = views.get(bandMode);
+			view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 			zoomTilesToDataCheckBox.checked? view.setZoomToData():view.zoomFullEarth();
 			view.myCall = localStorage.getItem('myCall');
 			view.invalidate();
@@ -87,16 +91,19 @@ function refreshMain(bandMode){
 		bandMode = mainBandMode;
 	}
 	let dataVignette = getDataVignette(bandMode);
+	const canvas = document.getElementById("mainCanvas");
+	const AzEq = document.getElementById('AzEqCheckBox').checked;
+	[canvas.width, canvas.height] = AzEq? [1200, 1200]:[1200, 600];
 	if (dataVignette != undefined){
 		document.getElementById('clickTileMessage').classList.add('hidden');
 		const stats = getDataVignette(bandMode).getStats();
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [out:${stats.connsHomeTx} In:${stats.connsHomeRx}]`;	
 		const view = views.get('main');
+		view.projection = document.getElementById('AzEqCheckBox').checked? 'AzEq':'EqRect';
 		view.myCall = localStorage.getItem('myCall');
 		if (zoomMainToDataCheckBox.checked) view.setZoomToData();
 		view.invalidate();
 	} else {
-		const canvas = document.getElementById("mainCanvas");
 		const ctx = canvas.getContext("2d");
 		ctx.clearRect(0, 0, canvas.width, canvas.height);		
 		document.getElementById('mainViewTitle').innerText = ''
@@ -147,7 +154,10 @@ export function initialisePage(){
 	document.getElementById('myCallInput').value = myCall?.toUpperCase();
 	const homeSquaresInput = document.getElementById('homeSquaresInput')
 	loadSquaresList(homeSquaresInput)
-	
+	const mapCentreInput = document.getElementById('mapCentreInput')
+	if (!localStorage.getItem('mapCentre')) localStorage.setItem('mapCentre', 'IO90');
+	mapCentreInput.value = localStorage.getItem('mapCentre');
+
 	//set colours for legend items
 	const colours = JSON.parse(localStorage.getItem('colours'));
 	document.getElementById('legendMarkerTx').style.background = colours.tx;
@@ -163,6 +173,7 @@ export function initialisePage(){
 
 	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});	
 	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
+	document.getElementById('mapSettings').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
 	
 	// show all connections changed
 	const showAllConnectionsCheckBox = document.getElementById('showAllConnections');
