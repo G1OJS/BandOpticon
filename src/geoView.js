@@ -148,6 +148,13 @@ export class GeoView{
 		this.setZoom(zoomFactor, xy);
 	}
 	
+	_hasReciprocal(connections, connection){
+		for (const conn of connections){
+			if (conn.s == connection.r && conn.r == connection.s) return true;
+		}
+		return false;
+	}
+	
 	_drawConnections(updateCanvas){
 		const srRecords = this.dataVignette.getsrRecords();	
 		const connections = this.dataVignette.getconnections();
@@ -176,7 +183,7 @@ export class GeoView{
 							showConnection = true;
 							this.ctx.strokeStyle = (connection.reciprocal)? colours.txrx: ((epRecord.call == connection.s)? colours.tx: colours.rx);
 						}
-						if (this.showReciprocalConnections && connections.has({'s':connection.r,'r':connection.s})){
+						if (this.showReciprocalConnections && this._hasReciprocal(connections, connection)){
 							showConnection = true;
 							this.ctx.strokeStyle = colours.txrx;
 						}						

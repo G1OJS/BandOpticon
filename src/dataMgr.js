@@ -13,8 +13,8 @@ const purge = setInterval(() => {
 export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	if (spot.sl && spot.rl){
 		const mapCentre = localStorage.getItem('mapCentre');
-		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome, 'kmDeg':squaresToKmDeg(mapCentre, spot.sl)};
-		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome, 'kmDeg':squaresToKmDeg(mapCentre, spot.rl)};
+		const sRecord = {call:spot.sc, sq:spot.sl, tx:true, rx:false, isInHome:senderIsInHome};
+		const rRecord = {call:spot.rc, sq:spot.rl, tx:false, rx:true, isInHome:receiverIsInHome};
 		const bandMode = spot.b+" "+spot.md;
 		if(!dataVignettes.get(bandMode)) {
 			console.log("Create data vignette "+bandMode);
