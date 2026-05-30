@@ -47,7 +47,7 @@ export function parseSquares(sqsList) {
     return outputSqsArr;
 }
 
-export function mhToLatLong(Sq_mixedCase, inRadians = false) {
+export function mhToLatLong(Sq_mixedCase) {
     let Sq = Sq_mixedCase.toUpperCase();
 	let lat = -90 + 10 * (Sq.charCodeAt(1) - 65) + 5;
 	let lon = -180 + 20 * (Sq.charCodeAt(0) - 65) + 10;
@@ -59,27 +59,29 @@ export function mhToLatLong(Sq_mixedCase, inRadians = false) {
 	    lat += (Sq.charCodeAt(5) - 65) / 24 - 0.5 + 1/48;
         lon += (Sq.charCodeAt(4) - 65) / 12 -1 + 1/24;
     }
-    if (inRadians) { lat = lat * Math.PI / 180;  lon = lon * Math.PI / 180;}
     return {'lat':lat, 'lon':lon};
 }
-
-export function squaresToKmDeg(SqA, SqB) {
-
-    let A = mhToLatLong(SqA, true);
-    let B = mhToLatLong(SqB, true);
-    let dLat = B.lat - A.lat;
-    let dLon = B.lon - A.lon;
-    let a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(A.lat) * Math.cos(B.lat) * Math.pow(Math.sin(dLon / 2), 2);
-    let c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    let km = 6371.0 * c;
-    let y = Math.sin(dLon) * Math.cos(B.lat);
-    let x = Math.cos(A.lat) * Math.sin(B.lat) - Math.sin(A.lat) * Math.cos(B.lat) * Math.cos(dLon);
-    let th = Math.atan2(y, x);
-    let brg = (th * 180 / Math.PI + 360) % 360;
+	
+export function latlonToKmDeg(Adegdeg, Bdegdeg){
+	const f = Math.PI/180.0;
+	const A = {'lat':Adegdeg.lat*f, 'lon':Adegdeg.lon*f}
+	const B = {'lat':Bdegdeg.lat*f, 'lon':Bdegdeg.lon*f}
+    const dLat = B.lat - A.lat;
+    const dLon = B.lon - A.lon;
+    const a = Math.pow(Math.sin(dLat / 2), 2) + Math.cos(A.lat) * Math.cos(B.lat) * Math.pow(Math.sin(dLon / 2), 2);
+    const c = 2.0 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const km = 6371.0 * c;
+    const y = Math.sin(dLon) * Math.cos(B.lat);
+    const x = Math.cos(A.lat) * Math.sin(B.lat) - Math.sin(A.lat) * Math.cos(B.lat) * Math.cos(dLon);
+    const th = Math.atan2(y, x);
+    const brg = (th * 180 / Math.PI + 360) % 360;
 
     return ({
-        "km": Math.round(km),
-        "deg": Math.round(brg)
+        "km": km,
+        "deg": brg
     });
 }
 
+export function squaresToKmDeg(SqA, SqB) {
+	return (latlonToKmDeg(mhToLatLong(SqA), mhToLatLong(SqB)));
+}

@@ -42,8 +42,17 @@
 			<span>
 				<input style='width:7em;' id='myCallInput' type="text">
 			</span>
-
-		</span>		<br>
+		</span>		
+		<br>
+		<span id='mapSettings' class = 'controlGroup' >
+			<span class = 'control ' >
+				<input type="checkbox" id="AzEqCheckBox"/>
+				<label for="AzEqCheckBox">Azimuthal Equidistant centred on</label>
+			</span>
+			<span>
+				<input style='width:7em;' type="text" id="mapCentreInput" checked/>
+			</span>
+		</span>		
 		<span class='controlGroup'>
 			Legend:
 			<span class = 'legendItem'><span class = 'legendMarker' id = 'legendMarkerRx' title = 'Stations receiving'></span>Rx</span>
