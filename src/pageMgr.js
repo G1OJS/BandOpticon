@@ -1,5 +1,5 @@
 
-import {parseSquares} from './geoFuncs.js';
+import {parseSquares, mhToLatLong} from './geoFuncs.js';
 import {GeoView} from './geoView.js';
 import {getDataVignette, clearAllVignettes} from './dataMgr.js';
 import {connectToFeed, mqttStatus} from './mqtt.js';
