@@ -3,7 +3,7 @@
 This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously, and you can filter and zoom in as much or as little as you need. The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
 
 ## All activity Carousel
-The carousel near the top of the page gives an instant impression of activity on your selected mode(s), with a choice of full-world view or automated 'zoom to activity'.
+The carousel near the top of the page gives an instant impression of activity on your selected mode(s), with a choice of full-world view or automated 'zoom to activity'. This screenshot shows a rectangular map projection being used. You can also select 'great circle' (Azimuthal Equidistant) as shown in the usage example below.
 <img width="982" height="514" alt="carousel" src="https://github.com/user-attachments/assets/4c902365-c1a2-420f-bbc4-e4c9495e4a9f" />
 
 ## Band detail view
