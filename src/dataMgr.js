@@ -82,15 +82,6 @@ export class DataVignette{
 			this.connections.add(connection);
 			changed = true;
 		}
-		let reverse = {'s':rRecord.call, 'r':sRecord.call};
-		if (this.connections.has(reverse)){
-			console.log(`Reciprocal connection ${this.bandmode} ${sRecord.call} <-> ${rRecord.call}`);
-			this.connections.remove(connection);
-			this.connections.remove(reverse);
-			this.connections.add({'s':sRecord.call, 'r':rRecord.call, 'reciprocal': true})
-			this.connections.add({'s':rRecord.call, 'r':sRecord.call, 'reciprocal': true})
-			changed = true;
-		}
 		if (changed) {
 			onDataUpdate(this.bandMode);
 		}

@@ -150,8 +150,9 @@ export class GeoView{
 	
 	_drawConnections(updateCanvas){
 		const srRecords = this.dataVignette.getsrRecords();	
+		const connections = this.dataVignette.getconnections();
 		let homeCalls = new Set();
-		for (const connection of this.dataVignette.getconnections()){
+		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
 			let vis = false; 
 			vis |= (txRecord.isInHome && document.getElementById('homeTx').checked); 
@@ -175,7 +176,7 @@ export class GeoView{
 							showConnection = true;
 							this.ctx.strokeStyle = (connection.reciprocal)? colours.txrx: ((epRecord.call == connection.s)? colours.tx: colours.rx);
 						}
-						if (this.showReciprocalConnections && connection.reciprocal){
+						if (this.showReciprocalConnections && connections.has({'s':connection.r,'r':connection.s})){
 							showConnection = true;
 							this.ctx.strokeStyle = colours.txrx;
 						}						
