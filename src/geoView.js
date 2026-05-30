@@ -197,7 +197,7 @@ export class GeoView{
 
 				if (showConnection) {
 					const epts = {'s':epCanv[0], 'r':epCanv[1]};
-					this.ctx.lineWidth=2;
+					this.ctx.lineWidth=4;
 					this.ctx.beginPath();
 					this.ctx.moveTo(epts.s.x, epts.s.y);
 					this.ctx.lineTo(epts.r.x, epts.r.y);
