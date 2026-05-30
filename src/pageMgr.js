@@ -173,7 +173,11 @@ export function initialisePage(){
 
 	document.getElementById('homeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});	
 	document.getElementById('modeFilters').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
-	document.getElementById('mapSettings').addEventListener('change', () => {refreshCarousel(); refreshMain();});		
+	document.getElementById('mapSettings').addEventListener('change', () => {
+		mapCentreInput.value = localStorage.getItem('mapCentre');
+		refreshCarousel(); 
+		refreshMain();
+	});		
 	
 	// show all connections changed
 	const showAllConnectionsCheckBox = document.getElementById('showAllConnections');
