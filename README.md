@@ -11,16 +11,14 @@ Click on any tile in the carousel to see a bigger view here, again either zoomed
 
 Connections are shown for all home callsigns, coloured differently for each home callsign, or for a single callsign coloured according to transmit or receive. The single callsign is specified in the input at the top of the page, and can be temporarily changed by hovering the mouse over another callsign spot.
 
-#### Example of single callsign connections:
-The image below shows how I use BandOpticon to check my receive performance against that of other stations nearby. I've set the map to show only spots involving nearby stations who are receiving, and only show connection lines for my callsign. The remote red dots (and blue dots) are remote transmitters (and transmitter receivers) heard by at least one 'home' receiver. The green connecting lines show how many of these that I'm also receiving.
+#### Example Usage: Checking Receive Performance:
+The image below shows how I use BandOpticon to check my receive performance against that of other stations nearby. I've set the map to show only spots involving nearby stations who are receiving, and only show connection lines for my callsign. The remote red dots (and blue dots) are remote transmitters (and transmitter receivers) heard by at least one 'home' receiver. The green connecting lines show how many of these that I'm also receiving. The same can be done for transmit performance by selecting the option to show only spots involving nearby stations who are transmitting.
 
 <img width="692" height="905" alt="Rx performance example" src="https://github.com/user-attachments/assets/928ae318-74fd-4c7f-af83-bad19e15c669" />
 
 
-#### Example of all callsign connections:
+#### Example Usage: Visualising Connectivity:
 <img width="868" height="475" alt="2m connectivity e g" src="https://github.com/user-attachments/assets/192bc8a6-e249-4ff5-91ad-118a9ee6eb7c" />
-
-
 
 [GitHub repo](https://github.com/G1OJS/BandOpticon/)
 
