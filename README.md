@@ -15,6 +15,8 @@ I wrote BandOpticon because it wasn’t easy for me to get the views that I want
     *  *only connections that are reciprocal (A hears B *and* B hears A)* showing paths that are likely to support QSOs rather than just spots, and which are surprisingly rare. When these appear in the carousel view, this helps identify *bands* that are supporting QSOs rathern than just spots.
 
 * automatic 'zoom to activity' option for both carousel and main view
+  
+* choice of map projection
 
 * what shows up is driven entirely by the data - so if a new mode appears on a new band, it will appear unless you've narrowed the filters. I found several modes I hadn't heard of this way, and what bands they are used on typically.
 
