@@ -4,6 +4,9 @@ This software uses data from Pskreporter to present a view of band activity on a
 
 The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
 
+<img width="933" height="805" alt="Main view" src="https://github.com/user-attachments/assets/8890c94e-bc8a-493d-b364-0f31cc350929" />
+
+
 ## What does BandOpticon do that's different to Pskreporter itself / other tools?
 I wrote BandOpticon because it wasn’t easy for me to get the views that I wanted from Pskreporter. So the key features that I added include:
 
