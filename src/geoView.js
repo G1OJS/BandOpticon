@@ -59,7 +59,7 @@ export class GeoView{
 			this._drawConnections(false);
 			this.setZoomToData();
 		} 
-		this.highlightCall = this.currentHover? this.currentHover: this.myCall;
+		//this.highlightCall = this.currentHover? this.currentHover: this.myCall;
 		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 		this._drawSea();
 		if (this.mapres == 110) this._drawLand(landPolys110m);
@@ -75,13 +75,13 @@ export class GeoView{
 			const pCanv = dc.canv;
 			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.y - pCanv.y) < 5) {
 				this.canvasElement.style = 'cursor:default;';
-				this.canvasElement.title = call;
 				hovering_over = call;
 				break;
 			}
 		}
 		if (hovering_over !== this.currentHover) {
 			this.currentHover = hovering_over;
+			this.canvasElement.title = this.currentHover? this.currentHover:'';
 			this.highlightCall = this.currentHover? this.currentHover: this.myCall;
 			this.invalidate();
 		}
