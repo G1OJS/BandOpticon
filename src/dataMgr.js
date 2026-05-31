@@ -40,6 +40,7 @@ export class DataVignette{
 		if (band.search("cm") > 0) this.wavelength /= 100;
 		this.srRecords = new Map();
 		this.connections = new Set();
+		this.reciprocalConnections = new Set();
 	}
 	
 	getStats(){ 
@@ -72,11 +73,25 @@ export class DataVignette{
 		return this.srRecords;
 	}
 	
+	_hasReciprocal(connection){
+		for (const conn of this.connections){
+			if (conn.s == connection.r && conn.r == connection.s) return true;
+		}
+		return false;
+	}
+	
 	recordConnection(sRecord, rRecord){
 		let changed = false;
 		let connection = {'s':sRecord.call, 'r':rRecord.call};
 		changed |= this._update_srRecords(sRecord);  
 		changed |= this._update_srRecords(rRecord);
+		if (connection.reciprocal === undefined) {
+			const reciprocal = this._hasReciprocal(connection);
+			if (reciprocal) {
+				connection.reciprocal = true;
+				changed = true;
+			}
+		}
 		if(!this.connections.has(connection)) {	
 			this.connections.add(connection);
 			changed = true;
