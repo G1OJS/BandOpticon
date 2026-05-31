@@ -27,7 +27,6 @@ export class GeoView{
 		this.mapres = mapres;
 		this.showAllConnections = false;
 		this.showReciprocalConnections = false;
-		this.dataPointsVisible = new Map();
 		this.myCall = localStorage.getItem('myCall');
 		this.highlightCall = localStorage.getItem('myCall');
 		this.currentHover = null;
@@ -74,13 +73,14 @@ export class GeoView{
 		let hovering_over = null;
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
 			
-		for (const [call, dc] of this.dataPointsVisible.entries()) { 
-			const pCanv = dc.canv;
-			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.y - pCanv.y) < 5) {
-				this.canvasElement.style = 'cursor:default;';
-				hovering_over = call;
-				break;
+		for (const conn of this.connectionsToDraw) { 
+			for (let i=0; i<2; i++){
+				if(Math.abs(ptrCanv.x - conn.pCanv[i].x) < 5 && Math.abs(ptrCanv.y - conn.pCanv[i].y) < 5) {
+					this.canvasElement.style = 'cursor:default;';
+					hovering_over = conn.calls[i];
+				}
 			}
+			if (hovering_over) break;
 		}
 		if (hovering_over !== this.currentHover) {
 			this.currentHover = hovering_over;
@@ -164,8 +164,9 @@ export class GeoView{
 			if (vis){	
 				if (txRecord.isInHome) homeCalls.add(connection.s);
 				if (rxRecord.isInHome) homeCalls.add(connection.r);
-				let toDraw = {'pNDC':[null,null], 'pCanv':[null,null], 'epColours':[null, null], 'linecolour':null}
+				let toDraw = {'calls':[null,null], 'pNDC':[null,null], 'pCanv':[null,null], 'epColours':[null, null], 'linecolour':null}
 				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
+					toDraw.calls[i] = epRecord.call;
 					toDraw.pNDC[i] = this.getNDC(epRecord.latlong);
 					toDraw.pCanv[i] = this.getCanv(toDraw.pNDC[i]);
 					toDraw.epColours[i] = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
@@ -186,14 +187,20 @@ export class GeoView{
 	}
 
 	_drawConnections(){
+		let points = new Set();
 		for (const conn of this.connectionsToDraw){
-			
 			for (let i=0; i<2; i++){
-				this.ctx.beginPath();
-				this.ctx.arc(conn.pCanv[i].x, conn.pCanv[i].y, 6, 0, 6.282);
-				this.ctx.fillStyle = conn.epColours[i]
-				this.ctx.fill();
+				points.add({'p':conn.pCanv[i], 'col':conn.epColours[i]});
 			}
+		}
+		for (const pt of points){
+			this.ctx.beginPath();
+			this.ctx.arc(pt.p.x, pt.p.y, 6, 0, 6.282);
+			this.ctx.fillStyle = pt.col;
+			this.ctx.fill();
+		}
+		
+		for (const conn of this.connectionsToDraw){
 			if (conn.linecolour != null) {
 				this.ctx.strokeStyle = conn.linecolour;
 				const epts = {'s':conn.pCanv[0], 'r':conn.pCanv[1]};
