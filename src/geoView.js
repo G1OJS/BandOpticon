@@ -1,8 +1,9 @@
 import {mhToLatLong, latlonToKmDeg} from './geoFuncs.js'
 
 const colours = JSON.parse(localStorage.getItem('colours'));
+const connectioncolours = JSON.parse(localStorage.getItem('connectioncolours'));
 const mapcolours = JSON.parse(localStorage.getItem('mapcolours'));
-const connectionColours = ['black','red','green','blue','purple','yellow','orange','cyan','grey'];
+const colourSequence = ['black','red','green','blue','purple','yellow','orange','cyan','grey'];
 
 let landPolys110m = null;
 let landPolys50m = null;
@@ -26,7 +27,7 @@ export class GeoView{
 		this.mapres = mapres;
 		this.showAllConnections = false;
 		this.showReciprocalConnections = false;
-		this.drawnCalls = new Map();
+		this.dataPointsVisible = new Map();
 		this.myCall = localStorage.getItem('myCall');
 		this.highlightCall = localStorage.getItem('myCall');
 		this.currentHover = null;
@@ -38,6 +39,7 @@ export class GeoView{
 		this.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
 		this.unitCircle = null;
 		this.earthHalfCircumference = latlonToKmDeg({'lat':0,'lon':0}, {'lat':0,'lon':180}).km;
+		this.connectionsToDraw = new Set();
 	}
 
 	invalidate(){
@@ -54,23 +56,25 @@ export class GeoView{
     }
 	
 	render(){
-		this.drawnCalls = new Map();
+		this.connectionsToDraw = new Set();
 		if (localStorage.getItem(this.zoomControlCheckBox) == 'true'){
-			this._drawConnections(false);
+			this._setConnectionsToDraw();
 			this.setZoomToData();
+			this._drawConnections();
 		} 
 		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 		this._drawSea();
 		if (this.mapres == 110) this._drawLand(landPolys110m);
 		if (this.mapres == 50) this._drawLand(landPolys50m);
-		this._drawConnections(true);	
+		this._setConnectionsToDraw();	
+		this._drawConnections();
 	}
 	
 	onMouseMove(e){
 		let hovering_over = null;
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
 			
-		for (const [call, dc] of this.drawnCalls.entries()) { 
+		for (const [call, dc] of this.dataPointsVisible.entries()) { 
 			const pCanv = dc.canv;
 			if(Math.abs(ptrCanv.x - pCanv.x) < 5 && Math.abs(ptrCanv.y - pCanv.y) < 5) {
 				this.canvasElement.style = 'cursor:default;';
@@ -122,13 +126,13 @@ export class GeoView{
 	}
 	
 	setZoomToData(){
-		if (this.drawnCalls.size > 0) {
+		if (this.connectionsToDraw.size > 0) {
 			let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
-			for (const [call, dc] of this.drawnCalls.entries()) { 
-				usedNDC.x0 = Math.min(usedNDC.x0, dc.ndc.x);
-				usedNDC.y0 = Math.min(usedNDC.y0, dc.ndc.y);
-				usedNDC.x1 = Math.max(usedNDC.x1, dc.ndc.x);
-				usedNDC.y1 = Math.max(usedNDC.y1, dc.ndc.y);
+			for (const ctd of this.connectionsToDraw) { 
+				usedNDC.x0 = Math.min(usedNDC.x0, ctd.pNDC[0].x, ctd.pNDC[1].x);
+				usedNDC.y0 = Math.min(usedNDC.y0, ctd.pNDC[0].y, ctd.pNDC[1].y);
+				usedNDC.x1 = Math.max(usedNDC.x1, ctd.pNDC[0].x, ctd.pNDC[1].x);
+				usedNDC.y1 = Math.max(usedNDC.y1, ctd.pNDC[0].y, ctd.pNDC[1].y);
 			}
 			const usedNDCCentre = {'x': (usedNDC.x0 + usedNDC.x1)/2, 'y':(usedNDC.y0 + usedNDC.y1)/2};
 			this.viewNDC = {'x0':usedNDC.x0, 'y0':usedNDC.y0, 'w':usedNDC.x1 - usedNDC.x0, 'h':usedNDC.y1 - usedNDC.y0};
@@ -147,60 +151,63 @@ export class GeoView{
 		this.setZoom(zoomFactor, xy);
 	}
 	
-	_drawConnections(updateCanvas){
+	_setConnectionsToDraw(){
 		const srRecords = this.dataVignette.getsrRecords();	
 		const connections = this.dataVignette.getconnections();
+		this.connectionsToDraw = new Set();
 		let homeCalls = new Set();
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
 			let vis = false; 
 			vis |= (txRecord.isInHome && document.getElementById('homeTx').checked); 
 			vis |= (rxRecord.isInHome && document.getElementById('homeRx').checked);
-			if (txRecord.isInHome) homeCalls.add(connection.s);
-			if (rxRecord.isInHome) homeCalls.add(connection.r);
 			if (vis){	
-				let epCanv = [];
-				let showConnection = false;    
-				for (const epRecord of [txRecord, rxRecord]) {
-					const pNDC = this.getNDC(epRecord.latlong);
-					const pCanv = this.getCanv(pNDC);
-					this.drawnCalls.set(epRecord.call, {'canv':pCanv, 'ndc':pNDC});
-					if (updateCanvas) {
-						epCanv.push(pCanv)
-						this.ctx.beginPath();
-						this.ctx.arc(pCanv.x, pCanv.y, 6, 0, 6.282);
-						this.ctx.fillStyle = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
-						this.ctx.fill();
-						if (epRecord.call == this.highlightCall){
-							showConnection = true;
-							this.ctx.strokeStyle = (connection.reciprocal)? colours.txrx: ((epRecord.call == connection.s)? colours.tx: colours.rx);
-						}
-						if (this.showReciprocalConnections && (connection.reciprocal === true)){
-							showConnection = true;
-							this.ctx.strokeStyle = colours.txrx;
-						}						
-						if (this.showAllConnections){
-							showConnection = true;
-							let origin = connection.s.isInHome? connection.s:connection.r;
-							this.ctx.strokeStyle = connectionColours[[...homeCalls].indexOf(origin) % connectionColours.length];
-						}					
+				if (txRecord.isInHome) homeCalls.add(connection.s);
+				if (rxRecord.isInHome) homeCalls.add(connection.r);
+				let toDraw = {'pNDC':[null,null], 'pCanv':[null,null], 'epColours':[null, null], 'linecolour':null}
+				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
+					toDraw.pNDC[i] = this.getNDC(epRecord.latlong);
+					toDraw.pCanv[i] = this.getCanv(toDraw.pNDC[i]);
+					toDraw.epColours[i] = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
+					if (epRecord.call == this.highlightCall){
+						toDraw.linecolour = (connection.reciprocal)? connectioncolours.txrx: ((epRecord.call == connection.s)? connectioncolours.tx: connectioncolours.rx);
 					}
 				}
-
-				if (showConnection) {
-					const epts = {'s':epCanv[0], 'r':epCanv[1]};
-					this.ctx.lineWidth=4;
-					this.ctx.beginPath();
-					this.ctx.moveTo(epts.s.x, epts.s.y);
-					this.ctx.lineTo(epts.r.x, epts.r.y);
-					this.ctx.stroke();
-					this.ctx.beginPath();
-					this.ctx.arc(epts.s.x, epts.s.y, 6, 0, 6.282);
-					this.ctx.stroke();
-					this.ctx.beginPath();
-					this.ctx.arc(epts.r.x, epts.r.y, 6, 0, 6.282);
-					this.ctx.stroke();
+				if (this.showReciprocalConnections && (connection.reciprocal === true)){
+					toDraw.linecolour = connectioncolours.txrx;
+				}						
+				if (this.showAllConnections){
+					let origin = connection.s.isInHome? connection.s:connection.r;
+					toDraw.linecolour = colourSequence[[...homeCalls].indexOf(origin) % colourSequence.length];
 				}
+				this.connectionsToDraw.add(toDraw);
+			}
+		}
+	}
+
+	_drawConnections(){
+		for (const conn of this.connectionsToDraw){
+			
+			for (let i=0; i<2; i++){
+				this.ctx.beginPath();
+				this.ctx.arc(conn.pCanv[i].x, conn.pCanv[i].y, 6, 0, 6.282);
+				this.ctx.fillStyle = conn.epColours[i]
+				this.ctx.fill();
+			}
+			if (conn.linecolour != null) {
+				this.ctx.strokeStyle = conn.linecolour;
+				const epts = {'s':conn.pCanv[0], 'r':conn.pCanv[1]};
+				this.ctx.lineWidth=4;
+				this.ctx.beginPath();
+				this.ctx.moveTo(epts.s.x, epts.s.y);
+				this.ctx.lineTo(epts.r.x, epts.r.y);
+				this.ctx.stroke();
+				this.ctx.beginPath();
+				this.ctx.arc(epts.s.x, epts.s.y, 6, 0, 6.282);
+				this.ctx.stroke();
+				this.ctx.beginPath();
+				this.ctx.arc(epts.r.x, epts.r.y, 6, 0, 6.282);
+				this.ctx.stroke();
 			}
 		}
 	}
