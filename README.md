@@ -1,6 +1,32 @@
 # BandOpticon Geo
 ### A live, visual, geographic view showing all bands and modes at once across the whole world, plus band detail.
-This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously, and you can filter and zoom in as much or as little as you need. The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
+This software uses data from Pskreporter to present a view of band activity on all active bands simultaneously, and you can filter and zoom in as much or as little as you need. 
+
+The software runs in Javascript on your machine and requires no downloads. Just click [here](https://g1ojs.github.io/BandOpticon/BandOpticon) to watch the views evolve.
+
+## What does BandOpticon do that's different to Pskreporter itself / other tools?
+I wrote BandOpticon because it wasn’t easy for me to get the views that I wanted from Pskreporter. So the key features that I added include:
+
+* carousel view shows geographic extent / intensity of activity for all bands and selected mode, separated into tiles for each band with colours discriminating Tx-only, Rx-only and Tx-Rx stations
+
+* can automatically highlight connections according to different filters:
+    * *only those involving my callsign*, providing a visual comparison of my Rx (and/or Tx) reach vs close peers
+    * *all connections, coloured according to home callsign*, allowing the reach of other callsigns to be compared with each other (is someone doing really well compared to the rest?)
+    *  *only connections that are reciprocal (A hears B *and* B hears A)* showing paths that are likely to support QSOs rather than just spots, and which are surprisingly rare. When these appear in the carousel view, this helps identify *bands* that are supporting QSOs rathern than just spots.
+
+* automatic 'zoom to activity' option for both carousel and main view
+
+* what shows up is driven entirely by the data - so if a new mode appears on a new band, it will appear unless you've narrowed the filters. I found several modes I hadn't heard of this way, and what bands they are used on typically.
+
+I used to have browser bookmarks for every band, to load Pskreporter views for ‘6m me’, ‘6m England’ etc. BandOpticon provides this in a fraction of the time that it took me to load these pages, and I’d never have tried loading all my bookmarks at once!
+
+Also, I've tried to ensure:
+
+* the page loads relatively quickly
+
+* minimal number of settings needed
+
+* works on mobile devices
 
 ## All activity Carousel
 The carousel near the top of the page gives an instant impression of activity on your selected mode(s), with a choice of full-world view or automated 'zoom to activity'. This screenshot shows a rectangular map projection being used. You can also select 'great circle' (Azimuthal Equidistant) as shown in the usage example below.
