@@ -50,7 +50,7 @@ export class DataVignette{
 			stats.calls +=1;
 			let crec = this.srRecords.get(call);
 			if (crec.isInHome){
-				if ((crec.tx) && (crec.tx)) {
+				if ((crec.tx) && (crec.rx)) {
 					stats.callsHomeTxRx +=1;
 				} else {
 					if(crec.tx) stats.callsHomeTx +=1;
