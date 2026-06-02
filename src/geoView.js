@@ -1,4 +1,5 @@
-import {mhToLatLong, latlonToKmDeg} from './geoFuncs.js'
+import {mhToLatLong, latlonToKmDeg} from './geoFuncs.js';
+import {getViewParams} from './pageMgr.js';
 
 const colours = JSON.parse(localStorage.getItem('colours'));
 const colourSequence = ['black','red','green','blue','purple','yellow','orange','cyan','grey'];
@@ -17,10 +18,10 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 	landPolys50m = data;
 });
 
-export function getView(viewName, dataVignette){
+export function getView(viewName, dataVignette, canvasWidth, mapres){
 	let view = views.get(viewName);
 	if (!view) {
-		view = new GeoView(dataVignette, document.getElementById(viewName).querySelector('canvas'));	
+		view = new GeoView(dataVignette, document.getElementById(viewName).querySelector('canvas'), canvasWidth, mapres);	
 		views.set(viewName, view);
 	}
 	return view;
@@ -29,10 +30,10 @@ export function getView(viewName, dataVignette){
 export function clearAllViews() {views = new Map()};
 
 class GeoView{
-	constructor(dataVignette, canvasElement) {
+	constructor(dataVignette, canvasElement, canvasWidth, mapres) {
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
-		this.viewParams = {};
+		this.canvasElement.width = canvasWidth;
 		this.currentHover = null;
 		this.ctx = this.canvasElement.getContext('2d');
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
@@ -57,22 +58,14 @@ class GeoView{
         });
     }
 	
-	setViewParams(viewParams){
-		for (const [key, value] of Object.entries(viewParams)){
-			this.viewParams[key] = value;
-		}
-		this.canvasElement.width = this.viewParams.canvasWidth;
-		this.canvasElement.height = (this.viewParams.projection=='AzEq')? this.canvasElement.width: this.canvasElement.width/2;
-		this.viewParams.latlonCentre = mhToLatLong(localStorage.getItem('mapCentre'));
-	}
-
 	render(){
+		this.canvasElement.height = getViewParams().AzEq? this.canvasElement.width: this.canvasElement.width/2;
 		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 		this._setItemsToDraw();
-		if (this.viewParams.zoomToData) this.setZoomToData();
+		if (getViewParams().setZoomToData) this.setZoomToData();
 		this._transformPointsToDrawToCanvas()
 		this._drawSea();
-		this._drawLand((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
+		this._drawLand((getViewParams().mapres == 110)? landPolys110m:landPolys50m);
 		this._drawPoints();
 		this._drawConnections();
 	}
@@ -96,8 +89,8 @@ class GeoView{
 	}
 	
 	getNDC(latlon){
-		if (this.viewParams.AzEq) {
-			const KmDeg = latlonToKmDeg(this.latlonCentre, latlon);
+		if (getViewParams().AzEq) {
+			const KmDeg = latlonToKmDeg(getViewParams().latlonCentre, latlon);
 			const scl = this.earthHalfCircumference;
 			return {'x':KmDeg.km * Math.sin(KmDeg.deg * Math.PI/180) / scl, 'y':KmDeg.km * Math.cos(KmDeg.deg * Math.PI/180) / scl};
 		} else {			
@@ -166,7 +159,6 @@ class GeoView{
 		const srRecords = this.dataVignette.srRecords;	
 		let connections = new Set();
 		for (const conn of this.dataVignette.connections){
-			console.log(conn);
 			const [s, r] = conn.split('|');
 			connections.add({'s':s,'r':r});
 		}
@@ -189,12 +181,13 @@ class GeoView{
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
 					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
-					if (this.viewParams.showAllConnections) forAutoZoom |= true;
-					if (this.viewParams.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
-					if (this.viewParams.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == this.myCall || rxRecord.call == this.myCall);
-					if (!this.viewParams.showOnlyInvolvingThisCall 
-					 && !this.viewParams.showOnlyDuplexConnections 
-					 && !this.viewParams.showAllConnections) forAutoZoom |= true;
+					const vp = getViewParams();
+					if (vp.showAllConnections) forAutoZoom |= true;
+					if (vp.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
+					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == this.myCall || rxRecord.call == this.myCall);
+					if (!vp.showOnlyInvolvingThisCall 
+					 && !vp.showOnlyDuplexConnections 
+					 && !vp.showAllConnections) forAutoZoom |= true;
 					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
 					
 					let showDirectionColouredConnection = (this.showOnlyInvolvingThisCall && (epRecord.call == this.myCall) )
@@ -224,9 +217,9 @@ class GeoView{
 	_drawPoints(){
 		for (const pt of this.pointsToDraw.values()){
 			pt.pCanv = this.getCanv(pt.pNDC);
-			this.ctx.globalAlpha = this.spotAlpha;
+			this.ctx.globalAlpha = getViewParams().spotAlpha;
 			this.ctx.beginPath();
-			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, getViewParams().spotSize, 0, 6.282);
 			this.ctx.fillStyle = pt.pColour;
 			this.ctx.fill();
 			this.ctx.globalAlpha = 1.0;
@@ -234,7 +227,7 @@ class GeoView{
 	}
 
 	_drawConnections(){
-		this.ctx.lineWidth = this.viewParams.lineWidth;
+		this.ctx.lineWidth = getViewParams().lineWidth;
 		for (const conn of this.connectionsToDraw){
 			const [callA, callB, lineColour] = conn.split('|');
 			this.ctx.strokeStyle = lineColour;

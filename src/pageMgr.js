@@ -9,6 +9,9 @@ const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Oth
 const uiClickables = ['tileTrayGrid','zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
+let viewParams = {'latlonCentre':{'lat':0,'lon':0}, 'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8};
+
+export function getViewParams() {return viewParams;}
 
 export async function loadApp(){
 	clearAllDataVignettes();
@@ -33,20 +36,17 @@ export async function loadApp(){
 		fieldElement.value = localStorageValue? localStorageValue.replaceAll('"',''):'';
 		fieldElement.addEventListener('change', () => {
 			localStorage.setItem(field, JSON.stringify(fieldElement.value));
-			
 		});
 	}
 	for (const cb of uiCheckBoxesCommon){
 		const cbElement = document.getElementById(cb);
 		let localStorageValue = localStorage.getItem(cb);
 		if (localStorageValue !== undefined)  cbElement.checked = (localStorageValue == 'true');
-		for (const [bandMode, view] of views.entries()) {view.setViewParams({cb: cbElement.checked})}
+		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
 			localStorage.setItem(cb, cbElement.checked);
-			for (const [bandMode, view] of views.entries()) {
-				view.setViewParams({cb: cbElement.checked});
-				pendingUpdates.add(bandMode);
-			}
+			viewParams[cb] = cbElement.checked;
+			for (const bandMode of views.keys()) {pendingUpdates.add(bandMode);}
 			refreshViews();
 		});
 	}
@@ -66,6 +66,8 @@ export async function loadApp(){
 		await new Promise(r => setTimeout(r, 250));
 	}
 	document.getElementById('mqttStatus').innerText ='';
+	
+	console.log(viewParams);
 }
 
 export function onDataUpdate(bandMode){
@@ -114,17 +116,15 @@ function refreshView(bandMode){
 		}
 		tileElement.classList.remove('hidden');
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
-		const view = getView(tileElement.id, dataVignette);
-		view.setViewParams({'canvasWidth':400, 'mapres':110, 'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8});
+		const view = getView(tileElement.id, dataVignette, 400, 110);
 		view.invalidate();
 	} 
 	
 	if (bandMode == document.getElementById('mainViewTitle').innerText){
 		const canvas = document.getElementById("mainCanvas");
-		const view = getView('mainCanvas', dataVignette);
+		const view = getView('mainCanvas', dataVignette, 1200, 50);
 		document.getElementById('clickTileMessage').classList.add('hidden');
-		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;
-		view.setViewParams({'canvasWidth':1200, 'mapres':50, 'spotSize':6, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8});			
+		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
 		view.invalidate();		
 	} 	
 	
