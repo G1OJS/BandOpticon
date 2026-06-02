@@ -6,11 +6,12 @@ import {connectToFeed, mqttStatus} from './mqtt.js';
 const uiFields = ['myCall', 'squaresList', 'mapCentreSquare'];
 const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToData',
 							'showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall','AzEq']
+const connectionsRadioGroup = ['showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall'];
 const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
-let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'setZoomToData':false, 'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8, 
-				'mapAlpha':0.4, 
+let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToData':false, 
+				  'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8, 'mapAlpha':0.4, 
 				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
 				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
 
@@ -39,24 +40,28 @@ export async function loadApp(){
 		fieldElement.addEventListener('change', () => {
 			localStorage.setItem(field, JSON.stringify(fieldElement.value));
 			if (field == 'mapCentreSquare') viewParams.latlonCentre = mhToLatLong(fieldElement.value);
-			for (const bandMode of dataVignettes.keys()) {
-				console.log("pending update "+bandMode);
-				pendingUpdates.add(bandMode);}
-			refreshViews();			
+			if (field == 'myCall') viewParams.myCall = fieldElement.value;
+			refreshViews(dataVignettes.keys());			
+			if (field == 'squaresList') loadApp();
 		});
 	}
 	for (const cb of uiCheckBoxesCommon){
 		const cbElement = document.getElementById(cb);
-		let localStorageValue = localStorage.getItem(cb);
-		if (localStorageValue !== undefined)  cbElement.checked = (localStorageValue == 'true');
+		cbElement.checked = (localStorage.getItem(cb) === 'true');
 		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
+			if (connectionsRadioGroup.includes(cb) && cbElement.checked) {
+				for (const other of connectionsRadioGroup) {
+					if (other != cb) {
+						document.getElementById(other).checked = false
+						localStorage.setItem(other, false);
+						viewParams[other] = false;
+					}
+				}
+			}
 			localStorage.setItem(cb, cbElement.checked);
 			viewParams[cb] = cbElement.checked;
-			for (const bandMode of dataVignettes.keys()) {
-				console.log("pending update "+bandMode);
-				pendingUpdates.add(bandMode);}
-			refreshViews();
+			refreshViews(dataVignettes.keys());
 		});
 	}
 	for (const cbl of uiMainViewClickElements) {
@@ -78,18 +83,22 @@ export async function loadApp(){
 		await new Promise(r => setTimeout(r, 250));
 	}
 	document.getElementById('mqttStatus').innerText ='';
-	
-	console.log(viewParams);
+	if (!document.getElementById('mainTile').dataset.bm) {
+		document.getElementById('clickTileMessage').classList.remove('hidden');
+	}
 }
 
 export function onDataUpdate(bandMode){
 	pendingUpdates.add(bandMode);
 }
 
-const refresh = setInterval(() => {refreshViews()}, 250);
+const refresh = setInterval(() => {
+	refreshViews(pendingUpdates);
+	pendingUpdates = new Set();
+}, 500);
 
-function refreshViews(){
-	for (const bandMode of pendingUpdates) {
+function refreshViews(viewsToRefresh){
+	for (const bandMode of viewsToRefresh) {
 		document.getElementById('tileTrayGrid').querySelector("[data-bm='"+bandMode+"']")?.classList.add('hidden');
 		const md = bandMode.split(' ')[1];
 		let vis = false;
@@ -101,7 +110,6 @@ function refreshViews(){
 		vis |= ('FT8FT4FT2WSPRCW'.search(md) <0 && document.getElementById('Other').checked);
 		if(vis) refreshView(bandMode);
 	}
-	pendingUpdates = new Set();
 }
 
 function refreshView(viewName){
@@ -109,8 +117,7 @@ function refreshView(viewName){
 	const dataVignette = getDataVignette(bandMode);
 	const stats = dataVignette?.getStats();
 	
-	console.log("Refresh "+bandMode);
-	if (stats.calls > 0){
+	if (stats.calls){
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
 		if (!tileElement) {
 			console.log("Create tile for ", bandMode);
@@ -133,23 +140,23 @@ function refreshView(viewName){
 		}
 		tileElement.classList.remove('hidden');
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;
-		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
-		const view = getView(bandMode, canvas, dataVignette, 400, 110);
-
-		(view.viewParams.setZoomToData)? view.setZoomToData(): view.setZoomFullEarth();
-		view.invalidate();
-	} 
-	
+	}
+	const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
+	const view = getView(bandMode, canvas, dataVignette, 400, 110);
+	(getViewParams().setZoomToData)? view.setZoomToData(): view.setZoomFullEarth();
+	view.invalidate();
+	 
 	if (bandMode == document.getElementById('mainTile').dataset.bm){
-		console.log("Refresh main for "+bandMode);
-		const canvas = document.getElementById('mainCanvas');
-		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
-		document.getElementById('clickTileMessage').classList.add('hidden');
-		document.getElementById('mainViewTitle').innerText = bandMode;
-		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
-		view.invalidate();		
+		if(stats.calls){
+			console.log("Refresh main for "+bandMode);
+			const canvas = document.getElementById('mainCanvas');
+			const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
+			document.getElementById('clickTileMessage').classList.add('hidden');
+			document.getElementById('mainViewTitle').innerText = bandMode;
+			document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
+			view.invalidate();
+		}
 	} 	
-	
 	
 }
 

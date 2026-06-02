@@ -49,15 +49,15 @@ class GeoView{
         this.dirty=true;
         if(this.redrawPending) return;
         this.redrawPending=true;
-		this.canvasElement.height = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
         requestAnimationFrame(()=>{
             this.redrawPending=false;
             if(this.dirty){
                 this.dirty=false;
+				this.viewParams = getViewParams();
+				this.canvasElement.height = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
 				this.ctx = this.canvasElement.getContext('2d');
 				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 				this._setItemsToDraw();
-				//if (this.viewParams.setZoomToData) this.setZoomToData();
 				this._drawMap((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
 				this._drawData();
             }
@@ -125,6 +125,7 @@ class GeoView{
 	}
 	
 	setZoomToData(){
+		if (this.pointsToDraw.size < 1) this._setItemsToDraw();
 		let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
 		let pointsExist = false;
 		let forAutoZoomExists = false;
@@ -149,9 +150,7 @@ class GeoView{
 			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h, 0.01);
 			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w, 0.01);
 			this.setZoom(0.8, usedNDCCentre);
-		} else {
-			this.setZoomFullEarth();
-		}
+		} 
 	}
 	
 	setZoomFullEarth(){
@@ -174,6 +173,7 @@ class GeoView{
 			const [s, r] = conn.split('|');
 			connections.add({'s':s,'r':r,'duplex':true});
 		}
+		this.pointsToDraw = new Map();
 		this.connectionsToDraw = new Set();
 		let homeCalls = new Set();
 		const vp = this.viewParams;
@@ -192,13 +192,13 @@ class GeoView{
 					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
 					if (vp.showAllConnections) forAutoZoom |= true;
 					if (vp.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
-					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == this.myCall || rxRecord.call == this.myCall);
+					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
 					if (!vp.showOnlyInvolvingThisCall 
 					 && !vp.showOnlyDuplexConnections 
 					 && !vp.showAllConnections) forAutoZoom |= true;
 					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
 					
-					let showDirectionColouredConnection = (this.showOnlyInvolvingThisCall && (epRecord.call == this.myCall) )
+					let showDirectionColouredConnection = (this.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) )
 					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
 					if (showDirectionColouredConnection) {
 						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
