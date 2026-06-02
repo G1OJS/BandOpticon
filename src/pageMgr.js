@@ -37,7 +37,6 @@ export async function loadApp(){
 		});
 	}
 	for (const cb of uiCheckBoxesCommon){
-		console.log(cb);
 		const cbElement = document.getElementById(cb);
 		let localStorageValue = localStorage.getItem(cb);
 		if (localStorageValue !== undefined)  cbElement.checked = (localStorageValue == 'true');
