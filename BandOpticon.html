@@ -19,42 +19,42 @@
 	<div id='ribbon' class="windowBar hideForMaxView ">
 		<h1>BandOpticon Geo</h1>
 		<div class= 'statusMessage' id = 'mqttStatus'></div>
-		<span id='homeFilters' class = 'controlGroup' >
+		<span class = 'controlGroup' >
 			Show spots involving
 			<span class = 'control ' ><input type="checkbox" id="homeTx" name="homeTx" checked /><label for="homeTx">Tx</label></span>
 			<span class = 'control ' ><input type="checkbox" id="homeRx" name="homeRx" checked /><label for="homeRx">Rx</label></span>
 			<span>
-				<label for="homeSquaresInput">in</label>
-				<input id='homeSquaresInput' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'>
+				<label for="squaresList">in</label>
+				<input id='squaresList' type="text"  title ='Enter a list containing for e.g. JO01, IO91ju, JO21:53, IO90bg:kl'>
 				(home)
 			</span>
 		</span>	
-		<span id='connectionsFilters' class = 'controlGroup' >
+		<span class = 'controlGroup' >
 			Connections: 
 			<span class = 'control ' >
 				<input type="checkbox" id="showAllConnections"/>
 				<label for="showAllConnections">All</label>
 			</span>
 			<span class = 'control ' >
-				<input type="checkbox" id="showReciprocalConnections" checked/>
-				<label for="showReciprocalConnections">All reciprocal</label>
+				<input type="checkbox" id="showOnlyDuplexConnections" checked/>
+				<label for="showOnlyDuplexConnections">All reciprocal</label>
 			</span>
 			<span class = 'control ' >
-				<input type="checkbox" id="showConnectionsForCallsign"/>
-				<label for="showConnectionsForCallsign">this callsign:</label>
+				<input type="checkbox" id="showOnlyInvolvingThisCall"/>
+				<label for="showOnlyInvolvingThisCall">this callsign:</label>
 			</span>
 			<span>
-				<input style='width:7em;' id='myCallInput' type="text">
+				<input style='width:7em;' id='myCall' type="text">
 			</span>
 		</span>		
 		<br>
-		<span id='mapSettings' class = 'controlGroup' >
+		<span class = 'controlGroup' >
 			<span class = 'control ' >
-				<input type="checkbox" id="AzEqCheckBox"/>
-				<label for="AzEqCheckBox">Azimuthal Equidistant, origin =</label>
+				<input type="checkbox" id="AzEq"/>
+				<label for="AzEq">Azimuthal Equidistant, origin =</label>
 			</span>
 			<span>
-				<input style='width:7em;' type="text" id="mapCentreInput" checked/>
+				<input style='width:7em;' type="text" id="mapCentreSquare"/>
 			</span>
 		</span>	
 			
@@ -69,8 +69,8 @@
 	<div id="tileTray" class="paper-light">
 		<span class = 'controlGroup' >
 			<span class = 'control' >
-				<input type="checkbox" id="zoomTilesToDataCheckBox" name="zoomTilesToDataCheckBox">
-				<label for="zoomTilesToDataCheckBox">Zoom to activity</label>
+				<input type="checkbox" id="setZoomToData" name="setZoomToData">
+				<label for="zoomToDataCarousel">Zoom to activity</label>
 			</span>
 		</span>
 		<span class = 'controlGroup'>
@@ -91,7 +91,7 @@
 						<div class = 'windowBar'>
 							<span class="tileTitle"></span> <span class="tileSubtitle"></span>
 						</div>
-						<canvas data-action = 'zoomIn' width="400" height="200"></canvas>
+						<canvas width="400" height="200"></canvas>
 					</div>
 				</template>
 			</div>
@@ -101,20 +101,14 @@
 	<div id="mainViewContainer" class="paper-light" >
 		<div id='mainView' >
 			<div class = 'mainTile'>
-				<span class = 'controlGroup' >
-					<span class = 'control ' >
-						<input type="checkbox" id="zoomMainToDataCheckBox" name="zoomMainToDataCheckBox">
-						<label for="zoomMainToDataCheckBox"> Zoom to activity</label>
-					</span>
-				</span>
-				<div class = 'windowBar', id='mainViewWindowBar'>
-					<span class="control windowBarButton" data-action='zoomFullEarth' title = 'Full Earth View'>⛶</span>
-					<span class="control windowBarButton" data-action='setZoomToData' title = 'Set Zoom to Current Activity'>=</span>
-					<span class="control windowBarButton" data-action='zoomOut' title = 'Zoom Out'>-</span>
+				<div class = 'windowBar'>
+					<span class="control windowBarButton" id = 'zoomFullEarthBtn' title = 'Full Earth View'>⛶</span>
+					<span class="control windowBarButton" id = 'setZoomToDataBtn'  title = 'Set Zoom to Current Activity'>=</span>
+					<span class="control windowBarButton" id = 'zoomOutBtn' title = 'Zoom Out'>-</span>
 					<span class="tileTitle" id='mainViewTitle'></span> <span class="tileSubtitle" id='mainViewSubTitle'></span>
 				</div>
 				<div class= 'statusMessage hidden' id = 'clickTileMessage'>Click a tile above to see its detail here</div>
-				<canvas data-action = 'zoomIn' width="1200" height="600", id='mainCanvas'></canvas>
+				<canvas width="1200" height="600", id='mainCanvas'></canvas>
 			</div>
 		</div>
 	</div>
