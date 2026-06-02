@@ -109,8 +109,8 @@ function refreshView(bandMode){
 			tileElement.dataset.value = dataVignette.wavelength;
 			tileElement.dataset.bm = bandMode;
 			tileElement.addEventListener('click', (e) => {
-				document.getElementById('mainTile').dataset.bm = bandMode;
-				refreshViews(bandMode);
+				document.getElementById('mainTile').dataset.bm = e.target.closest('.tile').dataset.bm;
+				refreshView(bandMode);
 			});		
 			let insertpos = null;
 			for (const tile of document.querySelectorAll('.tile')){
@@ -134,7 +134,7 @@ function refreshView(bandMode){
 	if (bandMode == document.getElementById('mainTile').dataset.bm){
 		console.log("Refresh main for "+bandMode);
 		const canvas = document.getElementById('mainCanvas');
-		const view = getView('mainCanvas', canvas, dataVignette, 1200, 50);
+		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
 		document.getElementById('clickTileMessage').classList.add('hidden');
 		document.getElementById('mainViewTitle').innerText = bandMode;
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
