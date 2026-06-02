@@ -6,7 +6,7 @@ import {connectToFeed, mqttStatus} from './mqtt.js';
 const uiFields = ['myCall', 'squaresList', 'mapCentreSquare'];
 const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToData',
 							'showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall','AzEq']
-const uiClickables = ['tileTrayGrid','zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
+const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
 let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'setZoomToData':false, 'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8, 
@@ -54,9 +54,11 @@ export async function loadApp(){
 			refreshViews();
 		});
 	}
-	for (const cbl of uiClickables) {
+	for (const cbl of uiMainViewClickElements) {
 		document.getElementById(cbl).addEventListener('click', (e) => {
-
+			const bandMode = document.getElementById('mainTile').dataset.bm;
+			views.get(bandMode+' main')?.onClick(e);
+			refreshView(bandMode+' main');
 		});
 	}
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
@@ -97,7 +99,8 @@ function refreshViews(){
 	pendingUpdates = new Set();
 }
 
-function refreshView(bandMode){
+function refreshView(viewName){
+	const bandMode = viewName.replace(' main','');
 	const dataVignette = getDataVignette(bandMode);
 	const stats = dataVignette?.getStats();
 	

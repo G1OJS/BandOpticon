@@ -82,6 +82,13 @@ class GeoView{
 		}
 	}
 	
+	onClick(e){
+		if (e.target.id == 'zoomFullEarthBtn') this.setZoomFullEarth();
+		if (e.target.id == 'setZoomToDataBtn') this.setZoomToData();
+		if (e.target.id == 'zoomOutBtn') this.setZoom(1/1.2, null);
+		if (e.target.id == 'mainCanvas') this.setZoom(1.2, this.getPtrNDC(e));
+	}
+	
 	getNDC(latlon){
 		if (this.viewParams.AzEq) {
 			const KmDeg = latlonToKmDeg(this.viewParams.latlonCentre, latlon);
@@ -103,7 +110,7 @@ class GeoView{
 		const cv = {'w':this.canvasElement.width, 'h':this.canvasElement.height };
 		return {'x':cv.w * (pNDC.x - vp.x0)/vp.w, 'y':cv.h - cv.h * (pNDC.y - vp.y0)/vp.h};
 	}
-
+	
 	setZoom(zoomFactor, centreNDC){
 		const vn = this.viewNDC;
 		if (centreNDC) {
