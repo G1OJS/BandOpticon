@@ -57,7 +57,7 @@ class GeoView{
 				this.ctx = this.canvasElement.getContext('2d');
 				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 				this._setItemsToDraw();
-				if (this.viewParams.setZoomToData) this.setZoomToData();
+				//if (this.viewParams.setZoomToData) this.setZoomToData();
 				this._drawMap((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
 				this._drawData();
             }
@@ -205,7 +205,7 @@ class GeoView{
 					}
 				}
 				if (vp.showOnlyDuplexConnections && (connection.duplex === true)){
-					lineColour = this.vp.txrx;
+					lineColour = vp.txrx;
 				}						
 				if (vp.showAllConnections){
 					let origin = txRecord.isInHome? connection.s:connection.r;

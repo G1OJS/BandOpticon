@@ -38,6 +38,11 @@ export async function loadApp(){
 		fieldElement.value = localStorageValue? localStorageValue.replaceAll('"',''):'';
 		fieldElement.addEventListener('change', () => {
 			localStorage.setItem(field, JSON.stringify(fieldElement.value));
+			if (field == 'mapCentreSquare') viewParams.latlonCentre = mhToLatLong(fieldElement.value);
+			for (const bandMode of dataVignettes.keys()) {
+				console.log("pending update "+bandMode);
+				pendingUpdates.add(bandMode);}
+			refreshViews();			
 		});
 	}
 	for (const cb of uiCheckBoxesCommon){
@@ -131,7 +136,7 @@ function refreshView(viewName){
 		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
 		const view = getView(bandMode, canvas, dataVignette, 400, 110);
 
-		if (!view.viewParams.setZoomToData) view.setZoomFullEarth();
+		(view.viewParams.setZoomToData)? view.setZoomToData(): view.setZoomFullEarth();
 		view.invalidate();
 	} 
 	
