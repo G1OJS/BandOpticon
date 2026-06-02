@@ -1,7 +1,7 @@
 import {mhToLatLong, squaresToKmDeg} from './geoFuncs.js'
 import {onDataUpdate} from './pageMgr.js'
 
-let dataVignettes = new Map();
+export let dataVignettes = new Map();
 const ttl = 300000;
 
 const purge = setInterval(() => {

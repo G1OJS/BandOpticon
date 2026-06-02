@@ -21,9 +21,11 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 export function getView(viewName, dataVignette, canvasWidth, mapres){
 	let view = views.get(viewName);
 	if (!view) {
-		view = new GeoView(dataVignette, document.getElementById(viewName).querySelector('canvas'), canvasWidth, mapres);	
+		const canvas = document.querySelector('[data-bm="'+viewName+'"]').querySelector('canvas');
+		view = new GeoView(dataVignette, canvas, canvasWidth, mapres);	
 		views.set(viewName, view);
 	}
+	view.viewParams = getViewParams();
 	return view;
 }
 
@@ -35,7 +37,6 @@ class GeoView{
 		this.canvasElement = canvasElement;
 		this.canvasElement.width = canvasWidth;
 		this.currentHover = null;
-		this.ctx = this.canvasElement.getContext('2d');
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
 		this.redrawPending = false;
@@ -49,27 +50,21 @@ class GeoView{
         this.dirty=true;
         if(this.redrawPending) return;
         this.redrawPending=true;
+		this.canvasElement.height = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
         requestAnimationFrame(()=>{
             this.redrawPending=false;
             if(this.dirty){
                 this.dirty=false;
-                this.render();
+				this.ctx = this.canvasElement.getContext('2d');
+				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
+				this._setItemsToDraw();
+				if (this.viewParams.setZoomToData) this.setZoomToData();
+				this._drawMap((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
+				this._drawData();
             }
         });
     }
-	
-	render(){
-		this.canvasElement.height = getViewParams().AzEq? this.canvasElement.width: this.canvasElement.width/2;
-		this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
-		this._setItemsToDraw();
-		if (getViewParams().setZoomToData) this.setZoomToData();
-		this._transformPointsToDrawToCanvas()
-		this._drawSea();
-		this._drawLand((getViewParams().mapres == 110)? landPolys110m:landPolys50m);
-		this._drawPoints();
-		this._drawConnections();
-	}
-	
+		
 	onMouseMove(e){
 		let hovering_over = null;
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
@@ -89,8 +84,8 @@ class GeoView{
 	}
 	
 	getNDC(latlon){
-		if (getViewParams().AzEq) {
-			const KmDeg = latlonToKmDeg(getViewParams().latlonCentre, latlon);
+		if (this.viewParams.AzEq) {
+			const KmDeg = latlonToKmDeg(this.viewParams.latlonCentre, latlon);
 			const scl = this.earthHalfCircumference;
 			return {'x':KmDeg.km * Math.sin(KmDeg.deg * Math.PI/180) / scl, 'y':KmDeg.km * Math.cos(KmDeg.deg * Math.PI/180) / scl};
 		} else {			
@@ -142,15 +137,15 @@ class GeoView{
 			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w, 0.01);
 			this.setZoom(0.8, usedNDCCentre);
 		} else {
-			this.zoomFullEarth();
+			this.setZoomFullEarth();
 		}
 	}
 	
-	zoomFullEarth(){
+	setZoomFullEarth(){
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 	}
 	
-	zoomToPointerPos(e, zoomFactor){
+	setZoomByPointerPos(e, zoomFactor){
 		let xy = this.getPtrNDC(e);
 		this.setZoom(zoomFactor, xy);
 	}
@@ -178,10 +173,10 @@ class GeoView{
 				if (txRecord.isInHome) homeCalls.add(connection.s);
 				if (rxRecord.isInHome) homeCalls.add(connection.r);
 				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
+					const vp = this.viewParams;
 					let pNDC = this.getNDC(epRecord.latlong);
-					let pColour = (epRecord.tx && epRecord.rx)? colours.txrx: (epRecord.tx? colours.tx: colours.rx);
+					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
 					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
-					const vp = getViewParams();
 					if (vp.showAllConnections) forAutoZoom |= true;
 					if (vp.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
 					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == this.myCall || rxRecord.call == this.myCall);
@@ -193,11 +188,11 @@ class GeoView{
 					let showDirectionColouredConnection = (this.showOnlyInvolvingThisCall && (epRecord.call == this.myCall) )
 					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
 					if (showDirectionColouredConnection) {
-						lineColour = (connection.duplex)? colours.txrx: ((epRecord.call == connection.s)? colours.tx: colours.rx);
+						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
 					}
 				}
 				if (this.showOnlyDuplexConnections && (connection.duplex === true)){
-					lineColour = colours.txrx;
+					lineColour = this.viewParams.txrx;
 				}						
 				if (this.showAllConnections){
 					let origin = txRecord.isInHome? connection.s:connection.r;
@@ -208,26 +203,18 @@ class GeoView{
 		}
 	}
 
-	_transformPointsToDrawToCanvas(){
+	_drawData(){
 		for (const pt of this.pointsToDraw.values()){
 			pt.pCanv = this.getCanv(pt.pNDC);
-		}
-	}
-
-	_drawPoints(){
-		for (const pt of this.pointsToDraw.values()){
-			pt.pCanv = this.getCanv(pt.pNDC);
-			this.ctx.globalAlpha = getViewParams().spotAlpha;
+			this.ctx.globalAlpha = this.viewParams.spotAlpha;
 			this.ctx.beginPath();
-			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, getViewParams().spotSize, 0, 6.282);
+			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, this.viewParams.spotSize, 0, 6.282);
 			this.ctx.fillStyle = pt.pColour;
 			this.ctx.fill();
 			this.ctx.globalAlpha = 1.0;
 		}	
-	}
 
-	_drawConnections(){
-		this.ctx.lineWidth = getViewParams().lineWidth;
+		this.ctx.lineWidth = this.viewParams.lineWidth;
 		for (const conn of this.connectionsToDraw){
 			const [callA, callB, lineColour] = conn.split('|');
 			this.ctx.strokeStyle = lineColour;
@@ -256,27 +243,25 @@ class GeoView{
 		return xy;
 	}
 	
-	_drawSea(){
-		this.ctx.fillStyle = colours.sea;
+	_drawMap(mapdata){
+		this.ctx.globalAlpha = this.viewParams.mapAlpha;
+		this.ctx.fillStyle = this.viewParams.sea;
 		this.ctx.beginPath();
-		if (this.projection == 'EqRect'){	
-			[[-1,-1],[-1,1],[1,1],[1,-1]].forEach(([x, y]) => {
-				const pCanv = this.getCanv({'x':x,'y':y});
-				this.ctx.lineTo(pCanv.x, pCanv.y);
-			});	
-		}
-		if (this.projection == 'AzEq'){	
+		if (this.viewParams.AzEq){	
 			if (!this.unitCircle) this.unitCircle = this._unitCircle(64);
 			this.unitCircle.forEach(([x, y]) => {
 				const pCanv = this.getCanv({'x':x,'y':y});
 				this.ctx.lineTo(pCanv.x, pCanv.y);
 			});
-		}					
+		} else {
+			[[-1,-1],[-1,1],[1,1],[1,-1]].forEach(([x, y]) => {
+				const pCanv = this.getCanv({'x':x,'y':y});
+				this.ctx.lineTo(pCanv.x, pCanv.y);
+			});	
+		}
 		this.ctx.fill();	
-	}
 
-	_drawLand(mapdata){
-		this.ctx.fillStyle = colours.land;
+		this.ctx.fillStyle = this.viewParams.land;
 		mapdata.features.forEach(feature => {
 			const geom = feature.geometry;
 			if (geom.type === 'Polygon') {
@@ -291,6 +276,8 @@ class GeoView{
 				});
 			}
 		});
+		
+		this.ctx.globalAlpha = 1.0;
 	}
 
 
