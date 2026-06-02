@@ -60,7 +60,8 @@ export async function loadApp(){
 		});
 	}
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
-		views.get('mainCanvas')?.onMouseMove(e);
+		const bandMode = document.getElementById('mainTile').dataset.bm;
+		views.get(bandMode+' main')?.onMouseMove(e);
 	});
 	
 	connectToFeed(document.getElementById('squaresList').value, bands); 
