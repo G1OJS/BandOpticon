@@ -60,7 +60,7 @@ export async function loadApp(){
 		});
 	}
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
-		views.get('mainCanvas')?.onMousemove(e);
+		views.get('mainCanvas')?.onMouseMove(e);
 	});
 	
 	connectToFeed(document.getElementById('squaresList').value, bands); 
@@ -108,6 +108,10 @@ function refreshView(bandMode){
 			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 			tileElement.dataset.value = dataVignette.wavelength;
 			tileElement.dataset.bm = bandMode;
+			tileElement.addEventListener('click', (e) => {
+				document.getElementById('mainTile').dataset.bm = bandMode;
+				refreshViews(bandMode);
+			});		
 			let insertpos = null;
 			for (const tile of document.querySelectorAll('.tile')){
 				if (tile.dataset.value < dataVignette.wavelength) {
@@ -119,17 +123,20 @@ function refreshView(bandMode){
 			tileElement.querySelector('.tileTitle').textContent = bandMode;  			
 		}
 		tileElement.classList.remove('hidden');
-		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;	
-		const view = getView(bandMode, dataVignette, 400, 110);
+		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;
+		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
+		const view = getView(bandMode, canvas, dataVignette, 400, 110);
 
 		if (!view.viewParams.setZoomToData) view.setZoomFullEarth();
 		view.invalidate();
 	} 
 	
-	if (bandMode == document.getElementById('mainViewTitle').innerText){
-		const canvas = document.getElementById("mainCanvas");
-		const view = getView('mainCanvas', dataVignette, 1200, 50);
+	if (bandMode == document.getElementById('mainTile').dataset.bm){
+		console.log("Refresh main for "+bandMode);
+		const canvas = document.getElementById('mainCanvas');
+		const view = getView('mainCanvas', canvas, dataVignette, 1200, 50);
 		document.getElementById('clickTileMessage').classList.add('hidden');
+		document.getElementById('mainViewTitle').innerText = bandMode;
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
 		view.invalidate();		
 	} 	

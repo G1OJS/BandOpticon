@@ -18,10 +18,9 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 	landPolys50m = data;
 });
 
-export function getView(viewName, dataVignette, canvasWidth, mapres){
+export function getView(viewName, canvas, dataVignette, canvasWidth, mapres){
 	let view = views.get(viewName);
 	if (!view) {
-		const canvas = document.querySelector('[data-bm="'+viewName+'"]').querySelector('canvas');
 		view = new GeoView(dataVignette, canvas, canvasWidth, mapres);	
 		views.set(viewName, view);
 	}
@@ -121,8 +120,15 @@ class GeoView{
 	setZoomToData(){
 		let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
 		let pointsExist = false;
+		let forAutoZoomExists = false;
 		for (const ptd of this.pointsToDraw.values()) { 
-			if (ptd.forAutoZoom){
+			if (ptd.forAutoZoom) {
+				forAutoZoomExists = true;
+				break;
+			}
+		}
+		for (const ptd of this.pointsToDraw.values()) { 
+			if (ptd.forAutoZoom || !forAutoZoomExists){
 				usedNDC.x0 = Math.min(usedNDC.x0, ptd.pNDC.x);
 				usedNDC.y0 = Math.min(usedNDC.y0, ptd.pNDC.y);
 				usedNDC.x1 = Math.max(usedNDC.x1, ptd.pNDC.x);
@@ -163,6 +169,7 @@ class GeoView{
 		}
 		this.connectionsToDraw = new Set();
 		let homeCalls = new Set();
+		const vp = this.viewParams;
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
 			let vis = false; 
@@ -173,7 +180,6 @@ class GeoView{
 				if (txRecord.isInHome) homeCalls.add(connection.s);
 				if (rxRecord.isInHome) homeCalls.add(connection.r);
 				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
-					const vp = this.viewParams;
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
 					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
@@ -191,10 +197,10 @@ class GeoView{
 						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
 					}
 				}
-				if (this.showOnlyDuplexConnections && (connection.duplex === true)){
-					lineColour = this.viewParams.txrx;
+				if (vp.showOnlyDuplexConnections && (connection.duplex === true)){
+					lineColour = this.vp.txrx;
 				}						
-				if (this.showAllConnections){
+				if (vp.showAllConnections){
 					let origin = txRecord.isInHome? connection.s:connection.r;
 					lineColour = colourSequence[[...homeCalls].indexOf(origin) % colourSequence.length];
 				}
