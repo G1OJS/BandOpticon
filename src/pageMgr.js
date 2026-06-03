@@ -43,6 +43,8 @@ export async function loadApp(){
 		const fieldElement = document.getElementById(field);
 		const localStorageValue = localStorage.getItem(field);
 		fieldElement.value = localStorageValue? localStorageValue.replaceAll('"',''):'';
+		if (field == 'mapCentreSquare') viewParams.latlonCentre = mhToLatLong(fieldElement.value);
+		if (field == 'myCall') viewParams.myCall = fieldElement.value;
 		fieldElement.addEventListener('change', () => {
 			fieldElement.value = fieldElement.value.toUpperCase();
 			localStorage.setItem(field, JSON.stringify(fieldElement.value));

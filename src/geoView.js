@@ -181,6 +181,7 @@ class GeoView{
 		this.connectionsToDraw = new Set();
 		let homeCalls = new Set();
 		const vp = this.viewParams;
+		//console.log(vp);
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
 			let vis = false; 
@@ -202,7 +203,7 @@ class GeoView{
 					 && !vp.showAllConnections) forAutoZoom |= true;
 					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
 					
-					let showDirectionColouredConnection = (this.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) )
+					let showDirectionColouredConnection = (vp.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) )
 					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
 					if (showDirectionColouredConnection) {
 						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
