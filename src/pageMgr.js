@@ -21,10 +21,6 @@ function setControl(controlName, value){
 	localStorage.setItem(controlName, value);
 }
 
-function setViewParams(params){
-	for (const [k,v] of Object.entries(params)) viewParams[k]=v;
-}
-
 export function getViewParams() {return viewParams;}
 
 export async function loadApp(){
@@ -130,7 +126,6 @@ function refreshView(viewName){
 	if (!stats) return;
 	
 	if (stats.calls){
-		setViewParams({'mapres': 110}); 
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
 		if (!tileElement) {
 			//console.log("Create tile for ", bandMode);
@@ -161,7 +156,6 @@ function refreshView(viewName){
 	 
 	if (bandMode == document.getElementById('mainTile').dataset.bm){
 		if(stats.calls){
-			setViewParams({'mapres': 50}); 
 			const canvas = document.getElementById('mainCanvas');
 			const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
 			if(getViewParams().setZoomToDataMain) view.setZoomToData();

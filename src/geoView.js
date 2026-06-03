@@ -35,6 +35,7 @@ class GeoView{
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
 		this.canvasElement.width = canvasWidth;
+		this.mapres = mapres;
 		this.currentHover = null;
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
@@ -60,7 +61,7 @@ class GeoView{
             if(this.dirty){
                 this.dirty=false;
 				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
-				this._drawMap((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
+				this._drawMap((this.mapres == 110)? landPolys110m:landPolys50m);
 				this._drawData();
             }
         });
