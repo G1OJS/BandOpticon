@@ -16,35 +16,25 @@ export function squareIsInHome(sqm, squaresArr) {
 }
 
 export function parseSquares(sqsList) {
-    // returns uppercase squares, expanded if necessary
-    var outputSqsArr = new Array();
-    var inputSqs = sqsList.toUpperCase().split(','); // internally we work with uppercase squares
-    console.log("Parsing squares list " + inputSqs);
-	var i;
-    for ( i = 0; i < inputSqs.length; i++) {
-        let sq = inputSqs[i].trim();
-        if (sq.length < 4) {
-			console.log("Invalid squares passed to parseSquares");
-            return "Err";
-		}
-        let cln = sq.search(":");
-        if (cln < 0) {
-            outputSqsArr.push(sq)
-        } else {
-            if (sq.length != 7 && sq.length != 9) {
-   			    console.log("Invalid squares passed to parseSquares");
-                return "Err";
+    let parsedSquares = new Array();
+	console.log('Parsing squares ',sqsList)
+    for (const sq of sqsList.split(',')) {
+		const colonPos = sq.search(":")
+        if (colonPos > 1){
+			if (sq.split(':')[1].length == 2){
+				const root = sq.substring(0, colonPos - 2);
+				for (let x = sq.charCodeAt(colonPos - 2); x < sq.charCodeAt(colonPos + 1) + 1; x++) {
+					for (let y = sq.charCodeAt(colonPos - 1); y < sq.charCodeAt(colonPos + 2) + 1; y++) {
+						parsedSquares.push(root + String.fromCharCode(x) + String.fromCharCode(y))
+					}
+				}
 			}
-            let root = sq.substring(0, cln - 2);
-            for (let x = sq.charCodeAt(cln - 2); x < sq.charCodeAt(cln + 1) + 1; x++) {
-                for (let y = sq.charCodeAt(cln - 1); y < sq.charCodeAt(cln + 2) + 1; y++) {
-                    outputSqsArr.push(root + String.fromCharCode(x) + String.fromCharCode(y))
-                }
-            }
-        }
+        } else {
+			if ([4,6,8].includes(sq.length)) {parsedSquares.push(sq)}
+		}
     }
-    console.log("Parsed squares result " + outputSqsArr);
-    return outputSqsArr;
+    console.log("Parsed squares result " + parsedSquares);
+    return parsedSquares;
 }
 
 export function mhToLatLong(Sq_mixedCase) {

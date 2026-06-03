@@ -1,7 +1,7 @@
 import {mhToLatLong, squaresToKmDeg} from './geoFuncs.js'
 import {onDataUpdate} from './pageMgr.js'
 
-let dataVignettes = new Map();
+export let dataVignettes = new Map();
 const ttl = 300000;
 
 const purge = setInterval(() => {
@@ -24,7 +24,7 @@ export function addSpot(spot, senderIsInHome, receiverIsInHome) {
 	}
 }
 
-export function clearAllVignettes(bandMode){
+export function clearAllDataVignettes(bandMode){
 	dataVignettes = new Map();
 }
 
@@ -40,11 +40,11 @@ export class DataVignette{
 		if (band.search("cm") > 0) this.wavelength /= 100;
 		this.srRecords = new Map();
 		this.connections = new Set();
-		this.reciprocalConnections = new Set();
+		this.duplexConnections = new Set();
 	}
 	
 	getStats(){ 
-		let stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'connsHomeTx':0, 'connsHomeRx':0};
+		let stats = {'calls': 0, 'callsHomeTx':0, 'callsHomeRx':0, 'callsHomeTxRx':0, 'simplex':0, 'duplex':0};
 		
 		for (const call of this.srRecords.keys()) {
 			stats.calls +=1;
@@ -58,43 +58,26 @@ export class DataVignette{
 				}
 			}
 		}
-		for (const connection of this.connections){
-			if (this.srRecords.get(connection.s).isInHome) stats.connsHomeTx +=1;
-			if (this.srRecords.get(connection.r).isInHome) stats.connsHomeRx +=1;
-		}
+		stats.simplex = this.connections.size;
+		stats.duplex = this.duplexConnections.size;
 		return stats;
-	}
-	
-	getconnections(){
-		return this.connections;	
-	}
-	
-	getsrRecords(){
-		return this.srRecords;
-	}
-	
-	_hasReciprocal(connection){
-		for (const conn of this.connections){
-			if (conn.s == connection.r && conn.r == connection.s) return true;
-		}
-		return false;
 	}
 	
 	recordConnection(sRecord, rRecord){
 		let changed = false;
-		let connection = {'s':sRecord.call, 'r':rRecord.call};
+		const connection = sRecord.call+"|"+rRecord.call;
+		const reverse_connection = rRecord.call+"|"+sRecord.call;
 		changed |= this._update_srRecords(sRecord);  
 		changed |= this._update_srRecords(rRecord);
-		if (connection.reciprocal === undefined) {
-			const reciprocal = this._hasReciprocal(connection);
-			if (reciprocal) {
-				connection.reciprocal = true;
+		if (this.connections.has(reverse_connection)) {
+			this.duplexConnections.add(connection);
+			this.connections.delete(reverse_connection);
+			changed = true;
+		} else {
+			if(!this.connections.has(connection)) {	
+				this.connections.add(connection);
 				changed = true;
 			}
-		}
-		if(!this.connections.has(connection)) {	
-			this.connections.add(connection);
-			changed = true;
 		}
 		if (changed) {
 			onDataUpdate(this.bandMode);
@@ -102,7 +85,7 @@ export class DataVignette{
 	}
 
 	_isCurrent(epRecord){
-		return ((Date.now() - epRecord.lastSeen) < ttl)
+		return epRecord? ((Date.now() - epRecord.lastSeen) < ttl):false;
 	}
 
 	purgeStale(){
@@ -110,14 +93,18 @@ export class DataVignette{
 		for (const [call, rec] of this.srRecords.entries()) {
 			if (this._isCurrent(rec)) srRecordsCurrent.set(call, rec);
 		}
-		let connectionsCurrent = new Set();
-		for (const connection of this.connections){
-			if (this._isCurrent(this.srRecords.get(connection.s)) &&  this._isCurrent(this.srRecords.get(connection.r)) ){
-				connectionsCurrent.add(connection);
+		this.srRecords = srRecordsCurrent;
+
+		for (const key of ['connections', 'duplexConnections']) {
+			let connectionsCurrent = new Set();
+			for (const connection of this[key]) {
+				const [s, r] = connection.split('|'); 
+				if (this._isCurrent(this.srRecords.get(s)) && this._isCurrent(this.srRecords.get(r))) {
+					connectionsCurrent.add(connection);
+				}
 			}
+			this[key] = connectionsCurrent; 
 		}
-		this.srRecords = structuredClone(srRecordsCurrent);
-		this.connections = structuredClone(connectionsCurrent);
 	}
 	
 	_update_srRecords(srRecordNew){

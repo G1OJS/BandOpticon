@@ -2,17 +2,21 @@ import {parseSquares, squareIsInHome} from './geoFuncs.js';
 import {addSpot} from './dataMgr.js'
 
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
-let squaresArr = null;
+let mixedLevelSquares = null;
 var mqttClient = null;
-export var mqttStatus = 'connecting';
+export var mqttStatus = 'Connecting';
 
-export function connectToFeed(bands) {
+export function connectToFeed(squaresList, bands) {
     //pskr/filter/v2/{band}/{mode}/{sendercall}/{receivercall}/{senderlocator}/{receiverlocator}/{sendercountry}/{receivercountry}
-    mqttClient = mqtt.connect("wss://mqtt.pskreporter.info:1886");
-    mqttClient.onSuccess = subscribe(bands);
-    mqttClient.on("message", (filter, message) => {
-        onMessage(message.toString());
-    });
+	if (squaresList){
+		mqttClient = mqtt.connect("wss://mqtt.pskreporter.info:1886");
+		mqttClient.onSuccess = subscribe(squaresList, bands);
+		mqttClient.on("message", (filter, message) => {
+			onMessage(message.toString());
+		});
+	} else {
+		mqttStatus = 'Please enter home square(s)'
+	}
 }
 
 function validate_band(band){
@@ -21,31 +25,29 @@ function validate_band(band){
 	return (valid);
 }
 
-function subscribe(bands) {
-    // find the topics for the level 4 squares we need to subscribe to in order to get messages for our squares in squaresArr
+function subscribe(squaresList, bands) {
     let topics = new Set;
-	squaresArr = parseSquares(JSON.parse(localStorage.getItem('squaresList')));
-
+	mixedLevelSquares = parseSquares(squaresList);
 	for (const b of bands) {
 		if (validate_band(b) || b=='+') {
-			for (let i = 0; i < squaresArr.length; i++) {
-				topics.add('pskr/filter/v2/'+b+'/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/+/#');
-				topics.add('pskr/filter/v2/'+b+'/+/+/+/+/' + squaresArr[i].substring(0, 4) + '/+/#');
+			for (const square of mixedLevelSquares) {
+				const L4square = square.slice(0,4);
+				topics.add('pskr/filter/v2/'+b+'/+/+/+/' + L4square + '/+/+/#');
+				topics.add('pskr/filter/v2/'+b+'/+/+/+/+/' + L4square + '/+/#');
 			}
 		}
 	}
-    // now subscribe to the topics
-	mqttStatus = 'subscribed - waiting for data';
-	Array.from(topics).forEach((t) => {
+	for (const t of topics){
 		console.log("Subscribe to " + t);
 		mqttClient.subscribe(t, (error) => {
 			if (error) {
-				mqttStatus = 'error';
+				mqttStatus = 'MQTT subscription error';
 				console.error('subscription failed to ' + t, error)
+			} else {
+				mqttStatus = 'Subscribed, waiting for data';
 			}
 		});
-	});
-	
+	}
 }
 
 function onMessage(msg) {
@@ -55,8 +57,8 @@ function onMessage(msg) {
         let kvp = v.split(":");
         spot[kvp[0]] = kvp[1];
     });
-	let sh = squareIsInHome(spot.sl, squaresArr);
-	let rh = squareIsInHome(spot.rl, squaresArr);
+	let sh = squareIsInHome(spot.sl, mixedLevelSquares);
+	let rh = squareIsInHome(spot.rl, mixedLevelSquares);
 	if(sh || rh) addSpot(spot, sh, rh);
-	mqttStatus = 'receiving';
+	mqttStatus = 'Receiving';
 }
