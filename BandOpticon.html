@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>BandOpticon Geo</title>
+<title>BandOpticon Geo Test</title>
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta http-equiv="Expires" content="0"/>
@@ -17,7 +17,7 @@
 <div id='test' style='height:100%; display:none;'></div>
 <div id="app" class="paper-main">
 	<div id='ribbon' class="windowBar hideForMaxView ">
-		<h1>BandOpticon Geo</h1>
+		<h1>BandOpticon Geo Test</h1>
 		<div class= 'statusMessage' id = 'mqttStatus'></div>
 		<span class = 'controlGroup' >
 			Show spots involving
@@ -69,8 +69,8 @@
 	<div id="tileTray" class="paper-light">
 		<span class = 'controlGroup' >
 			<span class = 'control' >
-				<input type="checkbox" id="setZoomToData" name="setZoomToData">
-				<label for="zoomToDataCarousel">Zoom to activity</label>
+				<input type="checkbox" id="setZoomToDataCarousel" name="setZoomToDataCarousel">
+				<label for="setZoomToDataCarousel">Zoom to activity</label>
 			</span>
 		</span>
 		<span class = 'controlGroup'>
@@ -99,8 +99,14 @@
 	</div>	
 	
 	<div id="mainViewContainer" class="paper-light" >
+		<span class = 'controlGroup' >
+			<span class = 'control' >
+				<input type="checkbox" id="setZoomToDataMain" name="setZoomToDataMain">
+				<label for="setZoomToDataMain">Zoom to activity</label>
+			</span>
+		</span>
 		<div id='mainView' >
-			<div id = 'mainTile'>
+			<div id = 'mainTile' class ='tile'>
 				<div class = 'windowBar'>
 					<span class="control windowBarButton" id = 'zoomFullEarthBtn' title = 'Full Earth View'>⛶</span>
 					<span class="control windowBarButton" id = 'setZoomToDataBtn'  title = 'Set Zoom to Current Activity'>=</span>

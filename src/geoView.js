@@ -46,18 +46,20 @@ class GeoView{
 	}
 
 	invalidate(){
+		console.log("Redraw request" + this.canvasElement.closest('.tile').dataset.bm);
         this.dirty=true;
         if(this.redrawPending) return;
+		this.viewParams = getViewParams();
+		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
+		if (this.canvasElement.height != canvasHeightNeeded) this.canvasElement.height = canvasHeightNeeded;
+		this.ctx = this.canvasElement.getContext('2d');
+		this._setItemsToDraw();
         this.redrawPending=true;
         requestAnimationFrame(()=>{
             this.redrawPending=false;
             if(this.dirty){
                 this.dirty=false;
-				this.viewParams = getViewParams();
-				this.canvasElement.height = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
-				this.ctx = this.canvasElement.getContext('2d');
 				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
-				this._setItemsToDraw();
 				this._drawMap((this.viewParams.mapres == 110)? landPolys110m:landPolys50m);
 				this._drawData();
             }
@@ -69,9 +71,11 @@ class GeoView{
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
 			
 		for (const [call, pt] of this.pointsToDraw.entries()) { 
-			if(Math.abs(ptrCanv.x - pt.pCanv.x) < 5 && Math.abs(ptrCanv.y - pt.pCanv.y) < 5) {
-				this.canvasElement.style = 'cursor:default;';
-				hovering_over = call;
+			if (ptrCanv && pt.pCanv){
+				if(Math.abs(ptrCanv.x - pt.pCanv.x) < 5 && Math.abs(ptrCanv.y - pt.pCanv.y) < 5) {
+					this.canvasElement.style = 'cursor:default;';
+					hovering_over = call;
+				}
 			}
 			if (hovering_over) break;
 		}

@@ -4,16 +4,22 @@ import {getDataVignette, clearAllDataVignettes, dataVignettes} from './dataMgr.j
 import {connectToFeed, mqttStatus} from './mqtt.js';
 
 const uiFields = ['myCall', 'squaresList', 'mapCentreSquare'];
-const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToData',
+const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToDataCarousel', 'setZoomToDataMain',
 							'showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall','AzEq']
 const connectionsRadioGroup = ['showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall'];
 const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
-let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToData':false, 
+let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToDataCarousel':false, 'setZoomToDataMain':false, 
 				  'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8, 'mapAlpha':0.4, 
 				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
 				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
+				
+function setControl(controlName, value){
+	viewParams[controlName] = value;
+	document.getElementById(controlName).checked = value;
+	localStorage.setItem(controlName, value);
+}
 
 export function getViewParams() {return viewParams;}
 
@@ -47,16 +53,13 @@ export async function loadApp(){
 	}
 	for (const cb of uiCheckBoxesCommon){
 		const cbElement = document.getElementById(cb);
+		if (!cbElement) console.log(cb);
 		cbElement.checked = (localStorage.getItem(cb) === 'true');
 		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
 			if (connectionsRadioGroup.includes(cb) && cbElement.checked) {
 				for (const other of connectionsRadioGroup) {
-					if (other != cb) {
-						document.getElementById(other).checked = false
-						localStorage.setItem(other, false);
-						viewParams[other] = false;
-					}
+					if (other != cb) setControl(other, false);
 				}
 			}
 			localStorage.setItem(cb, cbElement.checked);
@@ -66,6 +69,7 @@ export async function loadApp(){
 	}
 	for (const cbl of uiMainViewClickElements) {
 		document.getElementById(cbl).addEventListener('click', (e) => {
+			setControl('setZoomToDataMain', false);
 			const bandMode = document.getElementById('mainTile').dataset.bm;
 			views.get(bandMode+' main')?.onClick(e);
 			refreshView(bandMode+' main');
@@ -120,7 +124,7 @@ function refreshView(viewName){
 	if (stats.calls){
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
 		if (!tileElement) {
-			console.log("Create tile for ", bandMode);
+			//console.log("Create tile for ", bandMode);
 			tileElement = document.querySelector('#tileTemplate').content.cloneNode(true).querySelector('div');
 			tileElement.dataset.value = dataVignette.wavelength;
 			tileElement.dataset.bm = bandMode;
@@ -143,14 +147,14 @@ function refreshView(viewName){
 	}
 	const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
 	const view = getView(bandMode, canvas, dataVignette, 400, 110);
-	(getViewParams().setZoomToData)? view.setZoomToData(): view.setZoomFullEarth();
+	(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
 	view.invalidate();
 	 
 	if (bandMode == document.getElementById('mainTile').dataset.bm){
 		if(stats.calls){
-			console.log("Refresh main for "+bandMode);
 			const canvas = document.getElementById('mainCanvas');
 			const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
+			if(getViewParams().setZoomToDataMain) view.setZoomToData();
 			document.getElementById('clickTileMessage').classList.add('hidden');
 			document.getElementById('mainViewTitle').innerText = bandMode;
 			document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
