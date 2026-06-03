@@ -236,17 +236,17 @@ class GeoView{
 		for (const conn of this.connectionsToDraw){
 			const [callA, callB, lineColour] = conn.split('|');
 			this.ctx.strokeStyle = lineColour;
-			this.ctx.globalAlpha = this.lineAlpha;
+			this.ctx.globalAlpha = this.viewParams.lineAlpha;
 			const epts = {'s':this.pointsToDraw.get(callA).pCanv, 'r':this.pointsToDraw.get(callB).pCanv};
 			this.ctx.beginPath();
 			this.ctx.moveTo(epts.s.x, epts.s.y);
 			this.ctx.lineTo(epts.r.x, epts.r.y);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.s.x, epts.s.y, this.spotSize, 0, 6.282);
+			this.ctx.arc(epts.s.x, epts.s.y, this.viewParams.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.r.x, epts.r.y, this.spotSize, 0, 6.282);
+			this.ctx.arc(epts.r.x, epts.r.y, this.viewParams.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.globalAlpha = 1.0;
 		}

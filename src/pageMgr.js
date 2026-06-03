@@ -11,7 +11,7 @@ const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutB
 
 let pendingUpdates = new Set();
 let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToDataCarousel':false, 'setZoomToDataMain':false, 
-				  'spotSize':4, 'lineWidth':4, 'spotAlpha':0.7, 'lineAlpha': 0.8, 'mapAlpha':0.4, 
+				  'spotSize':6, 'lineWidth':4, 'spotAlpha':0.5, 'lineAlpha': 0.35, 'mapAlpha':0.35, 
 				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
 				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
 				
@@ -19,6 +19,10 @@ function setControl(controlName, value){
 	viewParams[controlName] = value;
 	document.getElementById(controlName).checked = value;
 	localStorage.setItem(controlName, value);
+}
+
+function setViewParams(params){
+	for (const [k,v] of Object.entries(params)) viewParams[k]=v;
 }
 
 export function getViewParams() {return viewParams;}
@@ -126,6 +130,7 @@ function refreshView(viewName){
 	if (!stats) return;
 	
 	if (stats.calls){
+		setViewParams({'mapres': 110}); 
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
 		if (!tileElement) {
 			//console.log("Create tile for ", bandMode);
@@ -156,6 +161,7 @@ function refreshView(viewName){
 	 
 	if (bandMode == document.getElementById('mainTile').dataset.bm){
 		if(stats.calls){
+			setViewParams({'mapres': 50}); 
 			const canvas = document.getElementById('mainCanvas');
 			const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
 			if(getViewParams().setZoomToDataMain) view.setZoomToData();
