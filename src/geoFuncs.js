@@ -38,7 +38,8 @@ export function parseSquares(sqsList) {
 }
 
 export function mhToLatLong(Sq_mixedCase) {
-    let Sq = Sq_mixedCase.toUpperCase();
+	if (Sq_mixedCase.length <2) return {'lat':0, 'lon':0};
+    const Sq = Sq_mixedCase.toUpperCase();
 	let lat = -90 + 10 * (Sq.charCodeAt(1) - 65) + 5;
 	let lon = -180 + 20 * (Sq.charCodeAt(0) - 65) + 10;
     if (Sq.length > 2) { 
