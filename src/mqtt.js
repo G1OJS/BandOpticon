@@ -2,7 +2,7 @@ import {parseSquares, squareIsInHome} from './geoFuncs.js';
 import {addSpot} from './dataMgr.js'
 
 import mqtt from 'https://unpkg.com/mqtt/dist/mqtt.esm.js';
-let L4squares = null;
+let mixedLevelSquares = null;
 var mqttClient = null;
 export var mqttStatus = 'Connecting';
 
@@ -27,10 +27,11 @@ function validate_band(band){
 
 function subscribe(squaresList, bands) {
     let topics = new Set;
-	L4squares = parseSquares(squaresList);
+	mixedLevelSquares = parseSquares(squaresList);
 	for (const b of bands) {
 		if (validate_band(b) || b=='+') {
-			for (const L4square of L4squares) {
+			for (const square of mixedLevelSquares) {
+				const L4square = square.slice(0,4);
 				topics.add('pskr/filter/v2/'+b+'/+/+/+/' + L4square + '/+/+/#');
 				topics.add('pskr/filter/v2/'+b+'/+/+/+/+/' + L4square + '/+/#');
 			}
@@ -56,8 +57,8 @@ function onMessage(msg) {
         let kvp = v.split(":");
         spot[kvp[0]] = kvp[1];
     });
-	let sh = squareIsInHome(spot.sl, L4squares);
-	let rh = squareIsInHome(spot.rl, L4squares);
+	let sh = squareIsInHome(spot.sl, mixedLevelSquares);
+	let rh = squareIsInHome(spot.rl, mixedLevelSquares);
 	if(sh || rh) addSpot(spot, sh, rh);
 	mqttStatus = 'Receiving';
 }

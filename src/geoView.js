@@ -46,7 +46,7 @@ class GeoView{
 	}
 
 	invalidate(){
-		console.log("Redraw request" + this.canvasElement.closest('.tile').dataset.bm);
+		//console.log("Redraw request for " + this.canvasElement.closest('.tile').dataset.bm);
         this.dirty=true;
         if(this.redrawPending) return;
 		this.viewParams = getViewParams();
@@ -71,7 +71,7 @@ class GeoView{
 		const ptrCanv = this.getCanv(this.getPtrNDC(e));
 			
 		for (const [call, pt] of this.pointsToDraw.entries()) { 
-			if (ptrCanv && pt.pCanv){
+			if (pt.pCanv){
 				if(Math.abs(ptrCanv.x - pt.pCanv.x) < 5 && Math.abs(ptrCanv.y - pt.pCanv.y) < 5) {
 					this.canvasElement.style = 'cursor:default;';
 					hovering_over = call;

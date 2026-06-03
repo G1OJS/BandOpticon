@@ -44,6 +44,7 @@ export async function loadApp(){
 		const localStorageValue = localStorage.getItem(field);
 		fieldElement.value = localStorageValue? localStorageValue.replaceAll('"',''):'';
 		fieldElement.addEventListener('change', () => {
+			fieldElement.value = fieldElement.value.toUpperCase();
 			localStorage.setItem(field, JSON.stringify(fieldElement.value));
 			if (field == 'mapCentreSquare') viewParams.latlonCentre = mhToLatLong(fieldElement.value);
 			if (field == 'myCall') viewParams.myCall = fieldElement.value;
@@ -53,7 +54,7 @@ export async function loadApp(){
 	}
 	for (const cb of uiCheckBoxesCommon){
 		const cbElement = document.getElementById(cb);
-		if (!cbElement) console.log(cb);
+		if (localStorage.getItem(cb) === null) localStorage.setItem(cb, cbElement.checked);
 		cbElement.checked = (localStorage.getItem(cb) === 'true');
 		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
@@ -120,6 +121,7 @@ function refreshView(viewName){
 	const bandMode = viewName.replace(' main','');
 	const dataVignette = getDataVignette(bandMode);
 	const stats = dataVignette?.getStats();
+	if (!stats) return;
 	
 	if (stats.calls){
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
