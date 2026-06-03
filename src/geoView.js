@@ -51,6 +51,8 @@ class GeoView{
         this.dirty=true;
         if(this.redrawPending) return;
 		this.viewParams = getViewParams();
+		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain,
+							this.viewParams.showAllConnections,this.viewParams.showOnlyDuplexConnections,this.viewParams.showOnlyInvolvingThisCall);
 		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
 		if (this.canvasElement.height != canvasHeightNeeded) this.canvasElement.height = canvasHeightNeeded;
 		this.ctx = this.canvasElement.getContext('2d');
