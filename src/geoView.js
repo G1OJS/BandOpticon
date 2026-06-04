@@ -191,6 +191,7 @@ class GeoView{
 			vis |= (rxRecord.isInHome && document.getElementById('homeRx').checked);
 			if (vis){	
 				let lineColour = null;
+				let lineAlpha = null;
 				if (txRecord.isInHome) homeCalls.add(connection.s);
 				if (rxRecord.isInHome) homeCalls.add(connection.r);
 				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
@@ -205,20 +206,19 @@ class GeoView{
 					 && !vp.showAllConnections) forAutoZoom |= true;
 					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
 					
-					let showDirectionColouredConnection = (vp.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) )
+					let showDirectionColouredConnection = (vp.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) || vp.showAllConnections)
 					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
 					if (showDirectionColouredConnection) {
 						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
+						lineAlpha = this.viewParams.lineAlpha;
 					}
 				}
 				if (vp.showOnlyDuplexConnections && (connection.duplex === true)){
 					lineColour = vp.txrx;
+					lineAlpha = this.viewParams.lineAlpha;
 				}						
-				if (vp.showAllConnections){
-					let origin = txRecord.isInHome? connection.s:connection.r;
-					lineColour = colourSequence[[...homeCalls].indexOf(origin) % colourSequence.length];
-				}
-				if (lineColour) this.connectionsToDraw.add(connection.s+"|"+connection.r+"|"+lineColour);
+				if (!lineAlpha) lineAlpha = 0.1;
+				this.connectionsToDraw.add(connection.s+"|"+connection.r+"|"+lineColour+"|"+lineAlpha);
 			}
 		}
 	}
@@ -236,9 +236,9 @@ class GeoView{
 
 		this.ctx.lineWidth = this.viewParams.lineWidth;
 		for (const conn of this.connectionsToDraw){
-			const [callA, callB, lineColour] = conn.split('|');
+			const [callA, callB, lineColour, lineAlpha] = conn.split('|');
 			this.ctx.strokeStyle = lineColour;
-			this.ctx.globalAlpha = this.viewParams.lineAlpha;
+			this.ctx.globalAlpha = lineAlpha;
 			const epts = {'s':this.pointsToDraw.get(callA).pCanv, 'r':this.pointsToDraw.get(callB).pCanv};
 			this.ctx.beginPath();
 			this.ctx.moveTo(epts.s.x, epts.s.y);
