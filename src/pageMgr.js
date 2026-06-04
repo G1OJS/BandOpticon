@@ -75,7 +75,7 @@ export async function loadApp(){
 			setControl('setZoomToDataMain', false);
 			const bandMode = document.getElementById('mainTile').dataset.bm;
 			views.get(bandMode+' main')?.onClick(e);
-			refreshView(bandMode+' main');
+			refreshMain();
 		});
 	}
 	document.getElementById('mainCanvas').addEventListener('mousemove', (e) => {
@@ -116,6 +116,9 @@ function refreshViews(viewsToRefresh){
 		vis |= (md == 'CW' && document.getElementById('CW').checked);
 		vis |= ('FT8FT4FT2WSPRCW'.search(md) <0 && document.getElementById('Other').checked);
 		if(vis) refreshView(bandMode);
+		if (bandMode == document.getElementById('mainTile').dataset.bm){
+			refreshMain();
+		}
 	}
 }
 
@@ -123,8 +126,6 @@ function refreshView(viewName){
 	const bandMode = viewName.replace(' main','');
 	const dataVignette = getDataVignette(bandMode);
 	const stats = dataVignette?.getStats();
-	if (!stats) return;
-	
 	if (stats.calls){
 		let tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
 		if (!tileElement) {
@@ -134,7 +135,7 @@ function refreshView(viewName){
 			tileElement.dataset.bm = bandMode;
 			tileElement.addEventListener('click', (e) => {
 				document.getElementById('mainTile').dataset.bm = e.target.closest('.tile').dataset.bm;
-				refreshView(bandMode);
+				refreshMain();
 			});		
 			let insertpos = null;
 			for (const tile of document.querySelectorAll('.tile')){
@@ -148,23 +149,31 @@ function refreshView(viewName){
 		}
 		tileElement.classList.remove('hidden');
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;
+		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
+		const view = getView(bandMode, canvas, dataVignette, 400, 110);
+		(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
+		view.invalidate();
+	} else {
+		tileElement?.classList.add('hidden');
+	}	 
+}
+
+function refreshMain(){
+	const bandMode = document.getElementById('mainTile').dataset.bm;
+	const dataVignette = getDataVignette(bandMode);
+	const stats = dataVignette?.getStats();
+	const tileElement = document.getElementById('tileTrayGrid').querySelector('[data-bm="'+bandMode+'"]');
+	if(!tileElement.classList.contains('hidden')){
+		document.getElementById('mainTile').classList.remove('hidden');
+		const canvas = document.getElementById('mainCanvas');
+		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
+		if(getViewParams().setZoomToDataMain) view.setZoomToData();
+		document.getElementById('clickTileMessage').classList.add('hidden');
+		document.getElementById('mainViewTitle').innerText = bandMode;
+		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
+		view.invalidate();
+	} else {
+		document.getElementById('mainTile').classList.add('hidden');
 	}
-	const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
-	const view = getView(bandMode, canvas, dataVignette, 400, 110);
-	(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
-	view.invalidate();
-	 
-	if (bandMode == document.getElementById('mainTile').dataset.bm){
-		if(stats.calls){
-			const canvas = document.getElementById('mainCanvas');
-			const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
-			if(getViewParams().setZoomToDataMain) view.setZoomToData();
-			document.getElementById('clickTileMessage').classList.add('hidden');
-			document.getElementById('mainViewTitle').innerText = bandMode;
-			document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
-			view.invalidate();
-		}
-	} 	
-	
 }
 
