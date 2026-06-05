@@ -5,13 +5,12 @@ import {connectToFeed, mqttStatus} from './mqtt.js';
 
 const uiFields = ['myCall', 'squaresList', 'mapCentreSquare'];
 const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToDataCarousel', 'setZoomToDataMain',
-							'showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall','AzEq']
-const connectionsRadioGroup = ['showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall'];
+							'highlightDuplexConnections','highlightMyCall','AzEq']
 const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
 let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToDataCarousel':false, 'setZoomToDataMain':false, 
-				  'spotSize':6, 'lineWidth':4, 'spotAlpha':0.5, 'lineAlpha': 0.35, 'mapAlpha':0.35, 
+				  'spotSize':6, 'lineWidth':1, 'spotAlpha':0.5, 'lineAlpha': 0.1, 'mapAlpha':0.35, 
 				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
 				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
 				
@@ -60,11 +59,6 @@ export async function loadApp(){
 		cbElement.checked = (localStorage.getItem(cb) === 'true');
 		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
-			if (connectionsRadioGroup.includes(cb) && cbElement.checked) {
-				for (const other of connectionsRadioGroup) {
-					if (other != cb) setControl(other, false);
-				}
-			}
 			localStorage.setItem(cb, cbElement.checked);
 			viewParams[cb] = cbElement.checked;
 			refreshViews(dataVignettes.keys());

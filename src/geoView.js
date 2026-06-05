@@ -51,7 +51,7 @@ class GeoView{
         this.dirty=true;
         if(this.redrawPending) return;
 		this.viewParams = getViewParams();
-		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.showOnlyDuplexConnections,this.viewParams.showOnlyInvolvingThisCall);
+		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.highlightDuplexConnections,this.viewParams.highlightMyCall);
 		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
 		if (this.canvasElement.height != canvasHeightNeeded) this.canvasElement.height = canvasHeightNeeded;
 		this.ctx = this.canvasElement.getContext('2d');
@@ -132,17 +132,20 @@ class GeoView{
 	
 	setZoomToData(){
 		if (this.pointsToDraw.size < 1) this._setItemsToDraw();
+		if (this.currentHover) {
+			return;
+		}
 		let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
 		let pointsExist = false;
-		let forAutoZoomExists = false;
+		let highlightExists = false;
 		for (const ptd of this.pointsToDraw.values()) { 
-			if (ptd.forAutoZoom) {
-				forAutoZoomExists = true;
+			if (ptd.highlight) {
+				highlightExists = true;
 				break;
 			}
 		}
 		for (const ptd of this.pointsToDraw.values()) { 
-			if (ptd.forAutoZoom || !forAutoZoomExists){
+			if (ptd.highlight || !highlightExists){
 				usedNDC.x0 = Math.min(usedNDC.x0, ptd.pNDC.x);
 				usedNDC.y0 = Math.min(usedNDC.y0, ptd.pNDC.y);
 				usedNDC.x1 = Math.max(usedNDC.x1, ptd.pNDC.x);
@@ -181,44 +184,32 @@ class GeoView{
 		}
 		this.pointsToDraw = new Map();
 		this.connectionsToDraw = new Set();
-		let homeCalls = new Set();
 		const vp = this.viewParams;
-		//console.log(vp);
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
-			let vis = false; 
-			vis |= (txRecord.isInHome && document.getElementById('homeTx').checked); 
-			vis |= (rxRecord.isInHome && document.getElementById('homeRx').checked);
-			if (vis){	
-				let lineColour = null;
-				let lineAlpha = null;
-				if (txRecord.isInHome) homeCalls.add(connection.s);
-				if (rxRecord.isInHome) homeCalls.add(connection.r);
-				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
+			if(	  (txRecord.isInHome && document.getElementById('homeTx').checked)
+				||(rxRecord.isInHome && document.getElementById('homeRx').checked) ) {	
+				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth};
+				let highlight = false;
+				for (const epRecord of [txRecord, rxRecord]) {
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
-					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
-					if (vp.showAllConnections) forAutoZoom |= true;
-					if (vp.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
-					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
-					if (!vp.showOnlyInvolvingThisCall 
-					 && !vp.showOnlyDuplexConnections 
-					 && !vp.showAllConnections) forAutoZoom |= true;
-					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
-					
-					let showDirectionColouredConnection = (vp.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) || vp.showAllConnections)
-					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
-					if (showDirectionColouredConnection) {
-						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
-						lineAlpha = this.viewParams.lineAlpha;
+					if (this.currentHover) {
+						highlight |= (epRecord.call == this.currentHover);
+					} else {
+						highlight |= (vp.highlightDuplexConnections) && (connection.duplex === true);
+						highlight |= (vp.highlightMyCall) && (epRecord.call == vp.myCall);
 					}
+					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlight, 'pColour':pColour});
 				}
-				if (vp.showOnlyDuplexConnections && (connection.duplex === true)){
-					lineColour = vp.txrx;
-					lineAlpha = this.viewParams.lineAlpha;
-				}						
-				if (!lineAlpha) lineAlpha = 0.1;
-				this.connectionsToDraw.add(connection.s+"|"+connection.r+"|"+lineColour+"|"+lineAlpha);
+				if (highlight) {
+					lineParams.alpha = 0.9;
+					lineParams.width = 4;
+				}
+				lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
+				lineParams.sCall = txRecord.call;
+				lineParams.rCall = rxRecord.call;
+				this.connectionsToDraw.add(lineParams);
 			}
 		}
 	}
@@ -234,21 +225,21 @@ class GeoView{
 			this.ctx.globalAlpha = 1.0;
 		}	
 
-		this.ctx.lineWidth = this.viewParams.lineWidth;
 		for (const conn of this.connectionsToDraw){
-			const [callA, callB, lineColour, lineAlpha] = conn.split('|');
-			this.ctx.strokeStyle = lineColour;
-			this.ctx.globalAlpha = lineAlpha;
-			const epts = {'s':this.pointsToDraw.get(callA).pCanv, 'r':this.pointsToDraw.get(callB).pCanv};
+			this.ctx.strokeStyle = conn.colour;
+			this.ctx.globalAlpha = conn.alpha;
+			this.ctx.lineWidth = conn.width;
 			this.ctx.beginPath();
-			this.ctx.moveTo(epts.s.x, epts.s.y);
-			this.ctx.lineTo(epts.r.x, epts.r.y);
+			let sCanv = this.pointsToDraw.get(conn.sCall).pCanv;
+			let rCanv = this.pointsToDraw.get(conn.rCall).pCanv;
+			this.ctx.moveTo(sCanv.x, sCanv.y);
+			this.ctx.lineTo(rCanv.x, rCanv.y);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.s.x, epts.s.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(sCanv.x, sCanv.y, this.viewParams.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.r.x, epts.r.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(rCanv.x, rCanv.y, this.viewParams.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.globalAlpha = 1.0;
 		}
