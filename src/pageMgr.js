@@ -145,7 +145,7 @@ function refreshView(viewName){
 		tileElement.classList.remove('hidden');
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;
 		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
-		const view = getView(bandMode, canvas, dataVignette, 400, 110);
+		const view = getView(bandMode, canvas, dataVignette, 400, 110, false);
 		(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
 		view.invalidate();
 	} else {
@@ -161,7 +161,7 @@ function refreshMain(){
 	if(!tileElement.classList.contains('hidden')){
 		document.getElementById('mainTile').classList.remove('hidden');
 		const canvas = document.getElementById('mainCanvas');
-		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
+		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50, true);
 		if(getViewParams().setZoomToDataMain) view.setZoomToData();
 		document.getElementById('clickTileMessage').classList.add('hidden');
 		document.getElementById('mainViewTitle').innerText = bandMode;

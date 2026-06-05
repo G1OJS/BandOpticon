@@ -18,10 +18,10 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 	landPolys50m = data;
 });
 
-export function getView(viewName, canvas, dataVignette, canvasWidth, mapres){
+export function getView(viewName, canvas, dataVignette, canvasWidth, mapres, drawUnhighlightedConnections){
 	let view = views.get(viewName);
 	if (!view) {
-		view = new GeoView(dataVignette, canvas, canvasWidth, mapres);	
+		view = new GeoView(dataVignette, canvas, canvasWidth, mapres, drawUnhighlightedConnections);	
 		views.set(viewName, view);
 	}
 	view.viewParams = getViewParams();
@@ -31,11 +31,12 @@ export function getView(viewName, canvas, dataVignette, canvasWidth, mapres){
 export function clearAllViews() {views = new Map()};
 
 class GeoView{
-	constructor(dataVignette, canvasElement, canvasWidth, mapres) {
+	constructor(dataVignette, canvasElement, canvasWidth, mapres, drawUnhighlightedConnections) {
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
 		this.canvasElement.width = canvasWidth;
 		this.mapres = mapres;
+		this.drawUnhighlightedConnections = drawUnhighlightedConnections;
 		this.currentHover = null;
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
@@ -213,7 +214,7 @@ class GeoView{
 					lineParams.width = this.viewParams.lineWidthHL;
 					lineParams.spotSize = this.viewParams.spotSizeHL;
 				}
-				let drawUnhighlightedConnections = true;
+				let drawUnhighlightedConnections = this.drawUnhighlightedConnections;
 				if (this.currentHover) drawUnhighlightedConnections = false;
 				if (highlightConnection || drawUnhighlightedConnections){
 					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
