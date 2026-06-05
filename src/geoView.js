@@ -184,29 +184,32 @@ class GeoView{
 		}
 		this.pointsToDraw = new Map();
 		this.connectionsToDraw = new Set();
+		let highlightConnection = false;
 		const vp = this.viewParams;
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
+			const connectionInvolvesMyCall = (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
 			if(	  (txRecord.isInHome && document.getElementById('homeTx').checked)
 				||(rxRecord.isInHome && document.getElementById('homeRx').checked) ) {	
 				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth};
-				let highlight = false;
 				for (const epRecord of [txRecord, rxRecord]) {
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
 					if (this.currentHover) {
-						highlight |= (epRecord.call == this.currentHover);
+						highlightConnection = (epRecord.call == this.currentHover);
 					} else {
-						highlight |= (vp.highlightDuplexConnections) && (connection.duplex === true);
-						highlight |= (vp.highlightMyCall) && (epRecord.call == vp.myCall);
+						const highlightBecauseDuplex = vp.highlightDuplexConnections && (connection.duplex === true);
+						const highlightBecaseMyCall = vp.highlightMyCall && connectionInvolvesMyCall
+						highlightConnection = highlightBecauseDuplex || highlightBecaseMyCall;
 					}
-					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlight, 'pColour':pColour});
+					const highlightEndpoint = highlightConnection || (this.pointsToDraw.get(epRecord.call)?.highlight === true);
+					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlightEndpoint, 'pColour':pColour});
 				}
-				if (highlight) {
+				if (highlightConnection) {
 					lineParams.alpha = 0.9;
 					lineParams.width = 4;
 				}
-				if (!(this.currentHover && !highlight)){
+				if (!(this.currentHover && !highlightConnection)){
 					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
 					lineParams.sCall = txRecord.call;
 					lineParams.rCall = rxRecord.call;
