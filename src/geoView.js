@@ -191,25 +191,31 @@ class GeoView{
 			const connectionInvolvesMyCall = (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
 			if(	  (txRecord.isInHome && document.getElementById('homeTx').checked)
 				||(rxRecord.isInHome && document.getElementById('homeRx').checked) ) {	
-				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth};
+				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth, spotSize: this.viewParams.spotSize};
 				for (const epRecord of [txRecord, rxRecord]) {
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
 					if (this.currentHover) {
-						highlightConnection = (epRecord.call == this.currentHover);
+						highlightConnection = (txRecord.call == this.currentHover || rxRecord.call == this.currentHover);
 					} else {
 						const highlightBecauseDuplex = vp.highlightDuplexConnections && (connection.duplex === true);
 						const highlightBecaseMyCall = vp.highlightMyCall && connectionInvolvesMyCall
 						highlightConnection = highlightBecauseDuplex || highlightBecaseMyCall;
 					}
 					const highlightEndpoint = highlightConnection || (this.pointsToDraw.get(epRecord.call)?.highlight === true);
-					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlightEndpoint, 'pColour':pColour});
+					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlightEndpoint, 'pColour':pColour,
+						alpha: highlightEndpoint? this.viewParams.spotAlphaHL : this.viewParams.spotAlpha, 
+						size: highlightEndpoint? this.viewParams.spotSizeHL : this.viewParams.spotSize
+					});
 				}
 				if (highlightConnection) {
-					lineParams.alpha = 0.9;
-					lineParams.width = 4;
+					lineParams.alpha = this.viewParams.lineAlphaHL;
+					lineParams.width = this.viewParams.lineWidthHL;
+					lineParams.spotSize = this.viewParams.spotSizeHL;
 				}
-				if (!(this.currentHover && !highlightConnection)){
+				let drawUnhighlightedConnections = true;
+				if (this.currentHover) drawUnhighlightedConnections = false;
+				if (highlightConnection || drawUnhighlightedConnections){
 					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
 					lineParams.sCall = txRecord.call;
 					lineParams.rCall = rxRecord.call;
@@ -222,9 +228,9 @@ class GeoView{
 	_drawData(){
 		for (const pt of this.pointsToDraw.values()){
 			pt.pCanv = this.getCanv(pt.pNDC);
-			this.ctx.globalAlpha = this.viewParams.spotAlpha;
+			this.ctx.globalAlpha = pt.alpha;
 			this.ctx.beginPath();
-			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, pt.size, 0, 6.282);
 			this.ctx.fillStyle = pt.pColour;
 			this.ctx.fill();
 			this.ctx.globalAlpha = 1.0;
@@ -241,10 +247,10 @@ class GeoView{
 			this.ctx.lineTo(rCanv.x, rCanv.y);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(sCanv.x, sCanv.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(sCanv.x, sCanv.y, conn.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(rCanv.x, rCanv.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(rCanv.x, rCanv.y, conn.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.globalAlpha = 1.0;
 		}

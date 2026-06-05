@@ -10,9 +10,10 @@ const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutB
 
 let pendingUpdates = new Set();
 let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToDataCarousel':false, 'setZoomToDataMain':false, 
-				  'spotSize':6, 'lineWidth':1, 'spotAlpha':0.5, 'lineAlpha': 0.1, 'mapAlpha':0.35, 
-				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
-				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
+				  'spotSize':6, 'lineWidth':1.5, 'spotAlpha':0.4, 'lineAlpha': 0.15,
+				  'spotSizeHL':7, 'lineWidthHL':4, 'spotAlphaHL':0.9, 'lineAlphaHL': 0.9,
+				'tx':'rgb(200, 30, 30)', 'rx':'rgb(30, 200, 30)',	'txrx':'rgb(51, 153, 255)', 
+				'land':'rgba(180,200,180)', 'sea':'rgba(180,210,250)', 'mapAlpha':0.35};
 				
 function setControl(controlName, value){
 	viewParams[controlName] = value;
