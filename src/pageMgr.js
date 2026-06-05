@@ -5,15 +5,15 @@ import {connectToFeed, mqttStatus} from './mqtt.js';
 
 const uiFields = ['myCall', 'squaresList', 'mapCentreSquare'];
 const uiCheckBoxesCommon = ['homeTx','homeRx','FT8','FT4','FT2','WSPR','CW','Other','setZoomToDataCarousel', 'setZoomToDataMain',
-							'showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall','AzEq']
-const connectionsRadioGroup = ['showAllConnections','showOnlyDuplexConnections','showOnlyInvolvingThisCall'];
+							'highlightDuplexConnections','highlightMyCall','AzEq']
 const uiMainViewClickElements = ['zoomFullEarthBtn','setZoomToDataBtn','zoomOutBtn','mainCanvas']
 
 let pendingUpdates = new Set();
 let viewParams = {'AzEq':false, 'latlonCentre':{'lat':0,'lon':0}, 'myCall':'', 'setZoomToDataCarousel':false, 'setZoomToDataMain':false, 
-				  'spotSize':6, 'lineWidth':4, 'spotAlpha':0.5, 'lineAlpha': 0.35, 'mapAlpha':0.35, 
-				tx:'rgb(200, 30, 30)', rx:'rgb(30, 200, 30)',	txrx:'rgb(51, 153, 255)', 
-				land:'rgba(180,200,180)', sea:'rgba(180,210,250)'};
+				  'spotSize':6, 'lineWidth':1.5, 'spotAlpha':0.4, 'lineAlpha': 0.15,
+				  'spotSizeHL':7, 'lineWidthHL':4, 'spotAlphaHL':0.9, 'lineAlphaHL': 0.9,
+				'tx':'rgb(200, 30, 30)', 'rx':'rgb(30, 200, 30)',	'txrx':'rgb(51, 153, 255)', 
+				'land':'rgba(180,200,180)', 'sea':'rgba(180,210,250)', 'mapAlpha':0.35};
 				
 function setControl(controlName, value){
 	viewParams[controlName] = value;
@@ -60,11 +60,6 @@ export async function loadApp(){
 		cbElement.checked = (localStorage.getItem(cb) === 'true');
 		viewParams[cb] = cbElement.checked;
 		cbElement.addEventListener('change', () => {
-			if (connectionsRadioGroup.includes(cb) && cbElement.checked) {
-				for (const other of connectionsRadioGroup) {
-					if (other != cb) setControl(other, false);
-				}
-			}
 			localStorage.setItem(cb, cbElement.checked);
 			viewParams[cb] = cbElement.checked;
 			refreshViews(dataVignettes.keys());
@@ -150,7 +145,7 @@ function refreshView(viewName){
 		tileElement.classList.remove('hidden');
 		tileElement.querySelector('.tileSubtitle').innerText = `Total Calls:${stats.calls}`;
 		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
-		const view = getView(bandMode, canvas, dataVignette, 400, 110);
+		const view = getView(bandMode, canvas, dataVignette, 400, 110, false);
 		(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
 		view.invalidate();
 	} else {
@@ -166,7 +161,7 @@ function refreshMain(){
 	if(!tileElement.classList.contains('hidden')){
 		document.getElementById('mainTile').classList.remove('hidden');
 		const canvas = document.getElementById('mainCanvas');
-		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50);
+		const view = getView(bandMode+' main', canvas, dataVignette, 1200, 50, true);
 		if(getViewParams().setZoomToDataMain) view.setZoomToData();
 		document.getElementById('clickTileMessage').classList.add('hidden');
 		document.getElementById('mainViewTitle').innerText = bandMode;

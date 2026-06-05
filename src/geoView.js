@@ -18,10 +18,10 @@ fetch('https://d2ad6b4ur7yvpq.cloudfront.net/naturalearth-3.3.0/ne_50m_land.geoj
 	landPolys50m = data;
 });
 
-export function getView(viewName, canvas, dataVignette, canvasWidth, mapres){
+export function getView(viewName, canvas, dataVignette, canvasWidth, mapres, drawUnhighlightedConnections){
 	let view = views.get(viewName);
 	if (!view) {
-		view = new GeoView(dataVignette, canvas, canvasWidth, mapres);	
+		view = new GeoView(dataVignette, canvas, canvasWidth, mapres, drawUnhighlightedConnections);	
 		views.set(viewName, view);
 	}
 	view.viewParams = getViewParams();
@@ -31,11 +31,12 @@ export function getView(viewName, canvas, dataVignette, canvasWidth, mapres){
 export function clearAllViews() {views = new Map()};
 
 class GeoView{
-	constructor(dataVignette, canvasElement, canvasWidth, mapres) {
+	constructor(dataVignette, canvasElement, canvasWidth, mapres, drawUnhighlightedConnections) {
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
 		this.canvasElement.width = canvasWidth;
 		this.mapres = mapres;
+		this.drawUnhighlightedConnections = drawUnhighlightedConnections;
 		this.currentHover = null;
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
 		this.dirty = false;
@@ -51,7 +52,7 @@ class GeoView{
         this.dirty=true;
         if(this.redrawPending) return;
 		this.viewParams = getViewParams();
-		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.showOnlyDuplexConnections,this.viewParams.showOnlyInvolvingThisCall);
+		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.highlightDuplexConnections,this.viewParams.highlightMyCall);
 		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
 		if (this.canvasElement.height != canvasHeightNeeded) this.canvasElement.height = canvasHeightNeeded;
 		this.ctx = this.canvasElement.getContext('2d');
@@ -132,17 +133,20 @@ class GeoView{
 	
 	setZoomToData(){
 		if (this.pointsToDraw.size < 1) this._setItemsToDraw();
+		if (this.currentHover) {
+			return;
+		}
 		let usedNDC = {'x0':1, 'x1':-1, 'y0':1, 'y1':-1}; 
 		let pointsExist = false;
-		let forAutoZoomExists = false;
+		let highlightExists = false;
 		for (const ptd of this.pointsToDraw.values()) { 
-			if (ptd.forAutoZoom) {
-				forAutoZoomExists = true;
+			if (ptd.highlight) {
+				highlightExists = true;
 				break;
 			}
 		}
 		for (const ptd of this.pointsToDraw.values()) { 
-			if (ptd.forAutoZoom || !forAutoZoomExists){
+			if (ptd.highlight || !highlightExists){
 				usedNDC.x0 = Math.min(usedNDC.x0, ptd.pNDC.x);
 				usedNDC.y0 = Math.min(usedNDC.y0, ptd.pNDC.y);
 				usedNDC.x1 = Math.max(usedNDC.x1, ptd.pNDC.x);
@@ -181,44 +185,43 @@ class GeoView{
 		}
 		this.pointsToDraw = new Map();
 		this.connectionsToDraw = new Set();
-		let homeCalls = new Set();
+		let highlightConnection = false;
 		const vp = this.viewParams;
-		//console.log(vp);
 		for (const connection of connections){
 			const [txRecord, rxRecord] = [srRecords.get(connection.s), srRecords.get(connection.r)];
-			let vis = false; 
-			vis |= (txRecord.isInHome && document.getElementById('homeTx').checked); 
-			vis |= (rxRecord.isInHome && document.getElementById('homeRx').checked);
-			if (vis){	
-				let lineColour = null;
-				if (txRecord.isInHome) homeCalls.add(connection.s);
-				if (rxRecord.isInHome) homeCalls.add(connection.r);
-				for (const [i, epRecord] of [txRecord, rxRecord].entries()) {
+			const connectionInvolvesMyCall = (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
+			if(	  (txRecord.isInHome && document.getElementById('homeTx').checked)
+				||(rxRecord.isInHome && document.getElementById('homeRx').checked) ) {	
+				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth, spotSize: this.viewParams.spotSize};
+				for (const epRecord of [txRecord, rxRecord]) {
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
-					let forAutoZoom =  this.pointsToDraw.get(epRecord.call)?.forAutoZoom;
-					if (vp.showAllConnections) forAutoZoom |= true;
-					if (vp.showOnlyDuplexConnections) forAutoZoom |= (connection.duplex === true);
-					if (vp.showOnlyInvolvingThisCall) forAutoZoom |= (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
-					if (!vp.showOnlyInvolvingThisCall 
-					 && !vp.showOnlyDuplexConnections 
-					 && !vp.showAllConnections) forAutoZoom |= true;
-					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'forAutoZoom':forAutoZoom, 'pColour':pColour});
-					
-					let showDirectionColouredConnection = (vp.showOnlyInvolvingThisCall && (epRecord.call == vp.myCall) )
-					if (this.currentHover) showDirectionColouredConnection = (epRecord.call == this.currentHover)
-					if (showDirectionColouredConnection) {
-						lineColour = (connection.duplex)? vp.txrx: ((epRecord.call == connection.s)? vp.tx: vp.rx);
+					if (this.currentHover) {
+						highlightConnection = (txRecord.call == this.currentHover || rxRecord.call == this.currentHover);
+					} else {
+						const highlightBecauseDuplex = vp.highlightDuplexConnections && (connection.duplex === true);
+						const highlightBecaseMyCall = vp.highlightMyCall && connectionInvolvesMyCall
+						highlightConnection = highlightBecauseDuplex || highlightBecaseMyCall;
 					}
+					const highlightEndpoint = highlightConnection || (this.pointsToDraw.get(epRecord.call)?.highlight === true);
+					this.pointsToDraw.set(epRecord.call, {'pNDC':pNDC, 'highlight':highlightEndpoint, 'pColour':pColour,
+						alpha: highlightEndpoint? this.viewParams.spotAlphaHL : this.viewParams.spotAlpha, 
+						size: highlightEndpoint? this.viewParams.spotSizeHL : this.viewParams.spotSize
+					});
 				}
-				if (vp.showOnlyDuplexConnections && (connection.duplex === true)){
-					lineColour = vp.txrx;
-				}						
-				if (vp.showAllConnections){
-					let origin = txRecord.isInHome? connection.s:connection.r;
-					lineColour = colourSequence[[...homeCalls].indexOf(origin) % colourSequence.length];
+				if (highlightConnection) {
+					lineParams.alpha = this.viewParams.lineAlphaHL;
+					lineParams.width = this.viewParams.lineWidthHL;
+					lineParams.spotSize = this.viewParams.spotSizeHL;
 				}
-				if (lineColour) this.connectionsToDraw.add(connection.s+"|"+connection.r+"|"+lineColour);
+				let drawUnhighlightedConnections = this.drawUnhighlightedConnections;
+				if (this.currentHover) drawUnhighlightedConnections = false;
+				if (highlightConnection || drawUnhighlightedConnections){
+					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
+					lineParams.sCall = txRecord.call;
+					lineParams.rCall = rxRecord.call;
+					this.connectionsToDraw.add(lineParams);
+				}
 			}
 		}
 	}
@@ -226,29 +229,29 @@ class GeoView{
 	_drawData(){
 		for (const pt of this.pointsToDraw.values()){
 			pt.pCanv = this.getCanv(pt.pNDC);
-			this.ctx.globalAlpha = this.viewParams.spotAlpha;
+			this.ctx.globalAlpha = pt.alpha;
 			this.ctx.beginPath();
-			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(pt.pCanv.x, pt.pCanv.y, pt.size, 0, 6.282);
 			this.ctx.fillStyle = pt.pColour;
 			this.ctx.fill();
 			this.ctx.globalAlpha = 1.0;
 		}	
 
-		this.ctx.lineWidth = this.viewParams.lineWidth;
 		for (const conn of this.connectionsToDraw){
-			const [callA, callB, lineColour] = conn.split('|');
-			this.ctx.strokeStyle = lineColour;
-			this.ctx.globalAlpha = this.viewParams.lineAlpha;
-			const epts = {'s':this.pointsToDraw.get(callA).pCanv, 'r':this.pointsToDraw.get(callB).pCanv};
+			this.ctx.strokeStyle = conn.colour;
+			this.ctx.globalAlpha = conn.alpha;
+			this.ctx.lineWidth = conn.width;
 			this.ctx.beginPath();
-			this.ctx.moveTo(epts.s.x, epts.s.y);
-			this.ctx.lineTo(epts.r.x, epts.r.y);
+			let sCanv = this.pointsToDraw.get(conn.sCall).pCanv;
+			let rCanv = this.pointsToDraw.get(conn.rCall).pCanv;
+			this.ctx.moveTo(sCanv.x, sCanv.y);
+			this.ctx.lineTo(rCanv.x, rCanv.y);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.s.x, epts.s.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(sCanv.x, sCanv.y, conn.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.beginPath();
-			this.ctx.arc(epts.r.x, epts.r.y, this.viewParams.spotSize, 0, 6.282);
+			this.ctx.arc(rCanv.x, rCanv.y, conn.spotSize, 0, 6.282);
 			this.ctx.stroke();
 			this.ctx.globalAlpha = 1.0;
 		}
