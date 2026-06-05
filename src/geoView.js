@@ -206,10 +206,12 @@ class GeoView{
 					lineParams.alpha = 0.9;
 					lineParams.width = 4;
 				}
-				lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
-				lineParams.sCall = txRecord.call;
-				lineParams.rCall = rxRecord.call;
-				this.connectionsToDraw.add(lineParams);
+				if (!(this.currentHover && !highlight)){
+					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
+					lineParams.sCall = txRecord.call;
+					lineParams.rCall = rxRecord.call;
+					this.connectionsToDraw.add(lineParams);
+				}
 			}
 		}
 	}
