@@ -247,12 +247,12 @@ class GeoView{
 			this.ctx.moveTo(sCanv.x, sCanv.y);
 			this.ctx.lineTo(rCanv.x, rCanv.y);
 			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(sCanv.x, sCanv.y, conn.spotSize, 0, 6.282);
-			this.ctx.stroke();
-			this.ctx.beginPath();
-			this.ctx.arc(rCanv.x, rCanv.y, conn.spotSize, 0, 6.282);
-			this.ctx.stroke();
+		//	this.ctx.beginPath();
+		//	this.ctx.arc(sCanv.x, sCanv.y, conn.spotSize, 0, 6.282);
+		//	this.ctx.stroke();
+		//	this.ctx.beginPath();
+		//	this.ctx.arc(rCanv.x, rCanv.y, conn.spotSize, 0, 6.282);
+		//	this.ctx.stroke();
 			this.ctx.globalAlpha = 1.0;
 		}
 	}
