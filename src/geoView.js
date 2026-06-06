@@ -233,14 +233,11 @@ class GeoView{
 		var lowAlphaCanvas = document.createElement('canvas');
 		lowAlphaCanvas.width = this.canvasElement.width;
 		lowAlphaCanvas.height = this.canvasElement.height;
-		var highAlphaCanvas = document.createElement('canvas');
-		highAlphaCanvas.width = this.canvasElement.width;
-		highAlphaCanvas.height = this.canvasElement.height;
 
 		var ctxLo = lowAlphaCanvas.getContext('2d');
-		var ctxHi = highAlphaCanvas.getContext('2d');
+		this.ctx.globalAlpha = this.viewParams.lineAlphaHL;
 		for (const conn of this.connectionsToDraw){
-			let ctx = conn.highlight? ctxHi:ctxLo;
+			let ctx = conn.highlight? this.ctx:ctxLo;
 			ctx.strokeStyle = conn.colour;
 			ctx.lineWidth = conn.width;
 			ctx.beginPath();
@@ -250,10 +247,9 @@ class GeoView{
 			ctx.lineTo(rCanv.x, rCanv.y);
 			ctx.stroke();
 		}
+		
 		this.ctx.globalAlpha = this.viewParams.lineAlpha;
 		this.ctx.drawImage(lowAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
-		this.ctx.globalAlpha = this.viewParams.lineAlphaHL;
-		this.ctx.drawImage(highAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
 		this.ctx.globalAlpha = 1.0;
 	}
 	
