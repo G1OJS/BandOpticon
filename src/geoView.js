@@ -192,7 +192,7 @@ class GeoView{
 			const connectionInvolvesMyCall = (txRecord.call == vp.myCall || rxRecord.call == vp.myCall);
 			if(	  (txRecord.isInHome && document.getElementById('homeTx').checked)
 				||(rxRecord.isInHome && document.getElementById('homeRx').checked) ) {	
-				let lineParams = {'txCall':null, 'rxCall':null, 'colour': null, 'alpha':this.viewParams.lineAlpha, width:this.viewParams.lineWidth, spotSize: this.viewParams.spotSize};
+				let lineParams = {};
 				for (const epRecord of [txRecord, rxRecord]) {
 					let pNDC = this.getNDC(epRecord.latlong);
 					let pColour = (epRecord.tx && epRecord.rx)? vp.txrx: (epRecord.tx? vp.tx: vp.rx);
@@ -209,19 +209,12 @@ class GeoView{
 						size: highlightEndpoint? this.viewParams.spotSizeHL : this.viewParams.spotSize
 					});
 				}
-				if (highlightConnection) {
-					lineParams.alpha = this.viewParams.lineAlphaHL;
-					lineParams.width = this.viewParams.lineWidthHL;
-					lineParams.spotSize = this.viewParams.spotSizeHL;
-				}
-				let drawUnhighlightedConnections = this.drawUnhighlightedConnections;
-				if (this.currentHover) drawUnhighlightedConnections = false;
-				if (highlightConnection || drawUnhighlightedConnections){
-					lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
-					lineParams.sCall = txRecord.call;
-					lineParams.rCall = rxRecord.call;
-					this.connectionsToDraw.add(lineParams);
-				}
+				lineParams.colour = (connection.duplex)? vp.txrx: ((txRecord.isInHome)? vp.tx: vp.rx);
+				lineParams.sCall = txRecord.call;
+				lineParams.rCall = rxRecord.call;
+				lineParams.highlight = highlightConnection;
+				lineParams.width = highlightConnection? this.viewParams.lineWidthHL:this.viewParams.lineWidth;
+				this.connectionsToDraw.add(lineParams);
 			}
 		}
 	}
@@ -236,25 +229,32 @@ class GeoView{
 			this.ctx.fill();
 			this.ctx.globalAlpha = 1.0;
 		}	
+		
+		var lowAlphaCanvas = document.createElement('canvas');
+		lowAlphaCanvas.width = this.canvasElement.width;
+		lowAlphaCanvas.height = this.canvasElement.height;
+		var highAlphaCanvas = document.createElement('canvas');
+		highAlphaCanvas.width = this.canvasElement.width;
+		highAlphaCanvas.height = this.canvasElement.height;
 
+		var ctxLo = lowAlphaCanvas.getContext('2d');
+		var ctxHi = highAlphaCanvas.getContext('2d');
 		for (const conn of this.connectionsToDraw){
-			this.ctx.strokeStyle = conn.colour;
-			this.ctx.globalAlpha = conn.alpha;
-			this.ctx.lineWidth = conn.width;
-			this.ctx.beginPath();
+			let ctx = conn.highlight? ctxHi:ctxLo;
+			ctx.strokeStyle = conn.colour;
+			ctx.lineWidth = conn.width;
+			ctx.beginPath();
 			let sCanv = this.pointsToDraw.get(conn.sCall).pCanv;
 			let rCanv = this.pointsToDraw.get(conn.rCall).pCanv;
-			this.ctx.moveTo(sCanv.x, sCanv.y);
-			this.ctx.lineTo(rCanv.x, rCanv.y);
-			this.ctx.stroke();
-		//	this.ctx.beginPath();
-		//	this.ctx.arc(sCanv.x, sCanv.y, conn.spotSize, 0, 6.282);
-		//	this.ctx.stroke();
-		//	this.ctx.beginPath();
-		//	this.ctx.arc(rCanv.x, rCanv.y, conn.spotSize, 0, 6.282);
-		//	this.ctx.stroke();
-			this.ctx.globalAlpha = 1.0;
+			ctx.moveTo(sCanv.x, sCanv.y);
+			ctx.lineTo(rCanv.x, rCanv.y);
+			ctx.stroke();
 		}
+		this.ctx.globalAlpha = this.viewParams.lineAlpha;
+		this.ctx.drawImage(lowAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
+		this.ctx.globalAlpha = this.viewParams.lineAlphaHL;
+		this.ctx.drawImage(highAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
+		this.ctx.globalAlpha = 1.0;
 	}
 	
 	_unitCircle(n){
