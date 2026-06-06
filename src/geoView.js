@@ -35,6 +35,7 @@ class GeoView{
 		this.dataVignette = dataVignette;
 		this.canvasElement = canvasElement;
 		this.canvasElement.width = canvasWidth;
+		this.ctx = this.canvasElement.getContext('2d');
 		this.mapres = mapres;
 		this.drawUnhighlightedConnections = drawUnhighlightedConnections;
 		this.currentHover = null;
@@ -45,6 +46,10 @@ class GeoView{
 		this.earthHalfCircumference = latlonToKmDeg({'lat':0,'lon':0}, {'lat':0,'lon':180}).km;
 		this.pointsToDraw = new Map();
 		this.connectionsToDraw = new Set();
+		this.lowAlphaCanvas = document.createElement('canvas');
+		this.lowAlphaCanvas.width = this.canvasElement.width;
+		this.lowAlphaCanvas.height = this.canvasElement.height;
+		this.ctxLo = this.lowAlphaCanvas.getContext('2d');
 	}
 
 	invalidate(){
@@ -54,8 +59,10 @@ class GeoView{
 		this.viewParams = getViewParams();
 		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.highlightDuplexConnections,this.viewParams.highlightMyCall);
 		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
-		if (this.canvasElement.height != canvasHeightNeeded) this.canvasElement.height = canvasHeightNeeded;
-		this.ctx = this.canvasElement.getContext('2d');
+		if (this.canvasElement.height != canvasHeightNeeded) {
+			this.canvasElement.height = canvasHeightNeeded;
+			this.lowAlphaCanvas.height = this.canvasElement.height;
+		}
 		this._setItemsToDraw();
         this.redrawPending=true;
         requestAnimationFrame(()=>{
@@ -63,6 +70,7 @@ class GeoView{
             if(this.dirty){
                 this.dirty=false;
 				this.ctx.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
+				this.ctxLo.clearRect(0,0, this.canvasElement.width, this.canvasElement.height);
 				this._drawMap((this.mapres == 110)? landPolys110m:landPolys50m);
 				this._drawData();
             }
@@ -230,14 +238,8 @@ class GeoView{
 			this.ctx.globalAlpha = 1.0;
 		}	
 		
-		var lowAlphaCanvas = document.createElement('canvas');
-		lowAlphaCanvas.width = this.canvasElement.width;
-		lowAlphaCanvas.height = this.canvasElement.height;
-
-		var ctxLo = lowAlphaCanvas.getContext('2d');
-		this.ctx.globalAlpha = this.viewParams.lineAlphaHL;
 		for (const conn of this.connectionsToDraw){
-			let ctx = conn.highlight? this.ctx:ctxLo;
+			let ctx = conn.highlight? this.ctx:this.ctxLo;
 			ctx.strokeStyle = conn.colour;
 			ctx.lineWidth = conn.width;
 			ctx.beginPath();
@@ -249,7 +251,7 @@ class GeoView{
 		}
 		
 		this.ctx.globalAlpha = this.viewParams.lineAlpha;
-		this.ctx.drawImage(lowAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
+		this.ctx.drawImage(this.lowAlphaCanvas,0,0, this.canvasElement.width, this.canvasElement.height);
 		this.ctx.globalAlpha = 1.0;
 	}
 	
