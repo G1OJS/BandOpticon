@@ -147,7 +147,6 @@ function refreshView(viewName){
 		const canvas = document.querySelector('[data-bm="'+bandMode+'"]').querySelector('canvas');
 		const view = getView(bandMode, canvas, dataVignette, 400, 110, false);
 		(getViewParams().setZoomToDataCarousel)? view.setZoomToData(): view.setZoomFullEarth();
-		view.invalidate();
 	} else {
 		tileElement?.classList.add('hidden');
 	}	 
@@ -166,7 +165,6 @@ function refreshMain(){
 		document.getElementById('clickTileMessage').classList.add('hidden');
 		document.getElementById('mainViewTitle').innerText = bandMode;
 		document.getElementById('mainViewSubTitle').innerText = `Total Calls:${stats.calls} Home Calls [Tx: ${stats.callsHomeTx} Rx:${stats.callsHomeRx} TxRx:${stats.callsHomeTxRx}] Connections [Simplex:${stats.simplex} Duplex:${stats.duplex} ]`;			
-		view.invalidate();
 	} else {
 		document.getElementById('mainTile').classList.add('hidden');
 	}

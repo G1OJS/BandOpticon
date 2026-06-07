@@ -53,11 +53,9 @@ class GeoView{
 	}
 
 	invalidate(){
-		//console.log("Redraw request for " + this.canvasElement.closest('.tile').dataset.bm);
         this.dirty=true;
         if(this.redrawPending) return;
 		this.viewParams = getViewParams();
-		//console.log(this.viewParams.setZoomToDataCarousel, this.viewParams.setZoomToDataMain, this.viewParams.showAllConnections,this.viewParams.highlightDuplexConnections,this.viewParams.highlightMyCall);
 		const canvasHeightNeeded = this.viewParams.AzEq? this.canvasElement.width: this.canvasElement.width/2;
 		if (this.canvasElement.height != canvasHeightNeeded) {
 			this.canvasElement.height = canvasHeightNeeded;
@@ -93,7 +91,6 @@ class GeoView{
 		if (hovering_over !== this.currentHover) {
 			this.currentHover = hovering_over;
 			this.canvasElement.title = this.currentHover? this.currentHover:'';
-			this.invalidate();
 		}
 	}
 	
@@ -126,7 +123,7 @@ class GeoView{
 		return {'x':cv.w * (pNDC.x - vp.x0)/vp.w, 'y':cv.h - cv.h * (pNDC.y - vp.y0)/vp.h};
 	}
 	
-	setZoom(zoomFactor, centreNDC){
+	_redrawWithZoom(zoomFactor, centreNDC){
 		const vn = this.viewNDC;
 		if (centreNDC) {
 			const cn = centreNDC;			
@@ -137,6 +134,7 @@ class GeoView{
 		vn.y0 += (zoomFactor-1) * vn.h / 2;
 		vn.w -= (zoomFactor-1) * vn.w;
 		vn.h -= (zoomFactor-1) * vn.h;
+		this.invalidate();
 	}
 	
 	setZoomToData(){
@@ -167,17 +165,18 @@ class GeoView{
 			this.viewNDC = {'x0':usedNDC.x0, 'y0':usedNDC.y0, 'w':usedNDC.x1 - usedNDC.x0, 'h':usedNDC.y1 - usedNDC.y0};
 			this.viewNDC.w = Math.max(this.viewNDC.w, this.viewNDC.h, 0.01);
 			this.viewNDC.h = Math.max(this.viewNDC.h, this.viewNDC.w, 0.01);
-			this.setZoom(0.8, usedNDCCentre);
+			this._redrawWithZoom(0.8, usedNDCCentre);
 		} 
 	}
 	
 	setZoomFullEarth(){
 		this.viewNDC = {'x0':-1, 'w':2, 'y0':-1, 'h':2};
+		this._redrawWithZoom(1.0, null);
 	}
 	
 	setZoomByPointerPos(e, zoomFactor){
 		let xy = this.getPtrNDC(e);
-		this.setZoom(zoomFactor, xy);
+		this._redrawWithZoom(zoomFactor, xy);
 	}
 	
 	_setItemsToDraw(){
